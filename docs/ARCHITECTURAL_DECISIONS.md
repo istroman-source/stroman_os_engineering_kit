@@ -207,3 +207,44 @@ admin password unavailable in the build environment).
 **Consequences.** Unblocked the build without system changes. Not a standard team
 setup — a reproducible install (Homebrew/nvm/`.tool-versions`) should be adopted
 before onboarding engineers (see Known Limitations).
+
+---
+
+## ADR-0014 — Initial domain architecture and core contracts
+**Status:** Accepted (Prompt 003)
+
+**Context.** Before feature work, the platform needs a pure domain layer that is
+framework/provider-independent, hard to misuse, and cheap to evolve.
+
+**Decision.** Introduce five domain modules — `project`, `content`, `evaluation`,
+`decision`, `ai` — over a `shared` kernel (branded identifiers, `Confidence`,
+`Score`, `Slug`, bounded-text validation, `DomainError` hierarchy, and a small
+declarative state-machine helper). Key choices:
+- **Value objects only where an invariant exists** (Confidence 0–1, Score 1–10,
+  Slug format, bounded names/titles/justifications). Primitives elsewhere.
+- **Branded, prefix-validated identifiers** (`proj_`, `cnt_`, `eval_`, `rbr_`,
+  `crit_`, `dec_`, `usr_`); different id kinds are non-interchangeable.
+- **Immutable aggregates**; lifecycle changes return new values via `Result`.
+- **Explicit state machines** for Project, ContentItem (with monotonic version),
+  and Decision; illegal transitions yield typed `InvalidStateTransitionError`.
+- **Human authority in Decision** enforced structurally: the only path to
+  `DECIDED` requires a human `decidedBy`, an explicit selected option, and a
+  rationale. AI `Advisory` can never decide.
+- **AI is provider-neutral**: an `AiRecommendation` value (observation/inference/
+  unknown separation) plus an `AiRecommender` port; SDKs live behind adapters.
+- **Cross-domain references by identifier only**, imported **type-only**, so
+  domains have no runtime coupling and no cycles.
+- **Narrow, intent-revealing repository contracts** per domain — no generic CRUD,
+  no `BaseRepository`, no Prisma/query types. **No domain events** (none justified).
+- **Determinism**: aggregate factories/transitions take an injected `now`; ids are
+  generated at the boundary via `@/lib/id` and validated by `parse`.
+
+**Consequences.** Persistence, providers, and UI can be added later without
+changing business logic. The ESLint domain boundary was strengthened to also
+forbid `@/lib/env`, `@/lib/logging`, `@/lib/config`, `@/lib/feature-flags`, and
+provider/infra SDKs; the domain may use only `@/lib/result`, `@/lib/errors`,
+`@/lib/id`, `@/lib/datetime`. See `docs/DOMAIN_MODEL.md` and `docs/DOMAIN_GLOSSARY.md`.
+
+**Reconciliation (per prompt §2).** "Content" is modeled as the **knowledge base**
+(`schemas/domain-model.md` authority), not media assets; media/transcripts are a
+separate deferred domain.

@@ -29,3 +29,12 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
   `node .next/standalone/server.js` runner) if smaller images are needed.
 - **e2e in CI.** A Playwright job was added to `.github/workflows/ci.yml`. Add a
   PostgreSQL service to that job once routes depend on the database.
+
+## Discovered during Prompt 003 (domain foundation)
+
+- **Rubric weight normalization decision.** Weights are currently "positive,
+  weighted average." Decide with product whether rubrics must sum to 100% and, if
+  so, enforce it in `createRubric`.
+- **Project rich metadata.** If/when invariants are needed on client, objectives,
+  audience, platform, or runtime target, model them as value objects; today only
+  identity/name/status/owner are enforced.

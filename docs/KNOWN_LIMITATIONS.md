@@ -19,6 +19,26 @@ The foundation intentionally contains **no business functionality**. Absent:
 
 These arrive in later build steps and must not be assumed present.
 
+## Domain foundation (Prompt 003) — what exists vs. not
+
+The pure **domain model** now exists for Project, Content (knowledge base),
+Evaluation (Rubric + Evaluation), Decision, and AI, with typed identifiers, value
+objects, invariants, lifecycle transitions, typed errors, and repository/port
+**contracts**. What is deliberately **not** modeled yet:
+
+- **Media assets & transcripts.** "Content" here is the knowledge base, not
+  footage/interviews. Media ingest, storage, and transcription are a separate,
+  deferred domain (see reconciliation in ADR-0014).
+- **Content relations graph, decision trees, Creative Council orchestration,
+  project stages, and the learning engine** — later steps.
+- **Rich Project metadata** (client, objectives, platform, runtime target) — held
+  off until a use case enforces invariants on it; only identity/name/status/owner
+  are modeled now.
+- **Persistence adapters** for the repository contracts — interfaces only; no
+  Prisma models or implementations.
+- **Rubric weight normalization** is "positive weights, weighted average," not a
+  mandated sum-to-100%; revisit if the product requires it.
+
 ## Platform / tooling constraints
 
 - **Prisma pinned to v6.** Prisma 7 (config file + driver adapter) is not adopted;
