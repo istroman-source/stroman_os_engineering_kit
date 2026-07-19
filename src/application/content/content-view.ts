@@ -17,9 +17,12 @@ export interface ContentItemView {
   readonly slug: Slug;
   readonly title: ContentTitle;
   readonly status: ContentStatus;
+  /** Domain revision count (not a concurrency token). */
   readonly version: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  /** Optimistic-concurrency token for delivery layers (e.g. HTTP ETag). */
+  readonly lockVersion: number;
 }
 
 export function toContentItemView(item: ContentItem): ContentItemView {
@@ -32,5 +35,6 @@ export function toContentItemView(item: ContentItem): ContentItemView {
     version: item.version,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
+    lockVersion: item.lockVersion,
   };
 }

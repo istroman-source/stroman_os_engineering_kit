@@ -150,6 +150,27 @@ const eslintConfig = defineConfig([
     },
   },
 
+  // HTTP delivery (route handlers and HTTP mapping) must stay thin: no Prisma and
+  // no direct persistence imports. Persistence is reached only via the server
+  // composition boundary (src/server/composition).
+  {
+    files: ["src/app/api/**/*.{ts,tsx}", "src/server/http/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@prisma/client", "@/infrastructure", "@/infrastructure/*"],
+              message:
+                "HTTP routes/mapping must not import Prisma or persistence directly. Use @/server/composition.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // UI/app layers must not reach into server-only internals directly.
   {
     files: ["src/ui/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],

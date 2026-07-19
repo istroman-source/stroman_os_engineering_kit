@@ -1,4 +1,4 @@
-import { type OptimisticConcurrencyError } from "@/lib/errors";
+import { OptimisticConcurrencyError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   archiveContent as archive,
@@ -21,6 +21,8 @@ export interface ContentLifecycleDeps {
 
 export interface ContentLifecycleInput {
   readonly contentItemId: ContentItemId;
+  /** The lockVersion the caller last observed (optimistic concurrency). */
+  readonly expectedVersion: number;
 }
 
 export type ContentLifecycleResult = Result<
@@ -45,6 +47,10 @@ async function runTransition(
   const item = loaded.value;
   if (!item) return err(new NotFoundError("ContentItem", input.contentItemId));
 
+  if (item.lockVersion !== input.expectedVersion) {
+    return err(new OptimisticConcurrencyError());
+  }
+
   const transitioned = transition(item, deps.clock.now());
   if (!transitioned.ok) return transitioned;
 
@@ -52,7 +58,9 @@ async function runTransition(
     deps.content.update(transitioned.value),
   );
   if (!saved.ok) return saved;
-  return ok(toContentItemView(transitioned.value));
+  return ok(
+    toContentItemView({ ...transitioned.value, lockVersion: transitioned.value.lockVersion + 1 }),
+  );
 }
 
 export function publishContentItem(

@@ -80,6 +80,7 @@ describe("human authority", () => {
       recommendedOptionId: "a",
       rationale: "AI likes A",
       confidence: 1,
+      expectedVersion: decision.lockVersion,
     });
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -96,6 +97,7 @@ describe("human authority", () => {
       decisionId: decision.id,
       selectedOptionId: "b", // human overrides the AI's recommended "a"
       rationale: "The interview open sets stakes faster.",
+      expectedVersion: decision.lockVersion,
     });
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -113,6 +115,7 @@ describe("human authority", () => {
       decisionId: decision.id,
       selectedOptionId: "nope",
       rationale: "x",
+      expectedVersion: decision.lockVersion,
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(UnknownOptionError);
@@ -126,13 +129,16 @@ describe("human authority", () => {
       decisionId: decision.id,
       selectedOptionId: "a",
       rationale: "chose A",
+      expectedVersion: decision.lockVersion,
     });
-    expect(first.ok).toBe(true);
+    if (!first.ok) throw first.error;
+    // Use the CURRENT version so the domain "already decided" guard is what fires.
     const second = await recordHumanDecision(e, {
       actorId: OWNER,
       decisionId: decision.id,
       selectedOptionId: "b",
       rationale: "changed mind",
+      expectedVersion: first.value.lockVersion,
     });
     expect(second.ok).toBe(false);
     if (!second.ok) expect(second.error).toBeInstanceOf(DecisionAlreadyDecidedError);
@@ -146,6 +152,7 @@ describe("human authority", () => {
       decisionId: decision.id,
       selectedOptionId: "a",
       rationale: "x",
+      expectedVersion: decision.lockVersion,
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(NotAuthorizedError);

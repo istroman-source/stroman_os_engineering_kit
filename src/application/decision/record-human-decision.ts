@@ -1,5 +1,5 @@
-import { type OptimisticConcurrencyError } from "@/lib/errors";
-import { ok, type Result } from "@/lib/result";
+import { OptimisticConcurrencyError } from "@/lib/errors";
+import { err, ok, type Result } from "@/lib/result";
 import { decide, type DecisionId, type DecisionRepository } from "@/domain/decision";
 import type { OwnerId, ProjectRepository } from "@/domain/project";
 import type { DomainError } from "@/domain/shared";
@@ -20,6 +20,8 @@ export interface RecordHumanDecisionInput {
   readonly decisionId: DecisionId;
   readonly selectedOptionId: string;
   readonly rationale: string;
+  /** The lockVersion the caller last observed (optimistic concurrency). */
+  readonly expectedVersion: number;
 }
 
 export type RecordHumanDecisionResult = Result<
@@ -38,6 +40,9 @@ export async function recordHumanDecision(
 ): Promise<RecordHumanDecisionResult> {
   const access = await loadOwnedDecision(deps, input.actorId, input.decisionId, "decision.decide");
   if (!access.ok) return access;
+  if (access.value.lockVersion !== input.expectedVersion) {
+    return err(new OptimisticConcurrencyError());
+  }
 
   const decided = decide(access.value, {
     selectedOptionId: input.selectedOptionId,
@@ -49,5 +54,5 @@ export async function recordHumanDecision(
 
   const saved = await attemptUpdate("decision.update", () => deps.decisions.update(decided.value));
   if (!saved.ok) return saved;
-  return ok(toDecisionView(decided.value));
+  return ok(toDecisionView({ ...decided.value, lockVersion: decided.value.lockVersion + 1 }));
 }

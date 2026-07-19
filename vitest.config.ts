@@ -19,7 +19,13 @@ export default defineConfig({
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     // Integration tests require a real PostgreSQL and run via the dedicated
     // vitest.integration.config.ts (npm run test:integration).
-    exclude: ["e2e/**", "node_modules/**", ".next/**", "src/**/*.integration.test.ts"],
+    exclude: [
+      "e2e/**",
+      "node_modules/**",
+      ".next/**",
+      "src/**/*.integration.test.ts",
+      "src/**/*.api.test.ts",
+    ],
     coverage: {
       provider: "v8",
       include: ["src/**/*.{ts,tsx}"],

@@ -60,9 +60,16 @@ describe("content lifecycle", () => {
     const d = deps();
     const created = await createContentItem(d, base);
     if (!created.ok) throw created.error;
-    const published = await publishContentItem(d, { contentItemId: created.value.id });
-    expect(published.ok && published.value.status).toBe("PUBLISHED");
-    const revised = await reviseContentItem(d, { contentItemId: created.value.id });
+    const published = await publishContentItem(d, {
+      contentItemId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
+    if (!published.ok) throw published.error;
+    expect(published.value.status).toBe("PUBLISHED");
+    const revised = await reviseContentItem(d, {
+      contentItemId: created.value.id,
+      expectedVersion: published.value.lockVersion,
+    });
     expect(revised.ok && revised.value.version).toBe(2);
     expect(revised.ok && revised.value.status).toBe("DRAFT");
   });
@@ -71,8 +78,15 @@ describe("content lifecycle", () => {
     const d = deps();
     const created = await createContentItem(d, base);
     if (!created.ok) throw created.error;
-    await archiveContentItem(d, { contentItemId: created.value.id });
-    const result = await publishContentItem(d, { contentItemId: created.value.id });
+    const archived = await archiveContentItem(d, {
+      contentItemId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
+    if (!archived.ok) throw archived.error;
+    const result = await publishContentItem(d, {
+      contentItemId: created.value.id,
+      expectedVersion: archived.value.lockVersion,
+    });
     expect(result.ok).toBe(false);
     const stored = await d.content.findById(created.value.id);
     expect(stored?.status).toBe("ARCHIVED");

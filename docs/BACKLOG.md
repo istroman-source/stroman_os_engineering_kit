@@ -70,3 +70,17 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
   migrations; recovery is restore-from-backup today).
 - **CI PostgreSQL.** Wire integration tests into CI with a PostgreSQL service or
   the embedded-postgres approach used locally.
+
+## Discovered during Prompt 006A (HTTP delivery layer)
+
+- **Replace the temporary actor adapter** with authenticated identity (Prompt 006B),
+  add 401 for unauthenticated requests, and add CSRF protection for the chosen auth.
+- **Concurrency version round-trip to clients** is now live via ETag/If-Match; ensure
+  the future UI/mobile client sends `If-Match` on mutations.
+- **Rate limiting** once the API is externally exposed.
+- **Idempotency keys** for create/command endpoints once external clients or webhooks
+  exist (optimistic concurrency is not idempotency).
+- **CI API integration tests**: run `npm run test:api` (embedded PostgreSQL) and
+  `npm run openapi:validate` in CI.
+- **API client generation** from the OpenAPI spec if a typed client is justified.
+- **Pagination** for list endpoints when collections can grow unbounded.

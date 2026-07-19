@@ -1,4 +1,4 @@
-import { type OptimisticConcurrencyError } from "@/lib/errors";
+import { OptimisticConcurrencyError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   activateProject as activate,
@@ -24,6 +24,8 @@ export interface ProjectLifecycleDeps {
 export interface ProjectLifecycleInput {
   readonly actorId: OwnerId;
   readonly projectId: ProjectId;
+  /** The lockVersion the caller last observed (optimistic concurrency). */
+  readonly expectedVersion: number;
 }
 
 export type ProjectLifecycleResult = Result<
@@ -54,6 +56,11 @@ async function runTransition(
   const authorized = ensureOwner(input.actorId, project.ownerId, action);
   if (!authorized.ok) return authorized;
 
+  // Reject a stale caller: the resource changed since the caller observed it.
+  if (project.lockVersion !== input.expectedVersion) {
+    return err(new OptimisticConcurrencyError());
+  }
+
   // Domain behavior runs before any persistence; a rejected transition never saves.
   const transitioned = transition(project, deps.clock.now());
   if (!transitioned.ok) return transitioned;
@@ -62,7 +69,10 @@ async function runTransition(
     deps.projects.update(transitioned.value),
   );
   if (!saved.ok) return saved;
-  return ok(toProjectView(transitioned.value));
+  // Persistence incremented the lock version; reflect it in the returned token.
+  return ok(
+    toProjectView({ ...transitioned.value, lockVersion: transitioned.value.lockVersion + 1 }),
+  );
 }
 
 export function activateProject(

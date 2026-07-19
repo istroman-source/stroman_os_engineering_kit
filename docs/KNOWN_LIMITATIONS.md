@@ -137,3 +137,20 @@ verified against a real database (integration tests). Genuine remaining limits:
   `src/app`. Add real assets when branding is defined.
 - **`.prettierignore` excludes markdown and `prompts/`** so the kit's authored
   content is never reformatted; docs are therefore not format-checked.
+
+## HTTP delivery layer (Prompt 006A) — genuine remaining limits
+
+- **No real authentication.** A temporary `X-Stroman-Actor-Id` header identifies the
+  caller. **Production invariant:** the mechanism is enabled ONLY when `NODE_ENV` is
+  `development` or `test`; production always disables it and **no environment variable
+  can override this**, so the header can never authenticate or impersonate in
+  production (such requests get 503). It is fail-closed (missing actor → 401 in
+  dev/test). Real auth arrives in Prompt 006B, replacing the single `resolveActor`
+  seam without changing ownership-denial (403) semantics.
+- **No AI endpoint.** The `AiRecommender` has no real provider yet; exposing a stub
+  route is prohibited. Deferred.
+- **Pagination deferred.** List endpoints return all items (bounded MVP
+  collections). Add cursor pagination before any collection can grow unbounded.
+- **No rate limiting** and no external provider endpoints.
+- **Production CORS/CSRF/auth posture pending Prompt 006B.** Same-origin defaults and
+  `no-store` are set now; CSRF handling is tied to the future auth mechanism.

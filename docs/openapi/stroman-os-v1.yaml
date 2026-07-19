@@ -1,0 +1,801 @@
+openapi: 3.1.0
+info:
+  title: Stroman OS API
+  version: "1.0.0"
+  description: >
+    Versioned HTTP delivery layer for Stroman OS MVP workflows. Authentication is
+    DEFERRED to a later step; during development a temporary actor header
+    (X-Stroman-Actor-Id) identifies the caller and is fail-closed in production.
+    Mutable resources use ETag / If-Match optimistic concurrency.
+servers:
+  - url: /
+tags:
+  - name: Projects
+  - name: Content
+  - name: Rubrics
+  - name: Evaluations
+  - name: Decisions
+  - name: Health
+
+components:
+  securitySchemes:
+    DevActor:
+      type: apiKey
+      in: header
+      name: X-Stroman-Actor-Id
+      description: >
+        TEMPORARY actor context, available in DEVELOPMENT and TEST runtimes ONLY.
+        It is UNAVAILABLE IN PRODUCTION: production always disables it and no
+        environment variable can re-enable it, so this header can never
+        authenticate or impersonate a caller in production (such requests receive
+        503). Replaced by real authentication in a later step.
+  parameters:
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      schema: { type: string }
+      description: Expected ETag concurrency token, e.g. `"project:3"`.
+      example: '"project:3"'
+    RequestId:
+      name: X-Request-Id
+      in: header
+      required: false
+      schema: { type: string, maxLength: 200 }
+  headers:
+    ETag:
+      description: Opaque, resource-scoped optimistic-concurrency token.
+      schema: { type: string }
+    XRequestId:
+      description: Correlation id echoed on every response.
+      schema: { type: string }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, requestId]
+          properties:
+            code: { type: string }
+            message: { type: string }
+            requestId: { type: string }
+            fields:
+              type: array
+              items:
+                type: object
+                required: [path, code, message]
+                properties:
+                  path: { type: string }
+                  code: { type: string }
+                  message: { type: string }
+    Project:
+      type: object
+      required: [id, name, status, createdAt, updatedAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        status: { type: string, enum: [DRAFT, ACTIVE, COMPLETED, ARCHIVED] }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ProjectListItem:
+      allOf:
+        - $ref: "#/components/schemas/Project"
+        - type: object
+          properties:
+            concurrencyToken:
+              type: string
+              description: Opaque token to copy verbatim into If-Match when mutating this item.
+    ProjectList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/ProjectListItem" }
+    CreateProjectRequest:
+      type: object
+      required: [name]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+    ContentItem:
+      type: object
+      required: [id, type, slug, title, status, version, createdAt, updatedAt]
+      properties:
+        id: { type: string }
+        type: { type: string }
+        slug: { type: string }
+        title: { type: string }
+        status: { type: string, enum: [DRAFT, PUBLISHED, ARCHIVED] }
+        version: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    CreateContentRequest:
+      type: object
+      required: [type, slug, title]
+      additionalProperties: false
+      properties:
+        type: { type: string, maxLength: 64 }
+        slug: { type: string, maxLength: 120 }
+        title: { type: string, maxLength: 200 }
+    RubricCriterion:
+      type: object
+      required: [id, name, weight, anchors]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        weight: { type: number }
+        anchors:
+          type: object
+          required: [one, five, ten]
+          properties:
+            one: { type: string }
+            five: { type: string }
+            ten: { type: string }
+    Rubric:
+      type: object
+      required: [id, slug, title, criteria]
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        title: { type: string }
+        criteria:
+          type: array
+          items: { $ref: "#/components/schemas/RubricCriterion" }
+    CreateRubricRequest:
+      type: object
+      required: [slug, title, criteria]
+      additionalProperties: false
+      properties:
+        slug: { type: string, maxLength: 120 }
+        title: { type: string, maxLength: 200 }
+        criteria:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [name, weight, anchors]
+            additionalProperties: false
+            properties:
+              name: { type: string, maxLength: 120 }
+              weight: { type: number }
+              anchors:
+                type: object
+                required: [one, five, ten]
+                additionalProperties: false
+                properties:
+                  one: { type: string, maxLength: 500 }
+                  five: { type: string, maxLength: 500 }
+                  ten: { type: string, maxLength: 500 }
+    CriterionScore:
+      type: object
+      required: [criterionId, score, justification]
+      properties:
+        criterionId: { type: string }
+        score: { type: integer }
+        justification: { type: string }
+    Evaluation:
+      type: object
+      required: [id, projectId, rubricId, reviewerType, reviewerId, scores, createdAt]
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        rubricId: { type: string }
+        reviewerType: { type: string, enum: [HUMAN, AI] }
+        reviewerId: { type: [string, "null"] }
+        scores:
+          type: array
+          items: { $ref: "#/components/schemas/CriterionScore" }
+        createdAt: { type: string, format: date-time }
+    EvaluationList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Evaluation" }
+    RecordEvaluationRequest:
+      type: object
+      required: [projectId, rubricId, reviewerType, scores]
+      additionalProperties: false
+      properties:
+        projectId: { type: string }
+        rubricId: { type: string }
+        reviewerType: { type: string, enum: [HUMAN, AI] }
+        scores:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [criterionId, score, justification]
+            additionalProperties: false
+            properties:
+              criterionId: { type: string }
+              score: { type: integer }
+              justification: { type: string, maxLength: 2000 }
+    DecisionOption:
+      type: object
+      required: [id, label, rationale]
+      properties:
+        id: { type: string }
+        label: { type: string }
+        rationale: { type: [string, "null"] }
+    Advisory:
+      type: object
+      required: [recommendedOptionId, rationale, confidence]
+      properties:
+        recommendedOptionId: { type: [string, "null"] }
+        rationale: { type: string }
+        confidence: { type: number }
+    Decision:
+      type: object
+      required:
+        [
+          id,
+          projectId,
+          question,
+          options,
+          advisory,
+          status,
+          selectedOptionId,
+          decidedBy,
+          decisionRationale,
+          createdAt,
+          decidedAt,
+        ]
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        question: { type: string }
+        options:
+          type: array
+          items: { $ref: "#/components/schemas/DecisionOption" }
+        advisory:
+          oneOf:
+            - $ref: "#/components/schemas/Advisory"
+            - type: "null"
+        status: { type: string, enum: [PROPOSED, DECIDED] }
+        selectedOptionId: { type: [string, "null"] }
+        decidedBy: { type: [string, "null"] }
+        decisionRationale: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+        decidedAt: { type: [string, "null"], format: date-time }
+    DecisionListItem:
+      allOf:
+        - $ref: "#/components/schemas/Decision"
+        - type: object
+          properties:
+            concurrencyToken:
+              type: string
+              description: Opaque token to copy verbatim into If-Match when mutating this item.
+    DecisionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/DecisionListItem" }
+    ProposeDecisionRequest:
+      type: object
+      required: [projectId, question, options]
+      additionalProperties: false
+      properties:
+        projectId: { type: string }
+        question: { type: string, maxLength: 500 }
+        options:
+          type: array
+          minItems: 2
+          items:
+            type: object
+            required: [id, label]
+            additionalProperties: false
+            properties:
+              id: { type: string }
+              label: { type: string, maxLength: 200 }
+              rationale: { type: [string, "null"], maxLength: 2000 }
+        advisory:
+          type: object
+          required: [rationale, confidence]
+          additionalProperties: false
+          properties:
+            recommendedOptionId: { type: [string, "null"] }
+            rationale: { type: string, maxLength: 2000 }
+            confidence: { type: number }
+    AttachAdvisoryRequest:
+      type: object
+      required: [rationale, confidence]
+      additionalProperties: false
+      properties:
+        recommendedOptionId: { type: [string, "null"] }
+        rationale: { type: string, maxLength: 2000 }
+        confidence: { type: number }
+    RecordHumanDecisionRequest:
+      type: object
+      required: [selectedOptionId, rationale]
+      additionalProperties: false
+      properties:
+        selectedOptionId: { type: string }
+        rationale: { type: string, maxLength: 2000 }
+  responses:
+    BadRequest:
+      description: Malformed request or precondition.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Forbidden:
+      description: Actor is not permitted to access the resource.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Conflict:
+      description: Duplicate, invalid transition, or stale-write conflict.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    Unprocessable:
+      description: Structurally valid but semantically rejected.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    PreconditionRequired:
+      description: An If-Match precondition is required.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+security:
+  - DevActor: []
+
+paths:
+  /api/health/live:
+    get:
+      tags: [Health]
+      operationId: healthLive
+      security: []
+      summary: Liveness probe (no database dependency).
+      responses:
+        "200":
+          description: Alive.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { status: { type: string } }
+  /api/health/ready:
+    get:
+      tags: [Health]
+      operationId: healthReady
+      security: []
+      summary: Readiness probe (verifies the database).
+      responses:
+        "200":
+          description: Ready.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { status: { type: string } }
+        "503": { $ref: "#/components/responses/Conflict" }
+  /api/v1/projects:
+    post:
+      tags: [Projects]
+      operationId: createProject
+      summary: Create a project owned by the actor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateProjectRequest" }
+            example: { name: "Signature Dish Reel" }
+      responses:
+        "201":
+          description: Created.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Forbidden" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      summary: List the actor's projects.
+      responses:
+        "200":
+          description: Project list.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ProjectList" }
+        "401": { $ref: "#/components/responses/Forbidden" }
+  /api/v1/projects/{projectId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProject
+      responses:
+        "200":
+          description: Project.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/activate:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Projects]
+      operationId: activateProject
+      responses:
+        "200":
+          description: Updated project.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/projects/{projectId}/complete:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Projects]
+      operationId: completeProject
+      responses:
+        "200":
+          description: Updated project.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/projects/{projectId}/archive:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Projects]
+      operationId: archiveProject
+      responses:
+        "200":
+          description: Updated project.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/projects/{projectId}/evaluations:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Evaluations]
+      operationId: listProjectEvaluations
+      responses:
+        "200":
+          description: Evaluations for the project.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EvaluationList" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/decisions:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Decisions]
+      operationId: listProjectDecisions
+      responses:
+        "200":
+          description: Decisions for the project.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DecisionList" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/content:
+    post:
+      tags: [Content]
+      operationId: createContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateContentRequest" }
+      responses:
+        "201":
+          description: Created.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/content/by-slug/{slug}:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Content]
+      operationId: getContentBySlug
+      responses:
+        "200":
+          description: Content item.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/content/{contentId}/publish:
+    parameters:
+      - name: contentId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Content]
+      operationId: publishContent
+      responses:
+        "200":
+          description: Updated content item.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/content/{contentId}/revise:
+    parameters:
+      - name: contentId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Content]
+      operationId: reviseContent
+      responses:
+        "200":
+          description: Updated content item.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/content/{contentId}/archive:
+    parameters:
+      - name: contentId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Content]
+      operationId: archiveContent
+      responses:
+        "200":
+          description: Updated content item.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentItem" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/rubrics:
+    post:
+      tags: [Rubrics]
+      operationId: createRubric
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateRubricRequest" }
+      responses:
+        "201":
+          description: Created rubric.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Rubric" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/rubrics/{rubricId}:
+    parameters:
+      - name: rubricId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Rubrics]
+      operationId: getRubric
+      responses:
+        "200":
+          description: Rubric.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Rubric" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/evaluations:
+    post:
+      tags: [Evaluations]
+      operationId: recordEvaluation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecordEvaluationRequest" }
+      responses:
+        "201":
+          description: Recorded evaluation.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Evaluation" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/evaluations/{evaluationId}:
+    parameters:
+      - name: evaluationId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Evaluations]
+      operationId: getEvaluation
+      responses:
+        "200":
+          description: Evaluation.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Evaluation" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/decisions:
+    post:
+      tags: [Decisions]
+      operationId: proposeDecision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProposeDecisionRequest" }
+      responses:
+        "201":
+          description: Proposed decision.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Decision" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/decisions/{decisionId}:
+    parameters:
+      - name: decisionId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Decisions]
+      operationId: getDecision
+      responses:
+        "200":
+          description: Decision.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Decision" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/decisions/{decisionId}/advisory:
+    parameters:
+      - name: decisionId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Decisions]
+      operationId: attachDecisionAdvisory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AttachAdvisoryRequest" }
+      responses:
+        "200":
+          description: Decision with advisory (still PROPOSED).
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Decision" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/decisions/{decisionId}/decide:
+    parameters:
+      - name: decisionId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Decisions]
+      operationId: recordHumanDecision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RecordHumanDecisionRequest" }
+      responses:
+        "200":
+          description: Decided decision.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Decision" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }

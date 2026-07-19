@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { OptimisticConcurrencyError } from "@/lib/errors";
 import { InvalidStateTransitionError } from "@/domain/shared";
 import { OwnerId, ProjectId } from "@/domain/project";
 import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes";
@@ -96,7 +97,11 @@ describe("project lifecycle", () => {
     const d = deps();
     const created = await createProject(d, { actorId: OWNER, name: "A" });
     if (!created.ok) throw created.error;
-    const result = await activateProject(d, { actorId: OWNER, projectId: created.value.id });
+    const result = await activateProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
     expect(result.ok && result.value.status).toBe("ACTIVE");
   });
 
@@ -105,7 +110,11 @@ describe("project lifecycle", () => {
     const created = await createProject(d, { actorId: OWNER, name: "A" });
     if (!created.ok) throw created.error;
     // DRAFT -> COMPLETED is illegal.
-    const result = await completeProject(d, { actorId: OWNER, projectId: created.value.id });
+    const result = await completeProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(InvalidStateTransitionError);
     const stored = await d.projects.findById(created.value.id);
@@ -116,20 +125,56 @@ describe("project lifecycle", () => {
     const d = deps();
     const created = await createProject(d, { actorId: OWNER, name: "A" });
     if (!created.ok) throw created.error;
-    const result = await activateProject(d, { actorId: OTHER, projectId: created.value.id });
+    const result = await activateProject(d, {
+      actorId: OTHER,
+      projectId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(NotAuthorizedError);
+  });
+
+  it("rejects a stale expected version", async () => {
+    const d = deps();
+    const created = await createProject(d, { actorId: OWNER, name: "A" });
+    if (!created.ok) throw created.error;
+    const first = await activateProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
+    expect(first.ok).toBe(true);
+    // Reusing the original (now stale) version must be rejected.
+    const stale = await archiveProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
+    expect(stale.ok).toBe(false);
+    if (!stale.ok) expect(stale.error).toBeInstanceOf(OptimisticConcurrencyError);
   });
 
   it("runs the full lifecycle through to ARCHIVED", async () => {
     const d = deps();
     const created = await createProject(d, { actorId: OWNER, name: "A" });
     if (!created.ok) throw created.error;
-    const activated = await activateProject(d, { actorId: OWNER, projectId: created.value.id });
-    expect(activated.ok).toBe(true);
-    const completed = await completeProject(d, { actorId: OWNER, projectId: created.value.id });
-    expect(completed.ok).toBe(true);
-    const archived = await archiveProject(d, { actorId: OWNER, projectId: created.value.id });
+    const activated = await activateProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: created.value.lockVersion,
+    });
+    if (!activated.ok) throw activated.error;
+    const completed = await completeProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: activated.value.lockVersion,
+    });
+    if (!completed.ok) throw completed.error;
+    const archived = await archiveProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: completed.value.lockVersion,
+    });
     expect(archived.ok && archived.value.status).toBe("ARCHIVED");
   });
 });

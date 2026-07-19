@@ -31,6 +31,8 @@ export interface DecisionView {
   readonly decisionRationale: string | null;
   readonly createdAt: Date;
   readonly decidedAt: Date | null;
+  /** Optimistic-concurrency token for delivery layers (e.g. HTTP ETag). */
+  readonly lockVersion: number;
 }
 
 export function toDecisionView(decision: Decision): DecisionView {
@@ -56,5 +58,6 @@ export function toDecisionView(decision: Decision): DecisionView {
     decisionRationale: decision.decisionRationale,
     createdAt: decision.createdAt,
     decidedAt: decision.decidedAt,
+    lockVersion: decision.lockVersion,
   };
 }

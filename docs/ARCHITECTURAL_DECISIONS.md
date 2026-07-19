@@ -337,3 +337,38 @@ behavior, and stale-write rejection). Domain aggregates gained a `lockVersion`
 concurrency token (Project, Content, Decision) and the repository contracts moved
 from `save` to `insert`/`update`; application use cases and in-memory test doubles
 were updated accordingly. See `docs/PERSISTENCE_ARCHITECTURE.md`.
+
+---
+
+## ADR-0017 — HTTP delivery layer (versioned route handlers)
+**Status:** Accepted (Prompt 006A)
+
+**Context.** The application needed a public HTTP delivery layer over the existing
+domain/application/persistence layers, without moving logic into routes.
+
+**Decision.** Add versioned Next.js Route Handlers under `src/app/api/v1` as thin
+adapters. Material choices:
+- **Thin handlers, one use case each.** Routes parse/validate, call one use case,
+  serialize, and map errors — no business logic, no Prisma (ESLint-enforced).
+- **Composition boundary** (`src/server/composition`) wires adapters to use cases;
+  a single `ApiContext` is a superset of every use case's deps. No DI framework.
+- **Zod request schemas** (`.strict()`), independent of domain/Prisma; explicit
+  serializers (never raw domain serialization); ISO-8601 UTC timestamps.
+- **Central neutral error mapping** → stable `{ error: { code, message, requestId,
+  fields? } }`; never leaks Prisma/SQL/causes/stack traces.
+- **ETag / If-Match optimistic concurrency**: mutable resources expose a strong,
+  resource-scoped ETag `"<resource>:<lockVersion>"`; mutations require `If-Match`,
+  thread the expected version to the use case, and reject stale writes with 409.
+  This required exposing `lockVersion` on the mutable views and adding an
+  `expectedVersion` input to the mutation use cases (delivery-driven corrections).
+- **Temporary, fail-closed dev actor** (`X-Stroman-Actor-Id`): disabled in
+  production; one seam (`resolveActor`) for Prompt 006B to replace with real auth.
+- **OpenAPI 3.1 source of truth** (`docs/openapi/stroman-os-v1.yaml`), validated in
+  CI-style checks with a contract test asserting documented paths equal implemented
+  routes (drift prevention).
+- **Real HTTP + PostgreSQL tests** (`npm run test:api`) invoke route handlers with
+  real Request objects against embedded PostgreSQL.
+
+**Consequences.** A stable, versioned, concurrency-safe API contract suitable for a
+future browser/mobile client, with authentication cleanly deferred behind one seam.
+See `docs/API_ARCHITECTURE.md`.

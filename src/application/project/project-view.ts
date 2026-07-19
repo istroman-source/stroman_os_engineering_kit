@@ -11,6 +11,8 @@ export interface ProjectView {
   readonly status: ProjectStatus;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  /** Optimistic-concurrency token for delivery layers (e.g. HTTP ETag). */
+  readonly lockVersion: number;
 }
 
 export function toProjectView(project: Project): ProjectView {
@@ -20,5 +22,6 @@ export function toProjectView(project: Project): ProjectView {
     status: project.status,
     createdAt: project.createdAt,
     updatedAt: project.updatedAt,
+    lockVersion: project.lockVersion,
   };
 }

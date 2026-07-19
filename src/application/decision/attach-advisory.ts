@@ -1,5 +1,5 @@
-import { type OptimisticConcurrencyError } from "@/lib/errors";
-import { ok, type Result } from "@/lib/result";
+import { OptimisticConcurrencyError } from "@/lib/errors";
+import { err, ok, type Result } from "@/lib/result";
 import {
   type Advisory,
   attachAdvisory as attachAdvisoryToDecision,
@@ -24,6 +24,8 @@ export interface AttachAdvisoryInput {
   readonly recommendedOptionId?: string | null;
   readonly rationale: string;
   readonly confidence: number;
+  /** The lockVersion the caller last observed (optimistic concurrency). */
+  readonly expectedVersion: number;
 }
 
 export type AttachAdvisoryResult = Result<
@@ -41,6 +43,9 @@ export async function attachAdvisory(
 ): Promise<AttachAdvisoryResult> {
   const access = await loadOwnedDecision(deps, input.actorId, input.decisionId, "decision.advise");
   if (!access.ok) return access;
+  if (access.value.lockVersion !== input.expectedVersion) {
+    return err(new OptimisticConcurrencyError());
+  }
 
   const confidence = makeConfidence(input.confidence);
   if (!confidence.ok) return confidence;
@@ -56,5 +61,5 @@ export async function attachAdvisory(
 
   const saved = await attemptUpdate("decision.update", () => deps.decisions.update(updated.value));
   if (!saved.ok) return saved;
-  return ok(toDecisionView(updated.value));
+  return ok(toDecisionView({ ...updated.value, lockVersion: updated.value.lockVersion + 1 }));
 }
