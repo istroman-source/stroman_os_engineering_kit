@@ -1,11 +1,15 @@
-import { getEnv, type Env } from "@/lib/env";
+import "server-only";
+
+import { getServerEnv, type ServerEnv } from "@/lib/env/env.server";
 import type { LogLevel } from "@/lib/logging";
+import { APP_NAME, APP_VERSION } from "./constants";
 
 /**
- * Application configuration.
+ * Server application configuration.
  *
- * Derives a stable, typed config object from the validated environment. Feature
- * code depends on this shape rather than reading process.env directly.
+ * Derives a stable, typed config object from the validated server environment.
+ * This module is server-only (it reads secrets); client code should use the
+ * client-safe constants in `./constants` instead.
  */
 
 export interface AppConfig {
@@ -18,10 +22,7 @@ export interface AppConfig {
   readonly isProduction: boolean;
 }
 
-export const APP_NAME = "Stroman OS";
-export const APP_VERSION = "0.1.0";
-
-export function loadConfig(env: Env = getEnv()): AppConfig {
+export function loadConfig(env: ServerEnv = getServerEnv()): AppConfig {
   return {
     name: APP_NAME,
     version: APP_VERSION,

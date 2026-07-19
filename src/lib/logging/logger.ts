@@ -4,6 +4,10 @@
  * Emits one JSON object per line so logs are machine-parseable in every
  * environment. The sink is injectable to keep the logger testable, and it has
  * no dependency on other modules to avoid initialization cycles.
+ *
+ * Sensitive values are redacted by default (keys such as password, token,
+ * secret, authorization) so credentials cannot be logged accidentally. This is
+ * a baseline safeguard; richer AI-specific redaction arrives in a later step.
  */
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
@@ -40,6 +44,48 @@ export interface LoggerOptions {
   readonly bindings?: LogMeta;
   readonly sink?: LogSink;
   readonly clock?: () => Date;
+  /** Extra substrings (case-insensitive) that mark a key as sensitive. */
+  readonly redactKeys?: readonly string[];
+}
+
+export const REDACTED = "[REDACTED]";
+
+const DEFAULT_REDACT_KEYS = [
+  "password",
+  "secret",
+  "token",
+  "apikey",
+  "authorization",
+  "cookie",
+  "credential",
+  "privatekey",
+  "passphrase",
+] as const;
+
+function normalizeKey(key: string): string {
+  return key.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+/** Recursively redact values whose key matches a sensitive pattern. */
+export function redact(value: unknown, patterns: readonly string[], seen = new WeakSet()): unknown {
+  if (Array.isArray(value)) {
+    if (seen.has(value)) return "[Circular]";
+    seen.add(value);
+    return value.map((item) => redact(item, patterns, seen));
+  }
+  if (value !== null && typeof value === "object") {
+    if (seen.has(value)) return "[Circular]";
+    seen.add(value);
+    const out: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(value)) {
+      const normalized = normalizeKey(key);
+      out[key] = patterns.some((p) => normalized.includes(p))
+        ? REDACTED
+        : redact(val, patterns, seen);
+    }
+    return out;
+  }
+  return value;
 }
 
 const defaultSink: LogSink = (record) => {
@@ -64,10 +110,11 @@ function resolveLevel(explicit: LogLevel | undefined): LogLevel {
 
 export function createLogger(options: LoggerOptions = {}): Logger {
   const level = resolveLevel(options.level);
-  const bindings = options.bindings ?? {};
   const sink = options.sink ?? defaultSink;
   const clock = options.clock ?? (() => new Date());
   const threshold = LEVEL_ORDER[level];
+  const patterns = [...DEFAULT_REDACT_KEYS, ...(options.redactKeys ?? []).map(normalizeKey)];
+  const bindings = redact(options.bindings ?? {}, patterns) as LogMeta;
 
   function log(recordLevel: LogLevel, message: string, meta?: LogMeta): void {
     if (LEVEL_ORDER[recordLevel] < threshold) return;
@@ -76,7 +123,7 @@ export function createLogger(options: LoggerOptions = {}): Logger {
       message,
       time: clock().toISOString(),
       bindings,
-      meta,
+      meta: meta ? (redact(meta, patterns) as LogMeta) : undefined,
     });
   }
 
@@ -86,7 +133,7 @@ export function createLogger(options: LoggerOptions = {}): Logger {
     warn: (message, meta) => log("warn", message, meta),
     error: (message, meta) => log("error", message, meta),
     child: (childBindings) =>
-      createLogger({ ...options, bindings: { ...bindings, ...childBindings } }),
+      createLogger({ ...options, bindings: { ...(options.bindings ?? {}), ...childBindings } }),
   };
 }
 

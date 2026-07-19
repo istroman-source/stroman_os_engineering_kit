@@ -10,6 +10,9 @@
  */
 
 :root {
+  /* Native controls (scrollbars, form widgets) follow the dark theme. */
+  color-scheme: dark;
+
   /* ---- Color: semantic surfaces & content (dark, default) ---- */
   --background: oklch(0.141 0.005 285.823);
   --foreground: oklch(0.985 0 0);
@@ -85,6 +88,8 @@
 }
 
 .light {
+  color-scheme: light;
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
 
