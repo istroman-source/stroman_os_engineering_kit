@@ -10,6 +10,11 @@ export interface ProjectRepository {
   findById(id: ProjectId): Promise<Project | null>;
   /** All projects owned by a user. */
   listByOwner(ownerId: OwnerId): Promise<readonly Project[]>;
-  /** Create or update a project. */
-  save(project: Project): Promise<void>;
+  /** Create a new project. Rejects if the id already exists (never overwrites). */
+  insert(project: Project): Promise<void>;
+  /**
+   * Update an existing project. Rejects if the id does not exist (never inserts)
+   * and rejects a stale write (optimistic concurrency on `lockVersion`).
+   */
+  update(project: Project): Promise<void>;
 }

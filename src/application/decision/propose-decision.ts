@@ -75,7 +75,7 @@ export async function proposeDecision(
   });
   if (!decision.ok) return decision;
 
-  const saved = await attempt("decision.save", () => deps.decisions.save(decision.value));
+  const saved = await attempt("decision.insert", () => deps.decisions.insert(decision.value));
   if (!saved.ok) return saved;
   return ok(toDecisionView(decision.value));
 }

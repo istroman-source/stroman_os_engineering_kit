@@ -55,8 +55,33 @@ evaluation, decision, AI), tested in memory. Genuine current limitations:
   project-owned resources; **content and rubric authoring authorization is not
   enforced** (no owner/role/author concept yet). `requestRecommendation` auth is
   also deferred.
-- **No persistence adapters / provider adapters.** Repository contracts and the
-  `AiRecommender` port have in-memory test doubles only; real adapters are later steps.
+- **No AI provider adapters.** The `AiRecommender` port has an in-memory test
+  double only; real provider adapters are a later step. (Repository adapters now
+  exist — see the persistence section below.)
+
+## Persistence layer (Prompt 005) — what exists vs. not
+
+Real Prisma/PostgreSQL repository adapters now implement the domain contracts,
+verified against a real database (integration tests). Genuine remaining limits:
+
+- **Optimistic concurrency is implemented** for mutable aggregates (Project,
+  Content, Decision) via a `lockVersion` compare-and-swap; append-only aggregates
+  (Rubric, Evaluation) have none by design. The version token is carried on the
+  loaded aggregate; when the delivery layer arrives it must round-trip the expected
+  version through the client so a stale submit from a browser is also rejected.
+- **No users/identity table.** `OwnerId` is stored as an external reference; no
+  fake users table was added while authentication is deferred.
+- **No cross-repository transaction abstraction.** Each aggregate saves atomically
+  on its own; no current workflow needs multi-aggregate atomicity.
+- **CHECK-constraint migrations are invisible to `prisma migrate dev` drift
+  detection.** The project authors schema via `migrate deploy`, so this is not on
+  the deploy path, but `migrate dev` should not be used to author further changes
+  without accounting for it.
+- **Connection pooling is not configured** (a single long-lived client is assumed);
+  serverless deployment needs review.
+- **Integration PostgreSQL is provided by `embedded-postgres`** (real PG 17 in
+  userspace) because Docker is unavailable in this environment; CI should use a
+  PostgreSQL service or the same embedded approach.
 
 ## Platform / tooling constraints
 

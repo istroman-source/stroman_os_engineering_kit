@@ -1,8 +1,9 @@
+import { type OptimisticConcurrencyError } from "@/lib/errors";
 import { ok, type Result } from "@/lib/result";
 import { decide, type DecisionId, type DecisionRepository } from "@/domain/decision";
 import type { OwnerId, ProjectRepository } from "@/domain/project";
 import type { DomainError } from "@/domain/shared";
-import { attempt } from "../shared/attempt";
+import { attemptUpdate } from "../shared/attempt";
 import { type DecisionAccessDeps, loadOwnedDecision } from "./decision-access";
 import { type DecisionView, toDecisionView } from "./decision-view";
 import type { Clock } from "../shared/clock";
@@ -23,7 +24,7 @@ export interface RecordHumanDecisionInput {
 
 export type RecordHumanDecisionResult = Result<
   DecisionView,
-  DomainError | NotFoundError | NotAuthorizedError | RepositoryError
+  DomainError | NotFoundError | NotAuthorizedError | OptimisticConcurrencyError | RepositoryError
 >;
 
 /**
@@ -46,7 +47,7 @@ export async function recordHumanDecision(
   });
   if (!decided.ok) return decided;
 
-  const saved = await attempt("decision.save", () => deps.decisions.save(decided.value));
+  const saved = await attemptUpdate("decision.update", () => deps.decisions.update(decided.value));
   if (!saved.ok) return saved;
   return ok(toDecisionView(decided.value));
 }

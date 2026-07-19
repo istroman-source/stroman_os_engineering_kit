@@ -24,9 +24,15 @@ export interface ContentItem {
   readonly slug: Slug;
   readonly title: ContentTitle;
   readonly status: ContentStatus;
+  /** Domain revision count (increments on `reviseContent`). Not a concurrency token. */
   readonly version: number;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  /**
+   * Optimistic-concurrency token, managed by the persistence layer — distinct
+   * from `version` (the domain revision). Used to reject stale writes.
+   */
+  readonly lockVersion: number;
 }
 
 export interface CreateContentItemInput {
@@ -47,6 +53,7 @@ export function createContentItem(input: CreateContentItemInput): ContentItem {
     version: 1,
     createdAt: input.now,
     updatedAt: input.now,
+    lockVersion: 1,
   };
 }
 

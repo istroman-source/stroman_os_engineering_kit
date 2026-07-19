@@ -1,3 +1,4 @@
+import { type OptimisticConcurrencyError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   activateProject as activate,
@@ -9,7 +10,7 @@ import {
   type ProjectRepository,
 } from "@/domain/project";
 import type { InvalidStateTransitionError } from "@/domain/shared";
-import { attempt } from "../shared/attempt";
+import { attempt, attemptUpdate } from "../shared/attempt";
 import { ensureOwner } from "../shared/authorization";
 import type { Clock } from "../shared/clock";
 import { NotAuthorizedError, NotFoundError, type RepositoryError } from "../shared/errors";
@@ -27,7 +28,11 @@ export interface ProjectLifecycleInput {
 
 export type ProjectLifecycleResult = Result<
   ProjectView,
-  NotFoundError | NotAuthorizedError | InvalidStateTransitionError | RepositoryError
+  | NotFoundError
+  | NotAuthorizedError
+  | InvalidStateTransitionError
+  | OptimisticConcurrencyError
+  | RepositoryError
 >;
 
 type DomainTransition = (
@@ -53,7 +58,9 @@ async function runTransition(
   const transitioned = transition(project, deps.clock.now());
   if (!transitioned.ok) return transitioned;
 
-  const saved = await attempt("project.save", () => deps.projects.save(transitioned.value));
+  const saved = await attemptUpdate("project.update", () =>
+    deps.projects.update(transitioned.value),
+  );
   if (!saved.ok) return saved;
   return ok(toProjectView(transitioned.value));
 }

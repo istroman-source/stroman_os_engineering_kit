@@ -1,3 +1,4 @@
+import { ConflictError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   ContentItemId,
@@ -9,7 +10,7 @@ import {
 import { type InvalidValueError, makeSlug } from "@/domain/shared";
 import { attempt } from "../shared/attempt";
 import type { Clock } from "../shared/clock";
-import { type RepositoryError, SlugAlreadyExistsError } from "../shared/errors";
+import { RepositoryError, SlugAlreadyExistsError } from "../shared/errors";
 import type { IdGenerator } from "../shared/id-generator";
 import { type ContentItemView, toContentItemView } from "./content-view";
 
@@ -31,9 +32,11 @@ export type CreateContentItemResult = Result<
 >;
 
 /**
- * Authoring a knowledge-base item. Slug uniqueness is checked before save.
- * NOTE: the check-then-save is not atomic in memory; the persistence adapter
- * must enforce slug uniqueness with a unique constraint (see APPLICATION_ARCHITECTURE).
+ * Authoring a knowledge-base item. Slug uniqueness is pre-checked for a clear
+ * error, but the DATABASE unique constraint is authoritative: a concurrent create
+ * that slips past the pre-check surfaces as a CONFLICT from the repository, which
+ * is mapped to the same `SlugAlreadyExistsError`. The pre-check is never relied on
+ * alone (see docs/PERSISTENCE_ARCHITECTURE.md).
  */
 export async function createContentItem(
   deps: CreateContentItemDeps,
@@ -58,7 +61,18 @@ export async function createContentItem(
     now: deps.clock.now(),
   });
 
-  const saved = await attempt("content.save", () => deps.content.save(item));
-  if (!saved.ok) return saved;
+  try {
+    await deps.content.insert(item);
+  } catch (error) {
+    // A conflict means the slug was taken between the pre-check and the write
+    // (the DB unique constraint is authoritative); map it to the expected failure.
+    // ContentItem ids are application-generated and never collide in practice, so
+    // the only realistic conflict here is the slug. `ConflictError` is a neutral
+    // shared-kernel type — no infrastructure error class is imported.
+    if (error instanceof ConflictError) {
+      return err(new SlugAlreadyExistsError(slug.value));
+    }
+    return err(new RepositoryError("content.insert", { cause: error }));
+  }
   return ok(toContentItemView(item));
 }

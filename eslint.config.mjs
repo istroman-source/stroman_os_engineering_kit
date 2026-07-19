@@ -58,9 +58,11 @@ const eslintConfig = defineConfig([
                 "bullmq",
                 "pg",
                 "server-only",
+                "@/infrastructure",
+                "@/infrastructure/*",
               ],
               message:
-                "The domain layer must stay pure. Do not import framework, provider, server, UI, or infrastructure (env/logging/config) modules here. The domain may use @/lib/result, @/lib/errors, @/lib/id, and @/lib/datetime.",
+                "The domain layer must stay pure. Do not import framework, provider, server, UI, persistence, or infrastructure (env/logging/config) modules here. The domain may use @/lib/result, @/lib/errors, @/lib/id, and @/lib/datetime.",
             },
           ],
         },
@@ -105,9 +107,42 @@ const eslintConfig = defineConfig([
                 "bullmq",
                 "pg",
                 "server-only",
+                "@/infrastructure",
+                "@/infrastructure/*",
               ],
               message:
-                "The application layer must stay framework-, persistence-, and provider-independent. Depend on @/domain, application-owned ports, and @/lib/{result,errors,id,datetime} only.",
+                "The application layer must stay framework-, persistence-, and provider-independent. Depend on @/domain, application-owned ports, and @/lib/{result,errors,id,datetime} only. Persistence (@/infrastructure) is wired at the composition root, not imported here.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // Infrastructure implements domain contracts; it must not depend on the
+  // application, UI, or framework layers above it.
+  {
+    files: ["src/infrastructure/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "react",
+                "react-dom",
+                "next",
+                "next/*",
+                "@/ui",
+                "@/ui/*",
+                "@/app",
+                "@/app/*",
+                "@/application",
+                "@/application/*",
+              ],
+              message:
+                "Infrastructure must not import application, UI, or framework layers. It implements domain contracts and may use @prisma/client, @/domain, and @/lib.",
             },
           ],
         },

@@ -129,9 +129,10 @@ Authentication is deferred, but possession of an id never implies permission.
 ## Transaction boundaries
 
 Operations requiring atomicity, and how they are handled now:
-- **createContentItem** (check slug uniqueness → save): not atomic in memory. The
-  persistence adapter **must** enforce slug uniqueness with a DB unique constraint;
-  the app check is a fast-path, not the guarantee.
+- **createContentItem** (check slug uniqueness → save): the DB unique constraint is
+  authoritative (implemented in Prompt 005). The pre-check is a fast-path; a race
+  that passes it surfaces as a repository `CONFLICT`, which the use case maps to
+  `SlugAlreadyExistsError`. See `docs/PERSISTENCE_ARCHITECTURE.md`.
 - **load-modify-save** (all transitions, recordHumanDecision): a read-modify-write
   that needs isolation under concurrency. No transaction manager is introduced;
   correctness is documented as a persistence-adapter responsibility.

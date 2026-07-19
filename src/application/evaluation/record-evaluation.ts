@@ -94,7 +94,7 @@ export async function recordEvaluation(
   });
   if (!evaluation.ok) return evaluation;
 
-  const saved = await attempt("evaluation.save", () => deps.evaluations.save(evaluation.value));
+  const saved = await attempt("evaluation.insert", () => deps.evaluations.insert(evaluation.value));
   if (!saved.ok) return saved;
   return ok(toEvaluationView(evaluation.value));
 }

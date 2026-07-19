@@ -51,7 +51,7 @@ export async function createRubric(
   });
   if (!rubric.ok) return rubric;
 
-  const saved = await attempt("rubric.save", () => deps.rubrics.save(rubric.value));
+  const saved = await attempt("rubric.insert", () => deps.rubrics.insert(rubric.value));
   if (!saved.ok) return saved;
   return ok(toRubricView(rubric.value));
 }

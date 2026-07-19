@@ -44,6 +44,11 @@ export interface Decision {
   readonly decisionRationale: string | null;
   readonly createdAt: Date;
   readonly decidedAt: Date | null;
+  /**
+   * Optimistic-concurrency token, managed by the persistence layer. Ensures a
+   * stale write (e.g. a duplicate human finalization) cannot overwrite newer state.
+   */
+  readonly lockVersion: number;
 }
 
 export interface DecisionOptionInput {
@@ -101,6 +106,7 @@ export function createDecision(input: CreateDecisionInput): Result<Decision, Dom
       decisionRationale: null,
       createdAt: input.now,
       decidedAt: null,
+      lockVersion: 1,
     },
   };
 }

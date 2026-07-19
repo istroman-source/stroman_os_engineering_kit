@@ -44,10 +44,29 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
 - **Slug uniqueness must be enforced at the database.** `createContentItem` checks
   then saves; the persistence adapter must add a unique constraint so concurrent
   creates cannot both succeed.
-- **Optimistic concurrency for load-modify-save.** When concurrent edits become
-  real, introduce a provider-neutral expected-version check in the repository
-  contracts (no Prisma row versions in the application layer).
+- **Optimistic concurrency for load-modify-save.** DONE in Prompt 005 — a
+  provider-neutral `lockVersion` compare-and-swap in the persistence layer (no
+  Prisma row versions leak upward). Remaining delivery-layer work tracked below.
 - **Content/rubric authoring authorization.** Introduce an author/role concept so
   authoring use cases can enforce permission (currently deferred, not enforced).
 - **Delivery-layer idempotency.** Add idempotency keys at the transport layer for
   retryable operations (project/content/evaluation creation).
+
+## Discovered during Prompt 005 (persistence layer)
+
+- **Delivery-layer concurrency version round-trip.** Optimistic concurrency is
+  implemented at the persistence layer (`lockVersion` + CAS). When the delivery
+  layer is built, expose the version to clients and require it on submit so a stale
+  browser write is rejected with a 409, not silently re-read.
+- **Authentication-backed identity tables.** Replace the external `OwnerId`
+  reference with a real users table (and FK) once authentication exists.
+- **Cross-repository transactions.** If a future workflow must save multiple
+  aggregates atomically, introduce an explicit application transaction port
+  (not a generic unit-of-work) for exactly that workflow.
+- **Production connection pooling.** Decide pooling/serverless strategy (e.g.
+  PgBouncer or Prisma driver adapters) before production deployment.
+- **Migration rehearsal automation.** Automate applying migrations against a copy
+  of production state and document operational rollback (Prisma emits no down
+  migrations; recovery is restore-from-backup today).
+- **CI PostgreSQL.** Wire integration tests into CI with a PostgreSQL service or
+  the embedded-postgres approach used locally.

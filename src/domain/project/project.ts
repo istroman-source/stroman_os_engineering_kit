@@ -24,6 +24,12 @@ export interface Project {
   readonly status: ProjectStatus;
   readonly createdAt: Date;
   readonly updatedAt: Date;
+  /**
+   * Optimistic-concurrency token, managed by the persistence layer. Distinct from
+   * any domain revision count. Loaded with the aggregate and used to reject stale
+   * writes; transitions preserve it (persistence increments it on update).
+   */
+  readonly lockVersion: number;
 }
 
 export interface CreateProjectInput {
@@ -41,6 +47,7 @@ export function createProject(input: CreateProjectInput): Project {
     status: "DRAFT",
     createdAt: input.now,
     updatedAt: input.now,
+    lockVersion: 1,
   };
 }
 

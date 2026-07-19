@@ -1,3 +1,4 @@
+import { type OptimisticConcurrencyError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   archiveContent as archive,
@@ -8,7 +9,7 @@ import {
   reviseContent as revise,
 } from "@/domain/content";
 import type { InvalidStateTransitionError } from "@/domain/shared";
-import { attempt } from "../shared/attempt";
+import { attempt, attemptUpdate } from "../shared/attempt";
 import type { Clock } from "../shared/clock";
 import { NotFoundError, type RepositoryError } from "../shared/errors";
 import { type ContentItemView, toContentItemView } from "./content-view";
@@ -24,7 +25,7 @@ export interface ContentLifecycleInput {
 
 export type ContentLifecycleResult = Result<
   ContentItemView,
-  NotFoundError | InvalidStateTransitionError | RepositoryError
+  NotFoundError | InvalidStateTransitionError | OptimisticConcurrencyError | RepositoryError
 >;
 
 type DomainTransition = (
@@ -47,7 +48,9 @@ async function runTransition(
   const transitioned = transition(item, deps.clock.now());
   if (!transitioned.ok) return transitioned;
 
-  const saved = await attempt("content.save", () => deps.content.save(transitioned.value));
+  const saved = await attemptUpdate("content.update", () =>
+    deps.content.update(transitioned.value),
+  );
   if (!saved.ok) return saved;
   return ok(toContentItemView(transitioned.value));
 }

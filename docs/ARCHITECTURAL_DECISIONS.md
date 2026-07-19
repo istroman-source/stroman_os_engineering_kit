@@ -284,3 +284,56 @@ one clear business operation each. Key choices:
 Prompt 003 API required correction. Repository contracts were validated against
 real use cases and all remained necessary and correctly shaped (none added,
 changed, or removed). See `docs/APPLICATION_ARCHITECTURE.md`.
+
+---
+
+## ADR-0016 — Prisma/PostgreSQL persistence layer
+**Status:** Accepted (Prompt 005)
+
+**Context.** The repository contracts (Prompt 003) and use cases (Prompt 004)
+needed a real production persistence implementation. Prisma/PostgreSQL was already
+the approved stack (ADR-0008).
+
+**Decision.** Implement persistence in `src/infrastructure/persistence/prisma`
+behind the existing domain repository contracts. Material choices:
+- **No ORM abstraction over Prisma** — the domain contracts are the boundary.
+  Prisma types never leak above `src/infrastructure` (ESLint-enforced both ways).
+- **Branded string PKs** (application-generated), never autoincrement; mappers
+  validate persisted ids/values and reject corruption with `PersistenceMappingError`.
+- **Explicit mappers** per aggregate (no reflection/auto-mapper); application
+  views are not reused as persistence models.
+- **Native PostgreSQL enums** for stable status/type sets; **CHECK constraints**
+  (hand-authored migration) for numeric ranges Prisma can't express.
+- **`timestamptz(3)`** columns carrying application-clock timestamps; the database
+  does not override domain time values.
+- **Composite PKs** on child tables enforce aggregate-owned uniqueness; **FKs**
+  cascade only for owned children and `RESTRICT` for history (evaluations/decisions).
+- **Intent-revealing save semantics** (finalized in the Prompt 005 review): `save`
+  was replaced by `insert` (create; rejects existing id) and `update` (rejects
+  missing id) for mutable aggregates; append-only aggregates (Rubric, Evaluation)
+  expose only `insert`. No upsert — persistence never silently guesses create/update.
+- **Optimistic concurrency implemented** for the mutable aggregates (Project,
+  Content, Decision) via a provider-neutral integer `lockVersion` + compare-and-swap
+  on update; a mismatch is a typed `OptimisticConcurrencyError`. Distinct from the
+  Content domain `version` (revision) and not exposed in views. Append-only
+  aggregates have none. This prevents lost updates — including a duplicate human
+  decision finalization overwriting a valid decision — ahead of the Prompt 006
+  delivery layer.
+- **Neutral repository-failure contract in `@/lib/errors`** (`ConflictError`,
+  `NotFoundError`, `OptimisticConcurrencyError`): infrastructure throws them and the
+  application recognizes them, so neither layer imports the other's error classes.
+- **Multi-table aggregate inserts are atomic** in a repository-local `$transaction`
+  (no unit-of-work framework). Slug uniqueness is database-authoritative; the create
+  use case maps the neutral conflict to `SlugAlreadyExistsError`.
+- **Migrations via `migrate deploy`** (never `db push`); CHECK constraints and the
+  `lock_version` columns are hand-authored/normal migrations applied in order.
+  Adapters take a Prisma client by constructor for testability.
+- **Integration tests run against real PostgreSQL 17** via `embedded-postgres`
+  (userspace, no Docker/sudo) — not SQLite or an emulation.
+
+**Consequences.** Persistence is verified against a real database (22 integration
+tests: constraints, transactions, rollback, mapping, missing-row/duplicate-id
+behavior, and stale-write rejection). Domain aggregates gained a `lockVersion`
+concurrency token (Project, Content, Decision) and the repository contracts moved
+from `save` to `insert`/`update`; application use cases and in-memory test doubles
+were updated accordingly. See `docs/PERSISTENCE_ARCHITECTURE.md`.

@@ -41,7 +41,7 @@ export async function createProject(
     now: deps.clock.now(),
   });
 
-  const saved = await attempt("project.save", () => deps.projects.save(project));
+  const saved = await attempt("project.insert", () => deps.projects.insert(project));
   if (!saved.ok) return saved;
   return ok(toProjectView(project));
 }

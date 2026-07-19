@@ -1,6 +1,5 @@
-import type { ContentItem, ContentRepository } from "@/domain/content";
-import type { Slug } from "@/domain/shared";
-import type { ContentItemId } from "@/domain/content";
+import { ConflictError, NotFoundError, OptimisticConcurrencyError } from "@/lib/errors";
+import type { ContentItem, ContentItemId, ContentRepository } from "@/domain/content";
 import type { Decision, DecisionId, DecisionRepository } from "@/domain/decision";
 import type {
   Evaluation,
@@ -11,12 +10,13 @@ import type {
   RubricRepository,
 } from "@/domain/evaluation";
 import type { OwnerId, Project, ProjectId, ProjectRepository } from "@/domain/project";
+import type { Slug } from "@/domain/shared";
 
 /**
  * In-memory repository implementations for tests only. They satisfy the real
- * domain contracts and model behavior faithfully (no more permissive than a
- * database), with a `fail` switch to exercise repository-failure translation.
- * These are NOT production persistence and are never imported by src runtime code.
+ * domain contracts and model behavior faithfully — insert rejects duplicates,
+ * update rejects missing rows and stale writes (optimistic concurrency) — with a
+ * `fail` switch to exercise repository-failure translation. NOT production code.
  */
 
 class FailableStore {
@@ -24,6 +24,23 @@ class FailableStore {
   protected guard(): void {
     if (this.fail) throw new Error("storage failure");
   }
+}
+
+interface Versioned {
+  readonly id: string;
+  readonly lockVersion: number;
+}
+
+function insertInto<T extends { id: string }>(store: Map<string, T>, entity: T): void {
+  if (store.has(entity.id)) throw new ConflictError("Duplicate id");
+  store.set(entity.id, entity);
+}
+
+function updateInto<T extends Versioned>(store: Map<string, T>, entity: T): void {
+  const existing = store.get(entity.id);
+  if (!existing) throw new NotFoundError();
+  if (existing.lockVersion !== entity.lockVersion) throw new OptimisticConcurrencyError();
+  store.set(entity.id, { ...entity, lockVersion: entity.lockVersion + 1 });
 }
 
 export class InMemoryProjectRepository extends FailableStore implements ProjectRepository {
@@ -43,9 +60,14 @@ export class InMemoryProjectRepository extends FailableStore implements ProjectR
     return [...this.store.values()].filter((project) => project.ownerId === ownerId);
   }
 
-  async save(project: Project): Promise<void> {
+  async insert(project: Project): Promise<void> {
     this.guard();
-    this.store.set(project.id, project);
+    insertInto(this.store, project);
+  }
+
+  async update(project: Project): Promise<void> {
+    this.guard();
+    updateInto(this.store, project);
   }
 }
 
@@ -71,9 +93,17 @@ export class InMemoryContentRepository extends FailableStore implements ContentR
     return [...this.store.values()].some((item) => item.slug === slug);
   }
 
-  async save(item: ContentItem): Promise<void> {
+  async insert(item: ContentItem): Promise<void> {
     this.guard();
-    this.store.set(item.id, item);
+    if ([...this.store.values()].some((existing) => existing.slug === item.slug)) {
+      throw new ConflictError("Duplicate slug");
+    }
+    insertInto(this.store, item);
+  }
+
+  async update(item: ContentItem): Promise<void> {
+    this.guard();
+    updateInto(this.store, item);
   }
 }
 
@@ -89,9 +119,9 @@ export class InMemoryRubricRepository extends FailableStore implements RubricRep
     return this.store.get(id) ?? null;
   }
 
-  async save(rubric: Rubric): Promise<void> {
+  async insert(rubric: Rubric): Promise<void> {
     this.guard();
-    this.store.set(rubric.id, rubric);
+    insertInto(this.store, rubric);
   }
 }
 
@@ -108,9 +138,9 @@ export class InMemoryEvaluationRepository extends FailableStore implements Evalu
     return [...this.store.values()].filter((evaluation) => evaluation.projectId === projectId);
   }
 
-  async save(evaluation: Evaluation): Promise<void> {
+  async insert(evaluation: Evaluation): Promise<void> {
     this.guard();
-    this.store.set(evaluation.id, evaluation);
+    insertInto(this.store, evaluation);
   }
 }
 
@@ -131,8 +161,13 @@ export class InMemoryDecisionRepository extends FailableStore implements Decisio
     return [...this.store.values()].filter((decision) => decision.projectId === projectId);
   }
 
-  async save(decision: Decision): Promise<void> {
+  async insert(decision: Decision): Promise<void> {
     this.guard();
-    this.store.set(decision.id, decision);
+    insertInto(this.store, decision);
+  }
+
+  async update(decision: Decision): Promise<void> {
+    this.guard();
+    updateInto(this.store, decision);
   }
 }

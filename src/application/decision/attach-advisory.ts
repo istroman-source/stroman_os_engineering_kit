@@ -1,3 +1,4 @@
+import { type OptimisticConcurrencyError } from "@/lib/errors";
 import { ok, type Result } from "@/lib/result";
 import {
   type Advisory,
@@ -7,7 +8,7 @@ import {
 } from "@/domain/decision";
 import type { OwnerId, ProjectRepository } from "@/domain/project";
 import { type DomainError, makeConfidence } from "@/domain/shared";
-import { attempt } from "../shared/attempt";
+import { attemptUpdate } from "../shared/attempt";
 import { type DecisionAccessDeps, loadOwnedDecision } from "./decision-access";
 import { type DecisionView, toDecisionView } from "./decision-view";
 import type { NotAuthorizedError, NotFoundError, RepositoryError } from "../shared/errors";
@@ -27,7 +28,7 @@ export interface AttachAdvisoryInput {
 
 export type AttachAdvisoryResult = Result<
   DecisionView,
-  DomainError | NotFoundError | NotAuthorizedError | RepositoryError
+  DomainError | NotFoundError | NotAuthorizedError | OptimisticConcurrencyError | RepositoryError
 >;
 
 /**
@@ -53,7 +54,7 @@ export async function attachAdvisory(
   const updated = attachAdvisoryToDecision(access.value, advisory);
   if (!updated.ok) return updated;
 
-  const saved = await attempt("decision.save", () => deps.decisions.save(updated.value));
+  const saved = await attemptUpdate("decision.update", () => deps.decisions.update(updated.value));
   if (!saved.ok) return saved;
   return ok(toDecisionView(updated.value));
 }

@@ -88,6 +88,20 @@ export class ConflictError extends AppError {
   }
 }
 
+/**
+ * A write was rejected because the aggregate changed since it was loaded
+ * (optimistic concurrency). Provider-neutral: thrown by persistence adapters and
+ * recognized by application code without either importing the other.
+ */
+export class OptimisticConcurrencyError extends AppError {
+  constructor(
+    message = "The record was modified by another writer",
+    options: AppErrorOptions = {},
+  ) {
+    super("CONFLICT", message, options);
+  }
+}
+
 export function isAppError(value: unknown): value is AppError {
   return value instanceof AppError;
 }
