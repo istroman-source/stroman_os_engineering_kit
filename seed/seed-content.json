@@ -1,0 +1,206 @@
+{
+  "taxonomy": [
+    {
+      "slug": "story",
+      "title": "Story",
+      "definition": "The meaningful progression of events that changes the audience's understanding, emotion, or perspective."
+    },
+    {
+      "slug": "curiosity",
+      "title": "Curiosity",
+      "definition": "The desire to continue because meaningful information has not yet been fully revealed."
+    },
+    {
+      "slug": "momentum",
+      "title": "Momentum",
+      "definition": "The perception that the story is continuously progressing, regardless of editing speed."
+    },
+    {
+      "slug": "emotional-density",
+      "title": "Emotional Density",
+      "definition": "The amount of meaningful emotional information contained within a moment."
+    },
+    {
+      "slug": "visual-economy",
+      "title": "Visual Economy",
+      "definition": "The degree to which every visual element contributes to the story."
+    },
+    {
+      "slug": "authenticity",
+      "title": "Authenticity",
+      "definition": "The extent to which the audience believes the experience is genuine."
+    },
+    {
+      "slug": "payoff",
+      "title": "Payoff",
+      "definition": "The satisfying resolution of a promise previously made to the audience."
+    }
+  ],
+  "tools": [
+    {
+      "slug": "shot-value-matrix",
+      "title": "Shot Value Matrix",
+      "summary": "Ranks footage by story, emotion, visual quality, brand value, and uniqueness."
+    },
+    {
+      "slug": "cut-decision-matrix",
+      "title": "Cut Decision Matrix",
+      "summary": "Determines whether a shot earns its place in the edit."
+    },
+    {
+      "slug": "gap-analyzer",
+      "title": "Gap Analyzer",
+      "summary": "Identifies missing story, context, reactions, coverage, and endings."
+    },
+    {
+      "slug": "client-translator",
+      "title": "Client Translator",
+      "summary": "Converts vague client feedback into diagnosable creative variables."
+    },
+    {
+      "slug": "creative-gps",
+      "title": "Creative GPS",
+      "summary": "Routes a creative problem to the right tools, trees, rubrics, and case studies."
+    }
+  ],
+  "playbooks": [
+    {
+      "slug": "restaurant-brand-documentary",
+      "title": "Restaurant Brand Documentary",
+      "summary": "Build emotional connection through people, history, craft, and community."
+    },
+    {
+      "slug": "signature-dish-reel",
+      "title": "Signature Dish Reel",
+      "summary": "Make one dish feel irresistible using reveal, texture, sound, and payoff."
+    },
+    {
+      "slug": "employee-comedy-reel",
+      "title": "Employee Comedy Reel",
+      "summary": "Create authentic brand-safe humor rooted in real workplace character."
+    },
+    {
+      "slug": "event-highlight-film",
+      "title": "Event Highlight Film",
+      "summary": "Make viewers who were absent wish they had attended."
+    }
+  ],
+  "decisionTrees": [
+    {
+      "slug": "edit-feels-boring",
+      "title": "My Edit Feels Boring",
+      "entryPrompt": "Does the story meaningfully progress?",
+      "nodes": [
+        {
+          "key": "start",
+          "question": "Does the story meaningfully progress?",
+          "yes": "emotion",
+          "no": "story-fix"
+        },
+        {
+          "key": "story-fix",
+          "result": "Use Story Discovery and Gap Analyzer to establish progression."
+        },
+        {
+          "key": "emotion",
+          "question": "Does the emotion change over time?",
+          "yes": "novelty",
+          "no": "emotion-fix"
+        },
+        {
+          "key": "emotion-fix",
+          "result": "Map the emotional arc and add contrast or a stronger character moment."
+        },
+        {
+          "key": "novelty",
+          "question": "Does visual or narrative novelty refresh attention?",
+          "yes": "curiosity",
+          "no": "novelty-fix"
+        },
+        { "key": "novelty-fix", "result": "Use Redundancy Detector and Shot Replacement Engine." },
+        {
+          "key": "curiosity",
+          "question": "Is there a reason to continue watching?",
+          "yes": "pacing",
+          "no": "curiosity-fix"
+        },
+        {
+          "key": "curiosity-fix",
+          "result": "Create an unanswered question, delayed reveal, or visible progression."
+        },
+        {
+          "key": "pacing",
+          "question": "Is the information delivered at the right rate?",
+          "yes": "review",
+          "no": "pacing-fix"
+        },
+        { "key": "pacing-fix", "result": "Use Pacing Calculator and reduce repeated information." },
+        { "key": "review", "result": "Run the Retention Rubric and First-Time Viewer review." }
+      ]
+    }
+  ],
+  "rubrics": [
+    {
+      "slug": "core-final-review",
+      "title": "Core Final Review",
+      "criteria": [
+        {
+          "name": "Story Clarity",
+          "weight": 15,
+          "anchor1": "Confusing or contradictory",
+          "anchor5": "Mostly understandable",
+          "anchor10": "Immediately clear and purposeful"
+        },
+        {
+          "name": "Emotional Arc",
+          "weight": 15,
+          "anchor1": "Flat",
+          "anchor5": "Some progression",
+          "anchor10": "Clear and earned emotional journey"
+        },
+        {
+          "name": "Audience Connection",
+          "weight": 15,
+          "anchor1": "Distant",
+          "anchor5": "Moderately engaging",
+          "anchor10": "Deeply relatable and memorable"
+        },
+        {
+          "name": "Retention",
+          "weight": 15,
+          "anchor1": "No reason to continue",
+          "anchor5": "Intermittent curiosity",
+          "anchor10": "Sustained momentum and payoff"
+        },
+        {
+          "name": "Visual Intent",
+          "weight": 10,
+          "anchor1": "Arbitrary",
+          "anchor5": "Generally competent",
+          "anchor10": "Every major visual choice supports meaning"
+        },
+        {
+          "name": "Sound",
+          "weight": 10,
+          "anchor1": "Distracting or unclear",
+          "anchor5": "Functional",
+          "anchor10": "Clear, textured, and emotionally effective"
+        },
+        {
+          "name": "Authenticity",
+          "weight": 10,
+          "anchor1": "Forced",
+          "anchor5": "Mostly believable",
+          "anchor10": "Deeply genuine"
+        },
+        {
+          "name": "Brand Alignment",
+          "weight": 10,
+          "anchor1": "Misaligned",
+          "anchor5": "Acceptable",
+          "anchor10": "Distinctive and fully aligned"
+        }
+      ]
+    }
+  ]
+}

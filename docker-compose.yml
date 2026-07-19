@@ -1,0 +1,26 @@
+# Local development services for Stroman OS.
+# Brings up PostgreSQL with the pgvector extension available, matching the
+# DATABASE_URL in .env.example. Application code is intentionally not
+# containerized for local dev — run it with `npm run dev`.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: stroman_os_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: stroman
+      POSTGRES_PASSWORD: stroman
+      POSTGRES_DB: stroman_os
+    ports:
+      - "5432:5432"
+    volumes:
+      - stroman_os_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stroman -d stroman_os"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  stroman_os_pgdata:

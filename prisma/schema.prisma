@@ -1,0 +1,15 @@
+// Stroman OS — Prisma schema.
+//
+// Foundation step: the datasource and client generator are configured, but no
+// domain models exist yet. Models are introduced deliberately in later build
+// steps (see the kit's domain-model prompts). Keeping this empty of models is
+// intentional, not an oversight.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

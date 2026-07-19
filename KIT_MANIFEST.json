@@ -1,0 +1,37 @@
+{
+  "name": "Stroman OS Engineering Kit",
+  "version": "2.0.0",
+  "prompt_count": 150,
+  "volumes": [
+    {
+      "slug": "volume_1_foundation",
+      "name": "Foundation",
+      "count": 25
+    },
+    {
+      "slug": "volume_2_core_application",
+      "name": "Core Application",
+      "count": 25
+    },
+    {
+      "slug": "volume_3_ai_infrastructure",
+      "name": "AI Infrastructure",
+      "count": 25
+    },
+    {
+      "slug": "volume_4_creative_engines",
+      "name": "Creative Intelligence Engines",
+      "count": 25
+    },
+    {
+      "slug": "volume_5_integrations_growth",
+      "name": "Integrations and Growth",
+      "count": 25
+    },
+    {
+      "slug": "volume_6_hardening_release",
+      "name": "Hardening and Release",
+      "count": 25
+    }
+  ]
+}
