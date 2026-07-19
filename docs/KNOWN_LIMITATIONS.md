@@ -39,6 +39,25 @@ objects, invariants, lifecycle transitions, typed errors, and repository/port
 - **Rubric weight normalization** is "positive weights, weighted average," not a
   mandated sum-to-100%; revisit if the product requires it.
 
+## Application layer (Prompt 004) — what exists vs. not
+
+Framework-independent MVP use cases now orchestrate the domain (project, content,
+evaluation, decision, AI), tested in memory. Genuine current limitations:
+
+- **No persistence-level transaction guarantees.** `createContentItem` checks slug
+  uniqueness then saves; atomicity depends on a future DB unique constraint.
+  Load-modify-save flows need isolation the in-memory adapters cannot prove.
+- **Concurrency (optimistic/expected-version) deferred** to the persistence phase;
+  no version metadata is modeled yet.
+- **Delivery-layer idempotency deferred.** Duplicate-submission protection for
+  retrying transports is future work; domain invariants cover deciding-twice.
+- **Authentication and full authorization deferred.** Ownership is enforced for
+  project-owned resources; **content and rubric authoring authorization is not
+  enforced** (no owner/role/author concept yet). `requestRecommendation` auth is
+  also deferred.
+- **No persistence adapters / provider adapters.** Repository contracts and the
+  `AiRecommender` port have in-memory test doubles only; real adapters are later steps.
+
 ## Platform / tooling constraints
 
 - **Prisma pinned to v6.** Prisma 7 (config file + driver adapter) is not adopted;

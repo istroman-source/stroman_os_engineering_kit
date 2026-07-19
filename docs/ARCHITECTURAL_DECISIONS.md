@@ -248,3 +248,39 @@ provider/infra SDKs; the domain may use only `@/lib/result`, `@/lib/errors`,
 **Reconciliation (per prompt §2).** "Content" is modeled as the **knowledge base**
 (`schemas/domain-model.md` authority), not media assets; media/transcripts are a
 separate deferred domain.
+
+---
+
+## ADR-0015 — Use-case-oriented application layer
+**Status:** Accepted (Prompt 004)
+
+**Context.** The domain (Prompt 003) needed to be validated and exercised by real
+MVP workflows without coupling to transport, persistence, or providers.
+
+**Decision.** Introduce `src/application` as a framework-independent layer of
+**plain use-case functions** `(deps, input) => Promise<Result<Output, Errors>>`,
+one clear business operation each. Key choices:
+- **No orchestration framework** — no command bus, mediator, handler registry,
+  DI container, or `BaseUseCase`. Dependencies are passed explicitly per call.
+- **Explicit actor identity** (`actorId`) distinct from target ids; ownership is
+  enforced with `ensureOwner` where the model supports it. Authentication remains
+  deferred; content/rubric authoring authorization is a documented gap.
+- **Application-owned ports** `Clock` and `IdGenerator` keep time and id creation
+  deterministic and out of the domain.
+- **Typed application errors** (`NotFoundError`, `NotAuthorizedError`,
+  `SlugAlreadyExistsError`, `UnknownRubricCriterionError`, `RepositoryError`)
+  distinct from domain errors; **no HTTP mapping** here. Port/repository failures
+  are translated to a safe `RepositoryError` via `attempt()`.
+- **Outputs are domain aggregates**, not DTO hierarchies or response envelopes.
+- **AI stays advisory**: `requestRecommendation` mutates nothing; attaching advice
+  and deciding are separate; only a human `recordHumanDecision` finalizes.
+- **No transaction/concurrency/idempotency machinery** beyond what a current
+  workflow requires; atomicity and optimistic concurrency are documented as
+  persistence-adapter responsibilities. Idempotency relies on domain invariants.
+- The application boundary is enforced by ESLint (`src/application/**`), mirroring
+  the domain rule.
+
+**Consequences.** The domain proved practical **without changes** — no
+Prompt 003 API required correction. Repository contracts were validated against
+real use cases and all remained necessary and correctly shaped (none added,
+changed, or removed). See `docs/APPLICATION_ARCHITECTURE.md`.

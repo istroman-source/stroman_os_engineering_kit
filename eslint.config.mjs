@@ -68,6 +68,53 @@ const eslintConfig = defineConfig([
     },
   },
 
+  // Application layer: framework-, persistence-, and provider-independent.
+  {
+    files: ["src/application/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "react",
+                "react-dom",
+                "next",
+                "next/*",
+                "@prisma/client",
+                "@/ui",
+                "@/ui/*",
+                "@/app",
+                "@/app/*",
+                "@/server",
+                "@/server/*",
+                "@/lib/env",
+                "@/lib/env/*",
+                "@/lib/logging",
+                "@/lib/logging/*",
+                "@/lib/config",
+                "@/lib/config/*",
+                "@/lib/feature-flags",
+                "@/lib/feature-flags/*",
+                "openai",
+                "@anthropic-ai/*",
+                "@google/*",
+                "@aws-sdk/*",
+                "ioredis",
+                "bullmq",
+                "pg",
+                "server-only",
+              ],
+              message:
+                "The application layer must stay framework-, persistence-, and provider-independent. Depend on @/domain, application-owned ports, and @/lib/{result,errors,id,datetime} only.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
   // UI/app layers must not reach into server-only internals directly.
   {
     files: ["src/ui/**/*.{ts,tsx}", "src/app/**/*.{ts,tsx}"],

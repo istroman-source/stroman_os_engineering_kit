@@ -38,3 +38,16 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
 - **Project rich metadata.** If/when invariants are needed on client, objectives,
   audience, platform, or runtime target, model them as value objects; today only
   identity/name/status/owner are enforced.
+
+## Discovered during Prompt 004 (application layer)
+
+- **Slug uniqueness must be enforced at the database.** `createContentItem` checks
+  then saves; the persistence adapter must add a unique constraint so concurrent
+  creates cannot both succeed.
+- **Optimistic concurrency for load-modify-save.** When concurrent edits become
+  real, introduce a provider-neutral expected-version check in the repository
+  contracts (no Prisma row versions in the application layer).
+- **Content/rubric authoring authorization.** Introduce an author/role concept so
+  authoring use cases can enforce permission (currently deferred, not enforced).
+- **Delivery-layer idempotency.** Add idempotency keys at the transport layer for
+  retryable operations (project/content/evaluation creation).
