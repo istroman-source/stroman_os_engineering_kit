@@ -1,6 +1,7 @@
 import type {
   AuthGateway,
   AuthOutcome,
+  ProviderSession,
   RequestAuthenticator,
   StartOtpOutcome,
   VerifyOtpOutcome,
@@ -57,12 +58,15 @@ export class FixedAuthenticator implements RequestAuthenticator {
 export class FakeAuthGateway implements AuthGateway {
   startCalls: string[] = [];
   verifyCalls: Array<{ email: string; token: string }> = [];
+  refreshCalls: string[] = [];
   signOutCalls: string[] = [];
 
   constructor(
     private readonly config: {
       start?: StartOtpOutcome;
       verify?: VerifyOtpOutcome;
+      /** null → refresh fails; ProviderSession → refresh succeeds. */
+      refresh?: ProviderSession | null;
     } = {},
   ) {}
 
@@ -80,6 +84,11 @@ export class FakeAuthGateway implements AuthGateway {
         session: { accessToken: "at", refreshToken: "rt", expiresInSeconds: 3600 },
       }
     );
+  }
+
+  async refreshSession(refreshToken: string): Promise<ProviderSession | null> {
+    this.refreshCalls.push(refreshToken);
+    return this.config.refresh === undefined ? null : this.config.refresh;
   }
 
   async signOut(accessToken: string): Promise<void> {

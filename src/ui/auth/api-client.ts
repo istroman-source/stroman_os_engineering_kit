@@ -140,20 +140,34 @@ export function getProject(projectId: string): Promise<ProjectItem> {
 /** Map an API failure to a safe, user-facing message (no provider/internal detail). */
 export function friendlyError(err: unknown): string {
   const code = (err as { code?: string } | null)?.code;
+  const status = (err as { status?: number } | null)?.status;
   switch (code) {
     case "INVALID_OTP":
       return "That code is invalid or has expired. Request a new one.";
     case "RATE_LIMITED":
       return "Too many attempts. Please wait a minute and try again.";
+    // 503 — a required upstream service (auth provider, identity store) is down.
     case "AUTHENTICATION_UNAVAILABLE":
-      return "Sign-in is temporarily unavailable. Please try again shortly.";
+    case "SERVICE_UNAVAILABLE":
+      return "A required service is unavailable.";
+    // 401 — no/expired session (refresh already attempted server-side and failed).
     case "AUTHENTICATION_REQUIRED":
     case "INVALID_SESSION":
-      return "Your session has ended. Please sign in again.";
+      return "Your session expired. Please sign in again.";
+    // 403 — authenticated but not permitted (owner scope, disabled account, CSRF).
+    case "FORBIDDEN":
+    case "ACCOUNT_DISABLED":
+    case "REQUEST_ORIGIN_REJECTED":
+      return "You do not have permission to access this resource.";
     case "VALIDATION_FAILED":
     case "MALFORMED_JSON":
       return "Please check your input and try again.";
     default:
+      // Fall back to status when the code is unrecognized, so new server codes
+      // still map to the correct family of message.
+      if (status === 401) return "Your session expired. Please sign in again.";
+      if (status === 403) return "You do not have permission to access this resource.";
+      if (status === 503) return "A required service is unavailable.";
       return (
         (err as { message?: string } | null)?.message ?? "Something went wrong. Please try again."
       );

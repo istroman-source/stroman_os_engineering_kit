@@ -116,3 +116,12 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
   real AI engine needs a provider API key (a STOP-condition secret) and is out of
   Milestone 2 scope — deferred. The human-decision path is already authoritative
   and unaffected.
+
+## Discovered during Memory Engine (creative knowledge graph)
+
+- **No in-place update for memory-graph records.** Entity/Source/Memory/Relationship/
+  Insight are append-only + deletable (consistent with the codebase's existing
+  append-only aggregates). Editing is delete + re-create. Add update endpoints if a
+  real editing workflow needs them.
+- **Out of scope by design (Milestone 2):** Notion integration, automated ingestion,
+  vector search, and agents — the engine is manual-entry structured knowledge for now.

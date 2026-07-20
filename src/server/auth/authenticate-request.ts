@@ -5,27 +5,40 @@ import {
   type AuthenticatedActor,
   resolveAuthenticatedActor,
 } from "@/application/identity";
-import { getApiContext, getRequestAuthenticator } from "@/server/composition";
+import { getApiContext, getAuthGateway, getRequestAuthenticator } from "@/server/composition";
 import { HttpError } from "@/server/http/http-error";
-import { getAllowedOrigins } from "./config";
+import { getAllowedOrigins, isCookieSecure } from "./config";
+import { cookieName, parseCookies, serializeSessionCookie } from "./cookies";
 import { isAllowedOrigin, isUnsafeMethod } from "./origin";
+import { addPendingSetCookie } from "./pending-cookies";
+import type { AuthOutcome } from "./types";
 
 const BEARER_CHALLENGE = { "WWW-Authenticate": "Bearer" } as const;
+/** Refresh-cookie lifetime (30 days), matching the OTP/callback session cookies. */
+const REFRESH_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
+const DEFAULT_ACCESS_TTL_SECONDS = 3600;
 
 /**
  * The single authoritative authentication + authorization gate for protected
- * routes. It replaces the temporary `resolveActor` seam. Steps:
+ * routes. Steps:
  *   1. Verify request credentials via the composed `RequestAuthenticator`.
- *   2. Fail closed on anonymous / invalid / provider-unavailable outcomes.
- *   3. For cookie-authenticated state-changing requests, enforce CSRF via Origin.
- *   4. Map the verified principal to a stable internal actor (race-safe
- *      provisioning), rejecting disabled accounts.
+ *   2. If the access token is missing/expired but a refresh-token cookie is
+ *      present, transparently refresh the session (rotating both cookies) so the
+ *      user stays signed in across refreshes, browser restarts, and dev restarts.
+ *   3. Fail closed on anonymous / invalid / provider-unavailable outcomes.
+ *   4. For cookie-authenticated state-changing requests, enforce CSRF via Origin.
+ *   5. Map the verified principal to a stable internal actor.
  *
- * Identity is NEVER taken from a request body, query, or a caller-chosen header.
- * The returned `ownerId` is derived server-side from the internal user id.
+ * Identity is NEVER taken from a request body, query, or caller-chosen header.
  */
 export async function authenticateRequest(req: Request): Promise<AuthenticatedActor> {
-  const outcome = await getRequestAuthenticator().authenticate(req);
+  let outcome = await getRequestAuthenticator().authenticate(req);
+
+  // The access token is gone or expired — try the refresh cookie before failing.
+  if (outcome.kind === "anonymous" || outcome.kind === "invalid") {
+    const refreshed = await tryRefresh(req);
+    if (refreshed) outcome = refreshed;
+  }
 
   if (outcome.kind === "anonymous") {
     throw new HttpError(
@@ -76,4 +89,45 @@ export async function authenticateRequest(req: Request): Promise<AuthenticatedAc
     );
   }
   return resolved.value;
+}
+
+/**
+ * Exchange the refresh-token cookie for a fresh session, verify the new access
+ * token, and queue rotated Set-Cookie headers on the response. Returns an
+ * authenticated outcome, or null when there is no usable refresh cookie / the
+ * refresh fails (caller then fails closed). Never grants access on an unverifiable
+ * token.
+ */
+async function tryRefresh(req: Request): Promise<AuthOutcome | null> {
+  const secure = isCookieSecure();
+  const refreshToken = parseCookies(req.headers.get("cookie")).get(cookieName("rt", secure));
+  if (!refreshToken || refreshToken.trim() === "") return null;
+
+  const session = await getAuthGateway().refreshSession(refreshToken);
+  if (!session) return null;
+
+  // Re-verify the freshly issued access token through the same authenticator.
+  const probe = new Request(req.url, {
+    headers: { authorization: `Bearer ${session.accessToken}` },
+  });
+  const verified = await getRequestAuthenticator().authenticate(probe);
+  if (verified.kind !== "authenticated") return null;
+
+  addPendingSetCookie(
+    req,
+    serializeSessionCookie("at", session.accessToken, {
+      secure,
+      maxAgeSeconds: session.expiresInSeconds || DEFAULT_ACCESS_TTL_SECONDS,
+    }),
+  );
+  addPendingSetCookie(
+    req,
+    serializeSessionCookie("rt", session.refreshToken, {
+      secure,
+      maxAgeSeconds: REFRESH_MAX_AGE_SECONDS,
+    }),
+  );
+
+  // The refreshed session is a cookie session (subject to CSRF like any other).
+  return { kind: "authenticated", principal: verified.principal, via: "cookie" };
 }

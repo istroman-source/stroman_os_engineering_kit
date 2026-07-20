@@ -258,6 +258,65 @@ describe("email OTP endpoints", () => {
   });
 });
 
+describe("server-side session refresh (persistent auth)", () => {
+  it("refreshes a stale session from the refresh cookie and re-issues both cookies", async () => {
+    // The primary credential is absent/expired (no x-test-principal → anonymous),
+    // but a valid refresh cookie is present. The gateway hands back a fresh access
+    // token whose value is the subject the TestAuthenticator will verify.
+    setAuthGatewayForTests(
+      new FakeAuthGateway({
+        refresh: { accessToken: A, refreshToken: "rotated-rt", expiresInSeconds: 3600 },
+      }),
+    );
+    const res = await call(listProjects, { cookie: "sos_rt=valid-refresh-token" });
+    expect(res.status).toBe(200);
+    const cookies = res.headers.getSetCookie();
+    const joined = cookies.join("\n");
+    expect(joined).toContain("sos_at=");
+    expect(joined).toContain("sos_rt=rotated-rt");
+    expect(joined).toContain("HttpOnly");
+  });
+
+  it("provisions/authorizes the refreshed principal like any signed-in user", async () => {
+    setAuthGatewayForTests(
+      new FakeAuthGateway({
+        refresh: { accessToken: A, refreshToken: "rotated-rt", expiresInSeconds: 3600 },
+      }),
+    );
+    await makeProjectAs(A); // A already exists
+    const res = await call(listProjects, { cookie: "sos_rt=valid-refresh-token" });
+    expect(res.status).toBe(200);
+    expect((res.body as { items: unknown[] }).items).toHaveLength(1);
+  });
+
+  it("returns 401 when there is no refresh cookie to fall back on", async () => {
+    const res = await call(listProjects, {});
+    expect(res.status).toBe(401);
+    expect(res.headers.getSetCookie()).toHaveLength(0);
+  });
+
+  it("returns 401 (and sets no cookies) when the refresh token is rejected", async () => {
+    // config omits `refresh` → FakeAuthGateway.refreshSession resolves to null.
+    setAuthGatewayForTests(new FakeAuthGateway());
+    const res = await call(listProjects, { cookie: "sos_rt=stale-or-revoked" });
+    expect(res.status).toBe(401);
+    expect(res.headers.getSetCookie()).toHaveLength(0);
+  });
+
+  it("does not grant access if the refreshed access token fails verification", async () => {
+    // Gateway returns a session, but the authenticator rejects everything → no access.
+    setRequestAuthenticatorForTests(new FixedAuthenticator({ kind: "invalid" }));
+    setAuthGatewayForTests(
+      new FakeAuthGateway({
+        refresh: { accessToken: A, refreshToken: "rotated-rt", expiresInSeconds: 3600 },
+      }),
+    );
+    const res = await call(listProjects, { cookie: "sos_rt=valid-refresh-token" });
+    expect(res.status).toBe(401);
+    expect(res.headers.getSetCookie()).toHaveLength(0);
+  });
+});
+
 describe("magic-link callback", () => {
   it("establishes session cookies for a verified token (same-origin)", async () => {
     // TestAuthenticator authenticates a bearer token whose value is the subject.

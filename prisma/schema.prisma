@@ -269,3 +269,105 @@ model DecisionOption {
   @@id([decisionId, id])
   @@map("decision_options")
 }
+
+// ── Memory Engine (creative knowledge graph) ─────────────────────────────────
+// Owner-scoped, append-only records. `owner_id` is an external identity reference
+// (equals the internal user id), consistent with Project.
+
+/// A node in the knowledge graph (person, organization, place, concept…).
+model Entity {
+  id        String   @id
+  ownerId   String   @map("owner_id")
+  name      String
+  kind      String
+  createdAt DateTime @map("created_at") @db.Timestamptz(3)
+
+  memories          Memory[]
+  relationshipsFrom Relationship[] @relation("RelationshipFrom")
+  relationshipsTo   Relationship[] @relation("RelationshipTo")
+
+  @@index([ownerId])
+  @@map("entities")
+}
+
+/// Provenance for knowledge (interview, article, note…).
+model Source {
+  id         String   @id
+  ownerId    String   @map("owner_id")
+  label      String
+  sourceType String   @map("source_type")
+  url        String?
+  detail     String?
+  createdAt  DateTime @map("created_at") @db.Timestamptz(3)
+
+  memories Memory[]
+
+  @@index([ownerId])
+  @@map("sources")
+}
+
+/// A discrete fact/observation about an entity, optionally traceable to a source.
+model Memory {
+  id        String   @id
+  ownerId   String   @map("owner_id")
+  entityId  String   @map("entity_id")
+  sourceId  String?  @map("source_id")
+  content   String
+  createdAt DateTime @map("created_at") @db.Timestamptz(3)
+
+  entity      Entity          @relation(fields: [entityId], references: [id], onDelete: Restrict)
+  source      Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  insightRefs InsightMemory[]
+
+  @@index([ownerId])
+  @@index([entityId])
+  @@index([sourceId])
+  @@map("memories")
+}
+
+/// A directed, typed link between two entities.
+model Relationship {
+  id           String   @id
+  ownerId      String   @map("owner_id")
+  fromEntityId String   @map("from_entity_id")
+  toEntityId   String   @map("to_entity_id")
+  relationType String   @map("relation_type")
+  createdAt    DateTime @map("created_at") @db.Timestamptz(3)
+
+  fromEntity Entity @relation("RelationshipFrom", fields: [fromEntityId], references: [id], onDelete: Restrict)
+  toEntity   Entity @relation("RelationshipTo", fields: [toEntityId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId])
+  @@index([fromEntityId])
+  @@index([toEntityId])
+  @@map("relationships")
+}
+
+/// A conclusion derived from one or more memories, with confidence and evidence.
+model Insight {
+  id         String   @id
+  ownerId    String   @map("owner_id")
+  statement  String
+  confidence Float
+  evidence   String?
+  createdAt  DateTime @map("created_at") @db.Timestamptz(3)
+
+  memories InsightMemory[]
+
+  @@index([ownerId])
+  @@map("insights")
+}
+
+/// Join: the memories an insight cites (its traceable evidence). >= 1 enforced in
+/// the domain/service. A memory cannot be deleted while an insight references it.
+model InsightMemory {
+  insightId String @map("insight_id")
+  memoryId  String @map("memory_id")
+
+  insight Insight @relation(fields: [insightId], references: [id], onDelete: Cascade)
+  memory  Memory  @relation(fields: [memoryId], references: [id], onDelete: Restrict)
+
+  @@id([insightId, memoryId])
+  @@index([memoryId])
+  @@map("insight_memories")
+}

@@ -76,6 +76,38 @@ describe("SupabaseAuthGateway.verifyEmailOtp", () => {
   });
 });
 
+describe("SupabaseAuthGateway.refreshSession", () => {
+  it("posts the refresh token to the token endpoint and returns the rotated session", async () => {
+    const { gateway, fetchImpl } = gatewayWith(() =>
+      json(200, { access_token: "at2", refresh_token: "rt2", expires_in: 3600 }),
+    );
+    const session = await gateway.refreshSession("rt1");
+    expect(session).toEqual({ accessToken: "at2", refreshToken: "rt2", expiresInSeconds: 3600 });
+    const [url, init] = fetchImpl.mock.calls[0]!;
+    expect(url).toBe("https://ref.supabase.co/auth/v1/token?grant_type=refresh_token");
+    expect((init?.headers as Record<string, string>).apikey).toBe("anon-key");
+    expect(String(init?.body)).toContain("rt1");
+  });
+
+  it("returns null on a 4xx (invalid/expired refresh token)", async () => {
+    const { gateway } = gatewayWith(() => json(400, { error_code: "invalid_grant" }));
+    expect(await gateway.refreshSession("stale")).toBeNull();
+  });
+
+  it("returns null on a network throw and on an unparseable body", async () => {
+    expect(
+      await gatewayWith(() => {
+        throw new Error("offline");
+      }).gateway.refreshSession("rt"),
+    ).toBeNull();
+    expect(
+      await gatewayWith(() => new Response("not json", { status: 200 })).gateway.refreshSession(
+        "rt",
+      ),
+    ).toBeNull();
+  });
+});
+
 describe("SupabaseAuthGateway.signOut", () => {
   it("never throws, even on provider failure", async () => {
     const { gateway } = gatewayWith(() => {

@@ -19,6 +19,7 @@ tags:
   - name: Rubrics
   - name: Evaluations
   - name: Decisions
+  - name: Memory
   - name: Health
 
 components:
@@ -441,6 +442,157 @@ components:
       properties:
         brief: { $ref: "#/components/schemas/CreativeBrief" }
         blueprint: { $ref: "#/components/schemas/Blueprint" }
+    Ok:
+      type: object
+      properties: { ok: { type: boolean } }
+    MemoryEntity:
+      type: object
+      required: [id, name, kind, createdAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        kind: { type: string }
+        createdAt: { type: string, format: date-time }
+    MemoryEntityList:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/MemoryEntity" } }
+    MemorySource:
+      type: object
+      required: [id, label, sourceType, url, detail, createdAt]
+      properties:
+        id: { type: string }
+        label: { type: string }
+        sourceType: { type: string }
+        url: { type: [string, "null"] }
+        detail: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
+    MemorySourceList:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/MemorySource" } }
+    MemoryRecord:
+      type: object
+      required: [id, entityId, sourceId, content, createdAt]
+      properties:
+        id: { type: string }
+        entityId: { type: string }
+        sourceId: { type: [string, "null"] }
+        content: { type: string }
+        createdAt: { type: string, format: date-time }
+    MemoryRecordList:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/MemoryRecord" } }
+    MemoryRelationship:
+      type: object
+      required: [id, fromEntityId, toEntityId, relationType, createdAt]
+      properties:
+        id: { type: string }
+        fromEntityId: { type: string }
+        toEntityId: { type: string }
+        relationType: { type: string }
+        createdAt: { type: string, format: date-time }
+    MemoryRelationshipList:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/MemoryRelationship" } }
+    MemoryInsight:
+      type: object
+      required: [id, statement, confidence, evidence, memoryIds, createdAt]
+      properties:
+        id: { type: string }
+        statement: { type: string }
+        confidence: { type: number }
+        evidence: { type: [string, "null"] }
+        memoryIds: { type: array, items: { type: string } }
+        createdAt: { type: string, format: date-time }
+    MemoryInsightList:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: "#/components/schemas/MemoryInsight" } }
+    EntityKnowledge:
+      type: object
+      required: [entity, memories, relationships, insights]
+      properties:
+        entity: { $ref: "#/components/schemas/MemoryEntity" }
+        memories:
+          type: array
+          items:
+            type: object
+            required: [memory, source]
+            properties:
+              memory: { $ref: "#/components/schemas/MemoryRecord" }
+              source:
+                oneOf:
+                  - $ref: "#/components/schemas/MemorySource"
+                  - type: "null"
+        relationships:
+          type: array
+          items:
+            type: object
+            required: [relationship, direction, otherEntity]
+            properties:
+              relationship: { $ref: "#/components/schemas/MemoryRelationship" }
+              direction: { type: string, enum: [outgoing, incoming] }
+              otherEntity:
+                oneOf:
+                  - $ref: "#/components/schemas/MemoryEntity"
+                  - type: "null"
+        insights:
+          type: array
+          items:
+            type: object
+            required: [insight, citedMemories]
+            properties:
+              insight: { $ref: "#/components/schemas/MemoryInsight" }
+              citedMemories: { type: array, items: { $ref: "#/components/schemas/MemoryRecord" } }
+    CreateEntityRequest:
+      type: object
+      required: [name, kind]
+      additionalProperties: false
+      properties:
+        name: { type: string, maxLength: 200 }
+        kind: { type: string, maxLength: 60 }
+    CreateSourceRequest:
+      type: object
+      required: [label, sourceType]
+      additionalProperties: false
+      properties:
+        label: { type: string, maxLength: 200 }
+        sourceType: { type: string, maxLength: 60 }
+        url: { type: [string, "null"], maxLength: 2000 }
+        detail: { type: [string, "null"], maxLength: 5000 }
+    CreateMemoryRequest:
+      type: object
+      required: [entityId, content]
+      additionalProperties: false
+      properties:
+        entityId: { type: string }
+        sourceId: { type: [string, "null"] }
+        content: { type: string, maxLength: 5000 }
+    CreateRelationshipRequest:
+      type: object
+      required: [fromEntityId, toEntityId, relationType]
+      additionalProperties: false
+      properties:
+        fromEntityId: { type: string }
+        toEntityId: { type: string }
+        relationType: { type: string, maxLength: 60 }
+    CreateInsightRequest:
+      type: object
+      required: [statement, confidence, memoryIds]
+      additionalProperties: false
+      properties:
+        statement: { type: string, maxLength: 2000 }
+        confidence: { type: number }
+        evidence: { type: [string, "null"], maxLength: 5000 }
+        memoryIds: { type: array, minItems: 1, items: { type: string } }
   responses:
     BadRequest:
       description: Malformed request or precondition.
@@ -1139,3 +1291,304 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
         "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/entities:
+    post:
+      tags: [Memory]
+      operationId: createEntity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateEntityRequest" }
+      responses:
+        "201":
+          description: Created entity.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryEntity" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+    get:
+      tags: [Memory]
+      operationId: listEntities
+      responses:
+        "200":
+          description: The owner's entities.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryEntityList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/entities/{entityId}:
+    parameters:
+      - name: entityId
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Memory]
+      operationId: deleteEntity
+      responses:
+        "200":
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /api/v1/entities/{entityId}/knowledge:
+    parameters:
+      - name: entityId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Memory]
+      operationId: getEntityKnowledge
+      summary: All knowledge about an entity, with traceable sources and evidence.
+      responses:
+        "200":
+          description: Entity knowledge graph.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EntityKnowledge" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/entities/{entityId}/memories:
+    parameters:
+      - name: entityId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Memory]
+      operationId: listMemoriesByEntity
+      responses:
+        "200":
+          description: Memories for the entity.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryRecordList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/entities/{entityId}/relationships:
+    parameters:
+      - name: entityId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Memory]
+      operationId: listRelationshipsByEntity
+      responses:
+        "200":
+          description: Relationships for the entity.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryRelationshipList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/sources:
+    post:
+      tags: [Memory]
+      operationId: createSource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateSourceRequest" }
+      responses:
+        "201":
+          description: Created source.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemorySource" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+    get:
+      tags: [Memory]
+      operationId: listSources
+      responses:
+        "200":
+          description: The owner's sources.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemorySourceList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/sources/{sourceId}:
+    parameters:
+      - name: sourceId
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Memory]
+      operationId: deleteSource
+      responses:
+        "200":
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /api/v1/sources/{sourceId}/memories:
+    parameters:
+      - name: sourceId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Memory]
+      operationId: listMemoriesBySource
+      responses:
+        "200":
+          description: Memories for the source.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryRecordList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/memories:
+    post:
+      tags: [Memory]
+      operationId: createMemory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateMemoryRequest" }
+      responses:
+        "201":
+          description: Created memory.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryRecord" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/memories/{memoryId}:
+    parameters:
+      - name: memoryId
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Memory]
+      operationId: deleteMemory
+      responses:
+        "200":
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+  /api/v1/memories/{memoryId}/insights:
+    parameters:
+      - name: memoryId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Memory]
+      operationId: listInsightsByMemory
+      responses:
+        "200":
+          description: Insights citing the memory.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryInsightList" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/relationships:
+    post:
+      tags: [Memory]
+      operationId: createRelationship
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateRelationshipRequest" }
+      responses:
+        "201":
+          description: Created relationship.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryRelationship" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/relationships/{relationshipId}:
+    parameters:
+      - name: relationshipId
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Memory]
+      operationId: deleteRelationship
+      responses:
+        "200":
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/insights:
+    post:
+      tags: [Memory]
+      operationId: createInsight
+      summary: Create an insight citing one or more memories (with confidence + evidence).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateInsightRequest" }
+      responses:
+        "201":
+          description: Created insight.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MemoryInsight" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/insights/{insightId}:
+    parameters:
+      - name: insightId
+        in: path
+        required: true
+        schema: { type: string }
+    delete:
+      tags: [Memory]
+      operationId: deleteInsight
+      responses:
+        "200":
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Ok" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }

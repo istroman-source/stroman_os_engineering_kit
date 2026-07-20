@@ -135,6 +135,50 @@ export const RecordHumanDecisionRequest = z
   .strict();
 export type RecordHumanDecisionRequest = z.infer<typeof RecordHumanDecisionRequest>;
 
+// ── Memory Engine request schemas ────────────────────────────────────────────
+export const CreateEntityRequest = z
+  .object({ name: z.string().min(1).max(200), kind: z.string().min(1).max(60) })
+  .strict();
+export type CreateEntityRequest = z.infer<typeof CreateEntityRequest>;
+
+export const CreateSourceRequest = z
+  .object({
+    label: z.string().min(1).max(200),
+    sourceType: z.string().min(1).max(60),
+    url: z.string().max(2000).nullish(),
+    detail: z.string().max(5000).nullish(),
+  })
+  .strict();
+export type CreateSourceRequest = z.infer<typeof CreateSourceRequest>;
+
+export const CreateMemoryRequest = z
+  .object({
+    entityId: z.string().min(1).max(200),
+    sourceId: z.string().min(1).max(200).nullish(),
+    content: z.string().min(1).max(5000),
+  })
+  .strict();
+export type CreateMemoryRequest = z.infer<typeof CreateMemoryRequest>;
+
+export const CreateRelationshipRequest = z
+  .object({
+    fromEntityId: z.string().min(1).max(200),
+    toEntityId: z.string().min(1).max(200),
+    relationType: z.string().min(1).max(60),
+  })
+  .strict();
+export type CreateRelationshipRequest = z.infer<typeof CreateRelationshipRequest>;
+
+export const CreateInsightRequest = z
+  .object({
+    statement: z.string().min(1).max(2000),
+    confidence: z.number().finite(),
+    evidence: z.string().max(5000).nullish(),
+    memoryIds: z.array(z.string().min(1).max(200)).min(1).max(100),
+  })
+  .strict();
+export type CreateInsightRequest = z.infer<typeof CreateInsightRequest>;
+
 // Analyze Project — the creator's context that Stroman OS turns into a blueprint.
 export const AnalyzeProjectRequest = z
   .object({

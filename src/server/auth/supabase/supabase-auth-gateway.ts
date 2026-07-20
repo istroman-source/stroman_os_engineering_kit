@@ -127,6 +127,33 @@ export class SupabaseAuthGateway implements AuthGateway {
     return { kind: "verified", session };
   }
 
+  async refreshSession(refreshToken: string): Promise<ProviderSession | null> {
+    let res: Response;
+    try {
+      res = await this.fetchImpl(this.endpoint("/auth/v1/token?grant_type=refresh_token"), {
+        method: "POST",
+        headers: this.headers(),
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+    } catch {
+      log.warn("token_refresh_network_error", {});
+      return null;
+    }
+    const bodyText = await res.text().catch(() => "");
+    if (!res.ok) {
+      log.warn("token_refresh_non_2xx", {
+        status: res.status,
+        providerErrorCode: safeProviderErrorCode(bodyText),
+      });
+      return null;
+    }
+    try {
+      return toProviderSession(JSON.parse(bodyText));
+    } catch {
+      return null;
+    }
+  }
+
   async signOut(accessToken: string): Promise<void> {
     // Best-effort provider-side revocation; local cookie clearing is authoritative
     // for the browser. Never throws — sign-out must remain idempotent.

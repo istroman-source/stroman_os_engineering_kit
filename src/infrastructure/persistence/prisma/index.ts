@@ -7,3 +7,10 @@ export { PrismaEvaluationRepository } from "./repositories/prisma-evaluation-rep
 export { PrismaDecisionRepository } from "./repositories/prisma-decision-repository";
 export { PrismaIdentityRepository } from "./repositories/prisma-identity-repository";
 export { PrismaCreativeBriefRepository } from "./repositories/prisma-creative-brief-repository";
+export {
+  PrismaEntityRepository,
+  PrismaSourceRepository,
+  PrismaMemoryRepository,
+  PrismaRelationshipRepository,
+  PrismaInsightRepository,
+} from "./repositories/prisma-memory-repositories";

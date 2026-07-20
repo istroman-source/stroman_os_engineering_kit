@@ -7,15 +7,27 @@ import type { DecisionRepository } from "@/domain/decision";
 import type { CreativeBriefRepository } from "@/domain/creative";
 import type { EvaluationRepository, RubricRepository } from "@/domain/evaluation";
 import type { IdentityRepository } from "@/domain/identity";
+import type {
+  EntityRepository,
+  InsightRepository,
+  MemoryRepository,
+  RelationshipRepository,
+  SourceRepository,
+} from "@/domain/memory";
 import type { ProjectRepository } from "@/domain/project";
 import {
   PrismaContentRepository,
   PrismaCreativeBriefRepository,
   PrismaDecisionRepository,
+  PrismaEntityRepository,
   PrismaEvaluationRepository,
   PrismaIdentityRepository,
+  PrismaInsightRepository,
+  PrismaMemoryRepository,
   PrismaProjectRepository,
+  PrismaRelationshipRepository,
   PrismaRubricRepository,
+  PrismaSourceRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -36,6 +48,11 @@ export interface ApiContext {
   readonly decisions: DecisionRepository;
   readonly identity: IdentityRepository;
   readonly creativeBriefs: CreativeBriefRepository;
+  readonly entities: EntityRepository;
+  readonly sources: SourceRepository;
+  readonly memories: MemoryRepository;
+  readonly relationships: RelationshipRepository;
+  readonly insights: InsightRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -49,6 +66,11 @@ export function createApiContext(): ApiContext {
     decisions: new PrismaDecisionRepository(prisma),
     identity: new PrismaIdentityRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),
+    entities: new PrismaEntityRepository(prisma),
+    sources: new PrismaSourceRepository(prisma),
+    memories: new PrismaMemoryRepository(prisma),
+    relationships: new PrismaRelationshipRepository(prisma),
+    insights: new PrismaInsightRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };

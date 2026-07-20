@@ -60,5 +60,10 @@ export interface AuthGateway {
   /** `redirectTo` is the same-origin URL the emailed link should return to. */
   startEmailOtp(email: string, redirectTo?: string): Promise<StartOtpOutcome>;
   verifyEmailOtp(email: string, token: string): Promise<VerifyOtpOutcome>;
+  /**
+   * Exchange a refresh token for a fresh session (rotating both tokens). Returns
+   * null when the refresh token is invalid/expired (the caller then fails closed).
+   */
+  refreshSession(refreshToken: string): Promise<ProviderSession | null>;
   signOut(accessToken: string): Promise<void>;
 }

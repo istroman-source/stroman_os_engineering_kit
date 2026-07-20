@@ -1,6 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
+import { takePendingSetCookies } from "@/server/auth/pending-cookies";
 import type { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logging";
 import type { Result } from "@/lib/result";
@@ -132,6 +133,17 @@ export function requireIfMatch(req: Request, resource: string): number {
 type NextRouteContext<P> = { params: Promise<P> } | undefined;
 
 /**
+ * Attach any `Set-Cookie` values queued during the request (a transparent session
+ * refresh in `authenticateRequest`) to the outgoing response, on both the success
+ * and error paths, so a re-issued session is always delivered to the browser.
+ */
+function drainRefreshedCookies(req: Request, response: Response): Response {
+  const cookies = takePendingSetCookies(req);
+  for (const cookie of cookies) response.headers.append("Set-Cookie", cookie);
+  return response;
+}
+
+/**
  * Wrap a route handler: resolve the request id, await params, run the handler, and
  * turn any thrown HttpError/AppError/unexpected error into a stable error response.
  * Emits one safe structured log line per request (no bodies, actor values, or
@@ -154,7 +166,7 @@ export function apiRoute<P = Record<string, never>>(
         status: response.status,
         durationMs: Date.now() - startedAt,
       });
-      return response;
+      return drainRefreshedCookies(req, response);
     } catch (error) {
       const response = errorResponse(error, requestId);
       log.warn("request_error", {
@@ -165,7 +177,7 @@ export function apiRoute<P = Record<string, never>>(
         durationMs: Date.now() - startedAt,
         category: response.status >= 500 ? "server" : "client",
       });
-      return response;
+      return drainRefreshedCookies(req, response);
     }
   };
 }

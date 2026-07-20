@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApiRequestError,
   createProject,
+  friendlyError,
   getSession,
   listProjects,
   signOut,
@@ -68,5 +69,49 @@ describe("api-client", () => {
   it("signOut resolves on 200", async () => {
     stubFetch(200, { ok: true });
     await expect(signOut()).resolves.toEqual({ ok: true });
+  });
+});
+
+describe("friendlyError — status-specific messages", () => {
+  it("maps 401 codes to a session-expired prompt", () => {
+    expect(friendlyError(new ApiRequestError(401, "AUTHENTICATION_REQUIRED", "x"))).toBe(
+      "Your session expired. Please sign in again.",
+    );
+    expect(friendlyError(new ApiRequestError(401, "INVALID_SESSION", "x"))).toBe(
+      "Your session expired. Please sign in again.",
+    );
+  });
+
+  it("maps 403 codes to a permission message", () => {
+    expect(friendlyError(new ApiRequestError(403, "FORBIDDEN", "x"))).toBe(
+      "You do not have permission to access this resource.",
+    );
+    expect(friendlyError(new ApiRequestError(403, "ACCOUNT_DISABLED", "x"))).toBe(
+      "You do not have permission to access this resource.",
+    );
+    expect(friendlyError(new ApiRequestError(403, "REQUEST_ORIGIN_REJECTED", "x"))).toBe(
+      "You do not have permission to access this resource.",
+    );
+  });
+
+  it("maps 503 codes to a service-unavailable message", () => {
+    expect(friendlyError(new ApiRequestError(503, "SERVICE_UNAVAILABLE", "x"))).toBe(
+      "A required service is unavailable.",
+    );
+    expect(friendlyError(new ApiRequestError(503, "AUTHENTICATION_UNAVAILABLE", "x"))).toBe(
+      "A required service is unavailable.",
+    );
+  });
+
+  it("falls back to the status family when the code is unrecognized", () => {
+    expect(friendlyError(new ApiRequestError(401, "SOMETHING_NEW", "x"))).toBe(
+      "Your session expired. Please sign in again.",
+    );
+    expect(friendlyError(new ApiRequestError(403, "SOMETHING_NEW", "x"))).toBe(
+      "You do not have permission to access this resource.",
+    );
+    expect(friendlyError(new ApiRequestError(503, "SOMETHING_NEW", "x"))).toBe(
+      "A required service is unavailable.",
+    );
   });
 });

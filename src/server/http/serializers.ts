@@ -2,6 +2,14 @@ import type { ContentItemView } from "@/application/content";
 import type { AnalysisView } from "@/application/creative";
 import type { DecisionView } from "@/application/decision";
 import type { EvaluationView, RubricView } from "@/application/evaluation";
+import type {
+  EntityKnowledgeView,
+  EntityView,
+  InsightView,
+  MemoryView,
+  RelationshipView,
+  SourceView,
+} from "@/application/memory";
 import type { ProjectView } from "@/application/project";
 
 /**
@@ -117,5 +125,72 @@ export function serializeAnalysis(view: AnalysisView) {
     },
     // The blueprint is pure JSON-safe data (strings/arrays) — passed through as-is.
     blueprint: view.blueprint,
+  };
+}
+
+// ── Memory Engine serializers ────────────────────────────────────────────────
+
+export function serializeEntity(view: EntityView) {
+  return { id: view.id, name: view.name, kind: view.kind, createdAt: iso(view.createdAt) };
+}
+
+export function serializeSource(view: SourceView) {
+  return {
+    id: view.id,
+    label: view.label,
+    sourceType: view.sourceType,
+    url: view.url,
+    detail: view.detail,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeMemory(view: MemoryView) {
+  return {
+    id: view.id,
+    entityId: view.entityId,
+    sourceId: view.sourceId,
+    content: view.content,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeRelationship(view: RelationshipView) {
+  return {
+    id: view.id,
+    fromEntityId: view.fromEntityId,
+    toEntityId: view.toEntityId,
+    relationType: view.relationType,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeInsight(view: InsightView) {
+  return {
+    id: view.id,
+    statement: view.statement,
+    confidence: view.confidence,
+    evidence: view.evidence,
+    memoryIds: view.memoryIds,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeEntityKnowledge(view: EntityKnowledgeView) {
+  return {
+    entity: serializeEntity(view.entity),
+    memories: view.memories.map((m) => ({
+      memory: serializeMemory(m.memory),
+      source: m.source ? serializeSource(m.source) : null,
+    })),
+    relationships: view.relationships.map((r) => ({
+      relationship: serializeRelationship(r.relationship),
+      direction: r.direction,
+      otherEntity: r.otherEntity ? serializeEntity(r.otherEntity) : null,
+    })),
+    insights: view.insights.map((i) => ({
+      insight: serializeInsight(i.insight),
+      citedMemories: i.citedMemories.map(serializeMemory),
+    })),
   };
 }
