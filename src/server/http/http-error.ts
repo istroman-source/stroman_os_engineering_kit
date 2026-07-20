@@ -17,12 +17,21 @@ export class HttpError extends Error {
   readonly status: number;
   readonly code: string;
   readonly fields: readonly FieldError[] | undefined;
-  constructor(status: number, code: string, message: string, fields?: readonly FieldError[]) {
+  /** Extra response headers (e.g. `WWW-Authenticate`). Never carries secrets. */
+  readonly headers: Readonly<Record<string, string>> | undefined;
+  constructor(
+    status: number,
+    code: string,
+    message: string,
+    fields?: readonly FieldError[],
+    headers?: Readonly<Record<string, string>>,
+  ) {
     super(message);
     this.name = "HttpError";
     this.status = status;
     this.code = code;
     this.fields = fields;
+    this.headers = headers;
   }
 }
 
@@ -31,6 +40,7 @@ interface ResponseParts {
   readonly code: string;
   readonly message: string;
   readonly fields?: readonly FieldError[];
+  readonly headers?: Readonly<Record<string, string>>;
 }
 
 /**
@@ -79,7 +89,13 @@ function appErrorToParts(error: AppError): ResponseParts {
 
 function toParts(error: unknown): ResponseParts {
   if (error instanceof HttpError) {
-    return { status: error.status, code: error.code, message: error.message, fields: error.fields };
+    return {
+      status: error.status,
+      code: error.code,
+      message: error.message,
+      fields: error.fields,
+      headers: error.headers,
+    };
   }
   if (error instanceof AppError) return appErrorToParts(error);
   return { status: 500, code: "INTERNAL", message: "An unexpected error occurred." };
@@ -98,6 +114,6 @@ export function errorResponse(error: unknown, requestId: string): Response {
   };
   return Response.json(body, {
     status: parts.status,
-    headers: { "X-Request-Id": requestId, "Cache-Control": "no-store" },
+    headers: { "X-Request-Id": requestId, "Cache-Control": "no-store", ...parts.headers },
   });
 }

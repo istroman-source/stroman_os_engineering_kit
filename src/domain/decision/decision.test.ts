@@ -64,7 +64,12 @@ describe("createDecision", () => {
         { id: "a", label: "A" },
         { id: "b", label: "B" },
       ],
-      advisory: { recommendedOptionId: "zzz", rationale: "because", confidence: conf(0.9) },
+      advisory: {
+        recommendedOptionId: "zzz",
+        rationale: "because",
+        confidence: conf(0.9),
+        evidence: [],
+      },
       now: T0,
     });
     expect(result.ok).toBe(false);
@@ -78,6 +83,7 @@ describe("human authority", () => {
       recommendedOptionId: "a",
       rationale: "AI likes A",
       confidence: conf(0.95),
+      evidence: [],
     };
     const d = proposed(advisory);
     // Even with a confident recommendation, nothing is decided.

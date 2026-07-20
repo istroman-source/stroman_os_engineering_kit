@@ -25,6 +25,25 @@ export function json(
   return Response.json(body, { status: opts.status ?? 200, headers });
 }
 
+/**
+ * Build a JSON response that may set one or more cookies (auth flows). Uses a
+ * `Headers` object so multiple `Set-Cookie` values are preserved (a plain record
+ * cannot hold duplicates). Always private/non-cacheable.
+ */
+export function jsonWithCookies(
+  body: unknown,
+  opts: { requestId: string; status?: number; setCookies?: readonly string[] },
+): Response {
+  const headers = new Headers({
+    "Content-Type": "application/json",
+    "X-Request-Id": opts.requestId,
+    "Cache-Control": "no-store",
+    "X-Content-Type-Options": "nosniff",
+  });
+  for (const cookie of opts.setCookies ?? []) headers.append("Set-Cookie", cookie);
+  return new Response(JSON.stringify(body), { status: opts.status ?? 200, headers });
+}
+
 /** Map a use-case Result to an HTTP response, attaching an ETag for mutable resources. */
 export function sendResult<V>(
   result: Result<V, AppError>,

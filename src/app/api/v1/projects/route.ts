@@ -1,13 +1,13 @@
 import { createProject, listProjectsForOwner } from "@/application/project";
 import { getApiContext } from "@/server/composition";
-import { resolveActor } from "@/server/http/context";
+import { authenticateRequest } from "@/server/auth";
 import { makeEtag } from "@/server/http/etag";
 import { apiRoute, parseJson, sendList, sendResult } from "@/server/http/respond";
 import { CreateProjectRequest } from "@/server/http/schemas";
 import { serializeProject } from "@/server/http/serializers";
 
 export const POST = apiRoute(async ({ req, requestId }) => {
-  const actorId = resolveActor(req.headers);
+  const actorId = (await authenticateRequest(req)).ownerId;
   const body = await parseJson(req, CreateProjectRequest);
   const result = await createProject(getApiContext(), { actorId, name: body.name });
   return sendResult(result, {
@@ -20,7 +20,7 @@ export const POST = apiRoute(async ({ req, requestId }) => {
 });
 
 export const GET = apiRoute(async ({ req, requestId }) => {
-  const actorId = resolveActor(req.headers);
+  const actorId = (await authenticateRequest(req)).ownerId;
   const result = await listProjectsForOwner(getApiContext(), { actorId });
   return sendList(result, {
     requestId,

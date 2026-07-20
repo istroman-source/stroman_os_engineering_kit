@@ -140,17 +140,38 @@ verified against a real database (integration tests). Genuine remaining limits:
 
 ## HTTP delivery layer (Prompt 006A) — genuine remaining limits
 
-- **No real authentication.** A temporary `X-Stroman-Actor-Id` header identifies the
-  caller. **Production invariant:** the mechanism is enabled ONLY when `NODE_ENV` is
-  `development` or `test`; production always disables it and **no environment variable
-  can override this**, so the header can never authenticate or impersonate in
-  production (such requests get 503). It is fail-closed (missing actor → 401 in
-  dev/test). Real auth arrives in Prompt 006B, replacing the single `resolveActor`
-  seam without changing ownership-denial (403) semantics.
 - **No AI endpoint.** The `AiRecommender` has no real provider yet; exposing a stub
   route is prohibited. Deferred.
 - **Pagination deferred.** List endpoints return all items (bounded MVP
   collections). Add cursor pagination before any collection can grow unbounded.
 - **No rate limiting** and no external provider endpoints.
-- **Production CORS/CSRF/auth posture pending Prompt 006B.** Same-origin defaults and
-  `no-store` are set now; CSRF handling is tied to the future auth mechanism.
+
+## Authentication (Prompt 006B) — genuine remaining limits
+
+- **Live Supabase not yet executed end-to-end (blocks public production).** The
+  provider-neutral core, Supabase adapter, identity model, CSRF/cookie policy, and
+  authorization are verified against real PostgreSQL + real HTTP with a deterministic
+  test authenticator and real (jose) JWT crypto. In Prompt 006B.1 the adapter's
+  REST/JWT contract was **verified against current official Supabase docs** and the JWT
+  verifier was **hardened with an explicit algorithm allowlist** (RS256/ES256 for JWKS,
+  HS256 only when a shared secret is set; `alg=none` rejected). A fail-closed acceptance
+  harness (`npm run auth:acceptance`) is provided. **Not** yet executed against a live
+  throwaway project (real OTP email delivery, verify/refresh/revocation, cookie
+  exchange, live JWKS): no isolated project/credentials/inbox is available here and OTP
+  entry is human-in-the-loop. Procedure in `docs/AUTHENTICATION_ARCHITECTURE.md`. **Not
+  approved for public production** until executed.
+- **No server-side session refresh (MVP; Option A deferred).** Access tokens expire
+  (~1h) with no auto-refresh (tokens are kept out of client JS by design). Acceptable
+  only while non-public/no-UI; a rotating HttpOnly refresh endpoint is **blocking before
+  a real browser UX ships**.
+- **OTP abuse limiting relies on Supabase's native limits** for the MVP; a durable
+  application-level per-IP/per-identifier limiter is a blocking item **before public
+  OTP exposure** (an in-memory limiter would fail across instances).
+- **No login / account-management / recovery UI**, no social login, no roles/teams/
+  memberships (owner-scoped only), no server-side session refresh endpoint, no
+  security audit log, no provider webhooks, and **no Row-Level Security** (single
+  trusted-server access; app-layer ownership only). All tracked in `docs/BACKLOG.md`.
+- **Knowledge-base authoring authorization** is still not owner/role-scoped (content
+  has no owner), but writes now require a verified session (no anonymous writes).
+- **User deletion is not implemented** (disable-only); when added it must not
+  cascade-delete business records.

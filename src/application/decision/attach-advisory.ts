@@ -10,7 +10,7 @@ import type { OwnerId, ProjectRepository } from "@/domain/project";
 import { type DomainError, makeConfidence } from "@/domain/shared";
 import { attemptUpdate } from "../shared/attempt";
 import { type DecisionAccessDeps, loadOwnedDecision } from "./decision-access";
-import { type DecisionView, toDecisionView } from "./decision-view";
+import { type AdvisoryEvidenceInput, type DecisionView, toDecisionView } from "./decision-view";
 import type { NotAuthorizedError, NotFoundError, RepositoryError } from "../shared/errors";
 
 export interface AttachAdvisoryDeps extends DecisionAccessDeps {
@@ -24,6 +24,7 @@ export interface AttachAdvisoryInput {
   readonly recommendedOptionId?: string | null;
   readonly rationale: string;
   readonly confidence: number;
+  readonly evidence?: readonly AdvisoryEvidenceInput[];
   /** The lockVersion the caller last observed (optimistic concurrency). */
   readonly expectedVersion: number;
 }
@@ -54,6 +55,11 @@ export async function attachAdvisory(
     recommendedOptionId: input.recommendedOptionId ?? null,
     rationale: input.rationale,
     confidence: confidence.value,
+    evidence: (input.evidence ?? []).map((entry) => ({
+      sourceLabel: entry.sourceLabel,
+      observation: entry.observation,
+      relevance: entry.relevance,
+    })),
   };
 
   const updated = attachAdvisoryToDecision(access.value, advisory);

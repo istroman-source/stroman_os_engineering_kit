@@ -29,6 +29,8 @@ reached only through `src/server/composition`.
 - Decisions: `POST /api/v1/decisions`, `GET /api/v1/decisions/{decisionId}`,
   `GET /api/v1/projects/{projectId}/decisions`,
   `POST /api/v1/decisions/{decisionId}/{advisory|decide}`
+- Auth (public): `POST /api/auth/start`, `POST /api/auth/verify`,
+  `GET /api/auth/session`, `POST /api/auth/sign-out`
 - Health: `GET /api/health/live`, `GET /api/health/ready`
 
 **Deferred:** no AI endpoint (the `AiRecommender` has no real provider yet — a route
@@ -63,6 +65,10 @@ HTTP + PostgreSQL test. The route↔OpenAPI equality is **enforced automatically
 | GET | /api/v1/decisions/{decisionId} | yes | yes | yes |
 | POST | /api/v1/decisions/{decisionId}/advisory | yes | yes | yes |
 | POST | /api/v1/decisions/{decisionId}/decide | yes | yes | yes |
+| POST | /api/auth/start | yes | yes | yes |
+| POST | /api/auth/verify | yes | yes | yes |
+| GET | /api/auth/session | yes | yes | yes |
+| POST | /api/auth/sign-out | yes | yes | yes |
 | GET | /api/health/live | yes | yes | yes |
 | GET | /api/health/ready | yes | yes | yes |
 
@@ -120,28 +126,45 @@ item. It is deliberately *not* named `etag` to avoid conflating an item mutation
 token with a representation ETag. (Alternatives — no token in lists, or reusing
 `etag` — were rejected as less clear.)
 
-## Actor context (temporary) and status policy
+## Authentication and authorization (Prompt 006B)
 
-`X-Stroman-Actor-Id` maps to an `OwnerId`. **Production invariant:** the mechanism is
-enabled **only** when `NODE_ENV` is `development` or `test`; production (or any other
-runtime) always disables it and **no environment variable can override this**, so the
-header can never authenticate or impersonate a caller in production. Owner identity
-for creation derives from the actor, never the request body (strict schemas reject an
-`ownerId` field). Ownership checks remain in the application layer.
+Real identity via Supabase Auth (passwordless email OTP) behind a provider-neutral
+boundary. `authenticateRequest` (`src/server/auth`) is the single gate; it replaced the
+temporary `resolveActor`/`X-Stroman-Actor-Id` mechanism, which is **removed** — there is
+no caller-controlled identity header. Owner identity is derived server-side from the
+internal user id, never from a request body (strict schemas reject an `ownerId` field).
+Ownership checks remain authoritative in the application layer. Full detail:
+[docs/AUTHENTICATION_ARCHITECTURE.md](AUTHENTICATION_ARCHITECTURE.md).
 
-Status policy (temporary, until Prompt 006B):
+**Transport:** browser = secure HttpOnly session cookie (`__Host-sos_at`, dev
+`sos_at`); future mobile/API = `Authorization: Bearer` access token. Both verify a
+Supabase JWT through the same neutral adapter.
+
+**Security schemes (OpenAPI):** `cookieAuth` (apiKey in cookie) and `bearerAuth` (http
+bearer); global `security` requires either. Public routes (health, auth start/verify/
+session/sign-out) set `security: []`.
+
+**CSRF:** state-changing **cookie** requests require a same-origin `Origin` header
+(allowlist); a foreign/missing origin → `403 REQUEST_ORIGIN_REJECTED`. Bearer requests
+are exempt. CORS is not relied on for CSRF.
+
+**Status policy:**
 
 | Situation | Status | Code |
 |-----------|--------|------|
-| Temporary adapter disabled (production) | 503 | `ACTOR_CONTEXT_UNAVAILABLE` |
-| Missing actor context (dev/test) | 401 | `ACTOR_REQUIRED` |
-| Malformed actor context | 400 | `INVALID_ACTOR` |
-| Valid actor, another owner's resource | 403 | `FORBIDDEN` |
+| No credentials | 401 | `AUTHENTICATION_REQUIRED` (+ `WWW-Authenticate: Bearer`) |
+| Invalid/expired credentials | 401 | `INVALID_SESSION` |
+| Invalid OTP (verify) | 401 | `INVALID_OTP` |
+| Disabled account | 403 | `ACCOUNT_DISABLED` |
+| Another owner's resource | 403 | `FORBIDDEN` |
+| CSRF/origin rejected | 403 | `REQUEST_ORIGIN_REJECTED` |
+| Provider / identity-store outage | 503 | `AUTHENTICATION_UNAVAILABLE` |
+| Provider rate limit | 429 | `RATE_LIMITED` |
 
-`503` represents an intentionally-unavailable API (no auth yet), **not** ordinary
-missing credentials in development. Prompt 006B may refine authentication responses
-(e.g. real 401s) **without changing the ownership-denial (403) semantics**. The
-replacement is one seam: `resolveActor`.
+**Resource-existence concealment:** cross-owner access returns 403 (existence not
+otherwise concealed at this stage; a consistent 404 policy is a documented future
+option). **Test auth** is injectable only via composition setters that throw in
+production — no runtime bypass.
 
 ## Dependency composition
 
@@ -163,8 +186,11 @@ credentials, or raw errors.
 ## Caching & CORS
 
 All API responses set `Cache-Control: no-store` and `X-Content-Type-Options:
-nosniff`. Same-origin defaults; no permissive CORS. CSRF posture is deferred to
-Prompt 006B along with the authentication mechanism.
+nosniff`, so authenticated responses are never stored by shared/CDN caches. Auth
+responses (start/verify/session/sign-out) are also `no-store`. Same-origin defaults;
+no permissive CORS (no credentialed wildcard, no reflected origins). CSRF is enforced
+via Origin verification on cookie-authenticated state-changing requests (see the
+Authentication section).
 
 ## Health
 
@@ -200,11 +226,15 @@ implemented route files (drift prevention).
 
 ## Explicit exclusions
 
-No authentication providers/sessions/RBAC, AI provider endpoints, external
-integrations, webhooks, queues, uploads, rate limiting, UI, or client SDKs.
+No RBAC/roles, AI provider endpoints, external integrations, webhooks, queues,
+uploads, product-route rate limiting, UI, or client SDKs. Authentication (Supabase
+email OTP) is now implemented — see the Authentication section.
 
-## Migration path to Prompt 006B (authentication)
+## Prompt 006B (authentication) — done
 
-Replace `resolveActor` with authenticated-identity resolution (same return type,
-one seam). Add 401 for unauthenticated requests, revisit 403 semantics, add CSRF
-protection appropriate to the auth mechanism, and remove the dev actor header.
+`resolveActor` / `X-Stroman-Actor-Id` were removed and replaced by
+`authenticateRequest` (Supabase-backed, provider-neutral). Unauthenticated requests
+get 401; ownership denial stays 403; CSRF is enforced for cookie sessions; real
+security schemes are documented in OpenAPI. End-to-end verification against a live
+Supabase project remains outstanding — see
+[docs/AUTHENTICATION_ARCHITECTURE.md](AUTHENTICATION_ARCHITECTURE.md).

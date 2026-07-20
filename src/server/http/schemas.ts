@@ -10,6 +10,29 @@ import { z } from "zod";
 export const CreateProjectRequest = z.object({ name: z.string().min(1).max(200) }).strict();
 export type CreateProjectRequest = z.infer<typeof CreateProjectRequest>;
 
+// --- Authentication (passwordless email OTP) ---
+// The email is validated for shape only; the provider decides deliverability and
+// whether an account exists (responses stay neutral to avoid enumeration).
+export const StartOtpRequest = z.object({ email: z.string().email().max(320) }).strict();
+export type StartOtpRequest = z.infer<typeof StartOtpRequest>;
+
+export const VerifyOtpRequest = z
+  .object({ email: z.string().email().max(320), token: z.string().min(4).max(12) })
+  .strict();
+export type VerifyOtpRequest = z.infer<typeof VerifyOtpRequest>;
+
+// Magic-link callback: the browser extracts the provider session from the URL
+// fragment and posts it here. The access token is re-verified server-side before
+// any cookie is set — these values are not trusted on their face.
+export const CallbackRequest = z
+  .object({
+    accessToken: z.string().min(1).max(8192),
+    refreshToken: z.string().min(1).max(8192),
+    expiresInSeconds: z.number().int().positive().max(86_400).optional(),
+  })
+  .strict();
+export type CallbackRequest = z.infer<typeof CallbackRequest>;
+
 export const CreateContentRequest = z
   .object({
     type: z.string().min(1).max(64),
@@ -63,11 +86,20 @@ export const RecordEvaluationRequest = z
   .strict();
 export type RecordEvaluationRequest = z.infer<typeof RecordEvaluationRequest>;
 
+const AdvisoryEvidenceInput = z
+  .object({
+    sourceLabel: z.string().min(1).max(200),
+    observation: z.string().min(1).max(2000),
+    relevance: z.string().min(1).max(2000),
+  })
+  .strict();
+
 const AdvisoryInput = z
   .object({
     recommendedOptionId: z.string().min(1).max(200).nullish(),
     rationale: z.string().min(1).max(2000),
     confidence: z.number().finite(),
+    evidence: z.array(AdvisoryEvidenceInput).max(20).optional(),
   })
   .strict();
 
@@ -102,3 +134,17 @@ export const RecordHumanDecisionRequest = z
   })
   .strict();
 export type RecordHumanDecisionRequest = z.infer<typeof RecordHumanDecisionRequest>;
+
+// Analyze Project — the creator's context that Stroman OS turns into a blueprint.
+export const AnalyzeProjectRequest = z
+  .object({
+    title: z.string().min(1).max(200),
+    client: z.string().min(1).max(200),
+    projectType: z.string().min(1).max(120),
+    creativeGoal: z.string().min(1).max(2000),
+    targetAudience: z.string().min(1).max(2000),
+    desiredEmotion: z.string().min(1).max(200),
+    context: z.string().min(1).max(5000),
+  })
+  .strict();
+export type AnalyzeProjectRequest = z.infer<typeof AnalyzeProjectRequest>;

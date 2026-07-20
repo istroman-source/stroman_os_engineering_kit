@@ -3,7 +3,12 @@ import { NotFoundError, OptimisticConcurrencyError } from "@/lib/errors";
 import type { Decision, DecisionId, DecisionRepository } from "@/domain/decision";
 import type { ProjectId } from "@/domain/project";
 import { translatePrismaError } from "../errors";
-import { toDecision, toDecisionFields, toDecisionOptionRows } from "../mappers/decision-mapper";
+import {
+  toDecision,
+  toDecisionEvidenceRows,
+  toDecisionFields,
+  toDecisionOptionRows,
+} from "../mappers/decision-mapper";
 
 /**
  * PostgreSQL/Prisma adapter for the Decision repository.
@@ -19,7 +24,10 @@ export class PrismaDecisionRepository implements DecisionRepository {
 
   async findById(id: DecisionId): Promise<Decision | null> {
     try {
-      const row = await this.db.decision.findUnique({ where: { id }, include: { options: true } });
+      const row = await this.db.decision.findUnique({
+        where: { id },
+        include: { options: true, evidence: true },
+      });
       return row ? toDecision(row) : null;
     } catch (error) {
       throw translatePrismaError(error);
@@ -30,7 +38,7 @@ export class PrismaDecisionRepository implements DecisionRepository {
     try {
       const rows = await this.db.decision.findMany({
         where: { projectId },
-        include: { options: true },
+        include: { options: true, evidence: true },
         orderBy: { createdAt: "asc" },
       });
       return rows.map(toDecision);
@@ -42,11 +50,15 @@ export class PrismaDecisionRepository implements DecisionRepository {
   async insert(decision: Decision): Promise<void> {
     const fields = toDecisionFields(decision);
     const options = toDecisionOptionRows(decision);
+    const evidence = toDecisionEvidenceRows(decision);
     try {
       await this.db.$transaction(async (tx) => {
         await tx.decision.create({ data: fields });
         if (options.length > 0) {
           await tx.decisionOption.createMany({ data: options });
+        }
+        if (evidence.length > 0) {
+          await tx.decisionEvidence.createMany({ data: evidence });
         }
       });
     } catch (error) {
@@ -56,17 +68,28 @@ export class PrismaDecisionRepository implements DecisionRepository {
 
   async update(decision: Decision): Promise<void> {
     const { id, lockVersion, ...rest } = toDecisionFields(decision);
-    let count: number;
+    const evidence = toDecisionEvidenceRows(decision);
+    // Root compare-and-swap plus advisory-evidence sync happen in one transaction
+    // so a decision and its supporting evidence can never diverge. `updated`
+    // distinguishes a stale/missing write (no rows changed) from a real update.
+    let updated = false;
     try {
-      const result = await this.db.decision.updateMany({
-        where: { id, lockVersion },
-        data: { ...rest, lockVersion: { increment: 1 } },
+      await this.db.$transaction(async (tx) => {
+        const result = await tx.decision.updateMany({
+          where: { id, lockVersion },
+          data: { ...rest, lockVersion: { increment: 1 } },
+        });
+        if (result.count === 0) return;
+        updated = true;
+        await tx.decisionEvidence.deleteMany({ where: { decisionId: id } });
+        if (evidence.length > 0) {
+          await tx.decisionEvidence.createMany({ data: evidence });
+        }
       });
-      count = result.count;
     } catch (error) {
       throw translatePrismaError(error);
     }
-    if (count === 0) {
+    if (!updated) {
       throw (await this.exists(id)) ? new OptimisticConcurrencyError() : new NotFoundError();
     }
   }

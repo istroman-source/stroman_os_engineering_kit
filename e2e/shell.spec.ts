@@ -1,22 +1,20 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("application shell", () => {
-  test("root redirects to the dashboard", async ({ page }) => {
-    await page.goto("/");
-    await expect(page).toHaveURL(/\/dashboard$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Dashboard" })).toBeVisible();
+test.describe("authentication gate", () => {
+  test("unauthenticated visit to a protected route redirects to /login", async ({ page }) => {
+    await page.goto("/dashboard");
+    await expect(page).toHaveURL(/\/login$/);
+    await expect(page.getByRole("button", { name: /send sign-in link/i })).toBeVisible();
   });
 
-  test("primary navigation moves between sections", async ({ page }) => {
-    await page.goto("/dashboard");
+  test("root also lands on /login when signed out", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/login$/);
+  });
 
-    const nav = page.getByRole("navigation", { name: "Primary" }).first();
-    await nav.getByRole("link", { name: "Projects" }).click();
-    await expect(page).toHaveURL(/\/projects$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Projects" })).toBeVisible();
-
-    await nav.getByRole("link", { name: "Settings" }).click();
-    await expect(page).toHaveURL(/\/settings$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Settings" })).toBeVisible();
+  test("the login page shows the email sign-in form", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.getByLabel("Email")).toBeVisible();
+    await expect(page.getByRole("button", { name: /send sign-in link/i })).toBeVisible();
   });
 });

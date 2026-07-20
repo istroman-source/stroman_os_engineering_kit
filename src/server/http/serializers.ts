@@ -1,4 +1,5 @@
 import type { ContentItemView } from "@/application/content";
+import type { AnalysisView } from "@/application/creative";
 import type { DecisionView } from "@/application/decision";
 import type { EvaluationView, RubricView } from "@/application/evaluation";
 import type { ProjectView } from "@/application/project";
@@ -82,6 +83,11 @@ export function serializeDecision(view: DecisionView) {
           recommendedOptionId: view.advisory.recommendedOptionId,
           rationale: view.advisory.rationale,
           confidence: view.advisory.confidence,
+          evidence: view.advisory.evidence.map((entry) => ({
+            sourceLabel: entry.sourceLabel,
+            observation: entry.observation,
+            relevance: entry.relevance,
+          })),
         }
       : null,
     status: view.status,
@@ -90,5 +96,26 @@ export function serializeDecision(view: DecisionView) {
     decisionRationale: view.decisionRationale,
     createdAt: iso(view.createdAt),
     decidedAt: view.decidedAt ? iso(view.decidedAt) : null,
+  };
+}
+
+export function serializeAnalysis(view: AnalysisView) {
+  const b = view.brief;
+  return {
+    brief: {
+      id: b.id,
+      projectId: b.projectId,
+      title: b.title,
+      client: b.client,
+      projectType: b.projectType,
+      creativeGoal: b.creativeGoal,
+      targetAudience: b.targetAudience,
+      desiredEmotion: b.desiredEmotion,
+      context: b.context,
+      createdAt: iso(b.createdAt),
+      updatedAt: iso(b.updatedAt),
+    },
+    // The blueprint is pure JSON-safe data (strings/arrays) — passed through as-is.
+    blueprint: view.blueprint,
   };
 }

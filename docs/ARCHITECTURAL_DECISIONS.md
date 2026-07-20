@@ -372,3 +372,69 @@ adapters. Material choices:
 **Consequences.** A stable, versioned, concurrency-safe API contract suitable for a
 future browser/mobile client, with authentication cleanly deferred behind one seam.
 See `docs/API_ARCHITECTURE.md`.
+
+## ADR-0018 — Authentication, identity, and authorization (Prompt 006B)
+
+**Status.** Accepted (2026-07-19). Provider end-to-end verification against a live
+Supabase project is outstanding — not yet approved for public production.
+
+**Context.** The temporary, fail-closed dev actor (`X-Stroman-Actor-Id`) had to be
+replaced with real, production-safe identity for browser and future mobile clients,
+without leaking a provider into the domain/application layers.
+
+**Decisions.**
+
+- **Provider: Supabase Auth**, passwordless **email OTP** (typed code, not magic
+  links). Chosen for PostgreSQL-native fit, Next.js server-side sessions, cross-
+  platform OTP, server-side verification, low ops, generous free tier. Rejected:
+  Auth.js (self-run email + session store, tighter Next coupling), Clerk (cost, UI
+  lock-in pulling provider concerns toward the client), custom auth (no email sender,
+  discouraged, reinvents crypto).
+- **Provider containment.** Two provider-neutral ports (`RequestAuthenticator`,
+  `AuthGateway`) with Supabase adapters under `src/server/auth/supabase/**`. No
+  provider type enters domain/application/repository/HTTP/error contracts.
+- **Credential transport (hybrid).** Browser = secure HttpOnly session cookie;
+  future mobile/API = Supabase bearer access token; both verified through one adapter.
+- **Internal identity.** Added `users` + `user_identities`; provider subject maps to a
+  stable internal `UserId`. Email is never a key. **Owner mapping Option A**: the
+  internal user id *is* the owner id (validated re-brand), no FK from `projects` to
+  `users` (no destructive cascades, no fabricated rows for legacy owners).
+- **Provisioning.** Lazy on first authenticated request; race-safe + transactional via
+  the unique `(provider, provider_subject)` constraint.
+- **CSRF.** Origin verification for cookie-authenticated state-changing requests
+  (bearer exempt); not reliant on CORS. Cookies: HttpOnly, SameSite=Lax, `__Host-` +
+  Secure in production.
+- **Authorization.** Ownership enforced authoritatively in the application layer;
+  route-level `authenticateRequest` gate; no middleware (avoids Edge/Node/Prisma
+  runtime pitfalls); no RBAC.
+- **Concealment.** Cross-owner access → 403 (consistent with prior contract); a 404
+  existence-concealment policy is a documented future option.
+- **Test-auth separation.** Injected only via composition setters that throw in
+  production; never selectable by header/query/cookie/flag.
+- **RLS deferred**; **provider webhooks deferred**; **application rate limiting for OTP
+  is a blocking pre-production item**.
+
+**Consequences.** Production-fail-closed, provider-replaceable identity with stable
+internal ownership. The one remaining risk is that the concrete Supabase flow (OTP
+delivery, verify/refresh/revocation, cookie exchange, JWKS verification) has not been
+exercised against a live project. See `docs/AUTHENTICATION_ARCHITECTURE.md`.
+
+### ADR-0018 addendum — Prompt 006B.1 live-acceptance decisions (2026-07-19)
+
+- **JWT algorithm allowlist (hardening).** The `jose` verifier now pins algorithms
+  explicitly: `RS256`/`ES256` for JWKS, `HS256` only when a shared secret is configured.
+  `alg=none` and algorithm-confusion are rejected (regression-tested). No silent
+  asymmetric→symmetric downgrade.
+- **Provider contract** verified against current official Supabase docs (endpoints,
+  payloads, JWKS path, issuer, audience, OTP defaults) — consistent with the adapter;
+  the OTP email template must include `{{ .Token }}` on the test project.
+- **Session refresh: Option A (defer).** No MVP server-side refresh; blocking before a
+  real browser UX ships.
+- **OTP abuse limits: Option B required before public exposure.** Supabase-native limits
+  suffice only for private/narrow use; a durable (non-in-memory) limiter is blocking for
+  public exposure.
+- **Acceptance tooling.** `scripts/verify-supabase-auth.mjs` + `npm run auth:acceptance`
+  with a fail-closed non-production guard; enables no runtime bypass.
+- **Commit status.** Prompt 006B remains **uncommitted** because live acceptance has not
+  been executed (no throwaway project/credentials/inbox available); per 006B.1 §17 the
+  commit is withheld until acceptance passes.

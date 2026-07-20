@@ -1,9 +1,10 @@
 import { APP_NAME } from "@/lib/config";
+import { SignOutButton } from "@/ui/auth/sign-out-button";
 import { NavLinks } from "./nav-links";
 
 /**
  * Top navigation bar. On small viewports it also carries the primary nav links
- * (the sidebar is hidden there). Presentation only.
+ * (the sidebar is hidden there). Presentation plus the sign-out control.
  */
 export function TopNav() {
   return (
@@ -11,6 +12,7 @@ export function TopNav() {
       <span className="text-sm font-semibold tracking-tight md:hidden">{APP_NAME}</span>
       <NavLinks orientation="horizontal" className="md:hidden" />
       <div className="ml-auto" />
+      <SignOutButton />
     </header>
   );
 }

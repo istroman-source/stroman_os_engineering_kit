@@ -8,10 +8,24 @@ export interface DecisionOptionView {
   readonly rationale: string | null;
 }
 
+export interface AdvisoryEvidenceView {
+  readonly sourceLabel: string;
+  readonly observation: string;
+  readonly relevance: string;
+}
+
+/** Structured evidence input shared by the propose and attach-advisory use cases. */
+export interface AdvisoryEvidenceInput {
+  readonly sourceLabel: string;
+  readonly observation: string;
+  readonly relevance: string;
+}
+
 export interface AdvisoryView {
   readonly recommendedOptionId: string | null;
   readonly rationale: string;
   readonly confidence: Confidence;
+  readonly evidence: readonly AdvisoryEvidenceView[];
 }
 
 /**
@@ -50,6 +64,11 @@ export function toDecisionView(decision: Decision): DecisionView {
           recommendedOptionId: decision.advisory.recommendedOptionId,
           rationale: decision.advisory.rationale,
           confidence: decision.advisory.confidence,
+          evidence: decision.advisory.evidence.map((entry) => ({
+            sourceLabel: entry.sourceLabel,
+            observation: entry.observation,
+            relevance: entry.relevance,
+          })),
         }
       : null,
     status: decision.status,

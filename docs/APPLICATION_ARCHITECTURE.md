@@ -115,9 +115,21 @@ not assume a view's shape mirrors an aggregate.
   `RepositoryError` captures the cause for outer-layer logging but its message is
   generic. Repository/port failures are translated via `attempt()`.
 
+## Authenticated actor (Prompt 006B)
+
+The application owns an `identity` module. `resolveAuthenticatedActor` takes a
+provider-neutral `VerifiedPrincipal` (`{ provider, subject, email }` — already
+verified by a delivery-layer adapter; the application never sees tokens) and returns
+an `AuthenticatedActor { userId, ownerId }`, provisioning a stable internal user
+race-safely and rejecting disabled accounts (`AccountDisabledError`). The `ownerId`
+that flows into every use case's `actorId` is derived here from the internal user id
+(owner mapping Option A) — never from a request body or the provider subject. See
+`docs/AUTHENTICATION_ARCHITECTURE.md`.
+
 ## Authorization boundary
 
-Authentication is deferred, but possession of an id never implies permission.
+Possession of an id never implies permission; the acting owner comes from the
+authenticated actor above.
 - Project-owned resources (projects, evaluations, decisions) enforce
   `ensureOwner(actorId, project.ownerId, …)`. For evaluations and decisions the
   owning project is loaded to authorize.

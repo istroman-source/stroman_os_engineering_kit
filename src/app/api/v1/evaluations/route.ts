@@ -2,13 +2,13 @@ import { recordEvaluation } from "@/application/evaluation";
 import { RubricId } from "@/domain/evaluation";
 import { ProjectId } from "@/domain/project";
 import { getApiContext } from "@/server/composition";
-import { resolveActor } from "@/server/http/context";
+import { authenticateRequest } from "@/server/auth";
 import { apiRoute, parseJson, parsePathId, sendResult } from "@/server/http/respond";
 import { RecordEvaluationRequest } from "@/server/http/schemas";
 import { serializeEvaluation } from "@/server/http/serializers";
 
 export const POST = apiRoute(async ({ req, requestId }) => {
-  const actorId = resolveActor(req.headers);
+  const actorId = (await authenticateRequest(req)).ownerId;
   const body = await parseJson(req, RecordEvaluationRequest);
   const projectId = parsePathId(body.projectId, ProjectId.parse);
   const rubricId = parsePathId(body.rubricId, RubricId.parse);

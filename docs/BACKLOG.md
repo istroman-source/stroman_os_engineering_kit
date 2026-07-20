@@ -84,3 +84,35 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
   `npm run openapi:validate` in CI.
 - **API client generation** from the OpenAPI spec if a typed client is justified.
 - **Pagination** for list endpoints when collections can grow unbounded.
+
+## Discovered during Prompt 006B (authentication)
+
+- **Live Supabase verification (BLOCKING for public production).** Exercise OTP
+  delivery, verify/refresh/revocation, cookie exchange, and JWKS verification against
+  an isolated throwaway project (procedure in `docs/AUTHENTICATION_ARCHITECTURE.md`).
+- **OTP abuse rate limiting (BLOCKING before public OTP exposure).** Add durable
+  per-IP/per-identifier limits (not in-memory); provider-native limits cover the MVP
+  only.
+- **Login / account-management / recovery UI.** No user-facing auth UI exists yet.
+- **Mobile bearer flow.** Native/hybrid client using the bearer path end-to-end.
+- **Server-side session refresh** (endpoint or middleware) so the browser need not
+  re-verify on access-token expiry.
+- **Security audit log** (sign-in, provisioning, disable, authorization denial, final
+  human decision).
+- **Roles / memberships / invitations / organizations** on the stable identity base.
+- **Provider webhooks** (user deletion, email change, disable, revocation) if a
+  reconciliation correctness need appears.
+- **Row-Level Security** — adopt if untrusted direct DB access, multi-tenant isolation,
+  or Supabase client-side data access is introduced.
+- **User deletion/anonymization** policy (disable-only today; no cascade of business
+  records).
+- **CI**: run `npm run test:auth` alongside `test:api`/`openapi:validate`.
+
+## Discovered during Milestone 2 (decision workspace)
+
+- **Real AI recommender adapter.** The `AiRecommender` domain port still has no
+  provider implementation, so the decision workspace attaches the AI advisory via
+  manual entry (the existing `/api/v1/decisions/{id}/advisory` endpoint). Wiring a
+  real AI engine needs a provider API key (a STOP-condition secret) and is out of
+  Milestone 2 scope — deferred. The human-decision path is already authoritative
+  and unaffected.

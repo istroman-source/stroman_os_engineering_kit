@@ -5,17 +5,27 @@ import { makeConfidence } from "@/domain/shared";
 import { PersistenceMappingError } from "../errors";
 import { orThrowMapping } from "./shared";
 
-export type DecisionRow = Prisma.DecisionGetPayload<{ include: { options: true } }>;
+export type DecisionRow = Prisma.DecisionGetPayload<{
+  include: { options: true; evidence: true };
+}>;
 
 function toAdvisory(row: DecisionRow): Advisory | null {
   if (row.advisoryRationale === null) return null;
   if (row.advisoryConfidence === null) {
     throw new PersistenceMappingError("decision.advisory has a rationale but no confidence");
   }
+  const evidence = [...row.evidence]
+    .sort((a, b) => a.position - b.position)
+    .map((entry) => ({
+      sourceLabel: entry.sourceLabel,
+      observation: entry.observation,
+      relevance: entry.relevance,
+    }));
   return {
     recommendedOptionId: row.advisoryRecommendedOptionId,
     rationale: row.advisoryRationale,
     confidence: orThrowMapping(makeConfidence(row.advisoryConfidence), "advisory.confidence"),
+    evidence,
   };
 }
 
@@ -71,5 +81,15 @@ export function toDecisionOptionRows(decision: Decision) {
     label: option.label,
     rationale: option.rationale,
     position: index,
+  }));
+}
+
+export function toDecisionEvidenceRows(decision: Decision) {
+  return (decision.advisory?.evidence ?? []).map((entry, index) => ({
+    decisionId: decision.id,
+    position: index,
+    sourceLabel: entry.sourceLabel,
+    observation: entry.observation,
+    relevance: entry.relevance,
   }));
 }

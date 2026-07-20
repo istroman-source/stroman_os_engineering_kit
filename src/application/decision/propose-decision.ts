@@ -13,7 +13,7 @@ import { ensureOwner } from "../shared/authorization";
 import type { Clock } from "../shared/clock";
 import { NotAuthorizedError, NotFoundError, type RepositoryError } from "../shared/errors";
 import type { IdGenerator } from "../shared/id-generator";
-import { type DecisionView, toDecisionView } from "./decision-view";
+import { type AdvisoryEvidenceInput, type DecisionView, toDecisionView } from "./decision-view";
 
 export interface ProposeDecisionDeps {
   readonly projects: ProjectRepository;
@@ -26,6 +26,7 @@ export interface AdvisoryInput {
   readonly recommendedOptionId?: string | null;
   readonly rationale: string;
   readonly confidence: number;
+  readonly evidence?: readonly AdvisoryEvidenceInput[];
 }
 
 export interface ProposeDecisionInput {
@@ -62,6 +63,11 @@ export async function proposeDecision(
       recommendedOptionId: input.advisory.recommendedOptionId ?? null,
       rationale: input.advisory.rationale,
       confidence: confidence.value,
+      evidence: (input.advisory.evidence ?? []).map((entry) => ({
+        sourceLabel: entry.sourceLabel,
+        observation: entry.observation,
+        relevance: entry.relevance,
+      })),
     };
   }
 

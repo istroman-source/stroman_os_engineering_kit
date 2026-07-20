@@ -1,7 +1,7 @@
 import { attachAdvisory } from "@/application/decision";
 import { DecisionId } from "@/domain/decision";
 import { getApiContext } from "@/server/composition";
-import { resolveActor } from "@/server/http/context";
+import { authenticateRequest } from "@/server/auth";
 import {
   apiRoute,
   parseJson,
@@ -13,7 +13,7 @@ import { AttachAdvisoryRequest } from "@/server/http/schemas";
 import { serializeDecision } from "@/server/http/serializers";
 
 export const POST = apiRoute<{ decisionId: string }>(async ({ req, params, requestId }) => {
-  const actorId = resolveActor(req.headers);
+  const actorId = (await authenticateRequest(req)).ownerId;
   const decisionId = parsePathId(params.decisionId, DecisionId.parse);
   const expectedVersion = requireIfMatch(req, "decision");
   const body = await parseJson(req, AttachAdvisoryRequest);
@@ -23,6 +23,7 @@ export const POST = apiRoute<{ decisionId: string }>(async ({ req, params, reque
     recommendedOptionId: body.recommendedOptionId ?? null,
     rationale: body.rationale,
     confidence: body.confidence,
+    evidence: body.evidence,
     expectedVersion,
   });
   return sendResult(result, {

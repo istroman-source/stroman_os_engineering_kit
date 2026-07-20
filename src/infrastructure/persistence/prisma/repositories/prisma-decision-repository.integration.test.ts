@@ -93,12 +93,21 @@ describe("PrismaDecisionRepository", () => {
       recommendedOptionId: "a",
       rationale: "AI prefers A",
       confidence: conf(0.9),
+      evidence: [
+        {
+          sourceLabel: "Client brief",
+          observation: "Wants a fast hook",
+          relevance: "Cold open is faster",
+        },
+      ],
     });
     if (!withAdvisory.ok) throw withAdvisory.error;
     await repo.update(withAdvisory.value);
 
     const loaded = await load();
     expect(loaded.advisory?.recommendedOptionId).toBe("a");
+    expect(loaded.advisory?.evidence).toHaveLength(1);
+    expect(loaded.advisory?.evidence[0]?.sourceLabel).toBe("Client brief");
     expect(loaded.status).toBe("PROPOSED");
     expect(loaded.selectedOptionId).toBeNull();
     expect(loaded.decidedBy).toBeNull();

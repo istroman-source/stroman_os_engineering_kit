@@ -18,14 +18,26 @@ export interface DecisionOption {
 }
 
 /**
+ * A single piece of supporting evidence behind an advisory: where it came from,
+ * the observation/excerpt itself, and why it is relevant. Structured (not free
+ * text) so the reasoning behind a recommendation is legible to the human deciding.
+ */
+export interface AdvisoryEvidence {
+  readonly sourceLabel: string;
+  readonly observation: string;
+  readonly relevance: string;
+}
+
+/**
  * Non-binding AI input to a decision. An advisory may recommend an option and
- * carry a confidence, but it can never select the option or move the decision to
- * DECIDED — only a human, via `decide`, does that.
+ * carry a confidence and supporting evidence, but it can never select the option
+ * or move the decision to DECIDED — only a human, via `decide`, does that.
  */
 export interface Advisory {
   readonly recommendedOptionId: string | null;
   readonly rationale: string;
   readonly confidence: Confidence;
+  readonly evidence: readonly AdvisoryEvidence[];
 }
 
 /**

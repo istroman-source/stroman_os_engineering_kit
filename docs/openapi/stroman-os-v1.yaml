@@ -4,12 +4,16 @@ info:
   version: "1.0.0"
   description: >
     Versioned HTTP delivery layer for Stroman OS MVP workflows. Authentication is
-    DEFERRED to a later step; during development a temporary actor header
-    (X-Stroman-Actor-Id) identifies the caller and is fail-closed in production.
-    Mutable resources use ETag / If-Match optimistic concurrency.
+    provided by Supabase Auth (passwordless email OTP) behind a provider-neutral
+    boundary: browser clients use a secure HttpOnly session cookie, future mobile/
+    API clients use a Supabase bearer access token. Product routes require a
+    verified identity; owner identity is derived server-side (never from a request
+    body). State-changing cookie requests require a same-origin Origin header
+    (CSRF). Mutable resources use ETag / If-Match optimistic concurrency.
 servers:
   - url: /
 tags:
+  - name: Auth
   - name: Projects
   - name: Content
   - name: Rubrics
@@ -19,16 +23,25 @@ tags:
 
 components:
   securitySchemes:
-    DevActor:
+    cookieAuth:
       type: apiKey
-      in: header
-      name: X-Stroman-Actor-Id
+      in: cookie
+      name: __Host-sos_at
       description: >
-        TEMPORARY actor context, available in DEVELOPMENT and TEST runtimes ONLY.
-        It is UNAVAILABLE IN PRODUCTION: production always disables it and no
-        environment variable can re-enable it, so this header can never
-        authenticate or impersonate a caller in production (such requests receive
-        503). Replaced by real authentication in a later step.
+        Secure HttpOnly session cookie set by POST /api/auth/verify (the browser
+        sends it automatically). Its value is a Supabase access token, verified
+        server-side; it is never readable by page JavaScript. State-changing
+        requests additionally require a same-origin `Origin` header (CSRF); a
+        foreign or absent origin is rejected with 403 REQUEST_ORIGIN_REJECTED. In
+        development over http the cookie name is `sos_at` (no `__Host-` prefix).
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Supabase-issued access token for non-browser clients (future mobile/API),
+        sent as `Authorization: Bearer <token>`. Because it is not an ambient
+        credential, it is exempt from the Origin/CSRF check.
   parameters:
     IfMatch:
       name: If-Match
@@ -222,13 +235,31 @@ components:
         id: { type: string }
         label: { type: string }
         rationale: { type: [string, "null"] }
+    AdvisoryEvidence:
+      type: object
+      required: [sourceLabel, observation, relevance]
+      properties:
+        sourceLabel: { type: string }
+        observation: { type: string }
+        relevance: { type: string }
+    AdvisoryEvidenceInput:
+      type: object
+      required: [sourceLabel, observation, relevance]
+      additionalProperties: false
+      properties:
+        sourceLabel: { type: string, maxLength: 200 }
+        observation: { type: string, maxLength: 2000 }
+        relevance: { type: string, maxLength: 2000 }
     Advisory:
       type: object
-      required: [recommendedOptionId, rationale, confidence]
+      required: [recommendedOptionId, rationale, confidence, evidence]
       properties:
         recommendedOptionId: { type: [string, "null"] }
         rationale: { type: string }
         confidence: { type: number }
+        evidence:
+          type: array
+          items: { $ref: "#/components/schemas/AdvisoryEvidence" }
     Decision:
       type: object
       required:
@@ -303,6 +334,10 @@ components:
             recommendedOptionId: { type: [string, "null"] }
             rationale: { type: string, maxLength: 2000 }
             confidence: { type: number }
+            evidence:
+              type: array
+              maxItems: 20
+              items: { $ref: "#/components/schemas/AdvisoryEvidenceInput" }
     AttachAdvisoryRequest:
       type: object
       required: [rationale, confidence]
@@ -311,6 +346,10 @@ components:
         recommendedOptionId: { type: [string, "null"] }
         rationale: { type: string, maxLength: 2000 }
         confidence: { type: number }
+        evidence:
+          type: array
+          maxItems: 20
+          items: { $ref: "#/components/schemas/AdvisoryEvidenceInput" }
     RecordHumanDecisionRequest:
       type: object
       required: [selectedOptionId, rationale]
@@ -318,6 +357,90 @@ components:
       properties:
         selectedOptionId: { type: string }
         rationale: { type: string, maxLength: 2000 }
+    AnalyzeProjectRequest:
+      type: object
+      required: [title, client, projectType, creativeGoal, targetAudience, desiredEmotion, context]
+      additionalProperties: false
+      properties:
+        title: { type: string, maxLength: 200 }
+        client: { type: string, maxLength: 200 }
+        projectType: { type: string, maxLength: 120 }
+        creativeGoal: { type: string, maxLength: 2000 }
+        targetAudience: { type: string, maxLength: 2000 }
+        desiredEmotion: { type: string, maxLength: 200 }
+        context: { type: string, maxLength: 5000 }
+    CreativeBrief:
+      type: object
+      required:
+        [
+          id,
+          projectId,
+          title,
+          client,
+          projectType,
+          creativeGoal,
+          targetAudience,
+          desiredEmotion,
+          context,
+          createdAt,
+          updatedAt,
+        ]
+      properties:
+        id: { type: string }
+        projectId: { type: string }
+        title: { type: string }
+        client: { type: string }
+        projectType: { type: string }
+        creativeGoal: { type: string }
+        targetAudience: { type: string }
+        desiredEmotion: { type: string }
+        context: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    HookConcept:
+      type: object
+      required: [title, description]
+      properties:
+        title: { type: string }
+        description: { type: string }
+    Blueprint:
+      type: object
+      required:
+        [
+          projectSummary,
+          storyObjective,
+          audienceAnalysis,
+          emotionalArc,
+          recommendedStructure,
+          hookConcepts,
+          editingBlueprint,
+          interviewStrategy,
+          brollPriorities,
+          risks,
+          masterPrompt,
+        ]
+      properties:
+        projectSummary: { type: string }
+        storyObjective: { type: string }
+        audienceAnalysis: { type: string }
+        emotionalArc: { type: array, items: { type: string } }
+        recommendedStructure: { type: string }
+        hookConcepts: { type: array, items: { $ref: "#/components/schemas/HookConcept" } }
+        editingBlueprint: { type: array, items: { type: string } }
+        interviewStrategy:
+          oneOf:
+            - type: array
+              items: { type: string }
+            - type: "null"
+        brollPriorities: { type: array, items: { type: string } }
+        risks: { type: array, items: { type: string } }
+        masterPrompt: { type: string }
+    Analysis:
+      type: object
+      required: [brief, blueprint]
+      properties:
+        brief: { $ref: "#/components/schemas/CreativeBrief" }
+        blueprint: { $ref: "#/components/schemas/Blueprint" }
   responses:
     BadRequest:
       description: Malformed request or precondition.
@@ -329,8 +452,27 @@ components:
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
+    Unauthorized:
+      description: >
+        Authentication is required or the session is invalid/expired
+        (AUTHENTICATION_REQUIRED or INVALID_SESSION). A `WWW-Authenticate: Bearer`
+        header is returned.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
     Forbidden:
-      description: Actor is not permitted to access the resource.
+      description: >
+        The authenticated caller is not permitted (FORBIDDEN cross-owner access,
+        ACCOUNT_DISABLED, or REQUEST_ORIGIN_REJECTED for a failed CSRF check).
+        Private resources owned by another user return 403 (existence is not
+        otherwise concealed at this stage — see docs/AUTHENTICATION_ARCHITECTURE.md).
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ServiceUnavailable:
+      description: >
+        Authentication is temporarily unavailable (AUTHENTICATION_UNAVAILABLE) —
+        e.g. the provider or identity store could not be reached. Fail-closed.
       content:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
@@ -350,10 +492,170 @@ components:
         application/json:
           schema: { $ref: "#/components/schemas/Error" }
 
+# Product routes require a verified identity via EITHER a session cookie OR a
+# bearer token. Public routes (health, auth initiation) override with `security: []`.
 security:
-  - DevActor: []
+  - cookieAuth: []
+  - bearerAuth: []
 
 paths:
+  /api/auth/start:
+    post:
+      tags: [Auth]
+      operationId: startEmailOtp
+      security: []
+      summary: Begin passwordless email-OTP sign-in (sends a code).
+      description: >
+        Neutral by design — the response never reveals whether an account exists.
+        Abuse is bounded by the provider's native rate limits.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              additionalProperties: false
+              properties:
+                email: { type: string, format: email, maxLength: 320 }
+            example: { email: "chef@example.com" }
+      responses:
+        "200":
+          description: A code has been sent if the address can receive one.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { message: { type: string } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "429":
+          description: Too many requests (provider rate limit).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/auth/verify:
+    post:
+      tags: [Auth]
+      operationId: verifyEmailOtp
+      security: []
+      summary: Verify an email OTP and establish a session.
+      description: >
+        On success, sets secure HttpOnly session cookies (access + refresh). Tokens
+        are never returned in the body. Internal identity is provisioned lazily on
+        the first protected request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, token]
+              additionalProperties: false
+              properties:
+                email: { type: string, format: email, maxLength: 320 }
+                token: { type: string, minLength: 4, maxLength: 12 }
+      responses:
+        "200":
+          description: Session established; session cookies set.
+          headers:
+            Set-Cookie:
+              description: Secure HttpOnly access and refresh session cookies.
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { authenticated: { type: boolean } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401":
+          description: The verification code is invalid (INVALID_OTP).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429":
+          description: Too many requests (provider rate limit).
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/auth/callback:
+    post:
+      tags: [Auth]
+      operationId: completeAuthCallback
+      security: []
+      summary: Complete a magic-link sign-in and establish the session.
+      description: >
+        Called by the /auth/callback page with the provider session it read from the
+        redirect fragment. CSRF-protected (same-origin Origin required). The access
+        token is re-verified server-side before any cookie is set; tokens are never
+        returned in the body.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [accessToken, refreshToken]
+              additionalProperties: false
+              properties:
+                accessToken: { type: string }
+                refreshToken: { type: string }
+                expiresInSeconds: { type: integer }
+      responses:
+        "200":
+          description: Session established; session cookies set.
+          headers:
+            Set-Cookie:
+              description: Secure HttpOnly access and refresh session cookies.
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { authenticated: { type: boolean } }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/auth/session:
+    get:
+      tags: [Auth]
+      operationId: getSession
+      security: []
+      summary: Report whether the caller has a valid session.
+      description: Returns only a boolean; never the user id, email, tokens, or claims.
+      responses:
+        "200":
+          description: Session state.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [authenticated]
+                properties: { authenticated: { type: boolean } }
+  /api/auth/sign-out:
+    post:
+      tags: [Auth]
+      operationId: signOut
+      security: []
+      summary: Sign out (clears session cookies).
+      description: >
+        Idempotent. CSRF-protected: a cookie-bearing sign-out must come from an
+        allowed origin, else 403 REQUEST_ORIGIN_REJECTED.
+      responses:
+        "200":
+          description: Signed out; session cookies cleared.
+          headers:
+            Set-Cookie:
+              description: Cleared session cookies (Max-Age=0).
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { ok: { type: boolean } }
+        "403": { $ref: "#/components/responses/Forbidden" }
   /api/health/live:
     get:
       tags: [Health]
@@ -402,7 +704,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Project" }
         "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/Forbidden" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
         "422": { $ref: "#/components/responses/Unprocessable" }
     get:
       tags: [Projects]
@@ -414,7 +716,7 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/ProjectList" }
-        "401": { $ref: "#/components/responses/Forbidden" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
   /api/v1/projects/{projectId}:
     parameters:
       - name: projectId
@@ -799,3 +1101,41 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
         "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/projects/{projectId}/analysis:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectAnalysis
+      summary: Fetch a project's creative brief and generated blueprint.
+      responses:
+        "200":
+          description: Brief + blueprint.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Analysis" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      tags: [Projects]
+      operationId: analyzeProject
+      summary: Analyze a project — capture its context and generate a Creative Blueprint.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AnalyzeProjectRequest" }
+      responses:
+        "200":
+          description: Brief saved; blueprint generated.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Analysis" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }

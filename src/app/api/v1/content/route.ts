@@ -1,6 +1,6 @@
 import { createContentItem } from "@/application/content";
 import { getApiContext } from "@/server/composition";
-import { resolveActor } from "@/server/http/context";
+import { authenticateRequest } from "@/server/auth";
 import { apiRoute, parseJson, sendResult } from "@/server/http/respond";
 import { CreateContentRequest } from "@/server/http/schemas";
 import { serializeContent } from "@/server/http/serializers";
@@ -8,7 +8,7 @@ import { serializeContent } from "@/server/http/serializers";
 export const POST = apiRoute(async ({ req, requestId }) => {
   // Require actor context (fail-closed). Knowledge-base authoring authorization is
   // deferred (Content has no owner yet — see KNOWN_LIMITATIONS); no anonymous writes.
-  resolveActor(req.headers);
+  await authenticateRequest(req);
   const body = await parseJson(req, CreateContentRequest);
   const result = await createContentItem(getApiContext(), {
     type: body.type,
