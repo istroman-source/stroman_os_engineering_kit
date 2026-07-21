@@ -22,7 +22,7 @@ export type StoryAngleStatus = "DRAFT" | "EVALUATED" | "SELECTED" | "ARCHIVED";
 export const storyAngleLifecycle = defineStateMachine<StoryAngleStatus>({
   DRAFT: ["EVALUATED", "ARCHIVED"],
   EVALUATED: ["SELECTED", "DRAFT", "ARCHIVED"],
-  SELECTED: ["DRAFT", "ARCHIVED"],
+  SELECTED: ["ARCHIVED"],
   ARCHIVED: ["DRAFT"],
 });
 
@@ -122,9 +122,9 @@ export function selectStoryAngle(angle: StoryAngle): Result<StoryAngle, DomainEr
   return transition(angle, ["EVALUATED"], "SELECTED");
 }
 
-/** Send an evaluated or selected angle back to DRAFT for rework. */
+/** Send an evaluated angle back to DRAFT for rework. */
 export function reviseStoryAngle(angle: StoryAngle): Result<StoryAngle, DomainError> {
-  return transition(angle, ["EVALUATED", "SELECTED"], "DRAFT");
+  return transition(angle, ["EVALUATED"], "DRAFT");
 }
 
 /** Set an active angle aside. */

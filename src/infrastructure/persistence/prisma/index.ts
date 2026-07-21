@@ -14,3 +14,8 @@ export {
   PrismaRelationshipRepository,
   PrismaInsightRepository,
 } from "./repositories/prisma-memory-repositories";
+export {
+  PrismaStoryAngleRepository,
+  PrismaStoryEvidenceRepository,
+  PrismaStoryCritiqueRepository,
+} from "./repositories/prisma-story-reasoning-repositories";

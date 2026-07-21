@@ -100,11 +100,20 @@ describe("StoryAngle — lifecycle operations", () => {
     if (!result.ok) expect(result.error).toBeInstanceOf(InvalidStateTransitionError);
   });
 
-  it("revises from EVALUATED and from SELECTED back to DRAFT", () => {
+  it("revises an EVALUATED angle back to DRAFT", () => {
     const fromEval = reviseStoryAngle(evaluated());
     expect(fromEval.ok && fromEval.value.status).toBe("DRAFT");
-    const fromSelected = reviseStoryAngle(selected());
-    expect(fromSelected.ok && fromSelected.value.status).toBe("DRAFT");
+  });
+
+  it("cannot revise a SELECTED angle (it may only be archived)", () => {
+    const result = reviseStoryAngle(selected());
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(InvalidStateTransitionError);
+  });
+
+  it("a SELECTED angle can only transition to ARCHIVED", () => {
+    const archived = archiveStoryAngle(selected());
+    expect(archived.ok && archived.value.status).toBe("ARCHIVED");
   });
 
   it("cannot revise a DRAFT or an ARCHIVED angle", () => {

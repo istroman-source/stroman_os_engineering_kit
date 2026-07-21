@@ -54,6 +54,31 @@ enum ReviewerType {
   AI
 }
 
+enum StoryAngleStatus {
+  DRAFT
+  EVALUATED
+  SELECTED
+  ARCHIVED
+}
+
+enum EvidenceRole {
+  PRIMARY
+  SUPPORTING
+  CONTEXTUAL
+  COUNTERPOINT
+}
+
+enum StoryRecommendation {
+  SELECT
+  REVISE
+  ARCHIVE
+}
+
+enum CriticType {
+  AI
+  HUMAN
+}
+
 enum AccountStatus {
   ACTIVE
   DISABLED
@@ -114,6 +139,7 @@ model Project {
   evaluations   Evaluation[]
   decisions     Decision[]
   creativeBrief CreativeBrief?
+  storyAngles   StoryAngle[]
 
   @@index([ownerId])
   @@map("projects")
@@ -315,9 +341,10 @@ model Memory {
   content   String
   createdAt DateTime @map("created_at") @db.Timestamptz(3)
 
-  entity      Entity          @relation(fields: [entityId], references: [id], onDelete: Restrict)
-  source      Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
-  insightRefs InsightMemory[]
+  entity        Entity          @relation(fields: [entityId], references: [id], onDelete: Restrict)
+  source        Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  insightRefs   InsightMemory[]
+  storyEvidence StoryEvidence[]
 
   @@index([ownerId])
   @@index([entityId])
@@ -352,7 +379,8 @@ model Insight {
   evidence   String?
   createdAt  DateTime @map("created_at") @db.Timestamptz(3)
 
-  memories InsightMemory[]
+  memories      InsightMemory[]
+  storyEvidence StoryEvidence[]
 
   @@index([ownerId])
   @@map("insights")
@@ -370,4 +398,85 @@ model InsightMemory {
   @@id([insightId, memoryId])
   @@index([memoryId])
   @@map("insight_memories")
+}
+
+// ── Story Reasoning Engine ───────────────────────────────────────────────────
+// Candidate story angles for a project, their cited evidence (traced to the
+// Memory Engine), and scored critiques. Owner-scoped; the angle is a mutable
+// aggregate (lifecycle + lockVersion), evidence and critiques are append-only.
+
+/// A candidate narrative direction for a project. At most one SELECTED angle per
+/// project is enforced by a partial unique index (see the migration).
+model StoryAngle {
+  id              String           @id
+  ownerId         String           @map("owner_id")
+  projectId       String           @map("project_id")
+  title           String
+  theme           String
+  premise         String
+  audiencePromise String           @map("audience_promise")
+  centralQuestion String           @map("central_question")
+  status          StoryAngleStatus
+  createdAt       DateTime         @map("created_at") @db.Timestamptz(3)
+  lockVersion     Int              @default(1) @map("lock_version")
+
+  project   Project         @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  evidence  StoryEvidence[]
+  critiques StoryCritique[]
+
+  @@index([ownerId])
+  @@index([projectId])
+  @@map("story_angles")
+}
+
+/// A single citation linking an angle to exactly one memory-graph node (memory OR
+/// insight; the XOR is enforced by a CHECK constraint in the migration). A cited
+/// node cannot be deleted while evidence references it.
+model StoryEvidence {
+  id           String       @id
+  ownerId      String       @map("owner_id")
+  storyAngleId String       @map("story_angle_id")
+  memoryId     String?      @map("memory_id")
+  insightId    String?      @map("insight_id")
+  role         EvidenceRole
+  reason       String
+  createdAt    DateTime     @map("created_at") @db.Timestamptz(3)
+
+  storyAngle StoryAngle @relation(fields: [storyAngleId], references: [id], onDelete: Cascade)
+  memory     Memory?    @relation(fields: [memoryId], references: [id], onDelete: Restrict)
+  insight    Insight?   @relation(fields: [insightId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId])
+  @@index([storyAngleId])
+  @@index([memoryId])
+  @@index([insightId])
+  @@map("story_evidence")
+}
+
+/// A scored, qualitative assessment of an angle across six creative dimensions
+/// (each an integer 1–10, enforced by CHECK constraints), plus an advisory
+/// recommendation. Recording a critique never transitions the angle.
+model StoryCritique {
+  id                 String              @id
+  ownerId            String              @map("owner_id")
+  storyAngleId       String              @map("story_angle_id")
+  criticType         CriticType          @map("critic_type")
+  criticId           String?             @map("critic_id")
+  evidenceStrength   Int                 @map("evidence_strength")
+  emotionalPotential Int                 @map("emotional_potential")
+  visualPotential    Int                 @map("visual_potential")
+  brandAlignment     Int                 @map("brand_alignment")
+  originality        Int
+  interviewPotential Int                 @map("interview_potential")
+  strengths          String
+  weaknesses         String
+  recommendation     StoryRecommendation
+  rationale          String
+  createdAt          DateTime            @map("created_at") @db.Timestamptz(3)
+
+  storyAngle StoryAngle @relation(fields: [storyAngleId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([storyAngleId])
+  @@map("story_critiques")
 }

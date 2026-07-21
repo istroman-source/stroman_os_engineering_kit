@@ -36,6 +36,16 @@ export class SlugAlreadyExistsError extends ApplicationError {
   }
 }
 
+export class SelectedAngleConflictError extends ApplicationError {
+  readonly projectId: string;
+  constructor(projectId: string) {
+    super("CONFLICT", "This project already has a selected story angle", {
+      context: { projectId },
+    });
+    this.projectId = projectId;
+  }
+}
+
 export class UnknownRubricCriterionError extends ApplicationError {
   readonly criterionId: string;
   constructor(criterionId: string) {

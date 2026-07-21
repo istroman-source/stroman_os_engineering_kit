@@ -9,8 +9,29 @@ import type {
   RubricId,
   RubricRepository,
 } from "@/domain/evaluation";
+import type {
+  EntityId,
+  Insight,
+  InsightId,
+  InsightRepository,
+  MemoryId,
+  MemoryRecord,
+  MemoryRepository,
+  SourceId,
+} from "@/domain/memory";
 import type { OwnerId, Project, ProjectId, ProjectRepository } from "@/domain/project";
 import type { Slug } from "@/domain/shared";
+import type {
+  StoryAngle,
+  StoryAngleId,
+  StoryAngleRepository,
+  StoryCritique,
+  StoryCritiqueId,
+  StoryCritiqueRepository,
+  StoryEvidence,
+  StoryEvidenceId,
+  StoryEvidenceRepository,
+} from "@/domain/story-reasoning";
 
 /**
  * In-memory repository implementations for tests only. They satisfy the real
@@ -169,5 +190,187 @@ export class InMemoryDecisionRepository extends FailableStore implements Decisio
   async update(decision: Decision): Promise<void> {
     this.guard();
     updateInto(this.store, decision);
+  }
+}
+
+export class InMemoryMemoryRepository extends FailableStore implements MemoryRepository {
+  private readonly store = new Map<string, MemoryRecord>();
+
+  seed(memory: MemoryRecord): void {
+    this.store.set(memory.id, memory);
+  }
+
+  async findById(id: MemoryId): Promise<MemoryRecord | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByEntity(entityId: EntityId): Promise<readonly MemoryRecord[]> {
+    this.guard();
+    return [...this.store.values()].filter((m) => m.entityId === entityId);
+  }
+
+  async listBySource(sourceId: SourceId): Promise<readonly MemoryRecord[]> {
+    this.guard();
+    return [...this.store.values()].filter((m) => m.sourceId === sourceId);
+  }
+
+  async insert(memory: MemoryRecord): Promise<void> {
+    this.guard();
+    insertInto(this.store, memory);
+  }
+
+  async delete(id: MemoryId): Promise<void> {
+    this.guard();
+    this.store.delete(id);
+  }
+}
+
+export class InMemoryInsightRepository extends FailableStore implements InsightRepository {
+  private readonly store = new Map<string, Insight>();
+
+  seed(insight: Insight): void {
+    this.store.set(insight.id, insight);
+  }
+
+  async findById(id: InsightId): Promise<Insight | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByMemory(memoryId: MemoryId): Promise<readonly Insight[]> {
+    return this.listByMemoryIds([memoryId]);
+  }
+
+  async listByMemoryIds(memoryIds: readonly MemoryId[]): Promise<readonly Insight[]> {
+    this.guard();
+    const wanted = new Set<string>(memoryIds);
+    return [...this.store.values()].filter((i) => i.memoryIds.some((m) => wanted.has(m)));
+  }
+
+  async insert(insight: Insight): Promise<void> {
+    this.guard();
+    insertInto(this.store, insight);
+  }
+
+  async delete(id: InsightId): Promise<void> {
+    this.guard();
+    this.store.delete(id);
+  }
+}
+
+export class InMemoryStoryAngleRepository extends FailableStore implements StoryAngleRepository {
+  private readonly store = new Map<string, StoryAngle>();
+
+  seed(angle: StoryAngle): void {
+    this.store.set(angle.id, angle);
+  }
+
+  async findById(id: StoryAngleId): Promise<StoryAngle | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByProject(projectId: ProjectId): Promise<readonly StoryAngle[]> {
+    this.guard();
+    return [...this.store.values()].filter((angle) => angle.projectId === projectId);
+  }
+
+  async listByOwner(ownerId: OwnerId): Promise<readonly StoryAngle[]> {
+    this.guard();
+    return [...this.store.values()].filter((angle) => angle.ownerId === ownerId);
+  }
+
+  async findSelectedByProject(projectId: ProjectId): Promise<StoryAngle | null> {
+    this.guard();
+    return (
+      [...this.store.values()].find(
+        (angle) => angle.projectId === projectId && angle.status === "SELECTED",
+      ) ?? null
+    );
+  }
+
+  async insert(angle: StoryAngle): Promise<void> {
+    this.guard();
+    insertInto(this.store, angle);
+  }
+
+  /**
+   * Mirrors the Prisma adapter: the domain transition already incremented
+   * `lockVersion`, so the compare-and-swap matches the stored (previous) version
+   * against `incoming - 1`. Also enforces the partial-unique "one SELECTED angle
+   * per project" invariant by throwing a ConflictError, as the DB index would.
+   */
+  async update(angle: StoryAngle): Promise<void> {
+    this.guard();
+    const existing = this.store.get(angle.id);
+    if (!existing) throw new NotFoundError();
+    if (existing.lockVersion !== angle.lockVersion - 1) throw new OptimisticConcurrencyError();
+    if (
+      angle.status === "SELECTED" &&
+      [...this.store.values()].some(
+        (other) =>
+          other.id !== angle.id &&
+          other.projectId === angle.projectId &&
+          other.status === "SELECTED",
+      )
+    ) {
+      throw new ConflictError("A unique constraint was violated");
+    }
+    this.store.set(angle.id, angle);
+  }
+}
+
+export class InMemoryStoryEvidenceRepository
+  extends FailableStore
+  implements StoryEvidenceRepository
+{
+  private readonly store = new Map<string, StoryEvidence>();
+
+  async findById(id: StoryEvidenceId): Promise<StoryEvidence | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByAngle(storyAngleId: StoryAngleId): Promise<readonly StoryEvidence[]> {
+    this.guard();
+    return [...this.store.values()].filter((e) => e.storyAngleId === storyAngleId);
+  }
+
+  async insert(evidence: StoryEvidence): Promise<void> {
+    this.guard();
+    insertInto(this.store, evidence);
+  }
+
+  async delete(id: StoryEvidenceId): Promise<void> {
+    this.guard();
+    this.store.delete(id);
+  }
+}
+
+export class InMemoryStoryCritiqueRepository
+  extends FailableStore
+  implements StoryCritiqueRepository
+{
+  private readonly store = new Map<string, StoryCritique>();
+
+  async findById(id: StoryCritiqueId): Promise<StoryCritique | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByAngle(storyAngleId: StoryAngleId): Promise<readonly StoryCritique[]> {
+    this.guard();
+    return [...this.store.values()].filter((c) => c.storyAngleId === storyAngleId);
+  }
+
+  async insert(critique: StoryCritique): Promise<void> {
+    this.guard();
+    insertInto(this.store, critique);
+  }
+
+  async delete(id: StoryCritiqueId): Promise<void> {
+    this.guard();
+    this.store.delete(id);
   }
 }

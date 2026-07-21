@@ -15,6 +15,11 @@ import type {
   SourceRepository,
 } from "@/domain/memory";
 import type { ProjectRepository } from "@/domain/project";
+import type {
+  StoryAngleRepository,
+  StoryCritiqueRepository,
+  StoryEvidenceRepository,
+} from "@/domain/story-reasoning";
 import {
   PrismaContentRepository,
   PrismaCreativeBriefRepository,
@@ -28,6 +33,9 @@ import {
   PrismaRelationshipRepository,
   PrismaRubricRepository,
   PrismaSourceRepository,
+  PrismaStoryAngleRepository,
+  PrismaStoryCritiqueRepository,
+  PrismaStoryEvidenceRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -53,6 +61,9 @@ export interface ApiContext {
   readonly memories: MemoryRepository;
   readonly relationships: RelationshipRepository;
   readonly insights: InsightRepository;
+  readonly storyAngles: StoryAngleRepository;
+  readonly storyEvidence: StoryEvidenceRepository;
+  readonly storyCritiques: StoryCritiqueRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -71,6 +82,9 @@ export function createApiContext(): ApiContext {
     memories: new PrismaMemoryRepository(prisma),
     relationships: new PrismaRelationshipRepository(prisma),
     insights: new PrismaInsightRepository(prisma),
+    storyAngles: new PrismaStoryAngleRepository(prisma),
+    storyEvidence: new PrismaStoryEvidenceRepository(prisma),
+    storyCritiques: new PrismaStoryCritiqueRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };
