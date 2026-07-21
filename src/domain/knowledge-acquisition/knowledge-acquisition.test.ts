@@ -209,9 +209,13 @@ describe("ObservationEvidence & ExtractionLocation", () => {
   });
 
   it("accepts valid locations and rejects malformed ones", () => {
-    expect(makeExtractionLocation({ charStart: 10, charEnd: 40 }).ok).toBe(true);
-    expect(makeExtractionLocation({ timeStartMs: 0, timeEndMs: 1000 }).ok).toBe(true);
-    expect(makeExtractionLocation({ pageNumber: 3, textSpan: "quoted" }).ok).toBe(true);
+    const characterRange = makeExtractionLocation({ charStart: 10, charEnd: 40 });
+    const timeRange = makeExtractionLocation({ timeStartMs: 0, timeEndMs: 1000 });
+    const page = makeExtractionLocation({ pageNumber: 3, textSpan: "quoted" });
+    expect(characterRange.ok && characterRange.value).not.toBeNull();
+    expect(timeRange.ok && timeRange.value).not.toBeNull();
+    expect(page.ok && page.value).not.toBeNull();
+    expect(makeExtractionLocation({})).toEqual({ ok: true, value: null });
     expect(makeExtractionLocation({ charStart: 40, charEnd: 10 }).ok).toBe(false);
     expect(makeExtractionLocation({ pageNumber: 0 }).ok).toBe(false);
     expect(makeExtractionLocation({ charStart: -1 }).ok).toBe(false);

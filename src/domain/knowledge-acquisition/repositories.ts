@@ -50,11 +50,10 @@ export interface KnowledgeObservationRepository {
   listByDocument(sourceDocumentId: SourceDocumentId): Promise<readonly KnowledgeObservation[]>;
   /** By `evidence.acquisitionRunId`. */
   listByRun(acquisitionRunId: AcquisitionRunId): Promise<readonly KnowledgeObservation[]>;
-  update(observation: KnowledgeObservation): Promise<void>;
+  applyReview(observation: KnowledgeObservation, review: KnowledgeReview): Promise<void>;
 }
 
 export interface KnowledgeReviewRepository {
-  insert(review: KnowledgeReview): Promise<void>;
   findById(id: KnowledgeReviewId): Promise<KnowledgeReview | null>;
   findByObservation(
     knowledgeObservationId: KnowledgeObservationId,

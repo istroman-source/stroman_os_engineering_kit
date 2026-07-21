@@ -8,6 +8,13 @@ import type { CreativeBriefRepository } from "@/domain/creative";
 import type { EvaluationRepository, RubricRepository } from "@/domain/evaluation";
 import type { IdentityRepository } from "@/domain/identity";
 import type {
+  AcquisitionRunRepository,
+  KnowledgeObservationRepository,
+  KnowledgeReviewRepository,
+  KnowledgeSourceRepository,
+  SourceDocumentRepository,
+} from "@/domain/knowledge-acquisition";
+import type {
   EntityRepository,
   InsightRepository,
   MemoryRepository,
@@ -36,6 +43,11 @@ import {
   PrismaStoryAngleRepository,
   PrismaStoryCritiqueRepository,
   PrismaStoryEvidenceRepository,
+  PrismaKnowledgeSourceRepository,
+  PrismaSourceDocumentRepository,
+  PrismaAcquisitionRunRepository,
+  PrismaKnowledgeObservationRepository,
+  PrismaKnowledgeReviewRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -64,6 +76,11 @@ export interface ApiContext {
   readonly storyAngles: StoryAngleRepository;
   readonly storyEvidence: StoryEvidenceRepository;
   readonly storyCritiques: StoryCritiqueRepository;
+  readonly knowledgeSources: KnowledgeSourceRepository;
+  readonly sourceDocuments: SourceDocumentRepository;
+  readonly acquisitionRuns: AcquisitionRunRepository;
+  readonly knowledgeObservations: KnowledgeObservationRepository;
+  readonly knowledgeReviews: KnowledgeReviewRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -85,6 +102,11 @@ export function createApiContext(): ApiContext {
     storyAngles: new PrismaStoryAngleRepository(prisma),
     storyEvidence: new PrismaStoryEvidenceRepository(prisma),
     storyCritiques: new PrismaStoryCritiqueRepository(prisma),
+    knowledgeSources: new PrismaKnowledgeSourceRepository(prisma),
+    sourceDocuments: new PrismaSourceDocumentRepository(prisma),
+    acquisitionRuns: new PrismaAcquisitionRunRepository(prisma),
+    knowledgeObservations: new PrismaKnowledgeObservationRepository(prisma),
+    knowledgeReviews: new PrismaKnowledgeReviewRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };

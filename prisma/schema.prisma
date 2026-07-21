@@ -79,6 +79,69 @@ enum CriticType {
   HUMAN
 }
 
+enum KnowledgeSourceType {
+  UPLOAD
+  WEB_PAGE
+  MANUAL
+}
+
+enum SourceReliability {
+  VERIFIED
+  HIGH
+  MEDIUM
+  LOW
+  UNKNOWN
+}
+
+enum KnowledgeSourceStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum DocumentType {
+  TRANSCRIPT
+  ARTICLE
+  WEB_PAGE
+  SOCIAL_POST
+  PDF
+  VIDEO
+  NOTE
+}
+
+enum AcquisitionRunStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  PARTIALLY_SUCCEEDED
+  FAILED
+}
+
+enum ObservationKind {
+  ENTITY
+  MEMORY
+  INSIGHT
+  RELATIONSHIP
+}
+
+enum ObservationOrigin {
+  AI
+  HUMAN
+  IMPORT
+}
+
+enum ObservationStatus {
+  PENDING_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+enum ReviewOutcome {
+  ACCEPT
+  EDIT_AND_ACCEPT
+  REJECT
+}
+
 enum AccountStatus {
   ACTIVE
   DISABLED
@@ -479,4 +542,110 @@ model StoryCritique {
   @@index([ownerId])
   @@index([storyAngleId])
   @@map("story_critiques")
+}
+
+model KnowledgeSource {
+  id                String                @id
+  ownerId           String                @map("owner_id")
+  name              String
+  sourceType        KnowledgeSourceType   @map("source_type")
+  origin            String?
+  sourceReliability SourceReliability     @map("source_reliability")
+  status            KnowledgeSourceStatus
+  createdAt         DateTime              @map("created_at") @db.Timestamptz(3)
+  lockVersion       Int                   @default(1) @map("lock_version")
+
+  documents    SourceDocument[]
+  runs         AcquisitionRun[]
+  observations KnowledgeObservation[]
+
+  @@index([ownerId])
+  @@map("knowledge_sources")
+}
+
+model SourceDocument {
+  id                String       @id
+  ownerId           String       @map("owner_id")
+  knowledgeSourceId String       @map("knowledge_source_id")
+  documentType      DocumentType @map("document_type")
+  contentHash       String       @map("content_hash")
+  title             String
+  mediaType         String?      @map("media_type")
+  byteSize          Int?         @map("byte_size")
+  createdAt         DateTime     @map("created_at") @db.Timestamptz(3)
+
+  knowledgeSource KnowledgeSource        @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
+  observations    KnowledgeObservation[]
+
+  @@unique([knowledgeSourceId, contentHash])
+  @@index([ownerId])
+  @@index([knowledgeSourceId])
+  @@map("source_documents")
+}
+
+model AcquisitionRun {
+  id                  String               @id
+  ownerId             String               @map("owner_id")
+  knowledgeSourceId   String               @map("knowledge_source_id")
+  extractor           String
+  extractorVersion    String               @map("extractor_version")
+  status              AcquisitionRunStatus
+  startedAt           DateTime?            @map("started_at") @db.Timestamptz(3)
+  finishedAt          DateTime?            @map("finished_at") @db.Timestamptz(3)
+  documentsProcessed  Int?                 @map("documents_processed")
+  observationsCreated Int?                 @map("observations_created")
+  failureCount        Int?                 @map("failure_count")
+  createdAt           DateTime             @map("created_at") @db.Timestamptz(3)
+  lockVersion         Int                  @default(1) @map("lock_version")
+
+  knowledgeSource KnowledgeSource        @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
+  observations    KnowledgeObservation[]
+
+  @@index([ownerId])
+  @@index([knowledgeSourceId])
+  @@map("acquisition_runs")
+}
+
+model KnowledgeObservation {
+  id                String            @id
+  ownerId           String            @map("owner_id")
+  observationType   ObservationKind   @map("observation_type")
+  payload           Json
+  sourceDocumentId  String            @map("source_document_id")
+  knowledgeSourceId String            @map("knowledge_source_id")
+  acquisitionRunId  String?           @map("acquisition_run_id")
+  location          Json?
+  confidence        Float?
+  createdBy         ObservationOrigin @map("created_by")
+  status            ObservationStatus
+  createdAt         DateTime          @map("created_at") @db.Timestamptz(3)
+  lockVersion       Int               @default(1) @map("lock_version")
+
+  sourceDocument  SourceDocument   @relation(fields: [sourceDocumentId], references: [id], onDelete: Restrict)
+  knowledgeSource KnowledgeSource  @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
+  acquisitionRun  AcquisitionRun?  @relation(fields: [acquisitionRunId], references: [id], onDelete: Restrict)
+  review          KnowledgeReview?
+
+  @@index([ownerId])
+  @@index([sourceDocumentId])
+  @@index([acquisitionRunId])
+  @@index([knowledgeSourceId])
+  @@map("knowledge_observations")
+}
+
+model KnowledgeReview {
+  id                     String        @id
+  ownerId                String        @map("owner_id")
+  knowledgeObservationId String        @unique @map("knowledge_observation_id")
+  outcome                ReviewOutcome
+  reviewerId             String        @map("reviewer_id")
+  note                   String?
+  editedPayload          Json?         @map("edited_payload")
+  reviewedAt             DateTime      @map("reviewed_at") @db.Timestamptz(3)
+  createdAt              DateTime      @map("created_at") @db.Timestamptz(3)
+
+  knowledgeObservation KnowledgeObservation @relation(fields: [knowledgeObservationId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId])
+  @@map("knowledge_reviews")
 }

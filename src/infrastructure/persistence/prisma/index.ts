@@ -19,3 +19,10 @@ export {
   PrismaStoryEvidenceRepository,
   PrismaStoryCritiqueRepository,
 } from "./repositories/prisma-story-reasoning-repositories";
+export {
+  PrismaKnowledgeSourceRepository,
+  PrismaSourceDocumentRepository,
+  PrismaAcquisitionRunRepository,
+  PrismaKnowledgeObservationRepository,
+  PrismaKnowledgeReviewRepository,
+} from "./repositories/prisma-knowledge-acquisition-repositories";
