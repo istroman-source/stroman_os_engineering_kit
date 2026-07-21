@@ -70,3 +70,9 @@ export class RepositoryError extends ApplicationError {
     this.operation = operation;
   }
 }
+
+export class ObservationNotAcceptedError extends ApplicationError {
+  constructor() {
+    super("CONFLICT", "Only accepted observations may be materialized");
+  }
+}

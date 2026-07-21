@@ -621,10 +621,11 @@ model KnowledgeObservation {
   createdAt         DateTime          @map("created_at") @db.Timestamptz(3)
   lockVersion       Int               @default(1) @map("lock_version")
 
-  sourceDocument  SourceDocument   @relation(fields: [sourceDocumentId], references: [id], onDelete: Restrict)
-  knowledgeSource KnowledgeSource  @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
-  acquisitionRun  AcquisitionRun?  @relation(fields: [acquisitionRunId], references: [id], onDelete: Restrict)
-  review          KnowledgeReview?
+  sourceDocument   SourceDocument               @relation(fields: [sourceDocumentId], references: [id], onDelete: Restrict)
+  knowledgeSource  KnowledgeSource              @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
+  acquisitionRun   AcquisitionRun?              @relation(fields: [acquisitionRunId], references: [id], onDelete: Restrict)
+  review           KnowledgeReview?
+  materializations ObservationMaterialization[]
 
   @@index([ownerId])
   @@index([sourceDocumentId])
@@ -644,8 +645,27 @@ model KnowledgeReview {
   reviewedAt             DateTime      @map("reviewed_at") @db.Timestamptz(3)
   createdAt              DateTime      @map("created_at") @db.Timestamptz(3)
 
-  knowledgeObservation KnowledgeObservation @relation(fields: [knowledgeObservationId], references: [id], onDelete: Restrict)
+  knowledgeObservation KnowledgeObservation         @relation(fields: [knowledgeObservationId], references: [id], onDelete: Restrict)
+  materializations     ObservationMaterialization[]
 
   @@index([ownerId])
   @@map("knowledge_reviews")
+}
+
+model ObservationMaterialization {
+  knowledgeObservationId String          @map("knowledge_observation_id")
+  knowledgeReviewId      String          @map("knowledge_review_id")
+  recordType             ObservationKind @map("record_type")
+  recordId               String          @map("record_id")
+  ownerId                String          @map("owner_id")
+  createdAt              DateTime        @map("created_at") @db.Timestamptz(3)
+
+  knowledgeObservation KnowledgeObservation @relation(fields: [knowledgeObservationId], references: [id], onDelete: Restrict)
+  knowledgeReview      KnowledgeReview      @relation(fields: [knowledgeReviewId], references: [id], onDelete: Restrict)
+
+  @@id([knowledgeObservationId, recordType])
+  @@index([recordType, recordId])
+  @@index([ownerId])
+  @@index([knowledgeReviewId])
+  @@map("observation_materializations")
 }

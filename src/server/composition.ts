@@ -2,6 +2,7 @@ import "server-only";
 
 import { createIdGenerator, systemClock } from "@/application/shared";
 import type { Clock, IdGenerator } from "@/application/shared";
+import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
 import type { DecisionRepository } from "@/domain/decision";
 import type { CreativeBriefRepository } from "@/domain/creative";
@@ -48,6 +49,7 @@ import {
   PrismaAcquisitionRunRepository,
   PrismaKnowledgeObservationRepository,
   PrismaKnowledgeReviewRepository,
+  PrismaMaterializationRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -81,6 +83,7 @@ export interface ApiContext {
   readonly acquisitionRuns: AcquisitionRunRepository;
   readonly knowledgeObservations: KnowledgeObservationRepository;
   readonly knowledgeReviews: KnowledgeReviewRepository;
+  readonly materializations: MaterializationRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -107,6 +110,7 @@ export function createApiContext(): ApiContext {
     acquisitionRuns: new PrismaAcquisitionRunRepository(prisma),
     knowledgeObservations: new PrismaKnowledgeObservationRepository(prisma),
     knowledgeReviews: new PrismaKnowledgeReviewRepository(prisma),
+    materializations: new PrismaMaterializationRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };

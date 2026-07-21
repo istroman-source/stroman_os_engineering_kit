@@ -1,4 +1,9 @@
 import { ConflictError, NotFoundError, OptimisticConcurrencyError } from "@/lib/errors";
+import type {
+  MaterializationLink,
+  MaterializationRepository,
+  MaterializedRecord,
+} from "@/application/knowledge-acquisition";
 import type { ContentItem, ContentItemId, ContentRepository } from "@/domain/content";
 import type { Decision, DecisionId, DecisionRepository } from "@/domain/decision";
 import type {
@@ -11,6 +16,7 @@ import type {
   KnowledgeReview,
   KnowledgeReviewId,
   KnowledgeReviewRepository,
+  KnowledgeKind,
   KnowledgeSource,
   KnowledgeSourceId,
   KnowledgeSourceRepository,
@@ -27,14 +33,21 @@ import type {
   RubricRepository,
 } from "@/domain/evaluation";
 import type {
+  Entity,
   EntityId,
+  EntityRepository,
   Insight,
   InsightId,
   InsightRepository,
   MemoryId,
   MemoryRecord,
   MemoryRepository,
+  Relationship,
+  RelationshipId,
+  RelationshipRepository,
   SourceId,
+  Source,
+  SourceRepository,
 } from "@/domain/memory";
 import type { OwnerId, Project, ProjectId, ProjectRepository } from "@/domain/project";
 import type { Slug } from "@/domain/shared";
@@ -238,6 +251,80 @@ export class InMemoryMemoryRepository extends FailableStore implements MemoryRep
   }
 
   async delete(id: MemoryId): Promise<void> {
+    this.guard();
+    this.store.delete(id);
+  }
+}
+
+export class InMemoryEntityRepository extends FailableStore implements EntityRepository {
+  private readonly store = new Map<string, Entity>();
+  seed(entity: Entity) {
+    this.store.set(entity.id, entity);
+  }
+  async findById(id: EntityId) {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+  async listByOwner(ownerId: OwnerId) {
+    this.guard();
+    return [...this.store.values()].filter((value) => value.ownerId === ownerId);
+  }
+  async insert(entity: Entity) {
+    this.guard();
+    insertInto(this.store, entity);
+  }
+  async delete(id: EntityId) {
+    this.guard();
+    this.store.delete(id);
+  }
+}
+
+export class InMemorySourceRepository extends FailableStore implements SourceRepository {
+  private readonly store = new Map<string, Source>();
+  seed(source: Source) {
+    this.store.set(source.id, source);
+  }
+  async findById(id: SourceId) {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+  async listByOwner(ownerId: OwnerId) {
+    this.guard();
+    return [...this.store.values()].filter((value) => value.ownerId === ownerId);
+  }
+  async insert(source: Source) {
+    this.guard();
+    insertInto(this.store, source);
+  }
+  async delete(id: SourceId) {
+    this.guard();
+    this.store.delete(id);
+  }
+}
+
+export class InMemoryRelationshipRepository
+  extends FailableStore
+  implements RelationshipRepository
+{
+  private readonly store = new Map<string, Relationship>();
+  seed(relationship: Relationship) {
+    this.store.set(relationship.id, relationship);
+  }
+  async findById(id: RelationshipId) {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+  async listByEntity(id: EntityId) {
+    this.guard();
+    return [...this.store.values()].filter(
+      (value) => value.fromEntityId === id || value.toEntityId === id,
+    );
+  }
+  async insert(relationship: Relationship) {
+    this.guard();
+    insertInto(this.store, relationship);
+  }
+  async delete(id: RelationshipId) {
     this.guard();
     this.store.delete(id);
   }
@@ -559,5 +646,46 @@ export class InMemoryKnowledgeReviewRepository
   async findByObservation(id: KnowledgeObservationId) {
     this.guard();
     return this.store.findByObservation(id);
+  }
+}
+
+export class InMemoryMaterializationRepository
+  extends FailableStore
+  implements MaterializationRepository
+{
+  private readonly links: MaterializationLink[] = [];
+  constructor(
+    private readonly entities: InMemoryEntityRepository,
+    private readonly memories: InMemoryMemoryRepository,
+    private readonly insights: InMemoryInsightRepository,
+    private readonly relationships: InMemoryRelationshipRepository,
+  ) {
+    super();
+  }
+  async findByObservation(id: KnowledgeObservationId) {
+    this.guard();
+    return this.links.filter((link) => link.knowledgeObservationId === id);
+  }
+  async findByRecord(recordType: KnowledgeKind, recordId: string) {
+    this.guard();
+    return this.links.filter(
+      (link) => link.record.recordType === recordType && link.record.recordId === recordId,
+    );
+  }
+  async materialize(record: MaterializedRecord, link: MaterializationLink) {
+    this.guard();
+    if (
+      this.links.some(
+        (existing) =>
+          existing.knowledgeObservationId === link.knowledgeObservationId &&
+          existing.record.recordType === link.record.recordType,
+      )
+    )
+      throw new ConflictError("Observation already materialized");
+    if (record.kind === "ENTITY") await this.entities.insert(record.entity);
+    else if (record.kind === "MEMORY") await this.memories.insert(record.memory);
+    else if (record.kind === "INSIGHT") await this.insights.insert(record.insight);
+    else await this.relationships.insert(record.relationship);
+    this.links.push(link);
   }
 }

@@ -25,4 +25,5 @@ export {
   PrismaAcquisitionRunRepository,
   PrismaKnowledgeObservationRepository,
   PrismaKnowledgeReviewRepository,
+  PrismaMaterializationRepository,
 } from "./repositories/prisma-knowledge-acquisition-repositories";

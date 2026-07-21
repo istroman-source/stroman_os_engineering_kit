@@ -8,3 +8,6 @@ export * from "./progress-acquisition-run";
 export * from "./create-knowledge-observation";
 export * from "./review-knowledge-observation";
 export * from "./read-knowledge-acquisition";
+export * from "./materialization-repository";
+export * from "./materialization-view";
+export * from "./materialize-observation";

@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { ConflictError, OptimisticConcurrencyError } from "@/lib/errors";
 import { OwnerId } from "@/domain/project";
+import { createEntity, EntityId } from "@/domain/memory";
 import {
   AcquisitionRunId,
   createAcquisitionRun,
@@ -12,6 +13,7 @@ import {
   KnowledgeReviewId,
   KnowledgeSourceId,
   makeObservationEvidence,
+  makeKnowledgeEngineRef,
   reviewObservation,
   SourceDocumentId,
 } from "@/domain/knowledge-acquisition";
@@ -20,6 +22,7 @@ import {
   PrismaKnowledgeObservationRepository,
   PrismaKnowledgeReviewRepository,
   PrismaKnowledgeSourceRepository,
+  PrismaMaterializationRepository,
   PrismaSourceDocumentRepository,
 } from "@/infrastructure/persistence/prisma";
 import { createTestPrisma, resetDatabase } from "@test/db/integration-helpers";
@@ -43,6 +46,7 @@ let docs: PrismaSourceDocumentRepository;
 let runs: PrismaAcquisitionRunRepository;
 let observations: PrismaKnowledgeObservationRepository;
 let reviews: PrismaKnowledgeReviewRepository;
+let materializations: PrismaMaterializationRepository;
 beforeAll(() => {
   db = createTestPrisma();
   sources = new PrismaKnowledgeSourceRepository(db);
@@ -50,6 +54,7 @@ beforeAll(() => {
   runs = new PrismaAcquisitionRunRepository(db);
   observations = new PrismaKnowledgeObservationRepository(db);
   reviews = new PrismaKnowledgeReviewRepository(db);
+  materializations = new PrismaMaterializationRepository(db);
 });
 afterAll(() => db.$disconnect());
 beforeEach(() => resetDatabase(db));
@@ -165,5 +170,82 @@ describe("Prisma knowledge acquisition repositories", () => {
       db.$executeRaw`UPDATE "knowledge_observations" SET "confidence" = 2 WHERE "id" = ${a.observation.id}`,
     ).rejects.toBeTruthy();
     await expect(db.knowledgeSource.delete({ where: { id: a.source.id } })).rejects.toBeTruthy();
+  });
+});
+
+describe("Prisma materialization repository", () => {
+  async function acceptedObservation() {
+    const aggregate = await seed();
+    const pair = unwrap(
+      reviewObservation(aggregate.observation, {
+        id: KnowledgeReviewId.unsafe("krev_MAT00001"),
+        reviewerId: OWNER,
+        outcome: "ACCEPT",
+        now: NOW,
+      }),
+    );
+    await observations.applyReview(pair.observation, pair.review);
+    return pair;
+  }
+
+  it("atomically writes a record and supports forward and reverse traceability", async () => {
+    const pair = await acceptedObservation();
+    const entity = unwrap(
+      createEntity({
+        id: EntityId.unsafe("ent_MAT00001"),
+        ownerId: OWNER,
+        name: "Michael",
+        kind: "person",
+        now: NOW,
+      }),
+    );
+    const link = {
+      ownerId: OWNER,
+      knowledgeObservationId: pair.observation.id,
+      knowledgeReviewId: pair.review.id,
+      record: unwrap(makeKnowledgeEngineRef("ENTITY", entity.id)),
+      createdAt: NOW,
+    };
+    await materializations.materialize({ kind: "ENTITY", entity }, link);
+    expect((await materializations.findByObservation(pair.observation.id))[0]).toEqual(link);
+    expect((await materializations.findByRecord("ENTITY", entity.id))[0]).toEqual(link);
+    expect(await db.entity.findUnique({ where: { id: entity.id } })).not.toBeNull();
+  });
+
+  it("rolls back the Memory record when the idempotency link conflicts", async () => {
+    const pair = await acceptedObservation();
+    const first = unwrap(
+      createEntity({
+        id: EntityId.unsafe("ent_MAT00001"),
+        ownerId: OWNER,
+        name: "First",
+        kind: "person",
+        now: NOW,
+      }),
+    );
+    const link = {
+      ownerId: OWNER,
+      knowledgeObservationId: pair.observation.id,
+      knowledgeReviewId: pair.review.id,
+      record: unwrap(makeKnowledgeEngineRef("ENTITY", first.id)),
+      createdAt: NOW,
+    };
+    await materializations.materialize({ kind: "ENTITY", entity: first }, link);
+    const losing = unwrap(
+      createEntity({
+        id: EntityId.unsafe("ent_MAT00002"),
+        ownerId: OWNER,
+        name: "Losing",
+        kind: "person",
+        now: NOW,
+      }),
+    );
+    await expect(
+      materializations.materialize(
+        { kind: "ENTITY", entity: losing },
+        { ...link, record: unwrap(makeKnowledgeEngineRef("ENTITY", losing.id)) },
+      ),
+    ).rejects.toBeInstanceOf(ConflictError);
+    expect(await db.entity.findUnique({ where: { id: losing.id } })).toBeNull();
   });
 });

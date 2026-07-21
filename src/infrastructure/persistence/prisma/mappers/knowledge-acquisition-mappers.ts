@@ -3,6 +3,7 @@ import type {
   KnowledgeObservation as KnowledgeObservationRow,
   KnowledgeReview as KnowledgeReviewRow,
   KnowledgeSource as KnowledgeSourceRow,
+  ObservationMaterialization as ObservationMaterializationRow,
   Prisma,
   SourceDocument as SourceDocumentRow,
 } from "@prisma/client";
@@ -17,6 +18,7 @@ import {
   KnowledgeSourceId,
   type KnowledgeSource,
   makeExtractionLocation,
+  makeKnowledgeEngineRef,
   makeObservationEvidence,
   SourceDocumentId,
   type SourceDocument,
@@ -239,5 +241,44 @@ export function toKnowledgeReviewFields(
     editedPayload: v.editedPayload ?? undefined,
     reviewedAt: v.reviewedAt,
     createdAt: v.createdAt,
+  };
+}
+
+export function toMaterializationLink(row: ObservationMaterializationRow) {
+  return {
+    ownerId: ownerOf(row.ownerId),
+    knowledgeObservationId: orThrowMapping(
+      KnowledgeObservationId.parse(row.knowledgeObservationId),
+      "materialization.knowledgeObservationId",
+    ),
+    knowledgeReviewId: orThrowMapping(
+      KnowledgeReviewId.parse(row.knowledgeReviewId),
+      "materialization.knowledgeReviewId",
+    ),
+    record: orThrowMapping(
+      makeKnowledgeEngineRef(row.recordType, row.recordId),
+      "materialization.record",
+    ),
+    createdAt: row.createdAt,
+  };
+}
+
+export function toMaterializationLinkFields(link: {
+  readonly ownerId: string;
+  readonly knowledgeObservationId: string;
+  readonly knowledgeReviewId: string;
+  readonly record: {
+    readonly recordType: Prisma.ObservationMaterializationUncheckedCreateInput["recordType"];
+    readonly recordId: string;
+  };
+  readonly createdAt: Date;
+}): Prisma.ObservationMaterializationUncheckedCreateInput {
+  return {
+    ownerId: link.ownerId,
+    knowledgeObservationId: link.knowledgeObservationId,
+    knowledgeReviewId: link.knowledgeReviewId,
+    recordType: link.record.recordType,
+    recordId: link.record.recordId,
+    createdAt: link.createdAt,
   };
 }

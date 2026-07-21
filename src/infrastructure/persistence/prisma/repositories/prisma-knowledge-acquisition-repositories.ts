@@ -1,4 +1,11 @@
 import type { PrismaClient } from "@prisma/client";
+// Milestone 4C explicitly places this cross-domain port in the application layer.
+// eslint-disable-next-line no-restricted-imports
+import type {
+  MaterializationLink,
+  MaterializationRepository,
+  MaterializedRecord,
+} from "@/application/knowledge-acquisition";
 import { NotFoundError, OptimisticConcurrencyError } from "@/lib/errors";
 import type { OwnerId } from "@/domain/project";
 import type {
@@ -11,6 +18,7 @@ import type {
   KnowledgeReview,
   KnowledgeReviewId,
   KnowledgeReviewRepository,
+  KnowledgeKind,
   KnowledgeSource,
   KnowledgeSourceId,
   KnowledgeSourceRepository,
@@ -20,12 +28,21 @@ import type {
 } from "@/domain/knowledge-acquisition";
 import { translatePrismaError } from "../errors";
 import {
+  toEntityFields,
+  toInsightFields,
+  toInsightMemoryRows,
+  toMemoryFields,
+  toRelationshipFields,
+} from "../mappers/memory-mappers";
+import {
   toAcquisitionRun,
   toAcquisitionRunFields,
   toKnowledgeObservation,
   toKnowledgeObservationFields,
   toKnowledgeReview,
   toKnowledgeReviewFields,
+  toMaterializationLink,
+  toMaterializationLinkFields,
   toKnowledgeSource,
   toKnowledgeSourceFields,
   toSourceDocument,
@@ -251,6 +268,55 @@ export class PrismaKnowledgeReviewRepository implements KnowledgeReviewRepositor
       return r ? toKnowledgeReview(r) : null;
     } catch (e) {
       throw translatePrismaError(e);
+    }
+  }
+}
+
+export class PrismaMaterializationRepository implements MaterializationRepository {
+  constructor(private readonly db: PrismaClient) {}
+  async findByObservation(id: KnowledgeObservationId) {
+    try {
+      return (
+        await this.db.observationMaterialization.findMany({
+          where: { knowledgeObservationId: id },
+          orderBy: { createdAt: "asc" },
+        })
+      ).map(toMaterializationLink);
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+  }
+  async findByRecord(recordType: KnowledgeKind, recordId: string) {
+    try {
+      return (
+        await this.db.observationMaterialization.findMany({
+          where: { recordType, recordId },
+          orderBy: { createdAt: "asc" },
+        })
+      ).map(toMaterializationLink);
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+  }
+  async materialize(record: MaterializedRecord, link: MaterializationLink) {
+    try {
+      await this.db.$transaction(async (tx) => {
+        if (record.kind === "ENTITY")
+          await tx.entity.create({ data: toEntityFields(record.entity) });
+        else if (record.kind === "MEMORY")
+          await tx.memory.create({ data: toMemoryFields(record.memory) });
+        else if (record.kind === "RELATIONSHIP")
+          await tx.relationship.create({ data: toRelationshipFields(record.relationship) });
+        else {
+          await tx.insight.create({ data: toInsightFields(record.insight) });
+          await tx.insightMemory.createMany({ data: toInsightMemoryRows(record.insight) });
+        }
+        await tx.observationMaterialization.create({
+          data: toMaterializationLinkFields(link),
+        });
+      });
+    } catch (error) {
+      throw translatePrismaError(error);
     }
   }
 }
