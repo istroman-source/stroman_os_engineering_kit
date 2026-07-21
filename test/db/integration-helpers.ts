@@ -8,6 +8,6 @@ export function createTestPrisma(): PrismaClient {
 /** Truncate all tables between tests for isolation. CASCADE handles FKs. */
 export async function resetDatabase(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRawUnsafe(
-    'TRUNCATE TABLE "insight_memories","insights","relationships","memories","sources","entities","creative_briefs","decision_evidence","decision_options","decisions","evaluation_scores","evaluations","rubric_criteria","rubrics","content_items","projects","user_identities","users" RESTART IDENTITY CASCADE',
+    'TRUNCATE TABLE "observation_materializations","knowledge_reviews","knowledge_observations","acquisition_runs","source_documents","knowledge_sources","insight_memories","insights","relationships","memories","sources","entities","creative_briefs","decision_evidence","decision_options","decisions","evaluation_scores","evaluations","rubric_criteria","rubrics","content_items","projects","user_identities","users" RESTART IDENTITY CASCADE',
   );
 }

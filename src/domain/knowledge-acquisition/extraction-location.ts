@@ -39,7 +39,7 @@ function optionalOffset(
 /** Validate and normalize an extraction location. Blank text spans become null. */
 export function makeExtractionLocation(
   input: ExtractionLocationInput,
-): Result<ExtractionLocation, InvalidValueError> {
+): Result<ExtractionLocation | null, InvalidValueError> {
   const textSpan =
     input.textSpan == null || input.textSpan.trim() === "" ? null : input.textSpan.trim();
 
@@ -71,12 +71,14 @@ export function makeExtractionLocation(
     pageNumber = input.pageNumber;
   }
 
-  return ok({
+  const location: ExtractionLocation = {
     textSpan,
     charStart: charStart.value,
     charEnd: charEnd.value,
     timeStartMs: timeStartMs.value,
     timeEndMs: timeEndMs.value,
     pageNumber,
-  });
+  };
+
+  return ok(Object.values(location).every((value) => value === null) ? null : location);
 }

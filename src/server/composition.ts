@@ -2,11 +2,19 @@ import "server-only";
 
 import { createIdGenerator, systemClock } from "@/application/shared";
 import type { Clock, IdGenerator } from "@/application/shared";
+import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
 import type { DecisionRepository } from "@/domain/decision";
 import type { CreativeBriefRepository } from "@/domain/creative";
 import type { EvaluationRepository, RubricRepository } from "@/domain/evaluation";
 import type { IdentityRepository } from "@/domain/identity";
+import type {
+  AcquisitionRunRepository,
+  KnowledgeObservationRepository,
+  KnowledgeReviewRepository,
+  KnowledgeSourceRepository,
+  SourceDocumentRepository,
+} from "@/domain/knowledge-acquisition";
 import type {
   EntityRepository,
   InsightRepository,
@@ -36,6 +44,12 @@ import {
   PrismaStoryAngleRepository,
   PrismaStoryCritiqueRepository,
   PrismaStoryEvidenceRepository,
+  PrismaKnowledgeSourceRepository,
+  PrismaSourceDocumentRepository,
+  PrismaAcquisitionRunRepository,
+  PrismaKnowledgeObservationRepository,
+  PrismaKnowledgeReviewRepository,
+  PrismaMaterializationRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -64,6 +78,12 @@ export interface ApiContext {
   readonly storyAngles: StoryAngleRepository;
   readonly storyEvidence: StoryEvidenceRepository;
   readonly storyCritiques: StoryCritiqueRepository;
+  readonly knowledgeSources: KnowledgeSourceRepository;
+  readonly sourceDocuments: SourceDocumentRepository;
+  readonly acquisitionRuns: AcquisitionRunRepository;
+  readonly knowledgeObservations: KnowledgeObservationRepository;
+  readonly knowledgeReviews: KnowledgeReviewRepository;
+  readonly materializations: MaterializationRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -85,6 +105,12 @@ export function createApiContext(): ApiContext {
     storyAngles: new PrismaStoryAngleRepository(prisma),
     storyEvidence: new PrismaStoryEvidenceRepository(prisma),
     storyCritiques: new PrismaStoryCritiqueRepository(prisma),
+    knowledgeSources: new PrismaKnowledgeSourceRepository(prisma),
+    sourceDocuments: new PrismaSourceDocumentRepository(prisma),
+    acquisitionRuns: new PrismaAcquisitionRunRepository(prisma),
+    knowledgeObservations: new PrismaKnowledgeObservationRepository(prisma),
+    knowledgeReviews: new PrismaKnowledgeReviewRepository(prisma),
+    materializations: new PrismaMaterializationRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };
