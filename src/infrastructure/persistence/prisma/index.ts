@@ -27,3 +27,7 @@ export {
   PrismaKnowledgeReviewRepository,
   PrismaMaterializationRepository,
 } from "./repositories/prisma-knowledge-acquisition-repositories";
+export {
+  PrismaMediaAssetRepository,
+  PrismaTranscriptDocumentRepository,
+} from "./repositories/prisma-media-transcript-repositories";

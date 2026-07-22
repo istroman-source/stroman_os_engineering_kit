@@ -25,6 +25,14 @@ import type {
   SourceDocumentRepository,
 } from "@/domain/knowledge-acquisition";
 import type {
+  MediaAsset,
+  MediaAssetId,
+  MediaAssetRepository,
+  TranscriptDocument,
+  TranscriptDocumentId,
+  TranscriptDocumentRepository,
+} from "@/domain/media-transcript";
+import type {
   Evaluation,
   EvaluationId,
   EvaluationRepository,
@@ -119,6 +127,67 @@ export class InMemoryProjectRepository extends FailableStore implements ProjectR
   async update(project: Project): Promise<void> {
     this.guard();
     updateInto(this.store, project);
+  }
+}
+
+export class InMemoryMediaAssetRepository extends FailableStore implements MediaAssetRepository {
+  private readonly store = new Map<string, MediaAsset>();
+
+  seed(value: MediaAsset): void {
+    this.store.set(value.id, value);
+  }
+
+  async insert(value: MediaAsset): Promise<void> {
+    this.guard();
+    insertInto(this.store, value);
+  }
+
+  async findById(id: MediaAssetId): Promise<MediaAsset | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByProject(projectId: ProjectId): Promise<readonly MediaAsset[]> {
+    this.guard();
+    return [...this.store.values()]
+      .filter((value) => value.projectId === projectId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime() || a.id.localeCompare(b.id));
+  }
+}
+
+export class InMemoryTranscriptDocumentRepository
+  extends FailableStore
+  implements TranscriptDocumentRepository
+{
+  private readonly store = new Map<string, TranscriptDocument>();
+
+  seed(value: TranscriptDocument): void {
+    this.store.set(value.id, value);
+  }
+
+  async insert(value: TranscriptDocument): Promise<void> {
+    this.guard();
+    if (this.store.has(value.id)) throw new ConflictError("Duplicate id");
+    if ([...this.store.values()].some((item) => item.mediaAssetId === value.mediaAssetId))
+      throw new ConflictError("Media asset already has a transcript");
+    this.store.set(value.id, value);
+  }
+
+  async findById(id: TranscriptDocumentId): Promise<TranscriptDocument | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByProject(projectId: ProjectId): Promise<readonly TranscriptDocument[]> {
+    this.guard();
+    return [...this.store.values()]
+      .filter((value) => value.projectId === projectId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime() || a.id.localeCompare(b.id));
+  }
+
+  async findByMediaAsset(mediaAssetId: MediaAssetId): Promise<TranscriptDocument | null> {
+    this.guard();
+    return [...this.store.values()].find((value) => value.mediaAssetId === mediaAssetId) ?? null;
   }
 }
 

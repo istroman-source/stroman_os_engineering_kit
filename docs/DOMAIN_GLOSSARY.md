@@ -24,6 +24,11 @@ stated explicitly.
 | **Inference** | AI | An interpretation carrying a confidence. | Observation (fact); the final Decision. |
 | **Confidence** | shared | A number in [0, 1] expressing certainty. | Score (1–10). |
 | **AiRecommender** | AI | The provider-neutral port through which the app requests an `AiRecommendation`. Providers implement it **outside** the domain. | A provider SDK/adapter. |
+| **MediaAsset** | Media & Transcript | Immutable metadata for an externally managed media file, owned by one project. | A `ContentItem`; the file bytes or a storage object. |
+| **TranscriptDocument** | Media & Transcript | An immutable, ordered transcript for one `MediaAsset`, containing local speakers and segments. | A source-document ingestion record or a transcript viewer. |
+| **TranscriptSpeaker** | Media & Transcript | A transcript-local speaker label referenced by segments in the same transcript. | A global person or Entity record. |
+| **TranscriptSegment** | Media & Transcript | One ordered text passage, optionally attributed to a local speaker and optionally bounded by paired media timestamps. | A Knowledge Observation or extracted fact. |
+| **SourceDocument** | Knowledge Acquisition | An ingestion/provenance record belonging to a `KnowledgeSource`, used as evidence for observations. | A `MediaAsset` metadata record or normalized `TranscriptDocument`; Prompt 011 creates no link between them. |
 
 ## Usage rules
 

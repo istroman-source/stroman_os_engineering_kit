@@ -178,6 +178,25 @@ tests). Rubric/Evaluation get no concurrency machinery (no evidence of need).
 
 ## Identity tables (Prompt 006B)
 
+## Media and transcript tables (Prompt 011)
+
+- **`media_assets`** stores immutable metadata owned by a project. A composite
+  `(project_id, owner_id)` foreign key enforces project ownership alignment;
+  `byte_size` is constrained to a non-negative integer. Content hashes are not unique.
+- **`transcript_documents`** stores one immutable transcript per media asset. Composite
+  foreign keys enforce that transcript, project, owner, and media asset align.
+- **`transcript_speakers`** and **`transcript_segments`** are transcript-owned rows and
+  cascade only with their transcript root. Speaker identity is local to a transcript.
+  Segment ids and sequences are unique within the transcript, and a composite foreign
+  key prevents cross-transcript speaker references.
+- Segment CHECK constraints enforce non-negative sequence values, paired timestamps,
+  non-negative timestamp values, and `end_ms > start_ms`.
+
+`PrismaTranscriptDocumentRepository.insert` writes the root, speakers, and segments in
+one transaction. Reads explicitly reconstruct and validate the domain aggregate; any
+persisted corruption becomes `PersistenceMappingError`. No update or delete ports are
+exposed because both aggregates are immutable.
+
 Two tables back internal identity (migration `20260719120000_add_identity`):
 
 - **`users`** — stable internal identity: `id` (app-generated `usr_…`), `status`
