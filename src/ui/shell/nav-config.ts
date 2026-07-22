@@ -1,4 +1,11 @@
-import { Brain, LayoutDashboard, FolderKanban, Settings, type LucideIcon } from "lucide-react";
+import {
+  Brain,
+  LayoutDashboard,
+  FolderKanban,
+  Settings,
+  SearchCheck,
+  type LucideIcon,
+} from "lucide-react";
 
 /**
  * Primary navigation for the application shell.
@@ -17,5 +24,6 @@ export const navItems: readonly NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/projects", label: "Projects", icon: FolderKanban },
   { href: "/knowledge", label: "Memory", icon: Brain },
+  { href: "/acquisition", label: "Acquisition", icon: SearchCheck },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
