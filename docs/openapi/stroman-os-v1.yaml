@@ -2047,6 +2047,22 @@ paths:
                 },
             }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/acquisition-runs/{runId}:
+    parameters: [{ name: runId, in: path, required: true, schema: { type: string } }]
+    get:
+      tags: [Knowledge Acquisition]
+      operationId: getAcquisitionRun
+      responses:
+        "200":
+          {
+            description: Acquisition run,
+            headers: { ETag: { $ref: "#/components/headers/ETag" } },
+            content:
+              { application/json: { schema: { $ref: "#/components/schemas/AcquisitionRun" } } },
+          }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/acquisition-runs/{runId}/start:
     parameters:
       - { name: runId, in: path, required: true, schema: { type: string } }

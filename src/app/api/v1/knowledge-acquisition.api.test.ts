@@ -8,6 +8,7 @@ import { call } from "@test/http/call";
 import { POST as startRun } from "./acquisition-runs/[runId]/start/route";
 import { POST as completeRun } from "./acquisition-runs/[runId]/complete/route";
 import { POST as failRun } from "./acquisition-runs/[runId]/fail/route";
+import { GET as getRun } from "./acquisition-runs/[runId]/route";
 import { GET as observationsByRun } from "./acquisition-runs/[runId]/observations/route";
 import { GET as observationsByDocument } from "./source-documents/[documentId]/observations/route";
 import { GET as getSource } from "./knowledge-sources/[sourceId]/route";
@@ -246,6 +247,25 @@ describe("Knowledge Acquisition HTTP delivery", () => {
     ).toBe(403);
   });
 
+  it("gets an owner-scoped acquisition run with its ETag", async () => {
+    const created = await source();
+    const acquisition = await run(created.id);
+    const got = await call(getRun, { principal: ACTOR, params: { runId: acquisition.id } });
+    expect(got.status).toBe(200);
+    expect(got.headers.get("etag")).toBe('"acquisitionrun:1"');
+    expect(
+      (await call(getRun, { principal: OTHER, params: { runId: acquisition.id } })).status,
+    ).toBe(403);
+    expect(
+      (
+        await call(getRun, {
+          principal: ACTOR,
+          params: { runId: "arun_00000099" },
+        })
+      ).status,
+    ).toBe(404);
+  });
+
   it("creates, gets, and lists observations by run and document without private fields", async () => {
     const created = await source();
     const doc = await document(created.id);
@@ -361,6 +381,7 @@ describe("Knowledge Acquisition HTTP delivery", () => {
       "/api/v1/knowledge-sources/{sourceId}/archive",
       "/api/v1/knowledge-sources/{sourceId}/documents",
       "/api/v1/knowledge-sources/{sourceId}/runs",
+      "/api/v1/acquisition-runs/{runId}",
       "/api/v1/acquisition-runs/{runId}/start",
       "/api/v1/acquisition-runs/{runId}/complete",
       "/api/v1/acquisition-runs/{runId}/fail",

@@ -38,6 +38,18 @@ export async function getKnowledgeSource(
   );
   return source.ok ? ok(toKnowledgeSourceView(source.value)) : source;
 }
+export async function getAcquisitionRun(
+  deps: { acquisitionRuns: AcquisitionRunRepository },
+  input: { actorId: OwnerId; acquisitionRunId: AcquisitionRunId },
+) {
+  const run = await loadOwnedAcquisitionRun(
+    deps.acquisitionRuns,
+    input.actorId,
+    input.acquisitionRunId,
+    "acquisitionRun.read",
+  );
+  return run.ok ? ok(toAcquisitionRunView(run.value)) : run;
+}
 export async function listSourcesForOwner(
   deps: { knowledgeSources: KnowledgeSourceRepository },
   input: { actorId: OwnerId },
