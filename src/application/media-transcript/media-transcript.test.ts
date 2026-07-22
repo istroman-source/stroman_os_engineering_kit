@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { OwnerId, ProjectId, createProject, makeProjectName } from "@/domain/project";
 import { MediaAssetId, createMediaAsset } from "@/domain/media-transcript";
+import { InvalidValueError } from "@/domain/shared";
 import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes";
 import {
   InMemoryMediaAssetRepository,
@@ -93,6 +94,37 @@ describe("media transcript application", () => {
     expect(
       unwrap(await listTranscriptsForProject(e, { actorId: OWNER, projectId: PROJECT })),
     ).toEqual([transcript]);
+  });
+
+  it("accepts a valid speaker index", async () => {
+    const e = env();
+    const asset = await media(e);
+    const result = await createTranscriptDocument(e, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      mediaAssetId: asset.id,
+      title: "Valid speaker",
+      speakers: [{ label: "Guest" }],
+      segments: [{ sequence: 0, speakerIndex: 0, text: "Attributed" }],
+    });
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.value.segments[0]?.speakerId).toBe(result.value.speakers[0]?.id);
+  });
+
+  it.each([-1, 1])("rejects invalid speaker index %i before persistence", async (speakerIndex) => {
+    const e = env();
+    const asset = await media(e);
+    const result = await createTranscriptDocument(e, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      mediaAssetId: asset.id,
+      title: "Invalid speaker",
+      speakers: [{ label: "Guest" }],
+      segments: [{ sequence: 0, speakerIndex, text: "Attributed" }],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(InvalidValueError);
+    expect(await e.transcripts.findByMediaAsset(asset.id)).toBeNull();
   });
 
   it("rejects unauthorized, missing, invalid, and repository-failure paths", async () => {

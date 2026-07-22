@@ -61,6 +61,15 @@ export async function createTranscriptDocumentService(
   if (!a.ok) return a;
   if (a.value.projectId !== input.projectId)
     return err(new InvalidValueError("Media asset must belong to the transcript project"));
+  const hasInvalidSpeakerIndex = input.segments.some(
+    (segment) =>
+      segment.speakerIndex != null &&
+      (!Number.isInteger(segment.speakerIndex) ||
+        segment.speakerIndex < 0 ||
+        segment.speakerIndex >= input.speakers.length),
+  );
+  if (hasInvalidSpeakerIndex)
+    return err(new InvalidValueError("Speaker index must reference an existing speaker"));
   const speakerIds = input.speakers.map(() =>
     TranscriptSpeakerId.unsafe(deps.ids.generate(TranscriptSpeakerId.prefix)),
   );
@@ -74,10 +83,7 @@ export async function createTranscriptDocumentService(
     segments: input.segments.map((s) => ({
       id: TranscriptSegmentId.unsafe(deps.ids.generate(TranscriptSegmentId.prefix)),
       sequence: s.sequence,
-      speakerId:
-        s.speakerIndex == null
-          ? null
-          : (speakerIds[s.speakerIndex] ?? TranscriptSpeakerId.unsafe("trspk_invalid")),
+      speakerId: s.speakerIndex == null ? null : speakerIds[s.speakerIndex]!,
       text: s.text,
       startMs: s.startMs,
       endMs: s.endMs,
