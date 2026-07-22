@@ -2,6 +2,21 @@
 
 Append one verified entry after every numbered prompt.
 
+## Prompt 011 — Media and Transcript Domain Model
+
+**Date:** 2026-07-22 · **Volume:** Knowledge Acquisition foundation
+
+Added the immutable `MediaAsset` and `TranscriptDocument` domain model, including
+transcript-local speakers, ordered segments, timestamp and reference invariants, and
+narrow repository ports. Added project-owned application services for registering and
+reading media metadata and creating and reading normalized transcripts. Added Prisma
+tables, hand-written constraints, explicit mappers, transactional repositories,
+composition wiring, in-memory fakes, and domain/application/mapper/integration tests.
+
+Deferred by design: file storage and upload adapters, transcript importers, HTTP and
+OpenAPI delivery, UI/viewers, search, and AI extraction. These belong to Prompt 012 or
+later milestones.
+
 ---
 
 ## Prompt 002 — Repository Foundation & Engineering Architecture
@@ -74,4 +89,3 @@ installed; `npx playwright install` required).
 Rejoin the kit sequence. Either kit Prompt 001 (repository audit/baseline docs:
 `MVP_SCOPE.md`, `TECHNICAL_DECISIONS.md`) or kit Prompt 003 (Architecture
 Decision Records) to formalize the decisions recorded above.
-

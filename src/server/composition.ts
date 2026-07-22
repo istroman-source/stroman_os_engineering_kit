@@ -15,6 +15,7 @@ import type {
   KnowledgeSourceRepository,
   SourceDocumentRepository,
 } from "@/domain/knowledge-acquisition";
+import type { MediaAssetRepository, TranscriptDocumentRepository } from "@/domain/media-transcript";
 import type {
   EntityRepository,
   InsightRepository,
@@ -50,6 +51,8 @@ import {
   PrismaKnowledgeObservationRepository,
   PrismaKnowledgeReviewRepository,
   PrismaMaterializationRepository,
+  PrismaMediaAssetRepository,
+  PrismaTranscriptDocumentRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -84,6 +87,8 @@ export interface ApiContext {
   readonly knowledgeObservations: KnowledgeObservationRepository;
   readonly knowledgeReviews: KnowledgeReviewRepository;
   readonly materializations: MaterializationRepository;
+  readonly mediaAssets: MediaAssetRepository;
+  readonly transcripts: TranscriptDocumentRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -111,6 +116,8 @@ export function createApiContext(): ApiContext {
     knowledgeObservations: new PrismaKnowledgeObservationRepository(prisma),
     knowledgeReviews: new PrismaKnowledgeReviewRepository(prisma),
     materializations: new PrismaMaterializationRepository(prisma),
+    mediaAssets: new PrismaMediaAssetRepository(prisma),
+    transcripts: new PrismaTranscriptDocumentRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };

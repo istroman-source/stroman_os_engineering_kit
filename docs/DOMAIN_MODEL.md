@@ -143,6 +143,25 @@ concrete asynchronous workflow appears. (Documented per prompt §6.8.)
 By identifier only. Mapping an `AiRecommendation` (AI domain) into a Decision
 `Advisory` is an **application-layer** concern, so `decision` does not import `ai`.
 
+## Media and Transcript context (Prompt 011)
+
+`MediaAsset` is immutable project-owned metadata; it does not contain file bytes or
+storage-provider details. `TranscriptDocument` is an immutable aggregate associated
+with exactly one media asset. It owns transcript-local `TranscriptSpeaker` values and
+an ordered, non-empty collection of `TranscriptSegment` values. Segment identifiers
+and sequence numbers are unique within the transcript. A speaker reference cannot
+cross a transcript boundary, and timestamps are either both absent or a non-negative
+pair with `endMs > startMs`.
+
+This context references Project only by `ProjectId` and ownership by `OwnerId`.
+Registration and transcript creation enforce ownership and project/media alignment
+in the application layer; persistence repeats that alignment with composite foreign
+keys. It is intentionally separate from Knowledge Acquisition: later import work may
+translate a transcript into acquisition inputs without coupling these aggregates.
+In particular, a Knowledge Acquisition `SourceDocument` is an ingestion provenance
+record under a `KnowledgeSource`; it is neither media metadata nor the normalized
+transcript aggregate. Prompt 011 creates no cross-domain link or automatic conversion.
+
 ## Intentionally excluded (this step)
 Persistence/adapters, Prisma models, migrations, API/UI, auth/authz, media assets &
 transcripts, content relations graph, decision trees, Creative Council orchestration,

@@ -203,9 +203,80 @@ model Project {
   decisions     Decision[]
   creativeBrief CreativeBrief?
   storyAngles   StoryAngle[]
+  mediaAssets   MediaAsset[]
+  transcripts   TranscriptDocument[]
 
+  @@unique([id, ownerId])
   @@index([ownerId])
   @@map("projects")
+}
+
+model MediaAsset {
+  id          String   @id
+  ownerId     String   @map("owner_id")
+  projectId   String   @map("project_id")
+  fileName    String   @map("file_name")
+  mediaType   String   @map("media_type")
+  byteSize    Int      @map("byte_size")
+  contentHash String   @map("content_hash")
+  createdAt   DateTime @map("created_at") @db.Timestamptz(3)
+
+  project    Project             @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  transcript TranscriptDocument?
+
+  @@unique([id, ownerId, projectId])
+  @@index([projectId])
+  @@map("media_assets")
+}
+
+model TranscriptDocument {
+  id           String   @id
+  ownerId      String   @map("owner_id")
+  projectId    String   @map("project_id")
+  mediaAssetId String   @unique @map("media_asset_id")
+  title        String
+  createdAt    DateTime @map("created_at") @db.Timestamptz(3)
+
+  project    Project             @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  mediaAsset MediaAsset          @relation(fields: [mediaAssetId, ownerId, projectId], references: [id, ownerId, projectId], onDelete: Restrict)
+  speakers   TranscriptSpeaker[]
+  segments   TranscriptSegment[]
+
+  @@unique([mediaAssetId, ownerId, projectId])
+  @@index([projectId])
+  @@index([mediaAssetId])
+  @@map("transcript_documents")
+}
+
+model TranscriptSpeaker {
+  transcriptDocumentId String @map("transcript_document_id")
+  id                   String
+  label                String
+
+  transcript TranscriptDocument  @relation(fields: [transcriptDocumentId], references: [id], onDelete: Cascade)
+  segments   TranscriptSegment[]
+
+  @@id([transcriptDocumentId, id])
+  @@index([transcriptDocumentId])
+  @@map("transcript_speakers")
+}
+
+model TranscriptSegment {
+  transcriptDocumentId String  @map("transcript_document_id")
+  id                   String
+  sequence             Int
+  speakerId            String? @map("speaker_id")
+  text                 String
+  startMs              Int?    @map("start_ms")
+  endMs                Int?    @map("end_ms")
+
+  transcript TranscriptDocument @relation(fields: [transcriptDocumentId], references: [id], onDelete: Cascade)
+  speaker    TranscriptSpeaker? @relation(fields: [transcriptDocumentId, speakerId], references: [transcriptDocumentId, id], onDelete: Restrict)
+
+  @@id([transcriptDocumentId, id])
+  @@unique([transcriptDocumentId, sequence])
+  @@index([transcriptDocumentId, sequence])
+  @@map("transcript_segments")
 }
 
 /// The creator-supplied context Stroman OS analyzes into a Creative Blueprint.
