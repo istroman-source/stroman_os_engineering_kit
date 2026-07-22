@@ -26,6 +26,18 @@ import {
   toKnowledgeSourceView,
   toSourceDocumentView,
 } from "./knowledge-acquisition-view";
+export async function getKnowledgeSource(
+  deps: { knowledgeSources: KnowledgeSourceRepository },
+  input: { actorId: OwnerId; knowledgeSourceId: KnowledgeSourceId },
+) {
+  const source = await loadOwnedKnowledgeSource(
+    deps.knowledgeSources,
+    input.actorId,
+    input.knowledgeSourceId,
+    "knowledgeSource.read",
+  );
+  return source.ok ? ok(toKnowledgeSourceView(source.value)) : source;
+}
 export async function listSourcesForOwner(
   deps: { knowledgeSources: KnowledgeSourceRepository },
   input: { actorId: OwnerId },

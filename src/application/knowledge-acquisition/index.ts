@@ -11,3 +11,9 @@ export * from "./read-knowledge-acquisition";
 export * from "./materialization-repository";
 export * from "./materialization-view";
 export * from "./materialize-observation";
+export {
+  AcquisitionRunId,
+  KnowledgeObservationId,
+  KnowledgeSourceId,
+  SourceDocumentId,
+} from "@/domain/knowledge-acquisition";

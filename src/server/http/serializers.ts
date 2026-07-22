@@ -11,6 +11,14 @@ import type {
   SourceView,
 } from "@/application/memory";
 import type { ProjectView } from "@/application/project";
+import type {
+  AcquisitionRunView,
+  KnowledgeObservationView,
+  KnowledgeReviewView,
+  KnowledgeSourceView,
+  MaterializationView,
+  SourceDocumentView,
+} from "@/application/knowledge-acquisition";
 
 /**
  * Explicit HTTP serializers. Views are converted to plain JSON-safe objects with
@@ -192,5 +200,114 @@ export function serializeEntityKnowledge(view: EntityKnowledgeView) {
       insight: serializeInsight(i.insight),
       citedMemories: i.citedMemories.map(serializeMemory),
     })),
+  };
+}
+
+// ── Knowledge Acquisition serializers ──────────────────────────────────────
+export function serializeKnowledgeSource(view: KnowledgeSourceView) {
+  return {
+    id: view.id,
+    name: view.name,
+    sourceType: view.sourceType,
+    origin: view.origin,
+    sourceReliability: view.sourceReliability,
+    status: view.status,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeSourceDocument(view: SourceDocumentView) {
+  return {
+    id: view.id,
+    knowledgeSourceId: view.knowledgeSourceId,
+    documentType: view.documentType,
+    contentHash: view.contentHash,
+    title: view.title,
+    mediaType: view.mediaType,
+    byteSize: view.byteSize,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeAcquisitionRun(view: AcquisitionRunView) {
+  return {
+    id: view.id,
+    knowledgeSourceId: view.knowledgeSourceId,
+    extractor: view.extractor,
+    extractorVersion: view.extractorVersion,
+    status: view.status,
+    startedAt: view.startedAt ? iso(view.startedAt) : null,
+    finishedAt: view.finishedAt ? iso(view.finishedAt) : null,
+    summary: view.summary
+      ? {
+          documentsProcessed: view.summary.documentsProcessed,
+          observationsCreated: view.summary.observationsCreated,
+          failureCount: view.summary.failureCount,
+        }
+      : null,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+function serializeExtractionLocation(location: KnowledgeObservationView["evidence"]["location"]) {
+  return location
+    ? {
+        textSpan: location.textSpan,
+        charStart: location.charStart,
+        charEnd: location.charEnd,
+        timeStartMs: location.timeStartMs,
+        timeEndMs: location.timeEndMs,
+        pageNumber: location.pageNumber,
+      }
+    : null;
+}
+
+export function serializeKnowledgeObservation(view: KnowledgeObservationView) {
+  return {
+    id: view.id,
+    observationType: view.observationType,
+    payload: view.payload,
+    evidence: {
+      sourceDocumentId: view.evidence.sourceDocumentId,
+      knowledgeSourceId: view.evidence.knowledgeSourceId,
+      acquisitionRunId: view.evidence.acquisitionRunId,
+      location: serializeExtractionLocation(view.evidence.location),
+    },
+    confidence: view.confidence,
+    createdBy: view.createdBy,
+    status: view.status,
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeKnowledgeReview(view: KnowledgeReviewView) {
+  return {
+    id: view.id,
+    knowledgeObservationId: view.knowledgeObservationId,
+    outcome: view.outcome,
+    reviewerId: view.reviewerId,
+    note: view.note,
+    editedPayload: view.editedPayload,
+    reviewedAt: iso(view.reviewedAt),
+    createdAt: iso(view.createdAt),
+  };
+}
+
+export function serializeObservationWithReview(view: {
+  observation: KnowledgeObservationView;
+  review: KnowledgeReviewView | null;
+}) {
+  return {
+    observation: serializeKnowledgeObservation(view.observation),
+    review: view.review ? serializeKnowledgeReview(view.review) : null,
+  };
+}
+
+export function serializeMaterialization(view: MaterializationView) {
+  return {
+    knowledgeObservationId: view.knowledgeObservationId,
+    knowledgeReviewId: view.knowledgeReviewId,
+    record: { recordType: view.record.recordType, recordId: view.record.recordId },
+    createdAt: iso(view.createdAt),
   };
 }
