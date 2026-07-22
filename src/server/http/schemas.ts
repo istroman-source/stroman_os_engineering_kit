@@ -192,3 +192,141 @@ export const AnalyzeProjectRequest = z
   })
   .strict();
 export type AnalyzeProjectRequest = z.infer<typeof AnalyzeProjectRequest>;
+
+// ── Knowledge Acquisition request schemas ──────────────────────────────────
+export const CreateKnowledgeSourceRequest = z
+  .object({
+    name: z.string().min(1).max(200),
+    sourceType: z.enum(["UPLOAD", "WEB_PAGE", "MANUAL"]),
+    origin: z.string().max(2000).nullish(),
+    sourceReliability: z.enum(["VERIFIED", "HIGH", "MEDIUM", "LOW", "UNKNOWN"]),
+  })
+  .strict();
+export type CreateKnowledgeSourceRequest = z.infer<typeof CreateKnowledgeSourceRequest>;
+
+export const AddSourceDocumentRequest = z
+  .object({
+    documentType: z.enum([
+      "TRANSCRIPT",
+      "ARTICLE",
+      "WEB_PAGE",
+      "SOCIAL_POST",
+      "PDF",
+      "VIDEO",
+      "NOTE",
+    ]),
+    contentHash: z.string().min(1).max(512),
+    title: z.string().min(1).max(300),
+    mediaType: z.string().max(255).nullish(),
+    byteSize: z.number().int().nonnegative().nullish(),
+  })
+  .strict();
+export type AddSourceDocumentRequest = z.infer<typeof AddSourceDocumentRequest>;
+
+export const CreateAcquisitionRunRequest = z
+  .object({
+    extractor: z.string().min(1).max(120),
+    extractorVersion: z.string().min(1).max(60),
+  })
+  .strict();
+export type CreateAcquisitionRunRequest = z.infer<typeof CreateAcquisitionRunRequest>;
+
+const RunSummarySchema = z
+  .object({
+    documentsProcessed: z.number().int().nonnegative(),
+    observationsCreated: z.number().int().nonnegative(),
+    failureCount: z.number().int().nonnegative(),
+  })
+  .strict();
+
+export const CompleteAcquisitionRunRequest = z
+  .object({
+    status: z.enum(["SUCCEEDED", "PARTIALLY_SUCCEEDED", "FAILED"]),
+    summary: RunSummarySchema,
+  })
+  .strict();
+export type CompleteAcquisitionRunRequest = z.infer<typeof CompleteAcquisitionRunRequest>;
+
+export const ObservationPayloadSchema = z.discriminatedUnion("kind", [
+  z
+    .object({
+      kind: z.literal("ENTITY"),
+      name: z.string().min(1).max(200),
+      entityKind: z.string().min(1).max(60),
+    })
+    .strict(),
+  z.object({ kind: z.literal("MEMORY"), content: z.string().min(1).max(5000) }).strict(),
+  z.object({ kind: z.literal("INSIGHT"), statement: z.string().min(1).max(2000) }).strict(),
+  z
+    .object({
+      kind: z.literal("RELATIONSHIP"),
+      relationType: z.string().min(1).max(60),
+      fromLabel: z.string().min(1).max(200),
+      toLabel: z.string().min(1).max(200),
+    })
+    .strict(),
+]);
+
+export const ExtractionLocationSchema = z
+  .object({
+    textSpan: z.string().max(5000).nullish(),
+    charStart: z.number().int().nonnegative().nullish(),
+    charEnd: z.number().int().nonnegative().nullish(),
+    timeStartMs: z.number().int().nonnegative().nullish(),
+    timeEndMs: z.number().int().nonnegative().nullish(),
+    pageNumber: z.number().int().positive().nullish(),
+  })
+  .strict();
+
+export const CreateKnowledgeObservationRequest = z
+  .object({
+    knowledgeSourceId: z.string().min(1).max(200),
+    sourceDocumentId: z.string().min(1).max(200),
+    acquisitionRunId: z.string().min(1).max(200).nullish(),
+    location: ExtractionLocationSchema.nullish(),
+    payload: ObservationPayloadSchema,
+    createdBy: z.enum(["AI", "HUMAN", "IMPORT"]),
+    confidence: z.number().finite().min(0).max(1).nullish(),
+  })
+  .strict();
+export type CreateKnowledgeObservationRequest = z.infer<typeof CreateKnowledgeObservationRequest>;
+
+export const ReviewObservationRequest = z
+  .object({
+    outcome: z.enum(["ACCEPT", "EDIT_AND_ACCEPT", "REJECT"]),
+    note: z.string().max(2000).nullish(),
+    editedPayload: ObservationPayloadSchema.nullish(),
+  })
+  .strict();
+export type ReviewObservationRequest = z.infer<typeof ReviewObservationRequest>;
+
+const MaterializationResolutionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("ENTITY") }).strict(),
+  z
+    .object({
+      kind: z.literal("MEMORY"),
+      entityId: z.string().min(1).max(200),
+      sourceId: z.string().min(1).max(200).nullish(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("INSIGHT"),
+      memoryIds: z.array(z.string().min(1).max(200)).min(1).max(100),
+      confidence: z.number().finite().min(0).max(1).nullish(),
+      evidence: z.string().max(5000).nullish(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal("RELATIONSHIP"),
+      fromEntityId: z.string().min(1).max(200),
+      toEntityId: z.string().min(1).max(200),
+    })
+    .strict(),
+]);
+
+export const MaterializeObservationRequest = z
+  .object({ resolution: MaterializationResolutionSchema })
+  .strict();
+export type MaterializeObservationRequest = z.infer<typeof MaterializeObservationRequest>;

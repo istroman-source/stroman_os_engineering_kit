@@ -18,6 +18,7 @@ import {
   createKnowledgeSource,
   reviewKnowledgeObservation,
   getObservationWithReview,
+  getKnowledgeSource,
 } from "./index";
 
 const OWNER = OwnerId.unsafe("usr_00000001");
@@ -62,6 +63,17 @@ async function document(e: ReturnType<typeof env>, sourceId: string) {
 }
 
 describe("knowledge acquisition application", () => {
+  it("gets an owned knowledge source", async () => {
+    const e = env();
+    const created = await source(e);
+    const loaded = unwrap(
+      await getKnowledgeSource(e, { actorId: OWNER, knowledgeSourceId: created.id }),
+    );
+    expect(loaded).toEqual(created);
+    expect(
+      await getKnowledgeSource(e, { actorId: OTHER, knowledgeSourceId: created.id }),
+    ).toMatchObject({ ok: false });
+  });
   it("creates each aggregate and makes document requests idempotent", async () => {
     const e = env();
     const s = await source(e);
