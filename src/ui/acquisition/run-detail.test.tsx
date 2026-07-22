@@ -116,4 +116,15 @@ describe("RunDetail", () => {
     expect(await screen.findByText("ent-1")).toBeInTheDocument();
     expect(api.materializeObservation).toHaveBeenCalledWith("obs-1", { kind: "ENTITY" });
   });
+  it("refreshes the observation after a review conflict", async () => {
+    vi.mocked(api.reviewObservation).mockRejectedValue({ status: 409, message: "conflict" });
+    const user = userEvent.setup();
+    render(<RunDetail runId="run-1" />);
+    await user.click(await screen.findByRole("button", { name: /ENTITY/ }));
+    await user.click(await screen.findByRole("button", { name: "Submit review" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      /refreshed with the latest version/i,
+    );
+    await waitFor(() => expect(vi.mocked(api.getObservation).mock.calls.length).toBeGreaterThan(1));
+  });
 });

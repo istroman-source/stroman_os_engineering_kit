@@ -54,6 +54,7 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
   async function transition(action: "pause" | "resume" | "archive") {
     if (!etag) return;
     setError(null);
+    setSuccess(null);
     try {
       const fn =
         action === "pause"
@@ -74,6 +75,8 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
   }
   async function addDoc(e: FormEvent) {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
     if (!title.trim() || !hash.trim()) {
       setError("Document title and content hash are required.");
       return;
@@ -94,6 +97,8 @@ export function SourceDetail({ sourceId }: { sourceId: string }) {
   }
   async function addRun(e: FormEvent) {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
     if (!extractor.trim() || !version.trim()) {
       setError("Extractor and version are required.");
       return;

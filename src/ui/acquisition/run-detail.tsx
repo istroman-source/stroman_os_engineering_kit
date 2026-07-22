@@ -54,6 +54,10 @@ export function RunDetail({ runId }: { runId: string }) {
     void Promise.resolve().then(refresh);
   }, [refresh]);
   async function select(id: string) {
+    setOutcome("ACCEPT");
+    setNote("");
+    setEdited(null);
+    setSuccess(null);
     try {
       const r = await api.getObservation(id);
       setSelected(r.data);
@@ -66,6 +70,8 @@ export function RunDetail({ runId }: { runId: string }) {
   }
   async function runAction(action: "start" | "fail") {
     if (!runEtag) return;
+    setError(null);
+    setSuccess(null);
     try {
       const r =
         action === "start" ? await api.startRun(runId, runEtag) : await api.failRun(runId, runEtag);
@@ -82,6 +88,8 @@ export function RunDetail({ runId }: { runId: string }) {
   async function complete(e: FormEvent) {
     e.preventDefault();
     if (!runEtag) return;
+    setError(null);
+    setSuccess(null);
     const summary = Object.fromEntries(
       Object.entries(counts).map(([k, v]) => [k, Number(v)]),
     ) as unknown as api.RunSummary;
@@ -104,6 +112,8 @@ export function RunDetail({ runId }: { runId: string }) {
   async function review(e: FormEvent) {
     e.preventDefault();
     if (!selected || !obsEtag) return;
+    setError(null);
+    setSuccess(null);
     try {
       const body: {
         outcome: string;
@@ -127,6 +137,8 @@ export function RunDetail({ runId }: { runId: string }) {
   }
   async function materialize(resolution: Record<string, unknown>) {
     if (!selected) return;
+    setError(null);
+    setSuccess(null);
     try {
       const r = await api.materializeObservation(selected.observation.id, resolution);
       setResult(r.data);

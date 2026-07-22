@@ -53,6 +53,7 @@ describe("SourceDetail", () => {
     await user.type(screen.getByLabelText("Content hash"), "sha256:value");
     await user.click(screen.getByRole("button", { name: "Add document" }));
     await waitFor(() => expect(api.addDocument).toHaveBeenCalled());
+    expect(await screen.findByText("Document added.")).toBeInTheDocument();
     await user.type(screen.getByLabelText("Extractor"), "manual");
     await user.type(screen.getByLabelText("Version"), "1");
     await user.click(screen.getByRole("button", { name: "Create run" }));
@@ -62,6 +63,19 @@ describe("SourceDetail", () => {
         extractorVersion: "1",
       }),
     );
+  });
+  it("treats an idempotent duplicate document response as success", async () => {
+    vi.mocked(api.addDocument).mockResolvedValue({
+      data: { id: "existing-document" } as never,
+      etag: null,
+    });
+    const user = userEvent.setup();
+    render(<SourceDetail sourceId="source-1" />);
+    await user.type(await screen.findByLabelText("Title"), "Existing transcript");
+    await user.type(screen.getByLabelText("Content hash"), "sha256:duplicate");
+    await user.click(screen.getByRole("button", { name: "Add document" }));
+    expect(await screen.findByText("Document added.")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
   it("refreshes after a lifecycle conflict", async () => {
     vi.mocked(api.pauseSource).mockRejectedValue({ status: 409, message: "conflict" });

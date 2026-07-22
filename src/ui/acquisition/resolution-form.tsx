@@ -10,6 +10,8 @@ export function ResolutionForm({
 }) {
   const [a, setA] = useState("");
   const [b, setB] = useState("");
+  const [confidence, setConfidence] = useState("");
+  const [evidence, setEvidence] = useState("");
   if (kind === "ENTITY")
     return (
       <Button size="sm" onClick={() => onSubmit({ kind: "ENTITY" })}>
@@ -38,6 +40,8 @@ export function ResolutionForm({
                     .split(",")
                     .map((x) => x.trim())
                     .filter(Boolean),
+                  ...(confidence !== "" ? { confidence: Number(confidence) } : {}),
+                  ...(evidence.trim() ? { evidence: evidence.trim() } : {}),
                 }
               : { kind, fromEntityId: a.trim(), toEntityId: b.trim() };
         onSubmit(resolution);
@@ -54,6 +58,30 @@ export function ResolutionForm({
           />
         </label>
       ))}
+      {kind === "INSIGHT" ? (
+        <>
+          <label className="grid gap-1 text-sm">
+            <span>Confidence (optional)</span>
+            <input
+              className="rounded-md border px-3 py-2"
+              type="number"
+              min="0"
+              max="1"
+              step="any"
+              value={confidence}
+              onChange={(e) => setConfidence(e.target.value)}
+            />
+          </label>
+          <label className="grid gap-1 text-sm">
+            <span>Evidence (optional)</span>
+            <textarea
+              className="rounded-md border px-3 py-2"
+              value={evidence}
+              onChange={(e) => setEvidence(e.target.value)}
+            />
+          </label>
+        </>
+      ) : null}
       <Button size="sm" type="submit">
         Materialize {kind.toLowerCase()}
       </Button>
