@@ -40,23 +40,17 @@ function analysis(interviewStrategy: string[] | null): Analysis {
 }
 
 describe("BlueprintView", () => {
-  it("renders all eleven sections and the project title", () => {
+  it("renders the concept-first story workspace and the project title", () => {
     render(<BlueprintView analysis={analysis(null)} onReanalyze={vi.fn()} />);
     expect(
       screen.getByRole("heading", { level: 1, name: "Signature Dish Reel" }),
     ).toBeInTheDocument();
     for (const title of [
-      "Project Summary",
-      "Story Objective",
-      "Audience Analysis",
-      "Emotional Arc",
-      "Recommended Story Structure",
-      "Three Hook Concepts",
-      "Editing Blueprint",
-      "Interview Strategy",
-      "B-roll Priorities",
-      "Risks",
-      "Master Prompt",
+      "Current story",
+      "Creative intent",
+      "Creative alternatives",
+      "Edit recommendations",
+      "Production prompt",
     ]) {
       expect(screen.getByRole("heading", { name: new RegExp(title, "i") })).toBeInTheDocument();
     }
@@ -76,7 +70,7 @@ describe("BlueprintView", () => {
     const onReanalyze = vi.fn();
     const user = userEvent.setup();
     render(<BlueprintView analysis={analysis(null)} onReanalyze={onReanalyze} />);
-    await user.click(screen.getByRole("button", { name: /re-analyze/i }));
+    await user.click(screen.getByRole("button", { name: /update intent/i }));
     expect(onReanalyze).toHaveBeenCalled();
   });
 });

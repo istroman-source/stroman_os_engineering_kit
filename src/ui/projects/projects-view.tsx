@@ -18,8 +18,7 @@ const inputClass =
 /**
  * Minimal working projects interface backed by the existing /api/v1/projects
  * contract. Fetches the owner's projects, supports create, and reflects new
- * projects immediately by reloading the authoritative list from the server (so a
- * page refresh shows the same persisted data).
+ * projects and moves a new project directly into its concept-first workspace.
  */
 export function ProjectsView() {
   const router = useRouter();
@@ -59,11 +58,8 @@ export function ProjectsView() {
     setBusy(true);
     setCreateError(null);
     try {
-      await createProject(trimmed);
-      setName("");
-      // Reload the authoritative list so a subsequent refresh shows the same data.
-      const items = await listProjects();
-      setProjects(items);
+      const project = await createProject(trimmed);
+      router.push(`/projects/${project.id}`);
     } catch (err) {
       if (errorStatus(err) === 401) {
         router.replace("/login");
@@ -77,18 +73,27 @@ export function ProjectsView() {
 
   return (
     <div className="flex flex-col gap-6">
-      <form onSubmit={onCreate} className="flex gap-2" aria-label="Create project">
-        <input
-          className={inputClass}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="New project name"
-          maxLength={200}
-          aria-label="Project name"
-        />
-        <Button type="submit" disabled={busy || name.trim() === ""}>
-          {busy ? "Creating…" : "Create project"}
-        </Button>
+      <form onSubmit={onCreate} className="flex flex-col gap-3" aria-label="Start a story">
+        <div>
+          <h2 className="text-sm font-semibold">Start with the concept</h2>
+          <p className="text-muted-foreground text-sm">
+            Name the video. You’ll describe the story, source material, intent, and constraints
+            next.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <input
+            className={inputClass}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Working title"
+            maxLength={200}
+            aria-label="Video working title"
+          />
+          <Button type="submit" disabled={busy || name.trim() === ""}>
+            {busy ? "Starting…" : "Start story"}
+          </Button>
+        </div>
       </form>
 
       {createError ? (
@@ -105,7 +110,7 @@ export function ProjectsView() {
         </p>
       ) : projects.length === 0 ? (
         <div className="border-border bg-card text-muted-foreground rounded-lg border p-8 text-sm">
-          No projects yet. Create your first one above.
+          No stories yet. Start with your first video concept above.
         </div>
       ) : (
         <ul className="flex flex-col gap-2" aria-label="Projects">

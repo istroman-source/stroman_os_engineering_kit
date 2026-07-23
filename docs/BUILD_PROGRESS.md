@@ -1,5 +1,19 @@
 # Build Progress
 
+## Filmmaking Intelligence Workflow Restructuring
+
+The repository was audited against the filmmaking-intelligence north star. Primary
+navigation now leads directly to Story Studio; Memory and Knowledge Acquisition remain
+validated backend capabilities but are no longer user setup destinations. Creating a
+project immediately opens its concept and intent workflow, and the existing deterministic
+Creative Blueprint is presented as a current-story and edit-recommendation workspace.
+
+No domain records, APIs, migrations, provenance, or source data were removed. The revised
+roadmap prioritizes project source intake, automatic editorial context, the evidence-
+grounded Edit Engine, and prompt handoff. Generic knowledge-management and SaaS expansion
+are postponed. Full audit and ranked follow-ups are recorded in
+`docs/FILMMAKING_INTELLIGENCE_DIRECTION.md`.
+
 Append one verified entry after every numbered prompt.
 
 ## Prompt 011 — Media and Transcript Domain Model

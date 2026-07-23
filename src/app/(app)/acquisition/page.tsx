@@ -1,6 +1,5 @@
-import type { Metadata } from "next";
-import { SourcesWorkbench } from "@/ui/acquisition/sources-workbench";
-export const metadata: Metadata = { title: "Knowledge Acquisition" };
+import { redirect } from "next/navigation";
+
 export default function Page() {
-  return <SourcesWorkbench />;
+  redirect("/projects");
 }

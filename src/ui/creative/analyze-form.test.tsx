@@ -9,16 +9,16 @@ describe("AnalyzeForm", () => {
     const user = userEvent.setup();
     render(<AnalyzeForm busy={false} error={null} onSubmit={onSubmit} />);
 
-    const submit = screen.getByRole("button", { name: /analyze project/i });
+    const submit = screen.getByRole("button", { name: /build story plan/i });
     expect(submit).toBeDisabled();
 
-    await user.type(screen.getByLabelText("Project title"), "Signature Dish Reel");
+    await user.type(screen.getByLabelText("Video concept"), "Signature Dish Reel");
     await user.type(screen.getByLabelText("Client"), "Jimmy's");
     await user.type(screen.getByLabelText("Project type"), "Instagram reel");
-    await user.type(screen.getByLabelText("Creative goal"), "crave the crab cake");
+    await user.type(screen.getByLabelText("Creative intent"), "crave the crab cake");
     await user.type(screen.getByLabelText("Target audience"), "Baltimore foodies");
     await user.type(screen.getByLabelText("Desired emotion"), "hungry");
-    await user.type(screen.getByLabelText("Context"), "20s vertical");
+    await user.type(screen.getByLabelText("Source material and constraints"), "20s vertical");
 
     await waitFor(() => expect(submit).toBeEnabled());
     await user.click(submit);
@@ -51,6 +51,6 @@ describe("AnalyzeForm", () => {
         }}
       />,
     );
-    expect(screen.getByLabelText("Project title")).toHaveValue("Existing");
+    expect(screen.getByLabelText("Video concept")).toHaveValue("Existing");
   });
 });

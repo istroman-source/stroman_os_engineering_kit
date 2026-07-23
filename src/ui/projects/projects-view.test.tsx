@@ -4,11 +4,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProjectsView } from "./projects-view";
 import { createProject, listProjects } from "@/ui/auth/api-client";
 
-const { replaceMock, routerMock } = vi.hoisted(() => {
+const { pushMock, replaceMock, routerMock } = vi.hoisted(() => {
   const replaceMock = vi.fn();
+  const pushMock = vi.fn();
   return {
+    pushMock,
     replaceMock,
-    routerMock: { replace: replaceMock, push: vi.fn(), prefetch: vi.fn(), refresh: vi.fn() },
+    routerMock: { replace: replaceMock, push: pushMock, prefetch: vi.fn(), refresh: vi.fn() },
   };
 });
 vi.mock("next/navigation", () => ({ useRouter: () => routerMock }));
@@ -25,6 +27,7 @@ function project(id: string, name: string) {
 
 beforeEach(() => {
   replaceMock.mockReset();
+  pushMock.mockReset();
   vi.mocked(listProjects).mockReset();
   vi.mocked(createProject).mockReset();
 });
@@ -39,23 +42,22 @@ describe("ProjectsView", () => {
   it("shows an empty state when there are no projects", async () => {
     vi.mocked(listProjects).mockResolvedValue([]);
     render(<ProjectsView />);
-    expect(await screen.findByText(/no projects yet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/no stories yet/i)).toBeInTheDocument();
   });
 
-  it("creates a project and reflects it in the reloaded list", async () => {
+  it("creates a project and moves directly into its story workspace", async () => {
     const user = userEvent.setup();
-    vi.mocked(listProjects)
-      .mockResolvedValueOnce([]) // initial load
-      .mockResolvedValueOnce([project("proj_9", "New Reel")]); // after create
+    vi.mocked(listProjects).mockResolvedValue([]);
     vi.mocked(createProject).mockResolvedValue(project("proj_9", "New Reel"));
     render(<ProjectsView />);
 
-    await screen.findByText(/no projects yet/i);
-    await user.type(screen.getByLabelText(/project name/i), "New Reel");
-    await user.click(screen.getByRole("button", { name: /create project/i }));
+    await screen.findByText(/no stories yet/i);
+    await user.type(screen.getByLabelText(/video working title/i), "New Reel");
+    await user.click(screen.getByRole("button", { name: /start story/i }));
 
     await waitFor(() => expect(createProject).toHaveBeenCalledWith("New Reel"));
-    expect(await screen.findByText("New Reel")).toBeInTheDocument();
+    expect(pushMock).toHaveBeenCalledWith("/projects/proj_9");
+    expect(listProjects).toHaveBeenCalledTimes(1);
   });
 
   it("surfaces a create error without crashing", async () => {
@@ -64,9 +66,9 @@ describe("ProjectsView", () => {
     vi.mocked(createProject).mockRejectedValue({ status: 422, message: "Name is invalid." });
     render(<ProjectsView />);
 
-    await screen.findByText(/no projects yet/i);
-    await user.type(screen.getByLabelText(/project name/i), "bad");
-    await user.click(screen.getByRole("button", { name: /create project/i }));
+    await screen.findByText(/no stories yet/i);
+    await user.type(screen.getByLabelText(/video working title/i), "bad");
+    await user.click(screen.getByRole("button", { name: /start story/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/invalid/i);
   });

@@ -7,10 +7,20 @@ Stroman Creative Intelligence System
 Stroman OS
 
 ## Product mission
-Help filmmakers, editors, photographers, creative directors, and production teams make better creative decisions by reducing guesswork, structuring analysis, exposing tradeoffs, and turning completed projects into institutional knowledge.
+Help filmmakers and editors move from a video concept and source material to the strongest
+evidence-backed story and edit plan with minimal setup.
 
 ## Core product promise
-The user should be able to enter a creative problem in plain language and receive a structured path consisting of relevant tools, decision trees, scorecards, playbooks, case studies, and AI-assisted recommendations.
+The user provides a concept, source material, creative intent, and constraints. Stroman OS
+automatically manages ingestion, entities, relationships, evidence, themes, narrative
+structure, editorial analysis, prompts, and workflow state. The user sees current story,
+strongest observations, edit recommendations, creative alternatives, and production
+prompts—not backend data structures.
+
+The capability inventory below records useful editorial foundations. It does not imply
+that each capability is a separate screen or manual workflow. The concept-first product
+direction and priority order in `docs/FILMMAKING_INTELLIGENCE_DIRECTION.md` and
+`roadmap/PRODUCT_ROADMAP.md` are authoritative.
 
 ## Primary users
 1. Solo filmmaker or editor
