@@ -231,6 +231,16 @@ rows. See `docs/AUTHENTICATION_ARCHITECTURE.md`.
 
 ## Deletion & retention
 
+## Versioned analysis (Prompt 013)
+
+`analysis_runs` is unique by `(project_id, version)`, repeats project-owner alignment,
+and has lifecycle CHECK constraints. Status transitions use compare-and-swap updates.
+Immutable output and recommendation children retain ordered Evidence links; a
+recommendation may link to an existing Decision. Run completion and all result rows are
+committed in one transaction. Explicit mappers reconstruct domain values and translate
+corrupt persisted shapes to `PersistenceMappingError`.
+
+
 Archive states, not hard deletes — no `delete` methods are exposed. Evaluations and
 decisions are never cascade-deleted (their project/rubric FKs are `RESTRICT`).
 Only genuinely-owned child rows cascade with their root. Identity uses **disable, not

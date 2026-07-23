@@ -28,6 +28,7 @@ src/application/
   evaluation/ create-rubric · get-rubric · record-evaluation · get-evaluation · list-for-project
   decision/   propose · attach-advisory · record-human-decision · get · list-for-project
   ai/         request-recommendation
+  analysis/   create/version · lifecycle · atomic completion · authorized result reads
 ```
 
 Use cases are plain functions `(deps, input) => Promise<Result<Output, Errors>>`.

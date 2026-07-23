@@ -8,6 +8,12 @@ Knowledge Acquisition, Memory, entities, relationships, evidence linking, cluste
 workflow state are backend capabilities, not separate user journeys. See
 `docs/FILMMAKING_INTELLIGENCE_DIRECTION.md`.
 
+## Current progress
+
+Foundation Prompts 011–013 are complete: media/transcript provenance, durable Evidence,
+and versioned analysis with human-authoritative Decision linkage. The next incomplete
+dependency is Prompt 014 — Review and rubric domain model.
+
 ## Internal alpha
 
 1. Foundation, secure ownership, projects, provenance, and auditability.

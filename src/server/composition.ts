@@ -4,6 +4,7 @@ import { createIdGenerator, systemClock } from "@/application/shared";
 import type { Clock, IdGenerator } from "@/application/shared";
 import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
+import type { AnalysisRepository } from "@/domain/analysis";
 import type { DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceRepository } from "@/domain/evidence";
 import type { CreativeBriefRepository } from "@/domain/creative";
@@ -55,6 +56,7 @@ import {
   PrismaMediaAssetRepository,
   PrismaTranscriptDocumentRepository,
   PrismaEvidenceReferenceRepository,
+  PrismaAnalysisRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -68,6 +70,7 @@ import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
  * typing selects the fields each one needs). Prisma is never re-exported here.
  */
 export interface ApiContext {
+  readonly analyses: AnalysisRepository;
   readonly projects: ProjectRepository;
   readonly content: ContentRepository;
   readonly rubrics: RubricRepository;
@@ -98,6 +101,7 @@ export interface ApiContext {
 
 export function createApiContext(): ApiContext {
   return {
+    analyses: new PrismaAnalysisRepository(prisma),
     projects: new PrismaProjectRepository(prisma),
     content: new PrismaContentRepository(prisma),
     rubrics: new PrismaRubricRepository(prisma),
