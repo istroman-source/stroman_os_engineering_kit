@@ -16,6 +16,23 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Repository Autopilot
+
+**Date:** 2026-07-23 · **Volume:** Engineering automation
+
+Added the repository-owned `./autopilot` lifecycle coordinator. Its TypeScript state
+machine provides guarded preflight and milestone selection, branch and interrupted-run
+state, exact implementation/review prompts, canonical verification with redacted logs,
+commit/PR/CI orchestration, structured independent review, bounded objective remediation,
+strict merge gates, cleanup, and continuous-run intent. Agent commands are optional and
+disabled by default; unavailable agents produce explicit actionable waiting states.
+
+Runtime state and logs are gitignored, configuration is version controlled without
+secrets, and Git/GitHub execution uses argument arrays rather than shell interpolation.
+Seventeen focused tests cover dirty/auth failures, selection and prerequisite protection,
+branch naming, verification, resume, CI rejection, review/merge gates, remediation limits,
+cleanup, dry-run behavior, machine-readable state, and concurrent-run locking.
+
 ## Prompt 013 — Analysis and Decision Domain Model
 
 **Date:** 2026-07-23 · **Volume:** Foundation

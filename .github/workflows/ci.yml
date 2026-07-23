@@ -36,6 +36,9 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Autopilot tests
+        run: npm run test:autopilot
+
       - name: Build
         run: npm run build
         env:
