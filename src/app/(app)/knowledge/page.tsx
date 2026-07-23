@@ -1,8 +1,5 @@
-import type { Metadata } from "next";
-import { KnowledgeWorkspace } from "@/ui/memory/knowledge-workspace";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Creative Memory" };
-
-export default function KnowledgePage() {
-  return <KnowledgeWorkspace />;
+export default function Page() {
+  redirect("/projects");
 }

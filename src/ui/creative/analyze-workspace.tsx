@@ -69,15 +69,9 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
   }
 
   const nav = (
-    <nav className="text-muted-foreground flex gap-4 text-xs" aria-label="Project">
+    <nav className="text-muted-foreground flex gap-4 text-xs" aria-label="Story workspace">
       <Link className="underline-offset-4 hover:underline" href="/projects">
-        ← Projects
-      </Link>
-      <Link
-        className="underline-offset-4 hover:underline"
-        href={`/projects/${projectId}/decisions`}
-      >
-        Decision log
+        ← Story Studio
       </Link>
     </nav>
   );
@@ -95,9 +89,10 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
     <div className="flex flex-col gap-6">
       {nav}
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Analyze Project</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Describe the video</h1>
         <p className="text-muted-foreground text-sm">
-          Give Stroman OS the context and it will build your Creative Blueprint before you edit.
+          Share the concept, creative intent, audience, source context, and constraints. Stroman OS
+          will turn them into a story and edit plan.
         </p>
       </header>
       <AnalyzeForm initial={analysis?.brief} busy={busy} error={error} onSubmit={onAnalyze} />

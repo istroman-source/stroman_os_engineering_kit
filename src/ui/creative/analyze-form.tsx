@@ -46,14 +46,14 @@ export function AnalyzeForm({
   const complete = Object.values(fields).every((value) => value.trim() !== "");
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Analyze project" className="flex flex-col gap-4">
-      <Field label="Project title">
+    <form onSubmit={handleSubmit} aria-label="Describe video" className="flex flex-col gap-4">
+      <Field label="Video concept">
         <input
           className={inputClass}
           value={fields.title}
           onChange={(e) => set("title", e.target.value)}
           maxLength={200}
-          aria-label="Project title"
+          aria-label="Video concept"
         />
       </Field>
       <Field label="Client">
@@ -75,14 +75,14 @@ export function AnalyzeForm({
           aria-label="Project type"
         />
       </Field>
-      <Field label="Creative goal">
+      <Field label="Creative intent">
         <textarea
           className={inputClass}
           rows={2}
           value={fields.creativeGoal}
           onChange={(e) => set("creativeGoal", e.target.value)}
           maxLength={2000}
-          aria-label="Creative goal"
+          aria-label="Creative intent"
         />
       </Field>
       <Field label="Target audience">
@@ -105,15 +105,15 @@ export function AnalyzeForm({
           aria-label="Desired emotion"
         />
       </Field>
-      <Field label="Context">
+      <Field label="Source material and constraints">
         <textarea
           className={inputClass}
           rows={4}
           value={fields.context}
           onChange={(e) => set("context", e.target.value)}
-          placeholder="Anything else Stroman OS should know: story, footage, constraints, references…"
+          placeholder="Summarize available footage, transcripts, references, required beats, duration, platform, and other constraints."
           maxLength={5000}
-          aria-label="Context"
+          aria-label="Source material and constraints"
         />
       </Field>
       {error ? (
@@ -123,7 +123,7 @@ export function AnalyzeForm({
       ) : null}
       <div>
         <Button type="submit" disabled={busy || !complete}>
-          {busy ? "Analyzing…" : "Analyze Project"}
+          {busy ? "Building…" : "Build story plan"}
         </Button>
       </div>
     </form>

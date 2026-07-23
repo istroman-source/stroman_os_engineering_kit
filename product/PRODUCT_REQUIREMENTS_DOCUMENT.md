@@ -1,24 +1,38 @@
 # Stroman OS Product Requirements Document
 
 ## Product definition
-Stroman OS is a Creative Intelligence Platform that helps creative professionals discover, debate, document, and review creative decisions using project evidence. It is not a generic chatbot and it does not autonomously approve creative choices.
+Stroman OS is filmmaking intelligence for discovering the strongest evidence-backed story
+and turning it into an actionable edit plan. It is not a generic chatbot, knowledge
+management interface, or autonomous approver.
 
 ## Primary user
 The initial user is a filmmaker or small production company managing interview-driven, documentary, restaurant, event, commercial, and social projects.
 
-## Core jobs
-1. Organize project context and media evidence.
-2. Discover plausible stories without inventing facts.
-3. Compare creative options and tradeoffs.
-4. Preserve human decisions and their reasoning.
-5. Review work against explicit rubrics.
-6. Convert finished projects into approved institutional learning.
+## Core workflow
+
+The filmmaker provides a video concept, source material, creative intent, and constraints.
+Stroman OS handles entity and relationship creation, evidence linking, thematic
+clustering, narrative structure, editorial analysis, prompt synthesis, and internal
+workflow state. The filmmaker sees the current story, strongest observations, edit
+recommendations, creative alternatives, and production prompts.
+
+Human decisions remain explicit when selecting a creative direction. Provenance and
+uncertainty remain visible beside recommendations.
 
 ## MVP
-The MVP includes workspace security, projects, brand profiles, asset registration, transcript import, evidence references, Story Discovery, decision log, configurable review rubrics, lessons, exports, and a fixture-backed Wideframe boundary.
+The MVP includes workspace security, concept-first projects, project source intake,
+transcript import, evidence references, automatic editorial context, Story Discovery,
+Edit Engine recommendations, human selection, reviews, lessons, exports, and a
+fixture-backed integration boundary.
 
 ## Explicitly deferred
-Automated computer vision, full NLE timeline editing, live collaborative editing, public marketplace, autonomous publishing, generalized plugin execution, enterprise compliance certifications, and unsupported Wideframe API behavior.
+Generic knowledge-management UI, generic admin tooling, automated computer vision, full
+NLE timeline editing, live collaborative editing, public marketplace, autonomous
+publishing, generalized plugin execution, enterprise compliance certifications, and
+unsupported Wideframe API behavior.
 
 ## North-star outcome
-A user can move from a project brief and transcript to multiple evidence-backed story options, select one through an explicit human decision, review the work, export the reasoning, and preserve approved lessons.
+A user can move from a concept and source material to evidence-backed story options and
+edit recommendations without manually managing ingestion, entities, relationships, or
+evidence records; then select a direction, review it, export it, and preserve approved
+lessons.

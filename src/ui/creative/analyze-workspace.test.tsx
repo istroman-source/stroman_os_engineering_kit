@@ -63,7 +63,7 @@ describe("AnalyzeWorkspace", () => {
   it("shows the form when the project has not been analyzed (404)", async () => {
     vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
     render(<AnalyzeWorkspace projectId="proj_1" />);
-    expect(await screen.findByRole("form", { name: /analyze project/i })).toBeInTheDocument();
+    expect(await screen.findByRole("form", { name: /describe video/i })).toBeInTheDocument();
   });
 
   it("shows the existing blueprint immediately when already analyzed", async () => {
@@ -80,15 +80,15 @@ describe("AnalyzeWorkspace", () => {
     const user = userEvent.setup();
     render(<AnalyzeWorkspace projectId="proj_1" />);
 
-    await screen.findByRole("form", { name: /analyze project/i });
-    await user.type(screen.getByLabelText("Project title"), "Signature Dish Reel");
+    await screen.findByRole("form", { name: /describe video/i });
+    await user.type(screen.getByLabelText("Video concept"), "Signature Dish Reel");
     await user.type(screen.getByLabelText("Client"), "Jimmy's");
     await user.type(screen.getByLabelText("Project type"), "Instagram reel");
-    await user.type(screen.getByLabelText("Creative goal"), "crave the crab cake");
+    await user.type(screen.getByLabelText("Creative intent"), "crave the crab cake");
     await user.type(screen.getByLabelText("Target audience"), "Baltimore foodies");
     await user.type(screen.getByLabelText("Desired emotion"), "hungry");
-    await user.type(screen.getByLabelText("Context"), "20s vertical");
-    await user.click(screen.getByRole("button", { name: /analyze project/i }));
+    await user.type(screen.getByLabelText("Source material and constraints"), "20s vertical");
+    await user.click(screen.getByRole("button", { name: /build story plan/i }));
 
     await waitFor(() => expect(analyzeProject).toHaveBeenCalledWith("proj_1", expect.any(Object)));
     expect(
