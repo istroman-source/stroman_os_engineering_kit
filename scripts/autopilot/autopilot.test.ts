@@ -6,10 +6,17 @@ import type { CommandResult, CommandRunner, Config } from "./types";
 import { preflight } from "./preflight";
 import { selectMilestone, branchFor } from "./roadmap";
 import { verify } from "./verification";
-import { StateStore } from "./state-store";
+import { StateStore, withLock } from "./state-store";
 import { mergeGate } from "./policy";
 import { newState } from "./workflow";
 import { monitorCi } from "./github";
+import { ProcessCommandRunner, redact } from "./command-runner";
+import {
+  assertRecordedBranch,
+  enforceChangeSafety,
+  mergeReady,
+  parseReviewResult,
+} from "./lifecycle";
 class FakeRunner implements CommandRunner {
   calls: string[][] = [];
   constructor(readonly handler: (c: readonly string[]) => Partial<CommandResult> = () => ({})) {}
@@ -153,5 +160,176 @@ describe("Autopilot", () => {
       s = newState(false, false);
     await store.save(s);
     expect(JSON.parse(await readFile(store.statePath, "utf8")).runId).toBe(s.runId);
+  });
+
+  it("detects destructive tracked migrations before commit", async () => {
+    const r = await root();
+    const path = join(r, "prisma/migrations/001_bad");
+    await mkdir(path, { recursive: true });
+    await writeFile(join(path, "migration.sql"), "DROP TABLE projects;");
+    const runner = new FakeRunner((command) =>
+      command[1] === "status" ? { stdout: " M prisma/migrations/001_bad/migration.sql\n" } : {},
+    );
+    await expect(
+      enforceChangeSafety(r, config, runner, newState(false, false)),
+    ).rejects.toMatchObject({ code: "APPROVAL_REQUIRED" });
+  });
+
+  it("detects destructive untracked migrations before commit", async () => {
+    const r = await root();
+    const path = join(r, "prisma/migrations/002_new");
+    await mkdir(path, { recursive: true });
+    await writeFile(join(path, "migration.sql"), "TRUNCATE projects;");
+    const runner = new FakeRunner((command) =>
+      command[1] === "status" ? { stdout: "?? prisma/migrations/002_new/migration.sql\n" } : {},
+    );
+    await expect(
+      enforceChangeSafety(r, config, runner, newState(false, false)),
+    ).rejects.toMatchObject({ code: "APPROVAL_REQUIRED" });
+  });
+
+  it("enforces configured protected paths", async () => {
+    const r = await root();
+    const runner = new FakeRunner((command) =>
+      command[1] === "status" ? { stdout: " M .env.local\n" } : {},
+    );
+    await expect(
+      enforceChangeSafety(
+        r,
+        { ...config, protectedPaths: [".env.local"] },
+        runner,
+        newState(false, false),
+      ),
+    ).rejects.toMatchObject({ code: "PROTECTED_PATH" });
+  });
+
+  it("refuses a recorded branch mismatch", async () => {
+    const state = newState(false, false);
+    state.branch = "feat/expected";
+    await expect(
+      assertRecordedBranch(new FakeRunner(() => ({ stdout: "feat/other\n" })), state),
+    ).rejects.toMatchObject({ code: "BRANCH_MISMATCH" });
+  });
+
+  it("prevents dry-run state from mutating", async () => {
+    const state = newState(false, true);
+    state.branch = "feat/expected";
+    await expect(assertRecordedBranch(new FakeRunner(), state)).rejects.toMatchObject({
+      code: "DRY_RUN_MUTATION",
+    });
+  });
+
+  it.each([
+    "not json",
+    '{"verdict":"APPROVED","findings":[{"severity":"WRONG","summary":"x","resolved":false}]}',
+    '{"verdict":"APPROVED","findings":[{"severity":"IMPORTANT","resolved":false}]}',
+    '{"verdict":"MAYBE","findings":[]}',
+  ])("rejects malformed review result %s", (raw) => {
+    expect(() => parseReviewResult(raw)).toThrowError(
+      expect.objectContaining({ code: "REVIEW_OUTPUT_INVALID" }),
+    );
+  });
+
+  it("accepts a fully valid structured review result", () => {
+    expect(
+      parseReviewResult(
+        '{"verdict":"APPROVED","findings":[{"severity":"OPTIONAL","summary":"Polish","resolved":false}]}',
+      ),
+    ).toMatchObject({ verdict: "APPROVED" });
+  });
+
+  it("redacts authorization, bearer, GitHub, and API tokens", () => {
+    const secrets = [
+      "Authorization: Bearer abc.def.ghi",
+      "Bearer another-token-value",
+      "ghp_123456789012345678901234567890",
+      "github_pat_123456789012345678901234567890",
+      "sk-123456789012345678901234",
+      "api_key=plain-secret-value",
+    ];
+    const output = redact(secrets.join("\n"));
+    for (const secret of [
+      "abc.def.ghi",
+      "another-token-value",
+      "ghp_123456",
+      "github_pat_123456",
+      "sk-123456",
+      "plain-secret-value",
+    ])
+      expect(output).not.toContain(secret);
+  });
+
+  it("never writes command or output secrets to logs", async () => {
+    const r = await root();
+    const log = join(r, "command.log");
+    const secret = "ghp_123456789012345678901234567890";
+    await new ProcessCommandRunner().run(
+      [process.execPath, "-e", "process.stdout.write(process.argv[1])", secret],
+      { logFile: log },
+    );
+    const contents = await readFile(log, "utf8");
+    expect(contents).not.toContain(secret);
+    expect(contents).toContain("[REDACTED]");
+  });
+
+  it("pins merge to the independently reviewed PR head", async () => {
+    const state = newState(false, false);
+    state.branch = "feat/test";
+    state.prNumber = 9;
+    state.reviewedCommit = "old-sha";
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch") return { stdout: "feat/test\n" };
+      if (command.includes("mergeable,state"))
+        return { stdout: '{"mergeable":"MERGEABLE","state":"OPEN"}' };
+      if (command.includes("headRefOid")) return { stdout: '{"headRefOid":"new-sha"}' };
+      return {};
+    });
+    await expect(
+      mergeReady(".", { ...config, autoMerge: true }, runner, state),
+    ).rejects.toMatchObject({ code: "REVIEW_STALE" });
+  });
+
+  it("atomically matches the reviewed commit when merging", async () => {
+    const r = await root();
+    const state = newState(false, false);
+    state.branch = "feat/test";
+    state.prNumber = 9;
+    state.reviewedCommit = "reviewed-sha";
+    state.phase = "READY_TO_MERGE";
+    state.ciStatus = "PASSED";
+    state.reviewVerdict = "APPROVED";
+    state.verification = [
+      { command: ["ok"], status: "PASSED", durationMs: 1, log: "x", exitCode: 0 },
+    ];
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch" && command[2] === "--show-current")
+        return { stdout: "feat/test\n" };
+      if (command.includes("mergeable,state"))
+        return { stdout: '{"mergeable":"MERGEABLE","state":"OPEN"}' };
+      if (command.includes("headRefOid")) return { stdout: '{"headRefOid":"reviewed-sha"}' };
+      return {};
+    });
+    await mergeReady(r, { ...config, autoMerge: true }, runner, state);
+    expect(runner.calls).toContainEqual([
+      "gh",
+      "pr",
+      "merge",
+      "9",
+      "--merge",
+      "--delete-branch",
+      "--match-head-commit",
+      "reviewed-sha",
+    ]);
+  });
+
+  it("holds a lock for state-mutating command work", async () => {
+    const r = await root();
+    const first = new StateStore(r);
+    const second = new StateStore(r);
+    await withLock(first, async () => {
+      await expect(withLock(second, async () => undefined)).rejects.toMatchObject({
+        code: "LOCKED",
+      });
+    });
   });
 });

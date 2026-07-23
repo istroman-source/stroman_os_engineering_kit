@@ -16,6 +16,7 @@ export const newState = (continuous: boolean, dryRun: boolean): RunState => {
     milestone: null,
     branch: null,
     commit: null,
+    reviewedCommit: null,
     prNumber: null,
     prUrl: null,
     phase: "PREFLIGHT",

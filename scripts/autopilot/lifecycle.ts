@@ -7,6 +7,7 @@ import { verify } from "./verification";
 import { monitorCi } from "./github";
 import { mergeGate } from "./policy";
 import { reviewPrompt, unresolvedObjectiveFindings } from "./prompts";
+import { z } from "zod";
 
 async function success(runner: CommandRunner, command: string[], code: string) {
   const result = await runner.run(command);
@@ -15,14 +16,58 @@ async function success(runner: CommandRunner, command: string[], code: string) {
   return result.stdout.trim();
 }
 
-async function enforceChangeSafety(runner: CommandRunner, state: RunState) {
-  const names = await success(runner, ["git", "diff", "--name-only"], "DIFF_READ_FAILED");
-  if (names.split("\n").some((name) => /^\.env(?:\.|$)/.test(name))) {
-    state.approvalGates.push("protected environment file changed");
-    throw new AutopilotError("Protected environment files may not be committed", "PROTECTED_PATH");
+function changedPaths(status: string) {
+  return status
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => ({ code: line.slice(0, 2), path: line.slice(3).split(" -> ").at(-1)! }));
+}
+
+export async function assertRecordedBranch(runner: CommandRunner, state: RunState) {
+  if (state.dryRun)
+    throw new AutopilotError("Dry-run state cannot mutate the repository", "DRY_RUN_MUTATION");
+  const current = await success(runner, ["git", "branch", "--show-current"], "GIT_BRANCH_FAILED");
+  if (!state.branch || current !== state.branch)
+    throw new AutopilotError(
+      `Recorded branch ${state.branch ?? "<none>"} is not checked out`,
+      "BRANCH_MISMATCH",
+    );
+}
+
+export async function enforceChangeSafety(
+  root: string,
+  config: Config,
+  runner: CommandRunner,
+  state: RunState,
+) {
+  const statusResult = await runner.run(["git", "status", "--porcelain", "--untracked-files=all"]);
+  if (statusResult.exitCode !== 0)
+    throw new AutopilotError(statusResult.stderr || "git status failed", "DIFF_READ_FAILED");
+  const status = statusResult.stdout;
+  const changed = changedPaths(status);
+  const protectedChange = changed.find(({ path }) =>
+    config.protectedPaths.some(
+      (protectedPath) => path === protectedPath || path.startsWith(`${protectedPath}/`),
+    ),
+  );
+  if (protectedChange) {
+    state.approvalGates.push(`protected path changed: ${protectedChange.path}`);
+    throw new AutopilotError(`Protected path changed: ${protectedChange.path}`, "PROTECTED_PATH");
   }
-  const sql = await success(runner, ["git", "diff", "--", "prisma/migrations"], "DIFF_READ_FAILED");
-  if (/\b(DROP\s+(TABLE|COLUMN)|TRUNCATE|DELETE\s+FROM)\b/i.test(sql)) {
+  const migrations = changed.filter(({ path }) =>
+    /^prisma\/migrations\/.+\/migration\.sql$/.test(path),
+  );
+  let destructive = migrations.some(({ code }) => code.includes("D"));
+  for (const migration of migrations) {
+    if (migration.code.includes("D")) continue;
+    try {
+      const sql = await readFile(resolve(root, migration.path), "utf8");
+      if (/\b(DROP\s+(TABLE|COLUMN|TYPE)|TRUNCATE|DELETE\s+FROM)\b/i.test(sql)) destructive = true;
+    } catch {
+      destructive = true;
+    }
+  }
+  if (destructive) {
     state.approvalGates.push("destructive schema migration requires human approval");
     throw new AutopilotError("Destructive migration detected", "APPROVAL_REQUIRED");
   }
@@ -35,6 +80,7 @@ export async function advanceImplemented(
   state: RunState,
 ) {
   const store = new StateStore(root);
+  await assertRecordedBranch(runner, state);
   state.phase = "VERIFYING";
   await store.save(state);
   state.verification = await verify(root, config, runner, state.runId);
@@ -46,7 +92,7 @@ export async function advanceImplemented(
   }
   state.phase = "VERIFIED";
   await store.save(state);
-  await enforceChangeSafety(runner, state);
+  await enforceChangeSafety(root, config, runner, state);
   await success(runner, ["git", "add", "-A"], "STAGE_FAILED");
   await success(
     runner,
@@ -112,19 +158,9 @@ export async function applyReviewResult(
   state: RunState,
   raw: string,
 ) {
-  const result = JSON.parse(raw) as {
-    verdict: "APPROVED" | "CHANGES_REQUIRED";
-    findings: Finding[];
-  };
-  if (
-    !Array.isArray(result.findings) ||
-    !["APPROVED", "CHANGES_REQUIRED"].includes(result.verdict)
-  ) {
-    throw new AutopilotError(
-      "Review result must be valid structured JSON",
-      "REVIEW_OUTPUT_INVALID",
-    );
-  }
+  const result = parseReviewResult(raw);
+  await assertRecordedBranch(runner, state);
+  state.reviewedCommit = await prHeadCommit(runner, state.prNumber!);
   state.reviewVerdict = result.verdict;
   state.findings = result.findings;
   const store = new StateStore(root);
@@ -154,6 +190,7 @@ export async function applyReviewResult(
     state.verification = await verify(root, config, runner, state.runId);
     if (state.verification.some((value) => value.status === "FAILED"))
       throw new AutopilotError("Remediation verification failed", "VERIFY_FAILED");
+    await enforceChangeSafety(root, config, runner, state);
     await success(runner, ["git", "add", "-A"], "STAGE_FAILED");
     await success(
       runner,
@@ -180,12 +217,16 @@ export async function mergeReady(
   runner: CommandRunner,
   state: RunState,
 ) {
+  await assertRecordedBranch(runner, state);
   const infoRaw = await success(
     runner,
     ["gh", "pr", "view", String(state.prNumber), "--json", "mergeable,state"],
     "PR_READ_FAILED",
   );
   const info = JSON.parse(infoRaw) as { mergeable: string; state: string };
+  const currentHead = await prHeadCommit(runner, state.prNumber!);
+  if (!state.reviewedCommit || currentHead !== state.reviewedCommit)
+    throw new AutopilotError("PR head changed after independent review", "REVIEW_STALE");
   const blocked = mergeGate(state, info.mergeable === "MERGEABLE");
   if (blocked.length)
     throw new AutopilotError(`Merge blocked: ${blocked.join("; ")}`, "MERGE_BLOCKED");
@@ -193,7 +234,16 @@ export async function mergeReady(
     throw new AutopilotError("Auto-merge is disabled in configuration", "MERGE_APPROVAL_REQUIRED");
   await success(
     runner,
-    ["gh", "pr", "merge", String(state.prNumber), "--merge", "--delete-branch"],
+    [
+      "gh",
+      "pr",
+      "merge",
+      String(state.prNumber),
+      "--merge",
+      "--delete-branch",
+      "--match-head-commit",
+      state.reviewedCommit,
+    ],
     "MERGE_FAILED",
   );
   await success(runner, ["git", "checkout", "main"], "CHECKOUT_MAIN_FAILED");
@@ -209,4 +259,44 @@ export async function mergeReady(
 
 export async function reviewResultFromFile(path: string) {
   return await readFile(path, "utf8");
+}
+
+const findingSchema = z
+  .object({
+    severity: z.enum(["BLOCKING", "IMPORTANT", "OPTIONAL"]),
+    summary: z.string().trim().min(1),
+    resolved: z.boolean(),
+  })
+  .strict();
+const reviewSchema = z
+  .object({
+    verdict: z.enum(["APPROVED", "CHANGES_REQUIRED"]),
+    findings: z.array(findingSchema),
+  })
+  .strict();
+
+export function parseReviewResult(raw: string): {
+  verdict: "APPROVED" | "CHANGES_REQUIRED";
+  findings: Finding[];
+} {
+  try {
+    return reviewSchema.parse(JSON.parse(raw));
+  } catch {
+    throw new AutopilotError(
+      "Review result must be valid structured JSON",
+      "REVIEW_OUTPUT_INVALID",
+    );
+  }
+}
+
+async function prHeadCommit(runner: CommandRunner, pr: number) {
+  const raw = await success(
+    runner,
+    ["gh", "pr", "view", String(pr), "--json", "headRefOid"],
+    "PR_READ_FAILED",
+  );
+  const parsed = JSON.parse(raw) as { headRefOid?: string };
+  if (!parsed.headRefOid)
+    throw new AutopilotError("PR head commit was missing", "PR_OUTPUT_INVALID");
+  return parsed.headRefOid;
 }

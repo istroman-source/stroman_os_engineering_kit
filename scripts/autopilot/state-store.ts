@@ -43,3 +43,12 @@ export class StateStore {
     await rm(this.statePath, { force: true });
   }
 }
+
+export async function withLock<T>(store: StateStore, work: () => Promise<T>) {
+  await store.acquire();
+  try {
+    return await work();
+  } finally {
+    await store.release();
+  }
+}

@@ -2,7 +2,7 @@
 import { resolve } from "node:path";
 import { loadConfig } from "./config";
 import { ProcessCommandRunner } from "./command-runner";
-import { StateStore } from "./state-store";
+import { StateStore, withLock } from "./state-store";
 import { prepareReview, startWorkflow } from "./workflow";
 import { verify } from "./verification";
 import { AutopilotError } from "./errors";
@@ -46,36 +46,48 @@ async function main() {
     return;
   }
   if (command === "review") {
-    const state = await store.load();
-    const resultPath = valueAfter("--result");
-    if (state && resultPath) {
-      console.log(
-        JSON.stringify(
-          await applyReviewResult(
-            root,
-            c,
-            runner,
-            state,
-            await reviewResultFromFile(resolve(resultPath)),
+    await withLock(store, async () => {
+      const state = await store.load();
+      const resultPath = valueAfter("--result");
+      if (state && resultPath) {
+        console.log(
+          JSON.stringify(
+            await applyReviewResult(
+              root,
+              c,
+              runner,
+              state,
+              await reviewResultFromFile(resolve(resultPath)),
+            ),
+            null,
+            2,
           ),
-          null,
-          2,
-        ),
-      );
-    } else console.log(JSON.stringify(await prepareReview(root, c, runner), null, 2));
+        );
+      } else console.log(JSON.stringify(await prepareReview(root, c, runner), null, 2));
+    });
     return;
   }
   if (command === "resume") {
-    const s = await store.load();
-    if (!s) throw new AutopilotError("No interrupted run exists", "NO_RUN");
-    if (s.phase === "AWAITING_IMPLEMENTATION")
-      console.log(JSON.stringify(await advanceImplemented(root, c, runner, s), null, 2));
-    else if (s.phase === "READY_TO_MERGE")
-      console.log(JSON.stringify(await mergeReady(root, c, runner, s), null, 2));
-    else {
-      console.log(JSON.stringify(s, null, 2));
-      console.log("Resume requires the recorded actionable state to be satisfied.");
-    }
+    await withLock(store, async () => {
+      const s = await store.load();
+      if (!s) throw new AutopilotError("No interrupted run exists", "NO_RUN");
+      if (s.phase === "AWAITING_IMPLEMENTATION")
+        console.log(JSON.stringify(await advanceImplemented(root, c, runner, s), null, 2));
+      else if (s.phase === "READY_TO_MERGE")
+        console.log(JSON.stringify(await mergeReady(root, c, runner, s), null, 2));
+      else {
+        console.log(JSON.stringify(s, null, 2));
+        console.log("Resume requires the recorded actionable state to be satisfied.");
+      }
+    });
+    return;
+  }
+  if (command === "merge") {
+    await withLock(store, async () => {
+      const state = await store.load();
+      if (!state) throw new AutopilotError("No run is ready to merge", "NO_RUN");
+      console.log(JSON.stringify(await mergeReady(root, c, runner, state), null, 2));
+    });
     return;
   }
   if (command !== "start")

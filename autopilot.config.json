@@ -22,7 +22,7 @@
   "autoMerge": false,
   "continuous": false,
   "branchTemplate": "feat/{slug}",
-  "protectedPaths": ["main", ".git", ".env", ".env.local", "prisma/migrations"],
+  "protectedPaths": [".git", ".env", ".env.local"],
   "approvalPolicies": [
     "destructive-migration",
     "irreversible-data-deletion",

@@ -38,6 +38,7 @@ export interface RunState {
   milestone: Milestone | null;
   branch: string | null;
   commit: string | null;
+  reviewedCommit: string | null;
   prNumber: number | null;
   prUrl: string | null;
   phase: Phase;
