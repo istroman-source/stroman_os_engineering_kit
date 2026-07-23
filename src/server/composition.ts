@@ -5,6 +5,7 @@ import type { Clock, IdGenerator } from "@/application/shared";
 import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
 import type { DecisionRepository } from "@/domain/decision";
+import type { EvidenceReferenceRepository } from "@/domain/evidence";
 import type { CreativeBriefRepository } from "@/domain/creative";
 import type { EvaluationRepository, RubricRepository } from "@/domain/evaluation";
 import type { IdentityRepository } from "@/domain/identity";
@@ -53,6 +54,7 @@ import {
   PrismaMaterializationRepository,
   PrismaMediaAssetRepository,
   PrismaTranscriptDocumentRepository,
+  PrismaEvidenceReferenceRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -89,6 +91,7 @@ export interface ApiContext {
   readonly materializations: MaterializationRepository;
   readonly mediaAssets: MediaAssetRepository;
   readonly transcripts: TranscriptDocumentRepository;
+  readonly evidenceReferences: EvidenceReferenceRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -118,6 +121,7 @@ export function createApiContext(): ApiContext {
     materializations: new PrismaMaterializationRepository(prisma),
     mediaAssets: new PrismaMediaAssetRepository(prisma),
     transcripts: new PrismaTranscriptDocumentRepository(prisma),
+    evidenceReferences: new PrismaEvidenceReferenceRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
   };

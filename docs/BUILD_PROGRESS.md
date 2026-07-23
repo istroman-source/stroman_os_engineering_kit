@@ -16,6 +16,42 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Prompt 012 — Evidence Domain Model
+
+**Date:** 2026-07-22 · **Volume:** Foundation
+
+### Files and behavior
+
+Added the distinct Evidence bounded context, immutable `EvidenceReference` aggregate,
+branded identifier, discriminated media/segment provenance, and narrow insert/read/list
+repository. Added authorized application services and owner-free views; explicit Prisma
+mappers and an insert-only repository; schema, migration, CHECK constraints, composite
+alignment foreign keys, indexes, composition wiring, and equivalent in-memory storage.
+
+### Decisions
+
+- Evidence points only to source material already modeled by Prompt 011: a whole media
+  asset or an exact transcript segment with its complete transcript/media chain.
+- Existing Story Evidence, Decision advisory evidence, and Knowledge Acquisition
+  provenance remain separate domain-specific concepts; no cross-domain link was added.
+- Evidence is immutable and source deletion is restricted. No generic repository,
+  update/delete operation, HTTP route, UI, bookmark workflow, or AI grounding was added.
+
+### Tests executed
+
+Domain, application, mapper-corruption, and real-PostgreSQL repository/migration tests
+cover both provenance kinds, authorization, project alignment, missing segments,
+deterministic lists, repository failures, malformed persistence shapes, foreign keys,
+duplicate identifiers, and source deletion protection. The final verification results
+are recorded in the implementation handoff.
+
+### Known limitations and next prompt
+
+Prompt 012 provides the resolvable domain/application/persistence foundation only.
+Bookmark creation UI is deferred to Prompt 044, citation presentation to Prompt 045,
+and AI citation validation to Prompt 067. The next strict roadmap step is Prompt 013 —
+Analysis and decision domain model.
+
 ## Prompt 011 — Media and Transcript Domain Model
 
 **Date:** 2026-07-22 · **Volume:** Knowledge Acquisition foundation
@@ -28,8 +64,7 @@ tables, hand-written constraints, explicit mappers, transactional repositories,
 composition wiring, in-memory fakes, and domain/application/mapper/integration tests.
 
 Deferred by design: file storage and upload adapters, transcript importers, HTTP and
-OpenAPI delivery, UI/viewers, search, and AI extraction. These belong to Prompt 012 or
-later milestones.
+OpenAPI delivery, UI/viewers, search, and AI extraction. These belong to later prompts.
 
 ---
 

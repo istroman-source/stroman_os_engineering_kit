@@ -29,6 +29,8 @@ stated explicitly.
 | **TranscriptSpeaker** | Media & Transcript | A transcript-local speaker label referenced by segments in the same transcript. | A global person or Entity record. |
 | **TranscriptSegment** | Media & Transcript | One ordered text passage, optionally attributed to a local speaker and optionally bounded by paired media timestamps. | A Knowledge Observation or extracted fact. |
 | **SourceDocument** | Knowledge Acquisition | An ingestion/provenance record belonging to a `KnowledgeSource`, used as evidence for observations. | A `MediaAsset` metadata record or normalized `TranscriptDocument`; Prompt 011 creates no link between them. |
+| **EvidenceReference** | Evidence | An immutable, project-owned pointer to authorized source material: either a whole `MediaAsset` or one exact `TranscriptSegment`, with its complete media/transcript provenance chain. | Story-specific evidence attached to an angle; Decision advisory evidence; free-text AI evidence. |
+| **EvidenceProvenance** | Evidence | The classification and durable source identifiers carried by an `EvidenceReference`: `MEDIA_ASSET` or `TRANSCRIPT_SEGMENT`. | An inference, claim, or assessment of evidence strength. |
 
 ## Usage rules
 
@@ -38,3 +40,5 @@ stated explicitly.
   "**recommendation**," never a "decision."
 - "Score" is 1–10 (evaluation). "Confidence" is 0–1 (AI/advisory). Do not mix.
 - Identifiers are named `<Concept>Id` and are not interchangeable across concepts.
+- "Evidence reference" means resolvable source provenance. It does not mean an
+  inference, recommendation, or domain-specific citation attached to a story angle.
