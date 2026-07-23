@@ -35,6 +35,7 @@ docker compose up -d
 | `npm run test:e2e`      | Playwright end-to-end tests                |
 | `npm run format`        | Prettier write                             |
 | `npm run db:generate`   | Prisma client generation                   |
+| `./autopilot`           | Run the guarded milestone lifecycle        |
 
 ## Documentation
 
@@ -42,6 +43,7 @@ docker compose up -d
 - `docs/LOCAL_DEVELOPMENT.md` — environment setup and workflow
 - `docs/CODING_STANDARDS.md` — conventions and quality bar
 - `docs/BUILD_PROGRESS.md` — verified log, one entry per build step
+- `docs/AUTOPILOT.md` — one-command engineering automation, gates, and recovery
 
 ## Tech stack
 
