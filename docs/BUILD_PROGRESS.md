@@ -16,6 +16,29 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Accelerated Delivery Plan — Project Source Intake & Transcript Import
+
+**Date:** 2026-07-23 · **Status:** In progress
+
+PR #8 merged Prompt 013 into `main`, completing the versioned Analysis and
+human-authoritative Decision foundation. A gap audit of Prompts 014–025 found no
+additional prerequisite that must be implemented before source intake: existing rubric
+and evaluation support, ownership authorization, project-isolation coverage, database
+constraints, authentication, shell, design tokens, components, and CI are sufficient.
+
+Review-run overrides, learning/retrospectives, generic audit/integration administration,
+seed expansion, generic workspace roles, and another foundation release gate are deferred
+because they do not enable the intake vertical slice. The active milestone combines only
+tightly coupled storage/upload and transcript-import work, preserving provenance,
+ownership, project isolation, auditability, source integrity, idempotency, typed errors,
+transaction safety, and test parity. It will not expose knowledge-management or graph
+administration to filmmakers.
+
+Forecast from the current merged-PR cadence, adjusted for higher integration complexity:
+first visible demo by 2026-08-04, usable internal alpha by 2026-08-28, and product-quality
+beta by 2026-10-23. Forecasts are recalculated after each merge from implementation,
+review, CI, and blocked-time data.
+
 ## Prompt 013 — Analysis and Decision Domain Model
 
 **Date:** 2026-07-23 · **Volume:** Foundation
