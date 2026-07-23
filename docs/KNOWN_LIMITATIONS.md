@@ -14,8 +14,9 @@ The foundation intentionally contains **no business functionality**. Absent:
   reserved and documented, but empty. **Do not build data access without it.**
 - Database models and migrations (`prisma/schema.prisma` has no models;
   `DATABASE_URL` is optional until models exist).
-- AI providers/engines, uploads, transcripts, evidence, decisions, dashboards,
-  and API endpoints.
+- AI providers/engines, uploads, evidence bookmarking/citation UI, dashboards, and
+  several later roadmap APIs. Media/transcript and durable Evidence domain foundations
+  now exist; storage/import and user-facing evidence workflows remain deferred.
 
 These arrive in later build steps and must not be assumed present.
 

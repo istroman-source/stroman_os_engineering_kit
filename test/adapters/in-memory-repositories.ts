@@ -7,6 +7,11 @@ import type {
 import type { ContentItem, ContentItemId, ContentRepository } from "@/domain/content";
 import type { Decision, DecisionId, DecisionRepository } from "@/domain/decision";
 import type {
+  EvidenceReference,
+  EvidenceReferenceId,
+  EvidenceReferenceRepository,
+} from "@/domain/evidence";
+import type {
   AcquisitionRun,
   AcquisitionRunId,
   AcquisitionRunRepository,
@@ -188,6 +193,54 @@ export class InMemoryTranscriptDocumentRepository
   async findByMediaAsset(mediaAssetId: MediaAssetId): Promise<TranscriptDocument | null> {
     this.guard();
     return [...this.store.values()].find((value) => value.mediaAssetId === mediaAssetId) ?? null;
+  }
+}
+
+export class InMemoryEvidenceReferenceRepository
+  extends FailableStore
+  implements EvidenceReferenceRepository
+{
+  private readonly store = new Map<string, EvidenceReference>();
+
+  seed(value: EvidenceReference): void {
+    this.store.set(value.id, value);
+  }
+
+  async insert(value: EvidenceReference): Promise<void> {
+    this.guard();
+    insertInto(this.store, value);
+  }
+
+  async findById(id: EvidenceReferenceId): Promise<EvidenceReference | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+
+  async listByProject(projectId: ProjectId): Promise<readonly EvidenceReference[]> {
+    this.guard();
+    return this.ordered((value) => value.projectId === projectId);
+  }
+
+  async listByMediaAsset(mediaAssetId: MediaAssetId): Promise<readonly EvidenceReference[]> {
+    this.guard();
+    return this.ordered((value) => value.provenance.mediaAssetId === mediaAssetId);
+  }
+
+  async listByTranscriptDocument(
+    transcriptDocumentId: TranscriptDocumentId,
+  ): Promise<readonly EvidenceReference[]> {
+    this.guard();
+    return this.ordered(
+      (value) =>
+        value.provenance.kind === "TRANSCRIPT_SEGMENT" &&
+        value.provenance.transcriptDocumentId === transcriptDocumentId,
+    );
+  }
+
+  private ordered(predicate: (value: EvidenceReference) => boolean): EvidenceReference[] {
+    return [...this.store.values()]
+      .filter(predicate)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime() || a.id.localeCompare(b.id));
   }
 }
 

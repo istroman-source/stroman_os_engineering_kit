@@ -162,6 +162,21 @@ In particular, a Knowledge Acquisition `SourceDocument` is an ingestion provenan
 record under a `KnowledgeSource`; it is neither media metadata nor the normalized
 transcript aggregate. Prompt 011 creates no cross-domain link or automatic conversion.
 
+## Evidence context (Prompt 012)
+
+`EvidenceReference` is an immutable project-owned source pointer. Its discriminated
+`EvidenceProvenance` is either `MEDIA_ASSET` (the whole registered asset) or
+`TRANSCRIPT_SEGMENT` (one exact segment plus its transcript and originating media
+asset). Transcript provenance deliberately retains the complete chain so later
+consumers can resolve the evidence without reconstructing or guessing its source.
+
+Evidence is a distinct bounded context. It references Media and Transcript identifiers
+only; it does not modify those aggregates and does not link to Knowledge Acquisition.
+`StoryEvidence`, Decision advisory evidence, and Knowledge Observation provenance keep
+their existing domain-specific meanings. Bookmarking workflows, citation presentation,
+analysis grounding, and evidence-to-analysis relationships are deferred to their
+numbered roadmap prompts.
+
 ## Intentionally excluded (this step)
 Persistence/adapters, Prisma models, migrations, API/UI, auth/authz, media assets &
 transcripts, content relations graph, decision trees, Creative Council orchestration,

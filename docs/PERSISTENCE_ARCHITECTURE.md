@@ -197,6 +197,19 @@ one transaction. Reads explicitly reconstruct and validate the domain aggregate;
 persisted corruption becomes `PersistenceMappingError`. No update or delete ports are
 exposed because both aggregates are immutable.
 
+## Evidence references (Prompt 012)
+
+`evidence_references` stores immutable project-owned pointers to either a whole media
+asset or one exact transcript segment. A provenance-shape CHECK constraint requires
+transcript and segment identifiers together only for `TRANSCRIPT_SEGMENT` rows.
+Composite foreign keys enforce the owner/project/media/transcript chain, and the
+segment foreign key proves that a cited segment belongs to the cited transcript.
+
+All source foreign keys use `ON DELETE RESTRICT`: durable evidence prevents referenced
+media, transcripts, or segments from disappearing. Indexes cover only current project,
+media-asset, and transcript list queries. Mappers reconstruct branded identifiers and
+surface corrupt rows as `PersistenceMappingError`; the repository is insert-only.
+
 Two tables back internal identity (migration `20260719120000_add_identity`):
 
 - **`users`** — stable internal identity: `id` (app-generated `usr_…`), `status`
