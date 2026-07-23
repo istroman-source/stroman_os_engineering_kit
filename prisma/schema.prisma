@@ -73,6 +73,22 @@ enum EvidenceProvenanceKind {
   TRANSCRIPT_SEGMENT
 }
 
+enum AnalysisRunStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum AnalysisOutputKind {
+  OBSERVATION
+  INFERENCE
+  THEME
+  NARRATIVE
+  EDIT_RECOMMENDATION
+  PROMPT
+}
+
 enum StoryRecommendation {
   SELECT
   REVISE
@@ -211,6 +227,7 @@ model Project {
   mediaAssets        MediaAsset[]
   transcripts        TranscriptDocument[]
   evidenceReferences EvidenceReference[]
+  analysisRuns       AnalysisRun[]
 
   @@unique([id, ownerId])
   @@index([ownerId])
@@ -299,15 +316,96 @@ model EvidenceReference {
   transcriptSegmentId  String?                @map("transcript_segment_id")
   createdAt            DateTime               @map("created_at") @db.Timestamptz(3)
 
-  project           Project             @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
-  mediaAsset        MediaAsset          @relation(fields: [mediaAssetId, ownerId, projectId], references: [id, ownerId, projectId], onDelete: Restrict)
-  transcript        TranscriptDocument? @relation(fields: [transcriptDocumentId, ownerId, projectId, mediaAssetId], references: [id, ownerId, projectId, mediaAssetId], onDelete: Restrict)
-  transcriptSegment TranscriptSegment?  @relation(fields: [transcriptDocumentId, transcriptSegmentId], references: [transcriptDocumentId, id], onDelete: Restrict)
+  project           Project                          @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  mediaAsset        MediaAsset                       @relation(fields: [mediaAssetId, ownerId, projectId], references: [id, ownerId, projectId], onDelete: Restrict)
+  transcript        TranscriptDocument?              @relation(fields: [transcriptDocumentId, ownerId, projectId, mediaAssetId], references: [id, ownerId, projectId, mediaAssetId], onDelete: Restrict)
+  transcriptSegment TranscriptSegment?               @relation(fields: [transcriptDocumentId, transcriptSegmentId], references: [transcriptDocumentId, id], onDelete: Restrict)
+  analysisOutputs   AnalysisOutputEvidence[]
+  recommendations   AnalysisRecommendationEvidence[]
 
   @@index([projectId, createdAt])
   @@index([mediaAssetId, createdAt])
   @@index([transcriptDocumentId, createdAt])
   @@map("evidence_references")
+}
+
+model AnalysisRun {
+  id            String            @id
+  ownerId       String            @map("owner_id")
+  projectId     String            @map("project_id")
+  version       Int
+  status        AnalysisRunStatus
+  failureReason String?           @map("failure_reason")
+  createdAt     DateTime          @map("created_at") @db.Timestamptz(3)
+  startedAt     DateTime?         @map("started_at") @db.Timestamptz(3)
+  completedAt   DateTime?         @map("completed_at") @db.Timestamptz(3)
+
+  project         Project                  @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  outputs         AnalysisOutput[]
+  recommendations AnalysisRecommendation[]
+
+  @@unique([projectId, version])
+  @@index([projectId, createdAt])
+  @@map("analysis_runs")
+}
+
+model AnalysisOutput {
+  id            String             @id
+  analysisRunId String             @map("analysis_run_id")
+  kind          AnalysisOutputKind
+  content       String
+  confidence    Float?
+  createdAt     DateTime           @map("created_at") @db.Timestamptz(3)
+
+  analysisRun AnalysisRun              @relation(fields: [analysisRunId], references: [id], onDelete: Cascade)
+  evidence    AnalysisOutputEvidence[]
+
+  @@index([analysisRunId, kind])
+  @@map("analysis_outputs")
+}
+
+model AnalysisOutputEvidence {
+  analysisOutputId    String @map("analysis_output_id")
+  evidenceReferenceId String @map("evidence_reference_id")
+  position            Int
+
+  analysisOutput    AnalysisOutput    @relation(fields: [analysisOutputId], references: [id], onDelete: Cascade)
+  evidenceReference EvidenceReference @relation(fields: [evidenceReferenceId], references: [id], onDelete: Restrict)
+
+  @@id([analysisOutputId, evidenceReferenceId])
+  @@unique([analysisOutputId, position])
+  @@map("analysis_output_evidence")
+}
+
+model AnalysisRecommendation {
+  id            String   @id
+  analysisRunId String   @map("analysis_run_id")
+  title         String
+  rationale     String
+  confidence    Float
+  decisionId    String?  @map("decision_id")
+  createdAt     DateTime @map("created_at") @db.Timestamptz(3)
+
+  analysisRun AnalysisRun                      @relation(fields: [analysisRunId], references: [id], onDelete: Cascade)
+  decision    Decision?                        @relation(fields: [decisionId], references: [id], onDelete: Restrict)
+  evidence    AnalysisRecommendationEvidence[]
+
+  @@index([analysisRunId])
+  @@index([decisionId])
+  @@map("analysis_recommendations")
+}
+
+model AnalysisRecommendationEvidence {
+  analysisRecommendationId String @map("analysis_recommendation_id")
+  evidenceReferenceId      String @map("evidence_reference_id")
+  position                 Int
+
+  analysisRecommendation AnalysisRecommendation @relation(fields: [analysisRecommendationId], references: [id], onDelete: Cascade)
+  evidenceReference      EvidenceReference      @relation(fields: [evidenceReferenceId], references: [id], onDelete: Restrict)
+
+  @@id([analysisRecommendationId, evidenceReferenceId])
+  @@unique([analysisRecommendationId, position])
+  @@map("analysis_recommendation_evidence")
 }
 
 /// The creator-supplied context Stroman OS analyzes into a Creative Blueprint.
@@ -422,9 +520,10 @@ model Decision {
   decidedAt                   DateTime?      @map("decided_at") @db.Timestamptz(3)
   lockVersion                 Int            @default(1) @map("lock_version")
 
-  project  Project            @relation(fields: [projectId], references: [id], onDelete: Restrict)
-  options  DecisionOption[]
-  evidence DecisionEvidence[]
+  project                 Project                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  options                 DecisionOption[]
+  evidence                DecisionEvidence[]
+  analysisRecommendations AnalysisRecommendation[]
 
   @@index([projectId])
   @@map("decisions")

@@ -16,6 +16,25 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Prompt 013 — Analysis and Decision Domain Model
+
+**Date:** 2026-07-23 · **Volume:** Foundation
+
+Added project-owned, versioned `AnalysisRun` lifecycle aggregates, immutable typed
+outputs and editorial recommendations, optional confidence and durable Evidence links,
+plus optional linkage to the existing human-authoritative Decision aggregate. Authorized
+application workflows create, start, fail, complete, and read runs through owner-free
+views. Prisma persistence adds lifecycle constraints, project-owner alignment,
+project-version uniqueness, CAS updates, explicit corruption-safe mappers, and atomic
+completion of runs, outputs, recommendations, and evidence links. Composition and test
+fakes implement the same repository contract.
+
+Recommendations remain advisory; only the existing Decision aggregate records a human
+choice. Completed outputs and prior versions are immutable. No HTTP, UI, provider call,
+analysis engine, or extraction was added. Domain, application, mapper, and PostgreSQL
+tests cover lifecycle rules, validation, ownership, version uniqueness, CAS, atomic
+completion, and rollback. Prompt 014 — Review and rubric domain model — is next.
+
 ## Prompt 012 — Evidence Domain Model
 
 **Date:** 2026-07-22 · **Volume:** Foundation

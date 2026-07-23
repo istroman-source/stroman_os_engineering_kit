@@ -177,7 +177,16 @@ their existing domain-specific meanings. Bookmarking workflows, citation present
 analysis grounding, and evidence-to-analysis relationships are deferred to their
 numbered roadmap prompts.
 
+## Analysis context (Prompt 013)
+
+`AnalysisRun` is a project-owned, monotonically versioned execution record with the
+lifecycle `PENDING → RUNNING → COMPLETED|FAILED`. A completed run owns immutable typed
+`AnalysisOutput` and `AnalysisRecommendation` records. Both may cite durable
+`EvidenceReference` identifiers. Recommendations are advisory and may link to an existing
+`Decision`, but only that Decision aggregate can record a human creative choice.
+
 ## Intentionally excluded (this step)
+
 Persistence/adapters, Prisma models, migrations, API/UI, auth/authz, media assets &
 transcripts, content relations graph, decision trees, Creative Council orchestration,
 project stages, learning engine, AI provider adapters, prompt templates. These are

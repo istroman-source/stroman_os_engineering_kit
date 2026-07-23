@@ -31,6 +31,9 @@ stated explicitly.
 | **SourceDocument** | Knowledge Acquisition | An ingestion/provenance record belonging to a `KnowledgeSource`, used as evidence for observations. | A `MediaAsset` metadata record or normalized `TranscriptDocument`; Prompt 011 creates no link between them. |
 | **EvidenceReference** | Evidence | An immutable, project-owned pointer to authorized source material: either a whole `MediaAsset` or one exact `TranscriptSegment`, with its complete media/transcript provenance chain. | Story-specific evidence attached to an angle; Decision advisory evidence; free-text AI evidence. |
 | **EvidenceProvenance** | Evidence | The classification and durable source identifiers carried by an `EvidenceReference`: `MEDIA_ASSET` or `TRANSCRIPT_SEGMENT`. | An inference, claim, or assessment of evidence strength. |
+| **AnalysisRun** | Analysis | One versioned execution envelope for project-scoped editorial reasoning, with an explicit lifecycle. | An AI provider request or a human Decision. |
+| **AnalysisOutput** | Analysis | A typed, optionally confidence-scored editorial result grounded by durable Evidence references. | A source or final human choice. |
+| **AnalysisRecommendation** | Analysis | Advisory editorial guidance with rationale, confidence, and optional Evidence and Decision linkage. | A Decision; recommendations never exercise human authority. |
 
 ## Usage rules
 

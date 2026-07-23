@@ -1,5 +1,13 @@
 import { ConflictError, NotFoundError, OptimisticConcurrencyError } from "@/lib/errors";
 import type {
+  AnalysisOutput,
+  AnalysisRecommendation,
+  AnalysisRepository,
+  AnalysisRun,
+  AnalysisRunId,
+  AnalysisRunStatus,
+} from "@/domain/analysis";
+import type {
   MaterializationLink,
   MaterializationRepository,
   MaterializedRecord,
@@ -809,5 +817,68 @@ export class InMemoryMaterializationRepository
     else if (record.kind === "INSIGHT") await this.insights.insert(record.insight);
     else await this.relationships.insert(record.relationship);
     this.links.push(link);
+  }
+}
+
+export class InMemoryAnalysisRepository extends FailableStore implements AnalysisRepository {
+  private readonly runs = new Map<string, AnalysisRun>();
+  private readonly outputs = new Map<string, AnalysisOutput[]>();
+  private readonly recommendations = new Map<string, AnalysisRecommendation[]>();
+
+  seed(run: AnalysisRun): void {
+    this.runs.set(run.id, run);
+  }
+  async findRunById(id: AnalysisRunId) {
+    this.guard();
+    return this.runs.get(id) ?? null;
+  }
+  async listRunsByProject(projectId: ProjectId) {
+    this.guard();
+    return [...this.runs.values()]
+      .filter((run) => run.projectId === projectId)
+      .sort((a, b) => a.version - b.version);
+  }
+  async listOutputsByRun(id: AnalysisRunId) {
+    this.guard();
+    return this.outputs.get(id) ?? [];
+  }
+  async listRecommendationsByRun(id: AnalysisRunId) {
+    this.guard();
+    return this.recommendations.get(id) ?? [];
+  }
+  async insertRun(run: AnalysisRun) {
+    this.guard();
+    if (
+      this.runs.has(run.id) ||
+      [...this.runs.values()].some(
+        (value) => value.projectId === run.projectId && value.version === run.version,
+      )
+    )
+      throw new ConflictError("Analysis run already exists");
+    this.runs.set(run.id, run);
+  }
+  async updateRun(run: AnalysisRun, expectedStatus: AnalysisRunStatus) {
+    this.guard();
+    const current = this.runs.get(run.id);
+    if (!current) throw new NotFoundError("Analysis run not found");
+    if (current.status !== expectedStatus)
+      throw new OptimisticConcurrencyError("Analysis run changed concurrently");
+    this.runs.set(run.id, run);
+  }
+  async saveResult(
+    run: AnalysisRun,
+    outputs: readonly AnalysisOutput[],
+    recommendations: readonly AnalysisRecommendation[],
+  ) {
+    this.guard();
+    const current = this.runs.get(run.id);
+    if (!current) throw new NotFoundError("Analysis run not found");
+    if (current.status !== "RUNNING")
+      throw new OptimisticConcurrencyError("Analysis run changed concurrently");
+    if (this.outputs.has(run.id) || this.recommendations.has(run.id))
+      throw new ConflictError("Analysis result already exists");
+    this.runs.set(run.id, run);
+    this.outputs.set(run.id, [...outputs]);
+    this.recommendations.set(run.id, [...recommendations]);
   }
 }
