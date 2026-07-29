@@ -1,4 +1,4 @@
-import { AppError, ValidationError } from "@/lib/errors";
+import { AppError, ConflictError, ValidationError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   MediaAssetId,
@@ -44,7 +44,7 @@ export interface ParsedTranscript {
   }[];
 }
 
-function timestamp(value: string): number {
+function srtTimestamp(value: string): number {
   const match = value.trim().match(/^(\d{1,2}):(\d{2}):(\d{2})[,.](\d{3})$/);
   if (!match) throw new TranscriptParseError(`Invalid transcript timestamp: ${value}`);
   return (
@@ -53,21 +53,20 @@ function timestamp(value: string): number {
   );
 }
 
-function timed(text: string, format: "srt" | "vtt"): ParsedTranscript {
+function parseSrt(text: string): ParsedTranscript {
   const normalized = text
     .replace(/\r\n?/g, "\n")
     .replace(/^\uFEFF/, "")
     .trim();
-  const body = format === "vtt" ? normalized.replace(/^WEBVTT[^\n]*\n+/, "") : normalized;
-  const blocks = body.split(/\n{2,}/).filter(Boolean);
+  const blocks = normalized.split(/\n{2,}/).filter(Boolean);
   const segments = blocks.map((block, sequence) => {
     const lines = block.split("\n");
-    if (format === "srt" && /^\d+$/.test(lines[0]?.trim() ?? "")) lines.shift();
+    if (/^\d+$/.test(lines[0]?.trim() ?? "")) lines.shift();
     const timing = lines
       .shift()
       ?.match(/^(\d{1,2}:\d{2}:\d{2}[,.]\d{3})\s+-->\s+(\d{1,2}:\d{2}:\d{2}[,.]\d{3})/);
     if (!timing || lines.length === 0)
-      throw new TranscriptParseError(`Invalid ${format.toUpperCase()} cue ${sequence + 1}`);
+      throw new TranscriptParseError(`Invalid SRT cue ${sequence + 1}`);
     const cueText = lines
       .join("\n")
       .replace(/<[^>]+>/g, "")
@@ -77,16 +76,69 @@ function timed(text: string, format: "srt" | "vtt"): ParsedTranscript {
       sequence,
       speakerIndex: null,
       text: cueText,
-      startMs: timestamp(timing[1]!),
-      endMs: timestamp(timing[2]!),
+      startMs: srtTimestamp(timing[1]!),
+      endMs: srtTimestamp(timing[2]!),
     };
   });
   if (segments.length === 0) throw new TranscriptParseError("Transcript contains no segments");
   return { speakers: [], segments };
 }
 
+function webVttTimestamp(value: string): number {
+  const match = value.trim().match(/^(?:(\d+):)?(\d{2}):(\d{2})\.(\d{3})$/);
+  if (!match) throw new TranscriptParseError(`Invalid transcript timestamp: ${value}`);
+  const hours = match[1] ? Number(match[1]) : 0;
+  const minutes = Number(match[2]);
+  const seconds = Number(match[3]);
+  if (minutes > 59 || seconds > 59)
+    throw new TranscriptParseError(`Invalid transcript timestamp: ${value}`);
+  return (hours * 3600 + minutes * 60 + seconds) * 1000 + Number(match[4]);
+}
+
+function parseWebVtt(text: string): ParsedTranscript {
+  const normalized = text.replace(/\r\n?/g, "\n").replace(/^\uFEFF/, "");
+  const headerEnd = normalized.indexOf("\n\n");
+  const header = (headerEnd < 0 ? normalized : normalized.slice(0, headerEnd)).split("\n");
+  if (!/^WEBVTT(?:[ \t].*)?$/.test(header[0] ?? ""))
+    throw new TranscriptParseError("WebVTT header is required");
+  if (headerEnd < 0) throw new TranscriptParseError("WebVTT contains no cues");
+  const blocks = normalized
+    .slice(headerEnd + 2)
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+  const segments: ParsedTranscript["segments"][number][] = [];
+  for (const block of blocks) {
+    const lines = block.split("\n");
+    const first = lines[0]?.trim() ?? "";
+    if (first === "STYLE" || first === "REGION" || first.startsWith("NOTE")) continue;
+    let timingLine = lines.shift() ?? "";
+    if (!timingLine.includes("-->")) timingLine = lines.shift() ?? "";
+    const timing = timingLine.match(
+      /^((?:(?:\d+):)?\d{2}:\d{2}\.\d{3})\s+-->\s+((?:(?:\d+):)?\d{2}:\d{2}\.\d{3})(?:\s+.*)?$/,
+    );
+    if (!timing || lines.length === 0)
+      throw new TranscriptParseError(`Invalid WebVTT cue ${segments.length + 1}`);
+    const cueText = lines
+      .join("\n")
+      .replace(/<[^>]+>/g, "")
+      .trim();
+    if (!cueText) throw new TranscriptParseError(`Empty transcript cue ${segments.length + 1}`);
+    segments.push({
+      sequence: segments.length,
+      speakerIndex: null,
+      text: cueText,
+      startMs: webVttTimestamp(timing[1]!),
+      endMs: webVttTimestamp(timing[2]!),
+    });
+  }
+  if (segments.length === 0) throw new TranscriptParseError("Transcript contains no segments");
+  return { speakers: [], segments };
+}
+
 export function parseTranscript(text: string, format: TranscriptFormat): ParsedTranscript {
-  if (format === "srt" || format === "vtt") return timed(text, format);
+  if (format === "srt") return parseSrt(text);
+  if (format === "vtt") return parseWebVtt(text);
   if (format === "text") {
     const segments = text
       .replace(/\r\n?/g, "\n")
@@ -244,11 +296,33 @@ export async function importProjectSource(
     createdAt: now,
     updatedAt: now,
   };
+  let lease: { readonly leaseId: string };
   try {
-    await deps.storage.put(storageKey, input.bytes);
-    return ok(await deps.imports.completeAtomically({ receipt, media: media.value, transcript }));
+    lease = await deps.storage.put(storageKey, input.bytes);
   } catch (error) {
-    await deps.storage.remove(storageKey).catch(() => undefined);
+    return err(
+      error instanceof AppError
+        ? error
+        : new AppError("UNAVAILABLE", "Import could not be stored", { cause: error }),
+    );
+  }
+  try {
+    const completed = await deps.imports.completeAtomically({
+      receipt,
+      media: media.value,
+      transcript,
+    });
+    await deps.storage.retain(storageKey, lease.leaseId);
+    return ok(completed);
+  } catch (error) {
+    if (error instanceof ConflictError) {
+      const original = await deps.imports.findByKey(input.projectId, input.idempotencyKey);
+      if (original) {
+        await deps.storage.retain(storageKey, lease.leaseId);
+        return ok(original);
+      }
+    }
+    await deps.storage.discard(storageKey, lease.leaseId).catch(() => undefined);
     return err(
       error instanceof AppError
         ? error

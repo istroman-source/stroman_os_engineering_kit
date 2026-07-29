@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { OwnerId, ProjectId, createProject, makeProjectName } from "@/domain/project";
 import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repositories";
@@ -36,6 +38,30 @@ describe("transcript import", () => {
     expect(parsed.segments).toMatchObject([
       { sequence: 0, text: "Second", startMs: 2000, endMs: 3250 },
       { sequence: 1, text: "Third", startMs: 4000, endMs: 5000 },
+    ]);
+  });
+
+  it("parses WebVTT headers, metadata, cue identifiers, NOTE blocks, and STYLE blocks", () => {
+    const fixture = readFileSync(
+      resolve(process.cwd(), "src/application/source-import/fixtures/standards.vtt"),
+      "utf8",
+    );
+    const parsed = parseTranscript(fixture, "vtt");
+    expect(parsed.segments).toEqual([
+      {
+        sequence: 0,
+        speakerIndex: null,
+        text: "Opening image",
+        startMs: 1000,
+        endMs: 3250,
+      },
+      {
+        sequence: 1,
+        speakerIndex: null,
+        text: "Second line",
+        startMs: 4000,
+        endMs: 6500,
+      },
     ]);
   });
 
@@ -78,6 +104,50 @@ describe("transcript import", () => {
     expect(
       [...deps.imports.transcripts.values()][0]?.segments.map((value) => value.sequence),
     ).toEqual([0, 1]);
+  });
+
+  it("returns the committed receipt for concurrent duplicate imports without cleanup", async () => {
+    const deps = env();
+    const input = {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "same-request",
+      sourceName: "clip.mov",
+      contentType: "video/quicktime",
+      bytes: new Uint8Array([1, 2, 3]),
+      contentHash: "sha256:concurrent",
+    };
+    const [left, right] = await Promise.all([
+      importProjectSource(deps, input),
+      importProjectSource(deps, input),
+    ]);
+    expect(left.ok).toBe(true);
+    expect(right.ok).toBe(true);
+    if (!left.ok || !right.ok) throw new Error("expected successful duplicate imports");
+    expect(right.value).toEqual(left.value);
+    expect(deps.imports.receipts.size).toBe(1);
+    expect(deps.storage.values.size).toBe(1);
+    expect(deps.storage.discardCount).toBe(0);
+  });
+
+  it("does not delete shared bytes when one concurrent attempt fails", async () => {
+    const deps = env();
+    const input = {
+      actorId: OWNER,
+      projectId: PROJECT,
+      sourceName: "clip.mov",
+      contentType: "video/quicktime",
+      bytes: new Uint8Array([4, 5, 6]),
+      contentHash: "sha256:shared",
+    };
+    deps.imports.failNext = true;
+    const [failed, committed] = await Promise.all([
+      importProjectSource(deps, { ...input, idempotencyKey: "first" }),
+      importProjectSource(deps, { ...input, idempotencyKey: "second" }),
+    ]);
+    expect([failed, committed].filter((result) => result.ok)).toHaveLength(1);
+    expect(deps.imports.receipts.size).toBe(1);
+    expect(deps.storage.values.size).toBe(1);
   });
 
   it("preserves project isolation and removes stored bytes after an atomic failure", async () => {

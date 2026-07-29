@@ -1631,6 +1631,10 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
+        "411":
+          description: Content-Length is required before an upload body is read.
+        "413":
+          description: Upload request exceeds the bounded in-memory request limit.
   /api/v1/entities:
     post:
       tags: [Memory]

@@ -5,8 +5,10 @@ import { authenticateRequest } from "@/server/auth";
 import { getApiContext } from "@/server/composition";
 import { HttpError } from "@/server/http/http-error";
 import { apiRoute, json, parsePathId, sendResult } from "@/server/http/respond";
+import { requireBoundedContentLength } from "@/server/http/upload-limit";
 
-const MAX_BYTES = 250 * 1024 * 1024;
+const MAX_FILE_BYTES = 50 * 1024 * 1024;
+const MAX_REQUEST_BYTES = MAX_FILE_BYTES + 1024 * 1024;
 const transcriptFormats = new Set<TranscriptFormat>(["srt", "vtt", "json", "text"]);
 
 const serialize = (value: {
@@ -37,10 +39,11 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
   const contentType = req.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().includes("multipart/form-data"))
     throw new HttpError(415, "UNSUPPORTED_MEDIA_TYPE", "Expected a file upload.");
+  requireBoundedContentLength(req.headers, MAX_REQUEST_BYTES);
   const form = await req.formData();
   const file = form.get("file");
   if (!(file instanceof File)) throw new HttpError(400, "VALIDATION_FAILED", "Choose a file.");
-  if (file.size === 0 || file.size > MAX_BYTES)
+  if (file.size === 0 || file.size > MAX_FILE_BYTES)
     throw new HttpError(400, "VALIDATION_FAILED", "File size is not supported.");
   const rawFormat = form.get("transcriptFormat");
   const transcriptFormat =
