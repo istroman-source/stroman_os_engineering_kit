@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "roadmapFile": "roadmap/PRODUCT_ROADMAP.md",
+  "progressFile": "docs/BUILD_PROGRESS.md",
+  "releaseNotesFile": "docs/BUILD_PROGRESS.md",
+  "promptDirectories": ["prompts"],
+  "verificationCommands": [
+    ["npx", "prisma", "format"],
+    ["npx", "prisma", "generate"],
+    ["npm", "run", "typecheck"],
+    ["npm", "run", "lint"],
+    ["npm", "run", "format:check"],
+    ["npm", "run", "test"],
+    ["npm", "run", "test:integration"],
+    ["npm", "run", "build"],
+    ["git", "diff", "--check"]
+  ],
+  "implementationAgentCommand": null,
+  "reviewAgentCommand": null,
+  "ciTimeoutSeconds": 1800,
+  "remediationLoopLimit": 2,
+  "autoMerge": false,
+  "continuous": false,
+  "branchTemplate": "feat/{slug}",
+  "protectedPaths": [".git", ".env", ".env.local"],
+  "approvalPolicies": [
+    "destructive-migration",
+    "irreversible-data-deletion",
+    "product-direction-change",
+    "security-architecture",
+    "paid-external-service",
+    "roadmap-ambiguity",
+    "subjective-review-finding"
+  ]
+}
