@@ -89,6 +89,13 @@ enum AnalysisOutputKind {
   PROMPT
 }
 
+enum SourceImportStatus {
+  PROCESSING
+  COMPLETED
+  RETRYABLE_FAILURE
+  TERMINAL_FAILURE
+}
+
 enum StoryRecommendation {
   SELECT
   REVISE
@@ -228,6 +235,7 @@ model Project {
   transcripts        TranscriptDocument[]
   evidenceReferences EvidenceReference[]
   analysisRuns       AnalysisRun[]
+  sourceImports      SourceImport[]
 
   @@unique([id, ownerId])
   @@index([ownerId])
@@ -247,6 +255,7 @@ model MediaAsset {
   project            Project             @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
   transcript         TranscriptDocument?
   evidenceReferences EvidenceReference[]
+  sourceImport       SourceImport?
 
   @@unique([id, ownerId, projectId])
   @@index([projectId])
@@ -266,12 +275,46 @@ model TranscriptDocument {
   speakers           TranscriptSpeaker[]
   segments           TranscriptSegment[]
   evidenceReferences EvidenceReference[]
+  sourceImport       SourceImport?
 
   @@unique([id, ownerId, projectId, mediaAssetId])
   @@unique([mediaAssetId, ownerId, projectId])
   @@index([projectId])
   @@index([mediaAssetId])
   @@map("transcript_documents")
+}
+
+/// Auditable, project-scoped receipt for one filmmaker source import. The
+/// idempotency key is unique only inside a project, never across owners/projects.
+model SourceImport {
+  id                   String             @id
+  ownerId              String             @map("owner_id")
+  projectId            String             @map("project_id")
+  idempotencyKey       String             @map("idempotency_key")
+  status               SourceImportStatus
+  sourceName           String             @map("source_name")
+  sourceKind           String             @map("source_kind")
+  contentType          String             @map("content_type")
+  byteSize             Int                @map("byte_size")
+  contentHash          String             @map("content_hash")
+  storageKey           String             @map("storage_key")
+  transcriptFormat     String?            @map("transcript_format")
+  failureCode          String?            @map("failure_code")
+  mediaAssetId         String?            @unique @map("media_asset_id")
+  transcriptDocumentId String?            @unique @map("transcript_document_id")
+  createdAt            DateTime           @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime           @map("updated_at") @db.Timestamptz(3)
+
+  project    Project             @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  mediaAsset MediaAsset?         @relation(fields: [mediaAssetId, ownerId, projectId], references: [id, ownerId, projectId], onDelete: Restrict)
+  transcript TranscriptDocument? @relation(fields: [transcriptDocumentId, ownerId, projectId, mediaAssetId], references: [id, ownerId, projectId, mediaAssetId], onDelete: Restrict)
+
+  @@unique([projectId, idempotencyKey])
+  @@unique([id, ownerId, projectId])
+  @@unique([mediaAssetId, ownerId, projectId])
+  @@unique([transcriptDocumentId, ownerId, projectId, mediaAssetId])
+  @@index([projectId, createdAt])
+  @@map("source_imports")
 }
 
 model TranscriptSpeaker {

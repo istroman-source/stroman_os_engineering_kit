@@ -1,0 +1,22 @@
+WEBVTT Filmmaker transcript
+Kind: captions
+Language: en
+
+STYLE
+::cue {
+  color: lime;
+}
+
+NOTE This block is intentionally ignored
+It may contain more than one line.
+
+opening-cue
+00:01.000 --> 00:03.250 align:start position:10%
+Opening image
+
+NOTE
+Another note block.
+
+second-cue
+00:00:04.000 --> 00:00:06.500
+Second <b>line</b>

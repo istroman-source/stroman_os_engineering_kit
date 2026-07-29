@@ -31,5 +31,6 @@ export {
   PrismaMediaAssetRepository,
   PrismaTranscriptDocumentRepository,
 } from "./repositories/prisma-media-transcript-repositories";
+export { PrismaSourceImportRepository } from "./repositories/prisma-source-import-repository";
 export { PrismaEvidenceReferenceRepository } from "./repositories/prisma-evidence-repository";
 export { PrismaAnalysisRepository } from "./repositories/prisma-analysis-repository";
