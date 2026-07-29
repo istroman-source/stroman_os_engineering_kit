@@ -115,6 +115,32 @@ components:
       additionalProperties: false
       properties:
         name: { type: string, minLength: 1, maxLength: 200 }
+    SourceImport:
+      type: object
+      required:
+        [
+          id,
+          status,
+          sourceName,
+          sourceKind,
+          byteSize,
+          contentHash,
+          mediaId,
+          transcriptId,
+          createdAt,
+        ]
+      properties:
+        id: { type: string }
+        status:
+          type: string
+          enum: [PROCESSING, COMPLETED, RETRYABLE_FAILURE, TERMINAL_FAILURE]
+        sourceName: { type: string }
+        sourceKind: { type: string, enum: [MEDIA, TRANSCRIPT] }
+        byteSize: { type: integer, minimum: 0 }
+        contentHash: { type: string }
+        mediaId: { type: [string, "null"] }
+        transcriptId: { type: [string, "null"] }
+        createdAt: { type: string, format: date-time }
     ContentItem:
       type: object
       required: [id, type, slug, title, status, version, createdAt, updatedAt]
@@ -1550,6 +1576,61 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
         "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/imports:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: listProjectImports
+      summary: List filmmaker-visible media and transcript import status.
+      responses:
+        "200":
+          description: Ordered project imports.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: "#/components/schemas/SourceImport" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    post:
+      tags: [Projects]
+      operationId: importProjectSource
+      summary: Import project media or a transcript.
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema: { type: string, maxLength: 200 }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+                transcriptFormat:
+                  type: string
+                  enum: [srt, vtt, json, text]
+      responses:
+        "201":
+          description: Completed import receipt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SourceImport" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
   /api/v1/entities:
     post:
       tags: [Memory]

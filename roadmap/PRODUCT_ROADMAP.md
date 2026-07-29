@@ -17,7 +17,7 @@ foundation prompts before visible filmmaker value.
 
 ## Accelerated delivery sequence
 
-### Project Source Intake & Transcript Import — in progress
+### Project Source Intake & Transcript Import — implementation complete, review pending
 
 **Goal:** let a filmmaker select or create a project, add source material once, and leave
 with project-owned, provenance-preserving transcript material that the existing Evidence

@@ -18,7 +18,7 @@ Append one verified entry after every numbered prompt.
 
 ## Accelerated Delivery Plan — Project Source Intake & Transcript Import
 
-**Date:** 2026-07-23 · **Status:** In progress
+**Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review
 
 PR #8 merged Prompt 013 into `main`, completing the versioned Analysis and
 human-authoritative Decision foundation. A gap audit of Prompts 014–025 found no
@@ -38,6 +38,26 @@ Forecast from the current merged-PR cadence, adjusted for higher integration com
 first visible demo by 2026-08-04, usable internal alpha by 2026-08-28, and product-quality
 beta by 2026-10-23. Forecasts are recalculated after each merge from implementation,
 review, CI, and blocked-time data.
+
+The implemented slice adds a filmmaker-facing Source Material panel to each project,
+project-scoped media and transcript upload, visible importing/completion states, and
+normalized SRT, VTT, JSON, and text transcript ingestion. SHA-256 provenance, source
+storage keys, idempotency receipts, transcript ordering, and atomic creation of receipts,
+media, documents, speakers, and segments make completed material immediately resolvable
+by the existing Evidence and Analysis foundations.
+
+The persistence mapper rejects corrupt import rows, the database enforces owner/project
+alignment and source relationships, and the test adapter mirrors idempotent atomic
+behavior with storage compensation. Focused application, mapper, and real-PostgreSQL
+tests cover parsing, ordering, ownership isolation, idempotency, rollback, and mapper
+corruption.
+
+Deferred remain review/rubric expansion, learning workflows, generic ingestion or asset
+administration, transcript editing/search, background job infrastructure, cloud storage
+providers, automatic analysis, and every nonessential roadmap item. The synchronous
+first slice deliberately uses the existing server boundary and a provider-neutral local
+storage adapter; production object storage and asynchronous workers are introduced only
+when scale or deployment requirements make them necessary.
 
 ## Repository Autopilot
 

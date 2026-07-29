@@ -2,6 +2,7 @@ import "server-only";
 
 import { createIdGenerator, systemClock } from "@/application/shared";
 import type { Clock, IdGenerator } from "@/application/shared";
+import type { SourceImportRepository, SourceStorage } from "@/application/source-import";
 import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
 import type { AnalysisRepository } from "@/domain/analysis";
@@ -57,8 +58,10 @@ import {
   PrismaTranscriptDocumentRepository,
   PrismaEvidenceReferenceRepository,
   PrismaAnalysisRepository,
+  PrismaSourceImportRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
+import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
 import { isCookieSecure } from "@/server/auth/config";
 import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
@@ -94,6 +97,8 @@ export interface ApiContext {
   readonly materializations: MaterializationRepository;
   readonly mediaAssets: MediaAssetRepository;
   readonly transcripts: TranscriptDocumentRepository;
+  readonly sourceImports: SourceImportRepository;
+  readonly sourceStorage: SourceStorage;
   readonly evidenceReferences: EvidenceReferenceRepository;
   readonly clock: Clock;
   readonly ids: IdGenerator;
@@ -125,6 +130,10 @@ export function createApiContext(): ApiContext {
     materializations: new PrismaMaterializationRepository(prisma),
     mediaAssets: new PrismaMediaAssetRepository(prisma),
     transcripts: new PrismaTranscriptDocumentRepository(prisma),
+    sourceImports: new PrismaSourceImportRepository(prisma),
+    sourceStorage: new FileSystemSourceStorage(
+      process.env.STROMAN_SOURCE_STORAGE_PATH ?? `${process.cwd()}/.data/source-imports`,
+    ),
     evidenceReferences: new PrismaEvidenceReferenceRepository(prisma),
     clock: systemClock,
     ids: createIdGenerator(),
