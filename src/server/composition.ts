@@ -5,7 +5,7 @@ import type { Clock, IdGenerator } from "@/application/shared";
 import type { SourceImportRepository, SourceStorage } from "@/application/source-import";
 import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
-import type { AnalysisRepository } from "@/domain/analysis";
+import type { AnalysisRepository, GroundedEditorialAnalyzer } from "@/domain/analysis";
 import type { DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceRepository } from "@/domain/evidence";
 import type { CreativeBriefRepository } from "@/domain/creative";
@@ -62,6 +62,7 @@ import {
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
+import { DeterministicGroundedAnalyzer } from "@/infrastructure/analysis";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
 import { isCookieSecure } from "@/server/auth/config";
 import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
@@ -100,6 +101,7 @@ export interface ApiContext {
   readonly sourceImports: SourceImportRepository;
   readonly sourceStorage: SourceStorage;
   readonly evidenceReferences: EvidenceReferenceRepository;
+  readonly analyzer: GroundedEditorialAnalyzer;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -135,6 +137,7 @@ export function createApiContext(): ApiContext {
       process.env.STROMAN_SOURCE_STORAGE_PATH ?? `${process.cwd()}/.data/source-imports`,
     ),
     evidenceReferences: new PrismaEvidenceReferenceRepository(prisma),
+    analyzer: new DeterministicGroundedAnalyzer(),
     clock: systemClock,
     ids: createIdGenerator(),
   };
