@@ -16,6 +16,30 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Accelerated Delivery Plan — Automatic Evidence-Grounded Analysis Pipeline
+
+**Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review
+
+Added a provider-neutral grounded editorial analysis boundary and a transparent,
+deterministic development implementation. A project owner can run analysis directly
+from imported transcripts; every finding and advisory recommendation must cite
+project-owned transcript segments before it can be persisted. The application reuses
+immutable Evidence references, creates versioned Analysis runs, records failed runs
+when grounding or the analyzer fails, and exposes the latest completed result after
+refresh through authenticated project-scoped HTTP delivery.
+
+The filmmaker-facing workspace adds one calm analysis action and displays concise
+findings, source counts, confidence, and an explicitly advisory next step. It does not
+create Decisions, mutate source material, call a hosted AI provider, expose knowledge
+administration, or add analysis dashboards. The deterministic adapter is a replaceable
+baseline behind the existing architecture boundary; provider-backed intelligence and
+the Edit Engine remain later gated work.
+
+Focused coverage verifies deterministic output, mandatory source grounding, ownership
+isolation, missing-source rejection, evidence reuse, version progression, latest-result
+retrieval, and failed-run recording for unsupported claims. OpenAPI documents both the
+run and latest-result operations.
+
 ## Accelerated Delivery Plan — Project Source Intake & Transcript Import
 
 **Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review

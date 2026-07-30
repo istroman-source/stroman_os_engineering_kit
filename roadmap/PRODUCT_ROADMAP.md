@@ -17,7 +17,7 @@ foundation prompts before visible filmmaker value.
 
 ## Accelerated delivery sequence
 
-### Project Source Intake & Transcript Import — implementation complete, review pending
+### Project Source Intake & Transcript Import — complete
 
 **Goal:** let a filmmaker select or create a project, add source material once, and leave
 with project-owned, provenance-preserving transcript material that the existing Evidence
@@ -50,7 +50,7 @@ be armed only after all of those conditions are true.
 
 ### Following vertical slices
 
-1. Automatic Evidence-Grounded Analysis Pipeline.
+1. Automatic Evidence-Grounded Analysis Pipeline — implementation complete, review pending.
 2. Edit Engine v1: Story, Recommendations, and Alternatives.
 3. Prompt Synthesis and verified Wideframe handoff.
 4. Internal-alpha reliability and evaluation gate.

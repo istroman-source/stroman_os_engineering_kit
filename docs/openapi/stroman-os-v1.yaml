@@ -141,6 +141,67 @@ components:
         mediaId: { type: [string, "null"] }
         transcriptId: { type: [string, "null"] }
         createdAt: { type: string, format: date-time }
+    AutomaticAnalysisResult:
+      type: object
+      required: [run, outputs, recommendations]
+      properties:
+        run:
+          type: object
+          required:
+            [id, projectId, version, status, failureReason, createdAt, startedAt, completedAt]
+          properties:
+            id: { type: string }
+            projectId: { type: string }
+            version: { type: integer, minimum: 1 }
+            status: { type: string, enum: [COMPLETED] }
+            failureReason: { type: ["string", "null"] }
+            createdAt: { type: string, format: date-time }
+            startedAt: { type: ["string", "null"], format: date-time }
+            completedAt: { type: ["string", "null"], format: date-time }
+        outputs:
+          type: array
+          items:
+            type: object
+            required:
+              [id, analysisRunId, kind, content, confidence, evidenceReferenceIds, createdAt]
+            properties:
+              id: { type: string }
+              analysisRunId: { type: string }
+              kind: { type: string, enum: [OBSERVATION, INFERENCE, THEME, NARRATIVE] }
+              content: { type: string }
+              confidence: { type: ["number", "null"], minimum: 0, maximum: 1 }
+              evidenceReferenceIds:
+                type: array
+                minItems: 1
+                items: { type: string }
+              createdAt: { type: string, format: date-time }
+        recommendations:
+          type: array
+          items:
+            type: object
+            required:
+              [
+                id,
+                analysisRunId,
+                title,
+                rationale,
+                confidence,
+                evidenceReferenceIds,
+                decisionId,
+                createdAt,
+              ]
+            properties:
+              id: { type: string }
+              analysisRunId: { type: string }
+              title: { type: string }
+              rationale: { type: string }
+              confidence: { type: number, minimum: 0, maximum: 1 }
+              evidenceReferenceIds:
+                type: array
+                minItems: 1
+                items: { type: string }
+              decisionId: { type: ["string", "null"] }
+              createdAt: { type: string, format: date-time }
     ContentItem:
       type: object
       required: [id, type, slug, title, status, version, createdAt, updatedAt]
@@ -1635,6 +1696,42 @@ paths:
           description: Content-Length is required before an upload body is read.
         "413":
           description: Upload request exceeds the bounded in-memory request limit.
+  /api/v1/projects/{projectId}/automatic-analysis:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: runAutomaticEvidenceGroundedAnalysis
+      summary: Create a versioned analysis from imported project transcripts.
+      description: >
+        Produces evidence-cited findings and advisory recommendations. The
+        operation creates no human decision and never mutates source material.
+      responses:
+        "201":
+          description: Completed evidence-grounded analysis.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AutomaticAnalysisResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+    get:
+      tags: [Projects]
+      operationId: getLatestAutomaticEvidenceGroundedAnalysis
+      summary: Fetch the latest versioned transcript analysis for a project.
+      responses:
+        "200":
+          description: Latest evidence-grounded analysis.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AutomaticAnalysisResult" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/entities:
     post:
       tags: [Memory]
