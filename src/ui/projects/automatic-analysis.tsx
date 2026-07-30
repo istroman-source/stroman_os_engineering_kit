@@ -70,6 +70,7 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
         );
       }
       setResult(body as AnalysisResult);
+      window.dispatchEvent(new Event("stroman:analysis-completed"));
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Analysis could not be completed.");
     } finally {

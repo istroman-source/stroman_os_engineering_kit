@@ -202,6 +202,58 @@ components:
                 items: { type: string }
               decisionId: { type: ["string", "null"] }
               createdAt: { type: string, format: date-time }
+    EditEngineResult:
+      type: object
+      required: [analysisVersion, story, strongestObservations, recommendations, alternatives]
+      properties:
+        analysisVersion: { type: integer, minimum: 1 }
+        story:
+          type: object
+          required: [summary, objective, structure, emotionalArc]
+          properties:
+            summary: { type: string }
+            objective: { type: string }
+            structure: { type: string }
+            emotionalArc:
+              type: array
+              items: { type: string }
+        strongestObservations:
+          type: array
+          maxItems: 5
+          items:
+            type: object
+            required: [id, content, kind, confidence, evidenceReferenceIds]
+            properties:
+              id: { type: string }
+              content: { type: string }
+              kind: { type: string, enum: [OBSERVATION, INFERENCE, THEME, NARRATIVE] }
+              confidence: { type: ["number", "null"], minimum: 0, maximum: 1 }
+              evidenceReferenceIds:
+                type: array
+                minItems: 1
+                items: { type: string }
+        recommendations:
+          type: array
+          items:
+            type: object
+            required: [id, title, rationale, confidence, evidenceReferenceIds]
+            properties:
+              id: { type: string }
+              title: { type: string }
+              rationale: { type: string }
+              confidence: { type: number, minimum: 0, maximum: 1 }
+              evidenceReferenceIds:
+                type: array
+                minItems: 1
+                items: { type: string }
+        alternatives:
+          type: array
+          items:
+            type: object
+            required: [title, description]
+            properties:
+              title: { type: string }
+              description: { type: string }
     ContentItem:
       type: object
       required: [id, type, slug, title, status, version, createdAt, updatedAt]
@@ -1730,6 +1782,24 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/AutomaticAnalysisResult" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/edit-engine:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getEditEngine
+      summary: Compose the latest completed grounded analysis with project creative intent.
+      responses:
+        "200":
+          description: Current story, strongest observations, recommendations, and alternatives.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EditEngineResult" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/entities:
