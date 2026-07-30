@@ -16,6 +16,22 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Accelerated Delivery Plan — Prompt Synthesis and Wideframe Handoff
+
+**Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review
+
+Added a provider-neutral, evidence-cited plain-text editorial intent package synthesized
+from the current Edit Engine result. Filmmakers can inspect, copy, or download the exact
+prompt before using it elsewhere. The package preserves the completed analysis version,
+deduplicated evidence identifiers, current story, recommendations, alternatives, and
+explicit non-invention and non-destructive-editing constraints.
+
+Wideframe's public product material supports intent-driven editing and local,
+non-destructive workflows, but no public API contract was verified. The UI therefore
+labels the Wideframe path as manual copy only and makes no network request or automatic
+transfer. Wideframe authentication, APIs, synchronization, project-file generation, and
+claims of successful import remain deliberately deferred.
+
 ## Accelerated Delivery Plan — Edit Engine v1
 
 **Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review
