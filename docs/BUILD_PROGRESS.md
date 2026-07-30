@@ -16,6 +16,20 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Accelerated Delivery Plan — Edit Engine v1
+
+**Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review
+
+Added a read-only Edit Engine composition that brings the existing creative intent and
+latest completed evidence-grounded analysis into one filmmaker-facing view: current
+story, five strongest observations, advisory edit recommendations, and creative
+alternatives. Evidence identifiers and confidence remain visible on grounded material,
+and interrupted or failed analysis runs cannot replace the completed version shown.
+
+The slice adds no persistence, provider, decision automation, or unrelated workflow.
+It reuses the current project ownership boundary, creative blueprint, analysis history,
+and analysis action. Completing a new analysis refreshes the Edit Engine in place.
+
 ## Accelerated Delivery Plan — Automatic Evidence-Grounded Analysis Pipeline
 
 **Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review
