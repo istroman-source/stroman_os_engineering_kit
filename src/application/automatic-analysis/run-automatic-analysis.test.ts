@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getLatestAutomaticAnalysis, runAutomaticAnalysis } from ".";
+import { createAnalysisRun, failAnalysisRun, startAnalysisRun } from "@/application/analysis";
 import type { GroundedEditorialAnalyzer } from "@/domain/analysis";
 import {
   createMediaAsset,
@@ -85,6 +86,12 @@ function setup(analyzer: GroundedEditorialAnalyzer = defaultAnalyzer()) {
   };
 }
 
+class CompletionFailingAnalysisRepository extends InMemoryAnalysisRepository {
+  override async saveResult(): Promise<void> {
+    throw new Error("synthetic completion failure");
+  }
+}
+
 function seedTranscript(deps: ReturnType<typeof setup>) {
   const transcript = createTranscriptDocument({
     id: DOCUMENT,
@@ -147,6 +154,48 @@ describe("runAutomaticAnalysis", () => {
     expect(latest.ok && latest.value.run.version).toBe(2);
   });
 
+  it("returns the latest completed run while newer pending, running, and failed runs exist", async () => {
+    const deps = setup();
+    seedTranscript(deps);
+    const completed = await runAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(completed.ok).toBe(true);
+
+    const pending = await createAnalysisRun(deps, { actorId: OWNER, projectId: PROJECT });
+    expect(pending.ok).toBe(true);
+    if (!pending.ok) return;
+    let latest = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(latest.ok && latest.value.run.version).toBe(1);
+
+    const running = await startAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: pending.value.id as never,
+    });
+    expect(running.ok).toBe(true);
+    latest = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(latest.ok && latest.value.run.version).toBe(1);
+
+    const failed = await failAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: pending.value.id as never,
+      reason: "Interrupted.",
+    });
+    expect(failed.ok).toBe(true);
+    latest = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(latest.ok && latest.value.run.version).toBe(1);
+  });
+
   it("does not reveal another owner's project and rejects missing transcripts", async () => {
     const deps = setup();
     expect((await runAutomaticAnalysis(deps, { actorId: OTHER, projectId: PROJECT })).ok).toBe(
@@ -184,5 +233,49 @@ describe("runAutomaticAnalysis", () => {
     const runs = await deps.analyses.listRunsByProject(PROJECT);
     expect(runs).toHaveLength(1);
     expect(runs[0]?.status).toBe("FAILED");
+  });
+
+  it("marks the run failed when completion payload validation fails", async () => {
+    const analyzer: GroundedEditorialAnalyzer = {
+      async analyze() {
+        return {
+          outputs: [
+            {
+              kind: "INFERENCE",
+              content: "Grounded but invalid confidence",
+              confidence: 2,
+              sourceSegmentIds: [SEGMENT_A],
+            },
+          ],
+          recommendations: [],
+        };
+      },
+    };
+    const deps = setup(analyzer);
+    seedTranscript(deps);
+    const result = await runAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(result.ok).toBe(false);
+    const runs = await deps.analyses.listRunsByProject(PROJECT);
+    expect(runs).toHaveLength(1);
+    expect(runs[0]?.status).toBe("FAILED");
+    expect(runs[0]?.failureReason).toBe("The analysis result could not be completed.");
+  });
+
+  it("marks the run failed when result persistence fails", async () => {
+    const deps = setup();
+    deps.analyses = new CompletionFailingAnalysisRepository();
+    seedTranscript(deps);
+    const result = await runAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(result.ok).toBe(false);
+    const runs = await deps.analyses.listRunsByProject(PROJECT);
+    expect(runs).toHaveLength(1);
+    expect(runs[0]?.status).toBe("FAILED");
+    expect(runs[0]?.failureReason).toBe("The analysis result could not be completed.");
   });
 });

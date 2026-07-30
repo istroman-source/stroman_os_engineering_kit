@@ -165,7 +165,7 @@ export async function runAutomaticAnalysis(
     }
     const idsFor = (ids: readonly TranscriptSegmentId[]) =>
       [...new Set(ids)].map((id) => evidence.value.get(segmentKey(id))!.id);
-    return completeAnalysisRun(deps, {
+    const completed = await completeAnalysisRun(deps, {
       actorId: input.actorId,
       analysisRunId: created.value.id as never,
       outputs: grounded.value.outputs.map((output) => ({
@@ -181,6 +181,15 @@ export async function runAutomaticAnalysis(
         evidenceReferenceIds: idsFor(recommendation.sourceSegmentIds),
       })),
     });
+    if (!completed.ok) {
+      const failed = await failAnalysisRun(deps, {
+        actorId: input.actorId,
+        analysisRunId: created.value.id as never,
+        reason: "The analysis result could not be completed.",
+      });
+      return failed.ok ? completed : failed;
+    }
+    return completed;
   } catch {
     await failAnalysisRun(deps, {
       actorId: input.actorId,
@@ -204,7 +213,7 @@ export async function getLatestAutomaticAnalysis(
     deps.analyses.listRunsByProject(input.projectId),
   );
   if (!runs.ok) return runs;
-  const latest = runs.value.at(-1);
+  const latest = runs.value.filter((run) => run.status === "COMPLETED").at(-1);
   if (!latest) return err(new NotFoundError("AnalysisRun", input.projectId));
   return getAnalysisRun(deps, {
     actorId: input.actorId,
