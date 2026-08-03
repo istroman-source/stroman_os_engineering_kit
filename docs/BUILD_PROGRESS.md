@@ -16,6 +16,21 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Accelerated Delivery Plan — Beta Readiness Gate
+
+**Date:** 2026-08-03 · **Status:** Implemented; awaiting CI and independent review
+
+Added global browser hardening headers, a beta-readiness evaluation covering safe health
+responses and log redaction, and a Playwright keyboard/accessibility smoke test for the
+signed-out onboarding flow. Added explicit internal-alpha onboarding and a deployment
+gate with a truthful **NOT READY FOR LIMITED BETA** verdict. Authentication documentation
+was corrected to reflect the already-implemented server-side session refresh.
+
+The gate does not authorize deployment. Durable OTP abuse controls, isolated staging,
+backup/restore and rollback rehearsal, a signed-in browser journey, manual WCAG 2.2 AA
+review, deployment-compatible storage/database configuration, and legal/privacy
+readiness remain blocking before public beta.
+
 ## Accelerated Delivery Plan — Internal-Alpha Reliability and Evaluation Gate
 
 **Date:** 2026-08-03 · **Status:** Implemented; awaiting CI and independent review

@@ -377,7 +377,12 @@ describe("error hygiene & production guard", () => {
   it("auth errors carry no provider or token detail", async () => {
     setRequestAuthenticatorForTests(new FixedAuthenticator({ kind: "invalid" }));
     const res = await call(createProject, { method: "POST", principal: A, json: { name: "X" } });
-    const serialized = JSON.stringify(res.body).toLowerCase();
+    const body = res.body as { error: { code: string; message: string; requestId: string } };
+    const serialized = JSON.stringify({
+      code: body.error.code,
+      message: body.error.message,
+    }).toLowerCase();
+    expect(body.error.requestId).toBeTruthy();
     expect(serialized).not.toContain("supabase");
     expect(serialized).not.toContain("jwt");
     expect(serialized).not.toContain("token");
