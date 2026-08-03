@@ -75,6 +75,9 @@ export class DeterministicGroundedAnalyzer implements GroundedEditorialAnalyzer 
   async analyze(input: {
     readonly segments: readonly AnalysisSourceSegment[];
   }): Promise<GroundedAnalysisDraft> {
+    if (input.segments.length === 0) {
+      return { outputs: [], recommendations: [] };
+    }
     const meaningful = input.segments.filter((segment) => segment.text.trim().length >= 12);
     const candidates = meaningful.length ? meaningful : input.segments;
     const opening = candidates[0]!;

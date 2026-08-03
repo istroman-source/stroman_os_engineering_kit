@@ -16,6 +16,22 @@ are postponed. Full audit and ranked follow-ups are recorded in
 
 Append one verified entry after every numbered prompt.
 
+## Accelerated Delivery Plan — Internal-Alpha Reliability and Evaluation Gate
+
+**Date:** 2026-08-03 · **Status:** Implemented; awaiting CI and independent review
+
+Added a deterministic CI evaluation gate for the complete internal-alpha intelligence
+path. Fixtures measure citation validity, confidence bounds, repeatability, insufficient-
+evidence behavior, prompt-injection containment, and honest manual-only integration
+labeling. The gate exposed and fixed an empty-transcript crash in the development
+analyzer and hardened generated prompts by placing authority rules before escaped,
+delimited source-derived material.
+
+The readiness verdict is limited to controlled internal alpha. Hosted-model editorial
+quality, signed-in browser journey coverage, clipboard/download smoke testing, and
+manual acceptance in the current Wideframe desktop product remain explicit manual checks
+instead of being represented as automated proof.
+
 ## Accelerated Delivery Plan — Prompt Synthesis and Wideframe Handoff
 
 **Date:** 2026-07-29 · **Status:** Implemented; awaiting CI and independent review

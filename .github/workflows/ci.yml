@@ -39,6 +39,9 @@ jobs:
       - name: Autopilot tests
         run: npm run test:autopilot
 
+      - name: Internal-alpha evaluations
+        run: npm run test:evaluations
+
       - name: Build
         run: npm run build
         env:

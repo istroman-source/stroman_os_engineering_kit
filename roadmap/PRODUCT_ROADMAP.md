@@ -52,9 +52,9 @@ be armed only after all of those conditions are true.
 
 1. Automatic Evidence-Grounded Analysis Pipeline — complete.
 2. Edit Engine v1: Story, Recommendations, and Alternatives — complete.
-3. Prompt Synthesis and verified Wideframe handoff — implementation complete, review
+3. Prompt Synthesis and verified Wideframe handoff — complete.
+4. Internal-alpha reliability and evaluation gate — implementation complete, review
    pending.
-4. Internal-alpha reliability and evaluation gate.
 5. Beta security, deployment, accessibility, observability, and onboarding gate.
 
 ## Internal alpha
