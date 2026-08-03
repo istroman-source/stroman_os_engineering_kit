@@ -23,6 +23,7 @@
     "openapi:validate": "node scripts/validate-openapi.mjs",
     "test:e2e": "playwright test",
     "test:autopilot": "vitest run --config vitest.autopilot.config.ts",
+    "test:evaluations": "vitest run --config vitest.evaluation.config.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
