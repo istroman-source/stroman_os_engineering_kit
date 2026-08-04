@@ -35,6 +35,12 @@ operational, legal, or external-service proof into a beta-readiness claim.
    serverless production design.
 6. Complete privacy policy, terms, retention, subprocessor, support, incident-response,
    and legal review appropriate to the intended beta audience.
+7. Define, deploy, and verify an application-specific Content-Security-Policy that
+   permits only the scripts, styles, connections, frames, and other resources required
+   by the production application.
+8. Enable and verify Strict-Transport-Security (HSTS) for the production HTTPS origin.
+   HSTS may be enforced by the deployment platform or reverse proxy rather than by the
+   application, but the effective production response must be tested before beta.
 
 ## Deployment stop rules
 
