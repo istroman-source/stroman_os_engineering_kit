@@ -12,8 +12,8 @@ describe("bundled foundation roadmap sequencing", () => {
 
     expect(milestones.find(({ id }) => id === "004")?.title).toBe("Monorepo and folder structure");
     await expect(selectMilestone(root, config)).resolves.toMatchObject({
-      id: "016",
-      title: "Audit and integration domain model",
+      id: "017",
+      title: "Database indexes and constraints",
     });
   });
 });
