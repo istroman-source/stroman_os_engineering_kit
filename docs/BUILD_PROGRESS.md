@@ -17,8 +17,82 @@ search services, and AI-provider adapters remain deferred until approved workflo
 them and can prove their real delivery boundaries.
 
 A focused documentation contract test verifies that all seven required areas map to
-accepted ADRs. The canonical verification gate is recorded in the PR handoff. Prompt 004 —
-Domain model and boundaries — is the next incomplete numbered prompt.
+accepted ADRs. The canonical verification gate is recorded in the PR handoff. The completion
+audit below identifies Prompt 008 — Database development environment — as the next genuinely
+incomplete prerequisite; Prompt 004 is Monorepo and folder structure and is already complete
+through bundled foundation work.
+
+---
+
+## Prompt 004 — Monorepo and Folder Structure
+
+**Classification:** COMPLETE THROUGH PREVIOUS BUNDLED WORK
+
+Concrete evidence: `src/app`, `src/ui`, `src/application`, `src/domain`, `src/server`,
+`src/infrastructure`, and focused `src/lib` modules implement the documented modular-monolith
+layout; `docs/ARCHITECTURE.md` defines responsibilities and dependency direction; ESLint
+enforces the boundaries. No duplicate repository structure is required.
+
+## Prompt 005 — Local Development Environment
+
+**Classification:** COMPLETE THROUGH PREVIOUS BUNDLED WORK
+
+Concrete evidence: `.nvmrc`, `.env.example`, `docker-compose.yml`, `Dockerfile`, environment
+validation under `src/lib/env`, and `docs/LOCAL_DEVELOPMENT.md` provide the Node, PostgreSQL,
+configuration, and documented local workflow foundation.
+
+## Prompt 006 — Code Quality Toolchain
+
+**Classification:** COMPLETE THROUGH PREVIOUS BUNDLED WORK
+
+Concrete evidence: strict `tsconfig.json`, `eslint.config.mjs` architecture rules, Prettier
+configuration, Husky/lint-staged pre-commit checks, and the package verification scripts are
+active and exercised by CI.
+
+## Prompt 007 — Continuous Integration Baseline
+
+**Classification:** COMPLETE THROUGH PREVIOUS BUNDLED WORK
+
+Concrete evidence: `.github/workflows/ci.yml` performs locked installation, Prisma generation,
+lint, strict typechecking, tests, production build, and Playwright checks with least-privilege
+repository permissions.
+
+## Prompt 008 — Database Development Environment
+
+**Classification:** COMPLETE AS WRITTEN after completing previous bundled work
+
+`docker-compose.yml`, Prisma 6, 16 ordered migrations, real-PostgreSQL test setup,
+constraints, and migration deployment came from previous bundled work. Prompt 008 adds the
+missing fail-closed developer reset and seed commands. Both require explicit local
+confirmation, reject production, remote, malformed, non-PostgreSQL, and reserved database
+targets without exposing credentials, and accept only the named local Stroman development or
+test databases. Reset reapplies migrations before verifying seed readiness.
+
+No product or demonstration rows are created because Prompt 018 owns that scope. Focused
+tests cover command confirmation and target safety; the canonical full gate supplies real
+migration and database-boundary coverage. Prompt 016 — Audit and integration domain model —
+is the next genuinely incomplete prerequisite after the audited Prompt 004–015 completion map.
+
+## Prompt 009 — Core Domain Glossary
+
+**Classification:** COMPLETE THROUGH PREVIOUS BUNDLED WORK
+
+Concrete evidence: `docs/DOMAIN_GLOSSARY.md` defines the implemented bounded-context vocabulary,
+distinguishes overloaded concepts, and corresponds to branded domain types and module names.
+
+## Prompt 010 — Initial Domain Model
+
+**Classification:** COMPLETE THROUGH PREVIOUS BUNDLED WORK
+
+Concrete evidence: `src/domain/shared`, `project`, `content`, `evaluation`, `decision`, and `ai`
+contain validated values, aggregates, lifecycle rules, repository/provider ports, and focused
+tests; `docs/DOMAIN_MODEL.md` and ADR-0014 document the boundaries and human-authority rule.
+
+Prompts 011–015 are **COMPLETE AS WRITTEN**. Their concrete evidence is recorded in the
+individual Prompt 011–015 entries below and includes domain/application contracts, Prisma
+migrations and constraints, corruption-safe mappers, in-memory adapters, focused tests, and
+real-PostgreSQL integration coverage for media/transcripts, Evidence, analysis/decisions,
+reviews/rubrics, and learning/retrospectives.
 
 ---
 

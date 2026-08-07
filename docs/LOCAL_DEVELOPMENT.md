@@ -15,16 +15,28 @@ cp .env.example .env      # fill in values; all vars are validated at startup
 npm run db:generate       # generate the Prisma client
 ```
 
-### Database (optional at this stage)
+### Database
 
-No domain models exist yet, so a running database is not required to develop the
-foundation. When you need one:
+Start the local PostgreSQL service and apply committed migrations:
 
 ```bash
 docker compose up -d      # PostgreSQL + pgvector on localhost:5432
+npm run db:migrate
 ```
 
 The default `DATABASE_URL` in `.env.example` matches the compose service.
+
+Database maintenance is deliberately fail-closed. Seed and reset accept only a loopback
+PostgreSQL URL whose database is `stroman_os` or a `stroman_*test` database, reject
+`NODE_ENV=production`, and require explicit confirmation:
+
+```bash
+npm run db:seed -- --confirm-local   # verifies the migrated database; no product data yet
+npm run db:reset -- --confirm-local  # destructive: reset migrations, then verify seed readiness
+```
+
+Prompt 008 does not create demonstration records; that content belongs to Prompt 018. The
+seed command reports this explicitly rather than representing fixture data as product data.
 
 ## Everyday commands
 

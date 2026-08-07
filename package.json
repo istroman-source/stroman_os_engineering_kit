@@ -26,6 +26,8 @@
     "test:evaluations": "vitest run --config vitest.evaluation.config.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:reset": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/database-maintenance.ts reset",
+    "db:seed": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/database-maintenance.ts seed",
     "db:studio": "prisma studio",
     "prepare": "husky"
   },

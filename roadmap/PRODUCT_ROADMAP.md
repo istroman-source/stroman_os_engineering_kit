@@ -10,16 +10,18 @@ workflow state are backend capabilities, not separate user journeys. See
 
 ## Current progress
 
-Foundation Prompts 001–003 and Prompts 011–015 are complete: the repository baseline,
-architecture decision coverage,
+Foundation Prompts 001–015 are complete: the repository baseline,
+architecture decision coverage, bundled repository/tooling foundations, the domain glossary,
+the initial domain model,
 media/transcript provenance, durable Evidence,
 versioned analysis with human-authoritative Decision linkage, review runs, and approved
 project learning. Delivery now follows
 the accelerated vertical slices below instead of implementing unrelated numbered
 foundation prompts before visible filmmaker value.
 
-The next incomplete dependency is Prompt 004. Prompt 002 is recorded as completed by the
-custom repository-foundation and MVP-scope work in `docs/BUILD_PROGRESS.md`.
+The next incomplete dependency is Prompt 016. Prompts 004–007, 009, and 010 are recorded as
+completed through previous bundled work in `docs/BUILD_PROGRESS.md`; Prompt 008 completes the
+previously missing safe reset and seed boundary. These foundations must not be rebuilt.
 
 ## Accelerated delivery sequence
 
