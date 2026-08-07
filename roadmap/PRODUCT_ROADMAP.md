@@ -10,8 +10,9 @@ workflow state are backend capabilities, not separate user journeys. See
 
 ## Current progress
 
-Foundation Prompts 011–013 are complete: media/transcript provenance, durable Evidence,
-and versioned analysis with human-authoritative Decision linkage. Delivery now follows
+Foundation Prompts 011–015 are complete: media/transcript provenance, durable Evidence,
+versioned analysis with human-authoritative Decision linkage, review runs, and approved
+project learning. Delivery now follows
 the accelerated vertical slices below instead of implementing unrelated numbered
 foundation prompts before visible filmmaker value.
 
