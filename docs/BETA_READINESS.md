@@ -11,7 +11,7 @@ operational, legal, or external-service proof into a beta-readiness claim.
 ## Automated evidence
 
 - Global anti-framing, MIME-sniffing, referrer, browser-capability, and opener-isolation
-  headers are configured and regression tested.
+  headers are verified on document and API responses from the running production server.
 - Health endpoints are non-cacheable and reveal no infrastructure detail.
 - Structured request logging carries request IDs, status, duration, and safe categories;
   credential and cookie redaction is regression tested.

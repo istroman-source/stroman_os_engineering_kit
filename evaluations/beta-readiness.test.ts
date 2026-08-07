@@ -4,7 +4,7 @@ import { GET as live } from "../src/app/api/health/live/route";
 import { redact, REDACTED } from "../src/lib/logging";
 
 describe("beta readiness automated gate", () => {
-  it("applies baseline browser hardening headers to every route", async () => {
+  it("declares baseline browser hardening headers for every route", async () => {
     const configured = await nextConfig.headers?.();
     expect(configured).toEqual([{ source: "/:path*", headers: [...SECURITY_HEADERS] }]);
     expect(
