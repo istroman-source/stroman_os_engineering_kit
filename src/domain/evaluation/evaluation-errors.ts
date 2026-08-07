@@ -42,3 +42,15 @@ export class IncompleteScoringError extends DomainError {
     this.missing = missing;
   }
 }
+
+export class EmptyReviewRunError extends DomainError {
+  constructor() {
+    super("VALIDATION", "A review run must contain at least one score override");
+  }
+}
+
+export class UnchangedScoreOverrideError extends DomainError {
+  constructor(criterionId: CriterionId) {
+    super("VALIDATION", "An override must change the recorded score", { context: { criterionId } });
+  }
+}

@@ -84,6 +84,15 @@ opt-out.
 - **End-to-end:** Playwright against the production build (`e2e/`).
 - Time and IO are injected (clocks, sinks) so tests stay deterministic.
 
+## Review and rubric boundary
+
+Rubrics own ordered criteria; evaluations are immutable rubric-based scores for a project.
+A completed `ReviewRun` is a separate immutable audit record of a project owner consciously
+overriding one or more evaluation scores. It retains both scores and the human rationale,
+and composite persistence relationships prevent a review from crossing project, rubric,
+criterion, or source-evaluation boundaries. Application services authorize through the
+owning project before any review read or write.
+
 ## What is intentionally absent at this step
 
 Authentication, database models, AI, uploads, transcripts, dashboards, and API

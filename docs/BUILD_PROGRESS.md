@@ -161,6 +161,32 @@ Seventeen focused tests cover dirty/auth failures, selection and prerequisite pr
 branch naming, verification, resume, CI rejection, review/merge gates, remediation limits,
 cleanup, dry-run behavior, machine-readable state, and concurrent-run locking.
 
+## Prompt 014 — Review and Rubric Domain Model
+
+**Date:** 2026-08-06 · **Volume:** Foundation
+
+Extended the existing rubric and immutable evaluation model with completed human review
+runs and per-criterion score overrides. Each override preserves the evaluated score, the
+human-selected score, criterion, rationale, reviewer, source evaluation, rubric, project,
+and completion time. Authorized application services record, retrieve, and list reviews;
+no HTTP, UI, AI execution, or generic workflow system was added.
+
+PostgreSQL composite foreign keys enforce project-owner, evaluation-project-rubric,
+criterion-rubric, and original-evaluation-score alignment. Review and override creation is
+transactional and completed reviews are append-only. Prisma mappers reject corrupt IDs or
+scores, and the in-memory adapter implements the same narrow repository contract.
+
+Focused domain, application, mapper, and real-PostgreSQL tests cover validation, human
+attribution, denied access, deterministic listing, source-score provenance, ownership
+isolation, atomic rollback, and mapper corruption. The complete verification commands and
+results are recorded in the PR handoff.
+
+Known limitation: this foundation intentionally has no filmmaker-facing review screen or
+HTTP contract; those require a later explicit product milestone. Prompt 015 — Learning and
+retrospective domain model — is the next numbered foundation prompt.
+
+---
+
 ## Prompt 013 — Analysis and Decision Domain Model
 
 **Date:** 2026-07-23 · **Volume:** Foundation

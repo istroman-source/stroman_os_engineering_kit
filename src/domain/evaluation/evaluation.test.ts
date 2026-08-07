@@ -9,6 +9,8 @@ import {
   IncompleteScoringError,
 } from "./evaluation-errors";
 import { createRubric, type Rubric, weightedScore } from "./rubric";
+import { createReviewRun } from "./review-run";
+import { ReviewRunId } from "./evaluation-id";
 
 const T0 = new Date("2026-07-17T00:00:00.000Z");
 const cid = (n: string) => CriterionId.unsafe(`crit_${n}00000000`);
@@ -141,5 +143,47 @@ describe("createEvaluation", () => {
       scores: [{ criterionId: cid("a"), score: score(8), justification: "   " }],
     });
     expect(result.ok).toBe(false);
+  });
+});
+
+describe("createReviewRun", () => {
+  const base = {
+    id: ReviewRunId.unsafe("rvw_ABCDEF12"),
+    projectId: ProjectId.unsafe("proj_ABCDEF12"),
+    rubricId: RubricId.unsafe("rbr_ABCDEF12"),
+    evaluationId: EvaluationId.unsafe("eval_ABCDEF12"),
+    reviewerId: OwnerId.unsafe("usr_ABCDEF12"),
+    completedAt: T0,
+  };
+  it("records explicit human score provenance", () => {
+    const result = createReviewRun({
+      ...base,
+      overrides: [
+        {
+          criterionId: cid("a"),
+          originalScore: score(5),
+          overrideScore: score(8),
+          rationale: "The final beat resolves the setup.",
+        },
+      ],
+    });
+    expect(result.ok && result.value.overrides[0]).toMatchObject({
+      originalScore: 5,
+      overrideScore: 8,
+    });
+  });
+  it("rejects empty, duplicate, unchanged, and unexplained overrides", () => {
+    expect(createReviewRun({ ...base, overrides: [] }).ok).toBe(false);
+    const valid = {
+      criterionId: cid("a"),
+      originalScore: score(5),
+      overrideScore: score(8),
+      rationale: "reason",
+    };
+    expect(createReviewRun({ ...base, overrides: [valid, valid] }).ok).toBe(false);
+    expect(
+      createReviewRun({ ...base, overrides: [{ ...valid, overrideScore: score(5) }] }).ok,
+    ).toBe(false);
+    expect(createReviewRun({ ...base, overrides: [{ ...valid, rationale: " " }] }).ok).toBe(false);
   });
 });

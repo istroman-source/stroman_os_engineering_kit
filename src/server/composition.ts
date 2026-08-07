@@ -9,7 +9,11 @@ import type { AnalysisRepository, GroundedEditorialAnalyzer } from "@/domain/ana
 import type { DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceRepository } from "@/domain/evidence";
 import type { CreativeBriefRepository } from "@/domain/creative";
-import type { EvaluationRepository, RubricRepository } from "@/domain/evaluation";
+import type {
+  EvaluationRepository,
+  ReviewRunRepository,
+  RubricRepository,
+} from "@/domain/evaluation";
 import type { IdentityRepository } from "@/domain/identity";
 import type {
   AcquisitionRunRepository,
@@ -38,6 +42,7 @@ import {
   PrismaDecisionRepository,
   PrismaEntityRepository,
   PrismaEvaluationRepository,
+  PrismaReviewRunRepository,
   PrismaIdentityRepository,
   PrismaInsightRepository,
   PrismaMemoryRepository,
@@ -79,6 +84,7 @@ export interface ApiContext {
   readonly content: ContentRepository;
   readonly rubrics: RubricRepository;
   readonly evaluations: EvaluationRepository;
+  readonly reviewRuns: ReviewRunRepository;
   readonly decisions: DecisionRepository;
   readonly identity: IdentityRepository;
   readonly creativeBriefs: CreativeBriefRepository;
@@ -113,6 +119,7 @@ export function createApiContext(): ApiContext {
     content: new PrismaContentRepository(prisma),
     rubrics: new PrismaRubricRepository(prisma),
     evaluations: new PrismaEvaluationRepository(prisma),
+    reviewRuns: new PrismaReviewRunRepository(prisma),
     decisions: new PrismaDecisionRepository(prisma),
     identity: new PrismaIdentityRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),

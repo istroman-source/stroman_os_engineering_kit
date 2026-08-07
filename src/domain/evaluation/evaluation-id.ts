@@ -8,3 +8,6 @@ export const RubricId = defineId<"RubricId">("RubricId", "rbr");
 
 export type CriterionId = Brand<string, "CriterionId">;
 export const CriterionId = defineId<"CriterionId">("CriterionId", "crit");
+
+export type ReviewRunId = Brand<string, "ReviewRunId">;
+export const ReviewRunId = defineId<"ReviewRunId">("ReviewRunId", "rvw");
