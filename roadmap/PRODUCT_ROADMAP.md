@@ -10,11 +10,15 @@ workflow state are backend capabilities, not separate user journeys. See
 
 ## Current progress
 
-Foundation Prompts 011–015 are complete: media/transcript provenance, durable Evidence,
+Foundation Prompt 001 and Prompts 011–015 are complete: the repository baseline,
+media/transcript provenance, durable Evidence,
 versioned analysis with human-authoritative Decision linkage, review runs, and approved
 project learning. Delivery now follows
 the accelerated vertical slices below instead of implementing unrelated numbered
 foundation prompts before visible filmmaker value.
+
+The next incomplete dependency is Prompt 003. Prompt 002 is recorded as completed by the
+custom repository-foundation and MVP-scope work in `docs/BUILD_PROGRESS.md`.
 
 ## Accelerated delivery sequence
 
