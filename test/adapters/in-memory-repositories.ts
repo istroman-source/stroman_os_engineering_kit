@@ -52,6 +52,9 @@ import type {
   Rubric,
   RubricId,
   RubricRepository,
+  ReviewRun,
+  ReviewRunId,
+  ReviewRunRepository,
 } from "@/domain/evaluation";
 import type {
   Entity,
@@ -322,6 +325,26 @@ export class InMemoryEvaluationRepository extends FailableStore implements Evalu
   async insert(evaluation: Evaluation): Promise<void> {
     this.guard();
     insertInto(this.store, evaluation);
+  }
+}
+
+export class InMemoryReviewRunRepository extends FailableStore implements ReviewRunRepository {
+  private readonly store = new Map<string, ReviewRun>();
+  async findById(id: ReviewRunId): Promise<ReviewRun | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+  async listByProject(projectId: ProjectId): Promise<readonly ReviewRun[]> {
+    this.guard();
+    return [...this.store.values()]
+      .filter((review) => review.projectId === projectId)
+      .sort(
+        (a, b) => a.completedAt.getTime() - b.completedAt.getTime() || a.id.localeCompare(b.id),
+      );
+  }
+  async insert(review: ReviewRun): Promise<void> {
+    this.guard();
+    insertInto(this.store, review);
   }
 }
 

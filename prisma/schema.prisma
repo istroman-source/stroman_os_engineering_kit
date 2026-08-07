@@ -228,6 +228,7 @@ model Project {
   lockVersion Int           @default(1) @map("lock_version")
 
   evaluations        Evaluation[]
+  reviewRuns         ReviewRun[]
   decisions          Decision[]
   creativeBrief      CreativeBrief?
   storyAngles        StoryAngle[]
@@ -494,6 +495,7 @@ model Rubric {
   title       String
   criteria    RubricCriterion[]
   evaluations Evaluation[]
+  reviewRuns  ReviewRun[]
 
   @@map("rubrics")
 }
@@ -509,8 +511,10 @@ model RubricCriterion {
   anchorTen  String @map("anchor_ten")
   position   Int
 
-  rubric Rubric @relation(fields: [rubricId], references: [id], onDelete: Cascade)
+  rubric    Rubric                @relation(fields: [rubricId], references: [id], onDelete: Cascade)
+  overrides ReviewScoreOverride[]
 
+  @@unique([rubricId, id])
   @@index([rubricId])
   @@map("rubric_criteria")
 }
@@ -524,10 +528,12 @@ model Evaluation {
   reviewerId   String?           @map("reviewer_id")
   createdAt    DateTime          @map("created_at") @db.Timestamptz(3)
   scores       EvaluationScore[]
+  reviewRuns   ReviewRun[]
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Restrict)
   rubric  Rubric  @relation(fields: [rubricId], references: [id], onDelete: Restrict)
 
+  @@unique([id, projectId, rubricId])
   @@index([projectId])
   @@map("evaluations")
 }
@@ -540,10 +546,51 @@ model EvaluationScore {
   score         Int
   justification String
 
-  evaluation Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  evaluation Evaluation            @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  overrides  ReviewScoreOverride[]
 
   @@id([evaluationId, criterionId])
+  @@unique([evaluationId, criterionId, score])
   @@map("evaluation_scores")
+}
+
+/// Immutable, completed record of a human review. Project ownership and the
+/// evaluation/rubric alignment are enforced by composite foreign keys.
+model ReviewRun {
+  id           String                @id
+  projectId    String                @map("project_id")
+  rubricId     String                @map("rubric_id")
+  evaluationId String                @map("evaluation_id")
+  reviewerId   String                @map("reviewer_id")
+  completedAt  DateTime              @map("completed_at") @db.Timestamptz(3)
+  overrides    ReviewScoreOverride[]
+
+  project    Project    @relation(fields: [projectId, reviewerId], references: [id, ownerId], onDelete: Restrict)
+  rubric     Rubric     @relation(fields: [rubricId], references: [id], onDelete: Restrict)
+  evaluation Evaluation @relation(fields: [evaluationId, projectId, rubricId], references: [id, projectId, rubricId], onDelete: Restrict)
+
+  @@unique([id, rubricId, evaluationId])
+  @@index([projectId, completedAt])
+  @@index([evaluationId])
+  @@map("review_runs")
+}
+
+model ReviewScoreOverride {
+  reviewRunId   String @map("review_run_id")
+  rubricId      String @map("rubric_id")
+  evaluationId  String @map("evaluation_id")
+  criterionId   String @map("criterion_id")
+  originalScore Int    @map("original_score")
+  overrideScore Int    @map("override_score")
+  rationale     String
+
+  reviewRun   ReviewRun       @relation(fields: [reviewRunId, rubricId, evaluationId], references: [id, rubricId, evaluationId], onDelete: Cascade)
+  criterion   RubricCriterion @relation(fields: [rubricId, criterionId], references: [rubricId, id], onDelete: Restrict)
+  sourceScore EvaluationScore @relation(fields: [evaluationId, criterionId, originalScore], references: [evaluationId, criterionId, score], onDelete: Restrict)
+
+  @@id([reviewRunId, criterionId])
+  @@index([rubricId, criterionId])
+  @@map("review_score_overrides")
 }
 
 /// A recorded creative decision. Human-authority fields (selected option, decided

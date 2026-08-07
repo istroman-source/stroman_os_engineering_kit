@@ -3,3 +3,4 @@ export * from "./evaluation-errors";
 export * from "./rubric";
 export * from "./evaluation";
 export * from "./evaluation-repository";
+export * from "./review-run";
