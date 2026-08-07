@@ -1,5 +1,27 @@
 # Build Progress
 
+## Prompt 003 — Architecture Decision Records
+
+**Date:** 2026-08-07 · **Volume:** Foundation
+
+Completed explicit ADR coverage for the application framework, database, authentication,
+jobs, storage, search, and AI-provider abstractions. Existing accepted records remain the
+single authority for framework, PostgreSQL/Prisma, Supabase authentication, and provider-
+neutral AI. New records make the current jobs, source-storage, and PostgreSQL-first search
+boundaries explicit without introducing runtime infrastructure.
+
+The decisions preserve inward dependency direction, project-scoped authorization,
+provenance, source integrity, deterministic behavior, and honest readiness claims. Queues,
+workers, production object storage, signed access, search indexes, embeddings, external
+search services, and AI-provider adapters remain deferred until approved workflows require
+them and can prove their real delivery boundaries.
+
+A focused documentation contract test verifies that all seven required areas map to
+accepted ADRs. The canonical verification gate is recorded in the PR handoff. Prompt 004 —
+Domain model and boundaries — is the next incomplete numbered prompt.
+
+---
+
 ## Prompt 001 — Repository Audit and Baseline
 
 **Date:** 2026-08-07 · **Volume:** Foundation
