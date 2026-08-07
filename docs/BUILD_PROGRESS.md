@@ -1,5 +1,27 @@
 # Build Progress
 
+## Prompt 001 — Repository Audit and Baseline
+
+**Date:** 2026-08-07 · **Volume:** Foundation
+
+Audited the repository at merge commit `9814d412da9e90b460f5ae6343a1e4997041c812`
+and recorded the current file inventory, implemented architecture, assumptions, exclusions,
+gaps, risks, and evidence boundaries in `docs/REPOSITORY_BASELINE.md`. The audit distinguishes
+repository/static proof from historical CI evidence and from production/provider evidence that
+remains unverified.
+
+No product code, schema, migration, dependency, runtime configuration, or deployment behavior
+changed. Missing consolidated MVP/technical-decision documents, production readiness proof,
+dependency advisories, external-provider acceptance, and later operational work are explicitly
+deferred to their own reviewed milestones.
+
+Focused validation checks the documented inventory against the tracked repository. The full
+canonical verification gate is recorded in the PR handoff. Prompt 003 — Architecture decision
+records — is the next incomplete numbered dependency because Prompt 002 is already represented
+by the repository foundation entry below.
+
+---
+
 ## Filmmaking Intelligence Workflow Restructuring
 
 The repository was audited against the filmmaking-intelligence north star. Primary
