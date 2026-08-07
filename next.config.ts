@@ -1,5 +1,13 @@
 import type { NextConfig } from "next";
 
+export const SECURITY_HEADERS = [
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+] as const;
+
 /**
  * Next.js configuration.
  *
@@ -13,6 +21,9 @@ const nextConfig: NextConfig = {
   // Fail the build on type errors. Never silence these. Linting runs as its
   // own CI step (`npm run lint`) rather than during the build.
   typescript: { ignoreBuildErrors: false },
+  async headers() {
+    return [{ source: "/:path*", headers: [...SECURITY_HEADERS] }];
+  },
 };
 
 export default nextConfig;

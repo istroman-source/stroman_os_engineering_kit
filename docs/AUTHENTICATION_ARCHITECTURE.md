@@ -87,9 +87,9 @@ No access or refresh token is ever exposed to page JavaScript, placed in
 - **Access token:** short-lived (Supabase default ~1 hour); the `sos_at` cookie's
   `Max-Age` tracks the token TTL.
 - **Refresh token:** stored in `sos_rt` (HttpOnly), 30-day cookie lifetime.
-- **Refresh:** Supabase manages token refresh. For the MVP there is **no automatic
-  server-side/middleware refresh**; when the access token expires the client
-  re-verifies or a future refresh endpoint is added (see Backlog). This is documented
+- **Refresh:** Protected requests transparently exchange a valid HttpOnly refresh-token
+  cookie when the access token is missing or expired, verify the rotated access token,
+  and reissue both cookies. Invalid refreshes fail closed. This is documented
   rather than faked.
 - **Sign-out:** `POST /api/auth/sign-out` best-effort revokes at the provider and
   clears both cookies (idempotent, CSRF-protected).
@@ -360,14 +360,12 @@ used depends on the user:**
 Templates). Then request a fresh OTP. `type: "email"` verification accepts the token
 from either. Record this in project settings, not in the repo; no production branding.
 
-### Session-refresh decision — Option A (explicitly defer)
+### Session refresh — implemented
 
-No server-side refresh in the MVP. Access tokens expire (~1h); the server-owned cookie
-model does not auto-refresh (the Supabase SDK only auto-refreshes client-side, which we
-deliberately avoid to keep tokens out of JS). Acceptable **only** while the app is
-non-public and there is no login UI. A server-side refresh endpoint (rotating the
-HttpOnly refresh cookie via the adapter) is **blocking before a real browser UX ships**
-— tracked in Backlog. Documented, not faked.
+Protected requests refresh expired sessions server-side from the HttpOnly refresh
+cookie, verify the returned access token, rotate both cookies, and fail closed when any
+step is rejected. Tokens remain unavailable to page JavaScript. API regression tests
+cover successful rotation, invalid refreshes, and unverifiable refreshed access tokens.
 
 ### OTP abuse-limit decision — Option B required before public exposure
 

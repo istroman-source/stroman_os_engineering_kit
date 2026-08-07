@@ -10,6 +10,7 @@ import { StateStore, withLock } from "./state-store";
 import { mergeGate } from "./policy";
 import { newState } from "./workflow";
 import { monitorCi } from "./github";
+import { implementationPrompt } from "./prompts";
 import { ProcessCommandRunner, redact } from "./command-runner";
 import {
   assertRecordedBranch,
@@ -59,6 +60,18 @@ const config: Config = {
   approvalPolicies: [],
 };
 describe("Autopilot", () => {
+  it("permanently evolves implementation prompts from review lessons", () => {
+    const prompt = implementationPrompt(
+      { id: "149", title: "Readiness", slug: "149-readiness", source: "prompt.md" },
+      config,
+    );
+    expect(prompt).toContain("Prompt Evolution Rule (permanent)");
+    expect(prompt).toContain("real delivery boundary");
+    expect(prompt).toContain("negative-path coverage");
+    expect(prompt).toContain("idempotency, concurrency, transactions, retries, and cleanup");
+    expect(prompt).toContain("in-memory adapters behaviorally equivalent");
+    expect(prompt).toContain("report NOT READY");
+  });
   it("passes clean preflight", async () => {
     const r = new FakeRunner((c) =>
       c[0] === "git" && c[1] === "branch" ? { stdout: "main\n" } : {},

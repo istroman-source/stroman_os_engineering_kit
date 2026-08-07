@@ -4,6 +4,13 @@
 core uses injected command adapters, a persistent state machine, atomic state writes, and
 a thin POSIX launcher. It never embeds tokens or provider credentials.
 
+Every generated implementation prompt includes the permanent Prompt Evolution Rule.
+Before product code changes, reusable lessons from prior PR reviews must be applied to
+the plan and regression coverage. A recurring finding first evolves the prompt, then
+receives the narrowest approved fix. Readiness claims require observable evidence at the
+real delivery boundary; configuration, documentation, mocks, and source inspection are
+never accepted as substitutes for runtime proof.
+
 ## Setup and usage
 
 Install repository dependencies and authenticate GitHub CLI, then start from clean
