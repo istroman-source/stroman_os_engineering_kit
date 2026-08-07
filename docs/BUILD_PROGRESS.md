@@ -1,5 +1,19 @@
 # Build Progress
 
+## Milestone 5A — General Creative Reasoning Domain
+
+**Status:** Complete (domain-only foundation)
+
+- Added form-neutral creative sessions, directions, critiques, questions, human context,
+  immutable revision lineage, explicit approvals, and ordered project plans.
+- Preserved strict source-evidence versus memory/insight-context distinctions and kept human
+  context separate from all three.
+- Proved documentary/interview, commercial/product, and music/performance planning without
+  a shared beat, device, or narrative structure.
+- Intentionally reused branded Project, Owner, EvidenceReference, Memory, and Insight IDs.
+- Intentionally deferred repositories, persistence, services, HTTP/OpenAPI/UI, provider
+  integrations, prompt generation, and connection to the existing Prompt Handoff path.
+
 ## Prompt 003 — Architecture Decision Records
 
 **Date:** 2026-08-07 · **Volume:** Foundation

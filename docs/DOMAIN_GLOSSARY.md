@@ -23,6 +23,13 @@ stated explicitly.
 | **Observation** | AI | A statement grounded in given evidence. | Inference (interpretation); Unknown (gap). |
 | **Inference** | AI | An interpretation carrying a confidence. | Observation (fact); the final Decision. |
 | **Confidence** | shared | A number in [0, 1] expressing certainty. | Score (1–10). |
+| **CreativeReasoningSession** | Creative Reasoning | A form-neutral reasoning root that keeps the filmmaker's goal separate from a challengeable proposed approach. | StoryAngle; ProjectPlan. |
+| **CreativeDirection** | Creative Reasoning | An immutable advisory proposal described without a required filmmaking form or structure. | StoryAngle; CreativeApproval. |
+| **CreativeEvidenceRef** | Creative Reasoning | A discriminated grounding reference preserving source evidence, memory context, or insight context. | HumanContext; a generic evidence bucket. |
+| **HumanContext** | Creative Reasoning | Immutable, attributable filmmaker-provided information that is never source evidence. | EvidenceReference. |
+| **ReasoningRevision** | Creative Reasoning | Immutable lineage from one direction to a new direction after human context or new evidence. | Overwriting a CreativeDirection. |
+| **CreativeApproval** | Creative Reasoning | Explicit human approval of an advisory CreativeDirection. | AI recommendation. |
+| **ProjectPlan** | Creative Reasoning | An approved, project-specific ordering of free-form segment intents. | Prompt Handoff; a prescribed beat structure. |
 | **AiRecommender** | AI | The provider-neutral port through which the app requests an `AiRecommendation`. Providers implement it **outside** the domain. | A provider SDK/adapter. |
 | **MediaAsset** | Media & Transcript | Immutable metadata for an externally managed media file, owned by one project. | A `ContentItem`; the file bytes or a storage object. |
 | **TranscriptDocument** | Media & Transcript | An immutable, ordered transcript for one `MediaAsset`, containing local speakers and segments. | A source-document ingestion record or a transcript viewer. |
