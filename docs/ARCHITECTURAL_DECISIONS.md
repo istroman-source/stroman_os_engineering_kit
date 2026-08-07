@@ -7,6 +7,21 @@ edit once accepted. Captured from Prompt 002 (foundation) and Prompt 002.5
 
 Status legend: **Accepted** · **Superseded** · **Deprecated**
 
+## Prompt 003 coverage index
+
+This index makes the seven foundation decisions required by Prompt 003 explicit without
+duplicating decisions already accepted by later implementation work.
+
+| Decision area | Authoritative record | Current implementation boundary |
+| --- | --- | --- |
+| Application framework | ADR-0002 | Next.js App Router modular monolith with strict TypeScript |
+| Database | ADR-0016 | PostgreSQL through Prisma-owned infrastructure adapters |
+| Authentication | ADR-0018 | Provider-neutral server boundary with a Supabase adapter |
+| Jobs | ADR-0019 | In-process execution now; queue and worker only under measured need |
+| Storage | ADR-0020 | Application-owned port with lease-scoped local adapter |
+| Search | ADR-0021 | PostgreSQL-first hybrid-search progression, not yet implemented |
+| AI-provider abstractions | ADR-0009 | Domain/application-owned ports; provider SDKs remain in adapters |
+
 ---
 
 ## ADR-0001 — Modular monolith for the MVP
@@ -438,3 +453,70 @@ exercised against a live project. See `docs/AUTHENTICATION_ARCHITECTURE.md`.
 - **Commit status.** Prompt 006B remains **uncommitted** because live acceptance has not
   been executed (no throwaway project/credentials/inbox available); per 006B.1 §17 the
   commit is withheld until acceptance passes.
+
+---
+
+## ADR-0019 — Defer a job queue until asynchronous work requires it
+
+**Status:** Accepted (Prompt 003)
+
+**Context.** The reference architecture anticipates a worker and queue for expensive or
+retryable work. Current workflows are bounded request-path operations, and no implemented
+use case requires durable scheduling, retries, cancellation, or worker coordination.
+
+**Decision.** Keep current operations in process. Introduce a job port, queue adapter,
+worker process, and durable job records together only when an approved workflow requires
+asynchronous execution. The application owns any future job contract; domain modules must
+not import queue SDKs. A future implementation must define idempotency, concurrency,
+retry, cancellation, authorization, audit, and terminal-failure semantics before it can
+claim operational readiness.
+
+**Consequences.** The MVP avoids speculative infrastructure and false background-work
+claims. Long-running operations remain unsuitable for the request path until a dedicated
+milestone supplies the complete lifecycle and runtime evidence.
+
+---
+
+## ADR-0020 — Application-owned storage port with lease-scoped cleanup
+
+**Status:** Accepted (Prompt 003)
+
+**Context.** Source intake already needs byte storage while preserving ownership,
+project isolation, provenance, integrity, idempotency, and concurrent-import safety. The
+current deployment has no approved production object-storage provider.
+
+**Decision.** Keep storage behind the application-owned `SourceStorage` port. The current
+filesystem adapter is a development implementation, not a production object-store claim.
+Keys are derived from owner, project, and content hash; writes return attempt-scoped leases;
+only the creating attempt may discard its lease; committed imports retain theirs. A future
+cloud adapter must preserve these semantics, stream or otherwise bound large requests, use
+private objects and scoped access, verify integrity, and prove cleanup races at its real
+storage boundary.
+
+**Consequences.** Business logic is provider-neutral and failed concurrent imports cannot
+delete bytes retained by successful imports. Production object storage, signed access,
+retention/deletion operations, backup, and restore evidence remain explicitly deferred.
+
+---
+
+## ADR-0021 — PostgreSQL-first search behind an application-owned contract
+
+**Status:** Accepted (Prompt 003)
+
+**Context.** Product direction calls for full-text and later semantic retrieval, but no
+approved user workflow currently requires a search service or embedding provider.
+Introducing a separate engine now would add synchronization, tenancy, and operational
+failure modes without demonstrated value.
+
+**Decision.** When search enters scope, define an application-owned, project-scoped search
+contract and begin with PostgreSQL full-text search over authorized records. Add vector
+similarity and a provider-neutral embedding adapter only after an approved semantic-search
+milestone defines evaluation quality and provenance requirements. Every adapter must apply
+owner/project filters before ranking, return stable deterministic ordering for ties, and
+preserve source references. A separate search service requires measured PostgreSQL limits
+and an explicit consistency model.
+
+**Consequences.** There is no fake search readiness or premature external index. Current
+exact repository queries remain authoritative. Full-text indexes, embeddings, ranking,
+reindexing, deletion propagation, and relevance evaluation are deferred to the search
+milestone.
