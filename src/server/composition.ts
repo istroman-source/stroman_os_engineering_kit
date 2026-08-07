@@ -15,6 +15,7 @@ import type {
   RubricRepository,
 } from "@/domain/evaluation";
 import type { IdentityRepository } from "@/domain/identity";
+import type { RetrospectiveRepository } from "@/domain/learning";
 import type {
   AcquisitionRunRepository,
   KnowledgeObservationRepository,
@@ -43,6 +44,7 @@ import {
   PrismaEntityRepository,
   PrismaEvaluationRepository,
   PrismaReviewRunRepository,
+  PrismaRetrospectiveRepository,
   PrismaIdentityRepository,
   PrismaInsightRepository,
   PrismaMemoryRepository,
@@ -85,6 +87,7 @@ export interface ApiContext {
   readonly rubrics: RubricRepository;
   readonly evaluations: EvaluationRepository;
   readonly reviewRuns: ReviewRunRepository;
+  readonly retrospectives: RetrospectiveRepository;
   readonly decisions: DecisionRepository;
   readonly identity: IdentityRepository;
   readonly creativeBriefs: CreativeBriefRepository;
@@ -120,6 +123,7 @@ export function createApiContext(): ApiContext {
     rubrics: new PrismaRubricRepository(prisma),
     evaluations: new PrismaEvaluationRepository(prisma),
     reviewRuns: new PrismaReviewRunRepository(prisma),
+    retrospectives: new PrismaRetrospectiveRepository(prisma),
     decisions: new PrismaDecisionRepository(prisma),
     identity: new PrismaIdentityRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),

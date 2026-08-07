@@ -54,6 +54,23 @@ enum ReviewerType {
   AI
 }
 
+enum RetrospectiveStatus {
+  DRAFT
+  APPROVED
+}
+
+enum LessonCategory {
+  WORKED
+  FAILED
+  SURPRISED
+  UNUSED_FOOTAGE
+  CLIENT_FEEDBACK
+  AUDIENCE_RESPONSE
+  TIME_SINK
+  REPEAT
+  AVOID
+}
+
 enum StoryAngleStatus {
   DRAFT
   EVALUATED
@@ -229,6 +246,7 @@ model Project {
 
   evaluations        Evaluation[]
   reviewRuns         ReviewRun[]
+  retrospectives     Retrospective[]
   decisions          Decision[]
   creativeBrief      CreativeBrief?
   storyAngles        StoryAngle[]
@@ -591,6 +609,41 @@ model ReviewScoreOverride {
   @@id([reviewRunId, criterionId])
   @@index([rubricId, criterionId])
   @@map("review_score_overrides")
+}
+
+model Retrospective {
+  id          String              @id
+  ownerId     String              @map("owner_id")
+  projectId   String              @map("project_id")
+  objective   String
+  outcome     String
+  constraints String?
+  status      RetrospectiveStatus
+  createdAt   DateTime            @map("created_at") @db.Timestamptz(3)
+  approvedAt  DateTime?           @map("approved_at") @db.Timestamptz(3)
+  approvedBy  String?             @map("approved_by")
+  lockVersion Int                 @default(1) @map("lock_version")
+  lessons     Lesson[]
+
+  project Project @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+
+  @@unique([id, ownerId, projectId])
+  @@index([projectId, createdAt])
+  @@map("retrospectives")
+}
+
+model Lesson {
+  id              String         @id
+  retrospectiveId String         @map("retrospective_id")
+  category        LessonCategory
+  content         String
+  position        Int
+
+  retrospective Retrospective @relation(fields: [retrospectiveId], references: [id], onDelete: Cascade)
+
+  @@unique([retrospectiveId, position])
+  @@index([retrospectiveId])
+  @@map("lessons")
 }
 
 /// A recorded creative decision. Human-authority fields (selected option, decided

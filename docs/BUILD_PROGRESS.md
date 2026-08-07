@@ -161,6 +161,29 @@ Seventeen focused tests cover dirty/auth failures, selection and prerequisite pr
 branch naming, verification, resume, CI rejection, review/merge gates, remediation limits,
 cleanup, dry-run behavior, machine-readable state, and concurrent-run locking.
 
+## Prompt 015 — Learning Domain Model
+
+**Date:** 2026-08-07 · **Volume:** Foundation
+
+Added project-owned retrospectives with an immutable project-context snapshot, ordered
+categorized lessons, and an explicit human `DRAFT → APPROVED` lifecycle. Authorized
+application services create, retrieve, list, and approve retrospectives while returning
+owner-free views. Approval uses optimistic concurrency and can occur only once.
+
+Prisma persistence stores roots and lessons transactionally. Composite project/owner
+relationships, lifecycle-shape checks, bounded text checks, ordering constraints, and
+indexes preserve ownership, project isolation, auditability, deterministic ordering, and
+human authority. Corruption-safe mapping and an equivalent in-memory adapter complete the
+boundary.
+
+Focused domain, application, mapper, and PostgreSQL tests cover validation, authorization,
+ordering, approval attribution, stale writes, atomic rollback, project isolation, and
+corrupt persistence. No UI, HTTP contract, AI generation/reuse, export, generic audit
+framework, or Prompt 016 work was added. Prompt 016 — Audit and integration domain model —
+is next.
+
+---
+
 ## Prompt 014 — Review and Rubric Domain Model
 
 **Date:** 2026-08-06 · **Volume:** Foundation

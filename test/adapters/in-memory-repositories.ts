@@ -14,6 +14,7 @@ import type {
 } from "@/application/knowledge-acquisition";
 import type { ContentItem, ContentItemId, ContentRepository } from "@/domain/content";
 import type { Decision, DecisionId, DecisionRepository } from "@/domain/decision";
+import type { Retrospective, RetrospectiveId, RetrospectiveRepository } from "@/domain/learning";
 import type {
   EvidenceReference,
   EvidenceReferenceId,
@@ -345,6 +346,34 @@ export class InMemoryReviewRunRepository extends FailableStore implements Review
   async insert(review: ReviewRun): Promise<void> {
     this.guard();
     insertInto(this.store, review);
+  }
+}
+
+export class InMemoryRetrospectiveRepository
+  extends FailableStore
+  implements RetrospectiveRepository
+{
+  private readonly store = new Map<string, Retrospective>();
+  async findById(id: RetrospectiveId): Promise<Retrospective | null> {
+    this.guard();
+    return this.store.get(id) ?? null;
+  }
+  async listByProject(projectId: ProjectId): Promise<readonly Retrospective[]> {
+    this.guard();
+    return [...this.store.values()]
+      .filter((value) => value.projectId === projectId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime() || a.id.localeCompare(b.id));
+  }
+  async insert(value: Retrospective): Promise<void> {
+    this.guard();
+    insertInto(this.store, value);
+  }
+  async update(value: Retrospective): Promise<void> {
+    this.guard();
+    const current = this.store.get(value.id);
+    if (!current) throw new NotFoundError();
+    if (current.lockVersion !== value.lockVersion) throw new OptimisticConcurrencyError();
+    this.store.set(value.id, { ...value, lockVersion: value.lockVersion + 1 });
   }
 }
 

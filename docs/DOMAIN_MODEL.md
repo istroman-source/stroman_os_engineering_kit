@@ -185,6 +185,20 @@ lifecycle `PENDING → RUNNING → COMPLETED|FAILED`. A completed run owns immut
 `EvidenceReference` identifiers. Recommendations are advisory and may link to an existing
 `Decision`, but only that Decision aggregate can record a human creative choice.
 
+## Learning context (Prompt 015)
+
+`Retrospective` is a project-owned aggregate that captures a bounded snapshot of the
+project objective, outcome, and constraints together with an ordered set of categorized
+lessons. Categories cover what worked, failed, surprised the team, unused-footage
+patterns, client feedback, audience response, time sinks, actions to repeat, and actions
+to avoid.
+
+Retrospectives move once from `DRAFT` to `APPROVED`. Approval is explicitly attributed
+to the owning human and protected by optimistic concurrency; approved learning cannot be
+silently replaced by AI or a stale request. This foundation does not automatically feed
+lessons into recommendations, expose a UI/API, or implement the later retrospective
+workflow.
+
 ## Intentionally excluded (this step)
 
 Persistence/adapters, Prisma models, migrations, API/UI, auth/authz, media assets &
