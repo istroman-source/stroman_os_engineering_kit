@@ -64,6 +64,15 @@ const config: Config = {
   approvalPolicies: [],
 };
 describe("Autopilot", () => {
+  it("keeps structured-output schemas compatible with both agent CLIs", async () => {
+    for (const name of ["implementation-result.schema.json", "review-result.schema.json"]) {
+      const schema = JSON.parse(
+        await readFile(join(import.meta.dirname, "agents", "schemas", name), "utf8"),
+      );
+      expect(schema).not.toHaveProperty("$schema");
+      expect(schema).toMatchObject({ type: "object", additionalProperties: false });
+    }
+  });
   it("permanently evolves implementation prompts from review lessons", () => {
     const prompt = implementationPrompt(
       { id: "149", title: "Readiness", slug: "149-readiness", source: "prompt.md" },
