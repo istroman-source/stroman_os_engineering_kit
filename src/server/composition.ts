@@ -5,6 +5,7 @@ import type { Clock, IdGenerator } from "@/application/shared";
 import type { SourceImportRepository, SourceStorage } from "@/application/source-import";
 import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
+import type { AuditIntegrationRepository } from "@/domain/audit-integration";
 import type { AnalysisRepository, GroundedEditorialAnalyzer } from "@/domain/analysis";
 import type { DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceRepository } from "@/domain/evidence";
@@ -66,6 +67,7 @@ import {
   PrismaEvidenceReferenceRepository,
   PrismaAnalysisRepository,
   PrismaSourceImportRepository,
+  PrismaAuditIntegrationRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
@@ -82,6 +84,7 @@ import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
  */
 export interface ApiContext {
   readonly analyses: AnalysisRepository;
+  readonly auditIntegrations: AuditIntegrationRepository;
   readonly projects: ProjectRepository;
   readonly content: ContentRepository;
   readonly rubrics: RubricRepository;
@@ -118,6 +121,7 @@ export interface ApiContext {
 export function createApiContext(): ApiContext {
   return {
     analyses: new PrismaAnalysisRepository(prisma),
+    auditIntegrations: new PrismaAuditIntegrationRepository(prisma),
     projects: new PrismaProjectRepository(prisma),
     content: new PrismaContentRepository(prisma),
     rubrics: new PrismaRubricRepository(prisma),

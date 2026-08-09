@@ -31,6 +31,10 @@ stated explicitly.
 | **CreativeApproval** | Creative Reasoning | Explicit human approval of an advisory CreativeDirection. | AI recommendation. |
 | **ProjectPlan** | Creative Reasoning | An approved, project-specific ordering of free-form segment intents. | Prompt Handoff; a prescribed beat structure. |
 | **AiRecommender** | AI | The provider-neutral port through which the app requests an `AiRecommendation`. Providers implement it **outside** the domain. | A provider SDK/adapter. |
+| **ExternalConnection** | Audit & Integration | Project-owned identity of an approved external account; contains no credential or provider SDK state. | A live provider session. |
+| **SyncRun** | Audit & Integration | Immutable terminal receipt for one idempotent synchronization attempt. | A background job or network request. |
+| **ExternalIdentifier** | Audit & Integration | Immutable project-scoped mapping between an internal resource reference and a provider identifier. | A generic graph relationship. |
+| **AuditEvent** | Audit & Integration | Immutable record of who performed an integration-domain action, on which project subject, and when. | An application log line. |
 | **MediaAsset** | Media & Transcript | Immutable metadata for an externally managed media file, owned by one project. | A `ContentItem`; the file bytes or a storage object. |
 | **TranscriptDocument** | Media & Transcript | An immutable, ordered transcript for one `MediaAsset`, containing local speakers and segments. | A source-document ingestion record or a transcript viewer. |
 | **TranscriptSpeaker** | Media & Transcript | A transcript-local speaker label referenced by segments in the same transcript. | A global person or Entity record. |

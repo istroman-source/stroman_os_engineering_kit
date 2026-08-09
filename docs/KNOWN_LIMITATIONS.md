@@ -141,6 +141,14 @@ verified against a real database (integration tests). Genuine remaining limits:
 
 ## HTTP delivery layer (Prompt 006A) — genuine remaining limits
 
+## Audit and integration foundation (Prompt 016)
+
+- Durable connections, terminal sync receipts, identifier mappings, and audit events exist,
+  but no provider SDK, credential storage, OAuth flow, webhook, scheduler, HTTP endpoint, or
+  UI is implemented yet.
+- Audit coverage is intentionally limited to the integration mutations introduced by this
+  milestone; it is not yet a system-wide security audit log.
+
 - **No AI endpoint.** The `AiRecommender` has no real provider yet; exposing a stub
   route is prohibited. Deferred.
 - **Pagination deferred.** List endpoints return all items (bounded MVP

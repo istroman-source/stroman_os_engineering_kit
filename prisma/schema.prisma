@@ -113,6 +113,11 @@ enum SourceImportStatus {
   TERMINAL_FAILURE
 }
 
+enum IntegrationSyncStatus {
+  SUCCEEDED
+  FAILED
+}
+
 enum StoryRecommendation {
   SELECT
   REVISE
@@ -244,17 +249,21 @@ model Project {
   updatedAt   DateTime      @map("updated_at") @db.Timestamptz(3)
   lockVersion Int           @default(1) @map("lock_version")
 
-  evaluations        Evaluation[]
-  reviewRuns         ReviewRun[]
-  retrospectives     Retrospective[]
-  decisions          Decision[]
-  creativeBrief      CreativeBrief?
-  storyAngles        StoryAngle[]
-  mediaAssets        MediaAsset[]
-  transcripts        TranscriptDocument[]
-  evidenceReferences EvidenceReference[]
-  analysisRuns       AnalysisRun[]
-  sourceImports      SourceImport[]
+  evaluations         Evaluation[]
+  reviewRuns          ReviewRun[]
+  retrospectives      Retrospective[]
+  decisions           Decision[]
+  creativeBrief       CreativeBrief?
+  storyAngles         StoryAngle[]
+  mediaAssets         MediaAsset[]
+  transcripts         TranscriptDocument[]
+  evidenceReferences  EvidenceReference[]
+  analysisRuns        AnalysisRun[]
+  sourceImports       SourceImport[]
+  auditEvents         AuditEvent[]
+  externalConnections ExternalConnection[]
+  integrationSyncRuns IntegrationSyncRun[]
+  externalIdentifiers ExternalIdentifier[]
 
   @@unique([id, ownerId])
   @@index([ownerId])
@@ -1012,4 +1021,82 @@ model ObservationMaterialization {
   @@index([ownerId])
   @@index([knowledgeReviewId])
   @@map("observation_materializations")
+}
+
+model AuditEvent {
+  id          String   @id
+  ownerId     String   @map("owner_id")
+  projectId   String   @map("project_id")
+  actorId     String   @map("actor_id")
+  action      String
+  subjectType String   @map("subject_type")
+  subjectId   String   @map("subject_id")
+  occurredAt  DateTime @map("occurred_at") @db.Timestamptz(3)
+
+  project Project @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+
+  @@index([projectId, occurredAt, id])
+  @@map("audit_events")
+}
+
+model ExternalConnection {
+  id                String   @id
+  ownerId           String   @map("owner_id")
+  projectId         String   @map("project_id")
+  provider          String
+  externalAccountId String   @map("external_account_id")
+  displayName       String   @map("display_name")
+  createdAt         DateTime @map("created_at") @db.Timestamptz(3)
+
+  project             Project              @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  syncRuns            IntegrationSyncRun[]
+  externalIdentifiers ExternalIdentifier[]
+
+  @@unique([id, ownerId, projectId])
+  @@unique([projectId, provider, externalAccountId])
+  @@index([projectId, createdAt, id])
+  @@map("external_connections")
+}
+
+model IntegrationSyncRun {
+  id           String                @id
+  connectionId String                @map("connection_id")
+  ownerId      String                @map("owner_id")
+  projectId    String                @map("project_id")
+  requestKey   String                @map("request_key")
+  status       IntegrationSyncStatus
+  failureCode  String?               @map("failure_code")
+  startedAt    DateTime              @map("started_at") @db.Timestamptz(3)
+  completedAt  DateTime              @map("completed_at") @db.Timestamptz(3)
+
+  project             Project              @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  connection          ExternalConnection   @relation(fields: [connectionId, ownerId, projectId], references: [id, ownerId, projectId], onDelete: Restrict)
+  externalIdentifiers ExternalIdentifier[]
+
+  @@unique([id, connectionId, ownerId, projectId])
+  @@unique([connectionId, requestKey])
+  @@index([connectionId, completedAt, id])
+  @@map("integration_sync_runs")
+}
+
+model ExternalIdentifier {
+  id           String   @id
+  syncRunId    String   @map("sync_run_id")
+  connectionId String   @map("connection_id")
+  ownerId      String   @map("owner_id")
+  projectId    String   @map("project_id")
+  resourceType String   @map("resource_type")
+  resourceId   String   @map("resource_id")
+  externalId   String   @map("external_id")
+  createdAt    DateTime @map("created_at") @db.Timestamptz(3)
+
+  project    Project            @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  connection ExternalConnection @relation(fields: [connectionId, ownerId, projectId], references: [id, ownerId, projectId], onDelete: Restrict)
+  syncRun    IntegrationSyncRun @relation(fields: [syncRunId, connectionId, ownerId, projectId], references: [id, connectionId, ownerId, projectId], onDelete: Restrict)
+
+  @@unique([connectionId, resourceType, resourceId])
+  @@unique([connectionId, externalId])
+  @@index([syncRunId])
+  @@index([projectId, resourceType, resourceId])
+  @@map("external_identifiers")
 }

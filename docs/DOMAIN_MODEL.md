@@ -219,6 +219,18 @@ segments contain free-form intent and exact grounding, with no beat or device ta
 This milestone is domain-only: it adds no repositories, persistence, application services,
 HTTP, UI, provider integration, prompt generation, or execution handoff.
 
+## Audit and integration context (Prompt 016)
+
+An `ExternalConnection` records the project-owned identity of an external provider account
+without storing credentials. A terminal `SyncRun` records one idempotent import/export
+attempt and its failure code when unsuccessful. `ExternalIdentifier` preserves the stable
+mapping between an internal resource and its provider identifier. Every registration and
+sync result produces an append-only `AuditEvent` in the same transaction.
+
+All records retain owner and project scope, all reads are deterministically ordered, and
+application views omit owner identifiers. Provider execution, OAuth, webhooks, scheduling,
+HTTP endpoints, and UI are deliberately deferred.
+
 ## Intentionally excluded (this step)
 
 Persistence/adapters, Prisma models, migrations, API/UI, auth/authz, media assets &
