@@ -2,6 +2,7 @@ import type { OwnerId, ProjectId } from "@/domain/project";
 import {
   type DomainError,
   InvalidStateTransitionError,
+  InvalidValueError,
   validateBoundedText,
 } from "@/domain/shared";
 import { err, ok, type Result } from "@/lib/result";
@@ -18,6 +19,11 @@ export type CreativeQuestionStatus = "OPEN" | "ANSWERED" | "DISMISSED";
 export type CreativeQuestionTarget =
   | { readonly kind: "SESSION"; readonly sessionId: CreativeReasoningSessionId }
   | { readonly kind: "DIRECTION"; readonly directionId: CreativeDirectionId };
+const CREATIVE_QUESTION_TARGET_KINDS: readonly CreativeQuestionTarget["kind"][] = [
+  "SESSION",
+  "DIRECTION",
+];
+const CREATIVE_QUESTION_ORIGINS: readonly CreativeOrigin[] = ["AI", "HUMAN"];
 export interface CreativeQuestion {
   readonly id: CreativeQuestionId;
   readonly ownerId: OwnerId;
@@ -34,6 +40,14 @@ export interface CreativeQuestion {
 export function createCreativeQuestion(
   input: Omit<CreativeQuestion, "status" | "answeredByContextId" | "lockVersion">,
 ): Result<CreativeQuestion, DomainError> {
+  if (!CREATIVE_QUESTION_TARGET_KINDS.includes(input.target.kind)) {
+    return err(
+      new InvalidValueError(`Invalid creative question target kind: "${input.target.kind}"`),
+    );
+  }
+  if (!CREATIVE_QUESTION_ORIGINS.includes(input.origin)) {
+    return err(new InvalidValueError(`Invalid creative question origin: "${input.origin}"`));
+  }
   const prompt = validateBoundedText(input.prompt, { label: "Creative question", max: 1000 });
   if (!prompt.ok) return prompt;
   const impact = validateBoundedText(input.decisionImpact, { label: "Decision impact", max: 2000 });

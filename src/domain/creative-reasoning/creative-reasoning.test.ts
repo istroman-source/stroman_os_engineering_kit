@@ -264,6 +264,32 @@ describe("general creative reasoning", () => {
     expect(answerCreativeQuestion(answered, context).ok).toBe(false);
   });
 
+  it("rejects invalid creative question origin and target kind", () => {
+    const base = {
+      id: CreativeQuestionId.unsafe("crqst_INVALID001"),
+      ownerId,
+      projectId,
+      target: { kind: "SESSION" as const, sessionId },
+      prompt: "Should the product be seen before it is named?",
+      decisionImpact: "Changes the reveal order",
+      origin: "AI" as const,
+      createdAt: now,
+    };
+    const invalidOrigin = createCreativeQuestion({
+      ...base,
+      origin: "AUTOMATION" as unknown as typeof base.origin,
+    });
+    expect(invalidOrigin.ok).toBe(false);
+    if (!invalidOrigin.ok) expect(invalidOrigin.error).toBeInstanceOf(InvalidValueError);
+
+    const invalidTarget = createCreativeQuestion({
+      ...base,
+      target: { kind: "PROJECT" } as unknown as typeof base.target,
+    });
+    expect(invalidTarget.ok).toBe(false);
+    if (!invalidTarget.ok) expect(invalidTarget.error).toBeInstanceOf(InvalidValueError);
+  });
+
   it("requires attributable human context", () => {
     expect(
       createHumanContext({
@@ -332,6 +358,23 @@ describe("general creative reasoning", () => {
         now,
       }).ok,
     ).toBe(false);
+  });
+
+  it("rejects an invalid revision trigger kind", () => {
+    const from = value(direction("crdir_BADTRIGGER1"));
+    const to = value(direction("crdir_BADTRIGGER2"));
+    const result = createReasoningRevision({
+      id: ReasoningRevisionId.unsafe("crrev_BADTRIGGER1"),
+      from,
+      to,
+      trigger: { kind: "SYSTEM_EVENT" } as unknown as Parameters<
+        typeof createReasoningRevision
+      >[0]["trigger"],
+      reason: "Invalid trigger",
+      now,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(InvalidValueError);
   });
 
   it("makes approval explicitly human and attributable", () => {

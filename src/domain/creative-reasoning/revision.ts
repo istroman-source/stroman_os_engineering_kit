@@ -1,5 +1,5 @@
 import type { OwnerId, ProjectId } from "@/domain/project";
-import { type DomainError, validateBoundedText } from "@/domain/shared";
+import { type DomainError, InvalidValueError, validateBoundedText } from "@/domain/shared";
 import { err, ok, type Result } from "@/lib/result";
 import type { CreativeDirection } from "./direction";
 import { CreativeAlignmentError, SelfRevisionError } from "./errors";
@@ -9,6 +9,10 @@ import type { CreativeDirectionId, HumanContextId, ReasoningRevisionId } from ".
 export type RevisionTrigger =
   | { readonly kind: "HUMAN_CONTEXT"; readonly contextId: HumanContextId }
   | { readonly kind: "NEW_EVIDENCE"; readonly ref: CreativeEvidenceRef };
+const REVISION_TRIGGER_KINDS: readonly RevisionTrigger["kind"][] = [
+  "HUMAN_CONTEXT",
+  "NEW_EVIDENCE",
+];
 export interface ReasoningRevision {
   readonly id: ReasoningRevisionId;
   readonly ownerId: OwnerId;
@@ -27,6 +31,9 @@ export function createReasoningRevision(input: {
   reason: string;
   now: Date;
 }): Result<ReasoningRevision, DomainError> {
+  if (!REVISION_TRIGGER_KINDS.includes(input.trigger.kind)) {
+    return err(new InvalidValueError(`Invalid revision trigger kind: "${input.trigger.kind}"`));
+  }
   if (input.from.id === input.to.id) return err(new SelfRevisionError());
   if (
     input.from.ownerId !== input.to.ownerId ||
