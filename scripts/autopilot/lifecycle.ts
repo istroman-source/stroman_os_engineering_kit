@@ -236,19 +236,22 @@ export async function requestIndependentReview(
   state.reviewedCommit = null;
   state.reviewVerdict = "NOT_RUN";
   state.failure = null;
-  await new StateStore(root).save(state);
+  const store = new StateStore(root);
+  await store.save(state);
   if (!config.reviewAgentCommand) return state;
-  const result = await runReviewAtCommit(root, config, runner, state, expectedCommit, promptPath);
-  if (result.exitCode !== 0)
-    throw new AutopilotError(result.stderr || "Independent review failed", "REVIEW_FAILED");
-  return await applyParsedReviewResult(
-    root,
-    config,
-    runner,
-    state,
-    parseReviewResult(result.stdout),
-    expectedCommit,
-  );
+  let parsed: ReviewResult;
+  try {
+    const result = await runReviewAtCommit(root, config, runner, state, expectedCommit, promptPath);
+    if (result.exitCode !== 0)
+      throw new AutopilotError(result.stderr || "Independent review failed", "REVIEW_FAILED");
+    parsed = parseReviewResult(result.stdout);
+  } catch (error) {
+    state.phase = "AWAITING_REVIEW";
+    state.failure = error instanceof Error ? error.message : String(error);
+    await store.save(state);
+    throw error;
+  }
+  return await applyParsedReviewResult(root, config, runner, state, parsed, expectedCommit);
 }
 
 export async function applyReviewResult(
@@ -310,41 +313,42 @@ async function applyParsedReviewResult(
     state.remediationAttempts += 1;
     state.phase = "REMEDIATING";
     await store.save(state);
-    const promptPath = resolve(
-      root,
-      `.autopilot/runs/${state.runId}/remediation-${state.remediationAttempts}.txt`,
-    );
-    await writeFile(promptPath, remediationPrompt(state.milestone!, objective, config), {
-      mode: 0o600,
-    });
-    const fixed = await runner.run(
-      [...config.implementationAgentCommand, promptPath],
-      agentOptions(root, state, config, `remediation-${state.remediationAttempts}`),
-    );
-    if (fixed.exitCode !== 0)
-      throw new AutopilotError(fixed.stderr || "Remediation agent failed", "REMEDIATION_FAILED");
-    state.verification = await verify(root, config, runner, state.runId);
-    if (state.verification.some((value) => value.status === "FAILED")) {
-      state.phase = "FAILED";
-      state.failure = "Remediation verification failed";
-      await store.save(state);
-      return state;
-    }
-    await enforceChangeSafety(root, config, runner, state);
-    await success(runner, ["git", "add", "-A"], "STAGE_FAILED");
-    await success(
-      runner,
-      ["git", "commit", "-m", "fix: address independent review findings"],
-      "COMMIT_FAILED",
-    );
-    state.commit = await success(runner, ["git", "rev-parse", "HEAD"], "COMMIT_READ_FAILED");
-    await success(runner, ["git", "push"], "PUSH_FAILED");
-    state.reviewedCommit = null;
-    state.reviewVerdict = "NOT_RUN";
-    state.ciStatus = "PENDING";
-    state.phase = "CI_PENDING";
-    await store.save(state);
     try {
+      const promptPath = resolve(
+        root,
+        `.autopilot/runs/${state.runId}/remediation-${state.remediationAttempts}.txt`,
+      );
+      await mkdir(dirname(promptPath), { recursive: true });
+      await writeFile(promptPath, remediationPrompt(state.milestone!, objective, config), {
+        mode: 0o600,
+      });
+      const fixed = await runner.run(
+        [...config.implementationAgentCommand, promptPath],
+        agentOptions(root, state, config, `remediation-${state.remediationAttempts}`),
+      );
+      if (fixed.exitCode !== 0)
+        throw new AutopilotError(fixed.stderr || "Remediation agent failed", "REMEDIATION_FAILED");
+      state.verification = await verify(root, config, runner, state.runId);
+      if (state.verification.some((value) => value.status === "FAILED")) {
+        state.phase = "FAILED";
+        state.failure = "Remediation verification failed";
+        await store.save(state);
+        return state;
+      }
+      await enforceChangeSafety(root, config, runner, state);
+      await success(runner, ["git", "add", "-A"], "STAGE_FAILED");
+      await success(
+        runner,
+        ["git", "commit", "-m", "fix: address independent review findings"],
+        "COMMIT_FAILED",
+      );
+      state.commit = await success(runner, ["git", "rev-parse", "HEAD"], "COMMIT_READ_FAILED");
+      await success(runner, ["git", "push"], "PUSH_FAILED");
+      state.reviewedCommit = null;
+      state.reviewVerdict = "NOT_RUN";
+      state.ciStatus = "PENDING";
+      state.phase = "CI_PENDING";
+      await store.save(state);
       await monitorCi(
         runner,
         state.prNumber!,
@@ -353,8 +357,9 @@ async function applyParsedReviewResult(
         config.requiredCiChecks,
       );
       state.ciStatus = "PASSED";
+      state.phase = "AWAITING_REVIEW";
+      await store.save(state);
     } catch (error) {
-      state.ciStatus = "FAILED";
       state.phase = "FAILED";
       state.failure = error instanceof Error ? error.message : String(error);
       await store.save(state);
@@ -373,6 +378,7 @@ export async function mergeReady(
   config: Config,
   runner: CommandRunner,
   state: RunState,
+  options: { manual?: boolean } = {},
 ) {
   await assertRecordedBranch(runner, state);
   const infoRaw = await success(
@@ -393,7 +399,7 @@ export async function mergeReady(
   const blocked = mergeGate(state, info.mergeable === "MERGEABLE");
   if (blocked.length)
     throw new AutopilotError(`Merge blocked: ${blocked.join("; ")}`, "MERGE_BLOCKED");
-  if (!config.autoMerge)
+  if (!config.autoMerge && !options.manual)
     throw new AutopilotError("Auto-merge is disabled in configuration", "MERGE_APPROVAL_REQUIRED");
   await success(
     runner,
@@ -453,11 +459,7 @@ const reviewSchema = z
 
 export function parseReviewResult(raw: string): ReviewResult {
   try {
-    const result = reviewSchema.parse(JSON.parse(raw));
-    return {
-      ...result,
-      findings: result.findings.map((finding) => ({ ...finding, resolved: false })),
-    };
+    return reviewSchema.parse(JSON.parse(raw));
   } catch {
     throw new AutopilotError(
       "Review result must be valid, internally consistent structured JSON",

@@ -74,11 +74,14 @@ and independent exact-commit review. OPTIONAL findings are recorded but are neve
 implemented automatically. An approved result with no objective findings enters the
 merge gate.
 
-`autoMerge` is enabled because the gate is fail-closed: local verification, exact-head CI,
-independent approval, zero unresolved objective findings, GitHub mergeability, no human
-approval gate, and an atomic `--match-head-commit` check must all pass. The merge uses a
-merge commit. The remote feature branch is retained for recovery; only the local branch
-is cleaned after `main` is synchronized.
+`autoMerge` remains disabled for the first rollout. A successful run stops at
+`READY_TO_MERGE`; inspect `./autopilot status`, then run `./autopilot merge` as the final
+human approval. That command rechecks local verification, exact-head CI, independent
+approval, zero objective findings, GitHub mergeability, no human approval gate, and the
+atomic `--match-head-commit` condition. Enable `autoMerge` only after one real milestone
+has completed this lifecycle end to end. The merge uses a merge commit. The remote
+feature branch is retained for recovery; only the local branch is cleaned after `main` is
+synchronized.
 
 ## State, review format, and recovery
 

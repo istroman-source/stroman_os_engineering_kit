@@ -41,14 +41,12 @@ export async function monitorCi(
 ) {
   const deadline = Date.now() + seconds * 1000;
   while (Date.now() < deadline) {
-    const result = await runner.run([
-      "gh",
-      "pr",
-      "view",
-      String(pr),
-      "--json",
-      "headRefOid,statusCheckRollup",
-    ]);
+    const remaining = Math.max(1, deadline - Date.now());
+    const result = await runner.run(
+      ["gh", "pr", "view", String(pr), "--json", "headRefOid,statusCheckRollup"],
+      { timeoutMs: Math.min(30_000, remaining) },
+    );
+    if (result.exitCode === 124) continue;
     if (result.exitCode !== 0)
       throw new AutopilotError(result.stderr || "CI status could not be read", "CI_FAILED");
     const parsed = JSON.parse(result.stdout) as {

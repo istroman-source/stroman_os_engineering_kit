@@ -25,7 +25,6 @@ export interface Finding {
   summary: string;
   file: string | null;
   line: number | null;
-  resolved: boolean;
 }
 export interface VerificationOutcome {
   command: readonly string[];

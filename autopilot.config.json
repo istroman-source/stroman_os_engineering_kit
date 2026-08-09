@@ -21,7 +21,7 @@
   "ciTimeoutSeconds": 1800,
   "requiredCiChecks": ["Lint, typecheck, test, build", "End-to-end (Playwright)"],
   "remediationLoopLimit": 2,
-  "autoMerge": true,
+  "autoMerge": false,
   "continuous": false,
   "branchTemplate": "feat/{slug}",
   "protectedPaths": [".git", ".env", ".env.local"],

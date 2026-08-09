@@ -22,9 +22,14 @@ import {
 } from "./lifecycle";
 class FakeRunner implements CommandRunner {
   calls: string[][] = [];
+  options: Array<{ cwd?: string; logFile?: string; timeoutMs?: number } | undefined> = [];
   constructor(readonly handler: (c: readonly string[]) => Partial<CommandResult> = () => ({})) {}
-  async run(c: readonly string[]) {
+  async run(
+    c: readonly string[],
+    options?: { cwd?: string; logFile?: string; timeoutMs?: number },
+  ) {
     this.calls.push([...c]);
+    this.options.push(options);
     return { exitCode: 0, stdout: "", stderr: "", durationMs: 1, ...this.handler(c) };
   }
 }
@@ -177,6 +182,8 @@ describe("Autopilot", () => {
       }),
     }));
     await expect(monitorCi(runner, 1, 1, commit, ["CI", "E2E"])).resolves.toBeUndefined();
+    expect(runner.options[0]?.timeoutMs).toBeGreaterThan(0);
+    expect(runner.options[0]?.timeoutMs).toBeLessThanOrEqual(1_000);
   });
   it("does not pass an incomplete required CI suite", async () => {
     const commit = "a".repeat(40);
@@ -197,9 +204,7 @@ describe("Autopilot", () => {
     s.verification = [{ command: ["ok"], status: "PASSED", durationMs: 1, log: "x", exitCode: 0 }];
     s.ciStatus = "PASSED";
     s.reviewVerdict = "CHANGES_REQUIRED";
-    s.findings = [
-      { severity: "IMPORTANT", summary: "x", file: "src/x.ts", line: 1, resolved: false },
-    ];
+    s.findings = [{ severity: "IMPORTANT", summary: "x", file: "src/x.ts", line: 1 }];
     expect(mergeGate(s, true)).toContain("independent review not approved");
   });
   it("caps remediation through configured state", () => {
@@ -318,7 +323,7 @@ describe("Autopilot", () => {
     ).toMatchObject({
       reviewedCommit: "a".repeat(40),
       verdict: "APPROVED",
-      findings: [{ resolved: false }],
+      findings: [{ file: "src/x.ts", line: 1 }],
     });
   });
 
@@ -411,6 +416,46 @@ describe("Autopilot", () => {
     ).rejects.toMatchObject({ code: "REVIEW_STALE" });
   });
 
+  it("persists remediation failures and approval gates", async () => {
+    const r = await root();
+    const commit = "a".repeat(40);
+    const state = newState(false, false);
+    state.branch = "feat/test";
+    state.prNumber = 9;
+    state.commit = commit;
+    state.ciStatus = "PASSED";
+    state.milestone = {
+      id: "002",
+      title: "Two",
+      slug: "002-two",
+      source: "prompts/v/002_two.md",
+    };
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch") return { stdout: "feat/test\n" };
+      if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${commit}"}` };
+      if (command[0] === "git" && command[1] === "status") return { stdout: " M .env.local\n" };
+      return {};
+    });
+    await expect(
+      applyReviewResult(
+        r,
+        {
+          ...config,
+          implementationAgentCommand: ["fixer"],
+          protectedPaths: [".env.local"],
+        },
+        runner,
+        state,
+        `{"reviewedCommit":"${commit}","verdict":"CHANGES_REQUIRED","findings":[{"severity":"IMPORTANT","summary":"Fix it","file":"src/x.ts","line":1}]}`,
+      ),
+    ).rejects.toMatchObject({ code: "PROTECTED_PATH" });
+    await expect(new StateStore(r).load()).resolves.toMatchObject({
+      phase: "FAILED",
+      failure: "Protected path changed: .env.local",
+      approvalGates: ["protected path changed: .env.local"],
+    });
+  });
+
   it("redacts authorization, bearer, GitHub, and API tokens", () => {
     const secrets = [
       "Authorization: Bearer abc.def.ghi",
@@ -443,6 +488,16 @@ describe("Autopilot", () => {
     const contents = await readFile(log, "utf8");
     expect(contents).not.toContain(secret);
     expect(contents).toContain("[REDACTED]");
+  });
+
+  it("force-kills a subprocess that ignores the configured timeout", async () => {
+    const result = await new ProcessCommandRunner().run(
+      [process.execPath, "-e", "process.on('SIGTERM',()=>{});setInterval(()=>{},1000)"],
+      { timeoutMs: 500 },
+    );
+    expect(result.exitCode).toBe(124);
+    expect(result.durationMs).toBeGreaterThan(1_000);
+    expect(result.durationMs).toBeLessThan(2_000);
   });
 
   it("pins merge to the independently reviewed PR head", async () => {
@@ -484,7 +539,7 @@ describe("Autopilot", () => {
       if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${"a".repeat(40)}"}` };
       return {};
     });
-    await mergeReady(r, { ...config, autoMerge: true }, runner, state);
+    await mergeReady(r, config, runner, state, { manual: true });
     expect(runner.calls).toContainEqual([
       "gh",
       "pr",

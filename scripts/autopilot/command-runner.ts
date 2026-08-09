@@ -7,6 +7,7 @@ const AUTHORIZATION = /(authorization\s*:\s*)(?:bearer|basic)\s+[^\s]+/gi;
 const BEARER = /\bbearer\s+[A-Za-z0-9._~+/=-]+/gi;
 const COMMON_TOKENS =
   /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{16,}|sb_(?:secret|publishable)_[A-Za-z0-9_-]{16,})\b/g;
+const FORCE_KILL_GRACE_MS = 1_000;
 export const redact = (value: string) =>
   value
     .replace(AUTHORIZATION, "$1[REDACTED]")
@@ -27,18 +28,21 @@ export class ProcessCommandRunner implements CommandRunner {
       });
       let stdout = "",
         stderr = "",
-        timedOut = false;
+        timedOut = false,
+        forceTimer: NodeJS.Timeout | null = null;
       child.stdout.on("data", (c) => (stdout += String(c)));
       child.stderr.on("data", (c) => (stderr += String(c)));
       const timer = options.timeoutMs
         ? setTimeout(() => {
             timedOut = true;
             child.kill("SIGTERM");
+            forceTimer = setTimeout(() => child.kill("SIGKILL"), FORCE_KILL_GRACE_MS);
           }, options.timeoutMs)
         : null;
       child.on("error", reject);
       child.on("close", async (code) => {
         if (timer) clearTimeout(timer);
+        if (forceTimer) clearTimeout(forceTimer);
         const result = {
           exitCode: timedOut ? 124 : (code ?? 1),
           stdout: redact(stdout),

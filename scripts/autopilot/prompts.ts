@@ -26,4 +26,4 @@ export const remediationPrompt = (m: Milestone, findings: Finding[], c: Config) 
       "\n",
     )}\n\nVerification: ${c.verificationCommands.map((v) => v.join(" ")).join("; ")}\n\nEdit and test the working tree only. Do not commit, push, create or merge a PR, or change branches. Return IMPLEMENTED only when the findings are resolved and ready for Autopilot verification, otherwise return BLOCKED with the concrete blocker.`;
 export const unresolvedObjectiveFindings = (f: Finding[]) =>
-  f.filter((x) => !x.resolved && (x.severity === "BLOCKING" || x.severity === "IMPORTANT"));
+  f.filter((x) => x.severity === "BLOCKING" || x.severity === "IMPORTANT");
