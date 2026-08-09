@@ -199,6 +199,26 @@ silently replaced by AI or a stale request. This foundation does not automatical
 lessons into recommendations, expose a UI/API, or implement the later retrospective
 workflow.
 
+## General creative reasoning context (Milestone 5A)
+
+`CreativeReasoningSession` keeps the filmmaker's authoritative goal separate from an
+optional, challengeable proposed approach. It owns no prescribed filmmaking structure.
+Documentary, commercial, performance, montage, observational, narrative, and other work
+use the same `CreativeDirection` primitive with free-text form, tags, intent, and grounding.
+Story Reasoning remains an unchanged optional narrative specialization.
+
+Grounded claims retain a discriminated reference to source `EvidenceReference`, contextual
+`Memory`, or contextual `Insight`; those categories cannot be collapsed at construction.
+Human context is separately attributable and never becomes source evidence. Questions must
+state the creative decision their answer could change. New context or evidence creates an
+immutable revision link between two distinct directions instead of overwriting history.
+
+AI directions remain proposals until an owning filmmaker creates a `CreativeApproval`.
+An ordered `ProjectPlan` can be approved only with its matching owner/project approval;
+segments contain free-form intent and exact grounding, with no beat or device taxonomy.
+This milestone is domain-only: it adds no repositories, persistence, application services,
+HTTP, UI, provider integration, prompt generation, or execution handoff.
+
 ## Audit and integration context (Prompt 016)
 
 An `ExternalConnection` records the project-owned identity of an external provider account
