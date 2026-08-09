@@ -1,5 +1,29 @@
 # Build Progress
 
+## Prompt 016 — Audit and Integration Domain Model
+
+**Date:** 2026-08-07 · **Volume:** Foundation
+
+Added project-owned, append-only external connections, terminal sync receipts, external
+identifier mappings, and audit events. Authorized application services register connections,
+record idempotent sync results, and read integration history without exposing owner ids.
+Provider credentials, provider SDKs, network synchronization, webhooks, jobs, HTTP routes, and
+UI are explicitly outside this domain-foundation milestone.
+
+Prisma persistence atomically records connection+audit and sync+identifier+audit units.
+Composite foreign keys preserve owner/project/connection/run alignment; unique constraints
+protect request idempotency and both sides of external mappings; CHECK constraints preserve
+terminal success/failure shape and bounded values. Duplicate concurrent request keys return
+the committed receipt. Explicit mappers reject corrupt persistence, and the in-memory adapter
+matches atomic, idempotent, deterministic behavior.
+
+Focused domain, application, mapper, and real-PostgreSQL tests cover validation,
+authorization, project isolation, migration order, transaction rollback, concurrent duplicate
+requests, external-id conflicts, deterministic ordering, and mapper corruption. Prompt 017 —
+Database indexes and constraints — is next.
+
+---
+
 ## Prompt 003 — Architecture Decision Records
 
 **Date:** 2026-08-07 · **Volume:** Foundation

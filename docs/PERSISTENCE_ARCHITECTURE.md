@@ -231,6 +231,18 @@ rows. See `docs/AUTHENTICATION_ARCHITECTURE.md`.
 
 ## Deletion & retention
 
+## Audit and integration records (Prompt 016)
+
+External connections are project- and owner-scoped. Sync runs are immutable terminal
+receipts, idempotent by `(connection_id, request_key)`, and retain external identifier
+mappings plus an append-only audit event. Composite foreign keys repeat project and owner
+scope across the graph so cross-project links fail in PostgreSQL, not only in application
+code. Connection registration and sync-result recording each commit their complete audit
+trail atomically. Explicit mappers reject corrupt persisted lifecycle or ownership data.
+
+Provider SDKs, credentials, webhooks, background execution, and provider-specific payloads
+remain outside this persistence boundary.
+
 ## Versioned analysis (Prompt 013)
 
 `analysis_runs` is unique by `(project_id, version)`, repeats project-owner alignment,
