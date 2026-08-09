@@ -3,6 +3,7 @@ import {
   makeConfidence,
   type Confidence,
   type DomainError,
+  InvalidValueError,
   validateBoundedText,
 } from "@/domain/shared";
 import { err, ok, type Result } from "@/lib/result";
@@ -13,6 +14,14 @@ import type { CreativeOrigin } from "./direction";
 
 export type DirectionVerdict = "VIABLE" | "CONDITIONAL" | "UNVIABLE";
 export type DirectionRecommendation = "ADVANCE" | "REVISE" | "NEEDS_CONTEXT" | "REJECT";
+const CRITIC_TYPES: readonly CreativeOrigin[] = ["AI", "HUMAN"];
+const DIRECTION_VERDICTS: readonly DirectionVerdict[] = ["VIABLE", "CONDITIONAL", "UNVIABLE"];
+const DIRECTION_RECOMMENDATIONS: readonly DirectionRecommendation[] = [
+  "ADVANCE",
+  "REVISE",
+  "NEEDS_CONTEXT",
+  "REJECT",
+];
 export interface DirectionCritique {
   readonly id: DirectionCritiqueId;
   readonly ownerId: OwnerId;
@@ -32,10 +41,21 @@ export interface DirectionCritique {
 export function createDirectionCritique(
   input: Omit<DirectionCritique, "confidence"> & { confidence: number },
 ): Result<DirectionCritique, DomainError> {
+  if (!CRITIC_TYPES.includes(input.criticType)) {
+    return err(new InvalidValueError(`Invalid critic type: "${input.criticType}"`));
+  }
   if (input.criticType === "AI" && input.criticId !== null)
     return err(new CreativeAuthorityError("An AI critique must not name a human critic"));
   if (input.criticType === "HUMAN" && input.criticId !== input.ownerId)
     return err(new CreativeAuthorityError("A human critique must be attributed to the owner"));
+  if (!DIRECTION_VERDICTS.includes(input.verdict)) {
+    return err(new InvalidValueError(`Invalid direction verdict: "${input.verdict}"`));
+  }
+  if (!DIRECTION_RECOMMENDATIONS.includes(input.recommendation)) {
+    return err(
+      new InvalidValueError(`Invalid direction recommendation: "${input.recommendation}"`),
+    );
+  }
   const strengths = validateBoundedText(input.strengths, {
     label: "Critique strengths",
     max: 3000,

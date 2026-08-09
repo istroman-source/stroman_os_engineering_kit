@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { EvidenceReferenceId } from "@/domain/evidence";
 import { InsightId, MemoryId } from "@/domain/memory";
 import { OwnerId, ProjectId } from "@/domain/project";
+import { InvalidValueError } from "@/domain/shared";
 import type { Result } from "@/lib/result";
 import {
   CreativeApprovalId,
@@ -19,6 +20,7 @@ import {
   createCreativeApproval,
   createCreativeDirection,
   createCreativeEvidenceRef,
+  createGroundedClaim,
   createCreativeQuestion,
   createCreativeReasoningSession,
   createDirectionCritique,
@@ -142,6 +144,14 @@ describe("general creative reasoning", () => {
     expect(direction("crdir_EMPTY0003", { form: "" }).ok).toBe(false);
   });
 
+  it("rejects an invalid direction origin", () => {
+    const result = direction("crdir_ORIGIN001", {
+      origin: "AUTOMATION" as unknown as CreativeDirection["origin"],
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(InvalidValueError);
+  });
+
   it("retains strict source, memory, and insight distinctions at runtime", () => {
     expect(sourceRef).toEqual({
       kind: "SOURCE_EVIDENCE",
@@ -185,6 +195,43 @@ describe("general creative reasoning", () => {
       createDirectionCritique({ ...base, criticType: "HUMAN", criticId: otherOwnerId }).ok,
     ).toBe(false);
     expect(createDirectionCritique({ ...base, criticType: "AI", criticId: null }).ok).toBe(true);
+
+    const invalidCriticType = createDirectionCritique({
+      ...base,
+      criticType: "SYSTEM" as unknown as "AI",
+      criticId: otherOwnerId,
+    });
+    expect(invalidCriticType.ok).toBe(false);
+    if (!invalidCriticType.ok) expect(invalidCriticType.error).toBeInstanceOf(InvalidValueError);
+
+    const invalidVerdict = createDirectionCritique({
+      ...base,
+      criticType: "AI",
+      criticId: null,
+      verdict: "UNKNOWN" as unknown as typeof base.verdict,
+    });
+    expect(invalidVerdict.ok).toBe(false);
+    if (!invalidVerdict.ok) expect(invalidVerdict.error).toBeInstanceOf(InvalidValueError);
+
+    const invalidRecommendation = createDirectionCritique({
+      ...base,
+      criticType: "AI",
+      criticId: null,
+      recommendation: "IGNORE" as unknown as typeof base.recommendation,
+    });
+    expect(invalidRecommendation.ok).toBe(false);
+    if (!invalidRecommendation.ok)
+      expect(invalidRecommendation.error).toBeInstanceOf(InvalidValueError);
+  });
+
+  it("rejects an invalid grounding stance", () => {
+    const result = createGroundedClaim({
+      ref: sourceRef,
+      stance: "NEUTRAL" as unknown as GroundedClaim["stance"],
+      note: "Invalid stance",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(InvalidValueError);
   });
 
   it("requires decision value and enforces question lifecycle", () => {

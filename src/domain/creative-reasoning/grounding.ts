@@ -1,6 +1,6 @@
 import type { EvidenceReferenceId } from "@/domain/evidence";
 import type { InsightId, MemoryId } from "@/domain/memory";
-import { type DomainError, validateBoundedText } from "@/domain/shared";
+import { type DomainError, InvalidValueError, validateBoundedText } from "@/domain/shared";
 import { err, ok, type Result } from "@/lib/result";
 import { GroundingReferenceError } from "./errors";
 
@@ -34,6 +34,7 @@ export function createCreativeEvidenceRef(
 }
 
 export type GroundingStance = "SUPPORTING" | "CONTRADICTORY" | "CONTEXTUAL";
+const GROUNDING_STANCES: readonly GroundingStance[] = ["SUPPORTING", "CONTRADICTORY", "CONTEXTUAL"];
 export interface GroundedClaim {
   readonly ref: CreativeEvidenceRef;
   readonly stance: GroundingStance;
@@ -44,6 +45,9 @@ export function createGroundedClaim(input: {
   stance: GroundingStance;
   note: string;
 }): Result<GroundedClaim, DomainError> {
+  if (!GROUNDING_STANCES.includes(input.stance)) {
+    return err(new InvalidValueError(`Invalid grounding stance: "${input.stance}"`));
+  }
   const note = validateBoundedText(input.note, { label: "Grounding note", max: 2000 });
   return note.ok ? ok({ ...input, note: note.value }) : note;
 }
