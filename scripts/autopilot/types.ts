@@ -23,6 +23,8 @@ export interface Milestone {
 export interface Finding {
   severity: "BLOCKING" | "IMPORTANT" | "OPTIONAL";
   summary: string;
+  file: string | null;
+  line: number | null;
   resolved: boolean;
 }
 export interface VerificationOutcome {
@@ -64,7 +66,9 @@ export interface Config {
   verificationCommands: string[][];
   implementationAgentCommand: string[] | null;
   reviewAgentCommand: string[] | null;
+  agentTimeoutSeconds: number;
   ciTimeoutSeconds: number;
+  requiredCiChecks: string[];
   remediationLoopLimit: number;
   autoMerge: boolean;
   continuous: boolean;

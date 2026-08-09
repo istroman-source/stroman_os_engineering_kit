@@ -73,6 +73,8 @@ async function main() {
       if (!s) throw new AutopilotError("No interrupted run exists", "NO_RUN");
       if (s.phase === "AWAITING_IMPLEMENTATION")
         console.log(JSON.stringify(await advanceImplemented(root, c, runner, s), null, 2));
+      else if (s.phase === "AWAITING_REVIEW")
+        console.log(JSON.stringify(await prepareReview(root, c, runner), null, 2));
       else if (s.phase === "READY_TO_MERGE")
         console.log(JSON.stringify(await mergeReady(root, c, runner, s), null, 2));
       else {

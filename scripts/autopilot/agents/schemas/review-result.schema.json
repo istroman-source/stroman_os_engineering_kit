@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "reviewedCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": ["APPROVED", "CHANGES_REQUIRED"]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["BLOCKING", "IMPORTANT", "OPTIONAL"]
+          },
+          "summary": {
+            "type": "string"
+          },
+          "file": {
+            "type": ["string", "null"]
+          },
+          "line": {
+            "type": ["integer", "null"],
+            "minimum": 1
+          }
+        },
+        "required": ["severity", "summary", "file", "line"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["reviewedCommit", "verdict", "findings"],
+  "additionalProperties": false
+}

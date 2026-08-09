@@ -5,9 +5,9 @@ import type { CommandRunner, Config, RunState } from "./types";
 import { StateStore } from "./state-store";
 import { preflight } from "./preflight";
 import { branchFor, selectMilestone } from "./roadmap";
-import { implementationPrompt, reviewPrompt } from "./prompts";
+import { implementationPrompt } from "./prompts";
 import { AutopilotError } from "./errors";
-import { advanceImplemented } from "./lifecycle";
+import { advanceImplemented, requestIndependentReview } from "./lifecycle";
 export const newState = (continuous: boolean, dryRun: boolean): RunState => {
   const now = new Date().toISOString();
   return {
@@ -42,9 +42,20 @@ export async function startWorkflow(
 ) {
   const store = new StateStore(root);
   await store.acquire();
-  const s = newState(o.continuous ?? c.continuous, o.dryRun ?? false);
+  const continuous = o.continuous ?? c.continuous;
+  const s = newState(continuous, o.dryRun ?? false);
   try {
     await preflight(r, root, s.dryRun);
+    if (continuous)
+      throw new AutopilotError(
+        "Continuous mode is disabled until the roadmap has one unambiguous next milestone",
+        "APPROVAL_REQUIRED",
+      );
+    if (!s.dryRun && !o.milestone)
+      throw new AutopilotError(
+        "Choose one explicit milestone with --milestone before starting automation",
+        "APPROVAL_REQUIRED",
+      );
     s.milestone = await selectMilestone(root, c, o.milestone);
     s.branch = branchFor(c.branchTemplate, s.milestone);
     s.phase = "MILESTONE_SELECTED";
@@ -76,11 +87,15 @@ export async function startWorkflow(
     }
     s.phase = "IMPLEMENTING";
     await store.save(s);
-    const result = await r.run([...c.implementationAgentCommand, path]);
+    const result = await r.run([...c.implementationAgentCommand, path], {
+      cwd: root,
+      timeoutMs: c.agentTimeoutSeconds * 1000,
+      logFile: resolve(root, `.autopilot/logs/${s.runId}/implementation.log`),
+    });
     if (result.exitCode !== 0) throw new AutopilotError(result.stderr, "IMPLEMENTATION_FAILED");
     return await advanceImplemented(root, c, r, s);
   } catch (e) {
-    s.phase = "FAILED";
+    if (s.phase !== "AWAITING_REVIEW" && s.phase !== "READY_TO_MERGE") s.phase = "FAILED";
     s.failure = e instanceof Error ? e.message : String(e);
     await store.save(s);
     throw e;
@@ -93,15 +108,5 @@ export async function prepareReview(root: string, c: Config, r: CommandRunner) {
     s = await store.load();
   if (!s?.milestone || !s.prNumber)
     throw new AutopilotError("No PR is ready for review", "REVIEW_NOT_READY");
-  const prompt = reviewPrompt(s.prNumber, s.milestone),
-    path = resolve(root, `.autopilot/runs/${s.runId}/review-prompt.txt`);
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, prompt, { mode: 0o600 });
-  if (c.reviewAgentCommand) {
-    const result = await r.run([...c.reviewAgentCommand, path]);
-    if (result.exitCode !== 0) throw new AutopilotError(result.stderr, "REVIEW_FAILED");
-  }
-  s.phase = "AWAITING_REVIEW";
-  await store.save(s);
-  return s;
+  return await requestIndependentReview(root, c, r, s);
 }

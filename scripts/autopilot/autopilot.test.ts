@@ -10,13 +10,15 @@ import { StateStore, withLock } from "./state-store";
 import { mergeGate } from "./policy";
 import { newState } from "./workflow";
 import { monitorCi } from "./github";
-import { implementationPrompt } from "./prompts";
+import { implementationPrompt, reviewPrompt } from "./prompts";
 import { ProcessCommandRunner, redact } from "./command-runner";
 import {
   assertRecordedBranch,
   enforceChangeSafety,
+  applyReviewResult,
   mergeReady,
   parseReviewResult,
+  requestIndependentReview,
 } from "./lifecycle";
 class FakeRunner implements CommandRunner {
   calls: string[][] = [];
@@ -51,7 +53,9 @@ const config: Config = {
   verificationCommands: [["ok"], ["next"]],
   implementationAgentCommand: null,
   reviewAgentCommand: null,
+  agentTimeoutSeconds: 10,
   ciTimeoutSeconds: 1,
+  requiredCiChecks: ["CI"],
   remediationLoopLimit: 2,
   autoMerge: false,
   continuous: false,
@@ -71,6 +75,18 @@ describe("Autopilot", () => {
     expect(prompt).toContain("idempotency, concurrency, transactions, retries, and cleanup");
     expect(prompt).toContain("in-memory adapters behaviorally equivalent");
     expect(prompt).toContain("report NOT READY");
+    expect(prompt).toContain("Do not commit, push, create a PR, merge, or change branches");
+  });
+  it("pins the independent review prompt to one exact commit", () => {
+    const commit = "a".repeat(40);
+    const prompt = reviewPrompt(
+      22,
+      { id: "149", title: "Readiness", slug: "149-readiness", source: "prompt.md" },
+      commit,
+    );
+    expect(prompt).toContain(`exact head commit ${commit}`);
+    expect(prompt).toContain(`Return reviewedCommit as exactly ${commit}`);
+    expect(prompt).toContain("detached, read-only review worktree");
   });
   it("passes clean preflight", async () => {
     const r = new FakeRunner((c) =>
@@ -92,6 +108,11 @@ describe("Autopilot", () => {
   });
   it("selects the next incomplete milestone", async () => {
     expect((await selectMilestone(await root(), config)).id).toBe("002");
+  });
+  it("refuses to rerun a completed milestone", async () => {
+    await expect(selectMilestone(await root(), config, "001")).rejects.toMatchObject({
+      code: "MILESTONE_COMPLETE",
+    });
   });
   it("prevents skipping prerequisites", async () => {
     const r = await root();
@@ -125,15 +146,51 @@ describe("Autopilot", () => {
   });
   it("rejects CI failure", async () => {
     await expect(
-      monitorCi(new FakeRunner(() => ({ exitCode: 1, stderr: "failed" })), 1, 1),
+      monitorCi(new FakeRunner(() => ({ exitCode: 1, stderr: "failed" })), 1, 1, "a".repeat(40), [
+        "CI",
+      ]),
     ).rejects.toMatchObject({ code: "CI_FAILED" });
+  });
+  it("passes only the complete required CI suite on the exact head", async () => {
+    const commit = "a".repeat(40);
+    const runner = new FakeRunner(() => ({
+      stdout: JSON.stringify({
+        headRefOid: commit,
+        statusCheckRollup: [
+          { __typename: "CheckRun", name: "CI", status: "COMPLETED", conclusion: "SUCCESS" },
+          {
+            __typename: "CheckRun",
+            name: "E2E",
+            status: "COMPLETED",
+            conclusion: "SUCCESS",
+          },
+        ],
+      }),
+    }));
+    await expect(monitorCi(runner, 1, 1, commit, ["CI", "E2E"])).resolves.toBeUndefined();
+  });
+  it("does not pass an incomplete required CI suite", async () => {
+    const commit = "a".repeat(40);
+    const runner = new FakeRunner(() => ({
+      stdout: JSON.stringify({
+        headRefOid: commit,
+        statusCheckRollup: [
+          { __typename: "CheckRun", name: "CI", status: "COMPLETED", conclusion: "SUCCESS" },
+        ],
+      }),
+    }));
+    await expect(monitorCi(runner, 1, 0.001, commit, ["CI", "E2E"])).rejects.toMatchObject({
+      code: "CI_TIMEOUT",
+    });
   });
   it("enforces review and merge gates", () => {
     const s = newState(false, false);
     s.verification = [{ command: ["ok"], status: "PASSED", durationMs: 1, log: "x", exitCode: 0 }];
     s.ciStatus = "PASSED";
     s.reviewVerdict = "CHANGES_REQUIRED";
-    s.findings = [{ severity: "IMPORTANT", summary: "x", resolved: false }];
+    s.findings = [
+      { severity: "IMPORTANT", summary: "x", file: "src/x.ts", line: 1, resolved: false },
+    ];
     expect(mergeGate(s, true)).toContain("independent review not approved");
   });
   it("caps remediation through configured state", () => {
@@ -234,9 +291,10 @@ describe("Autopilot", () => {
 
   it.each([
     "not json",
-    '{"verdict":"APPROVED","findings":[{"severity":"WRONG","summary":"x","resolved":false}]}',
-    '{"verdict":"APPROVED","findings":[{"severity":"IMPORTANT","resolved":false}]}',
-    '{"verdict":"MAYBE","findings":[]}',
+    '{"reviewedCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","verdict":"APPROVED","findings":[{"severity":"WRONG","summary":"x","file":null,"line":null}]}',
+    '{"reviewedCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","verdict":"APPROVED","findings":[{"severity":"IMPORTANT","file":null,"line":null}]}',
+    '{"reviewedCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","verdict":"MAYBE","findings":[]}',
+    '{"reviewedCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","verdict":"APPROVED","findings":[{"severity":"IMPORTANT","summary":"defect","file":"src/x.ts","line":1}]}',
   ])("rejects malformed review result %s", (raw) => {
     expect(() => parseReviewResult(raw)).toThrowError(
       expect.objectContaining({ code: "REVIEW_OUTPUT_INVALID" }),
@@ -246,9 +304,102 @@ describe("Autopilot", () => {
   it("accepts a fully valid structured review result", () => {
     expect(
       parseReviewResult(
-        '{"verdict":"APPROVED","findings":[{"severity":"OPTIONAL","summary":"Polish","resolved":false}]}',
+        '{"reviewedCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","verdict":"APPROVED","findings":[{"severity":"OPTIONAL","summary":"Polish","file":"src/x.ts","line":1}]}',
       ),
-    ).toMatchObject({ verdict: "APPROVED" });
+    ).toMatchObject({
+      reviewedCommit: "a".repeat(40),
+      verdict: "APPROVED",
+      findings: [{ resolved: false }],
+    });
+  });
+
+  it("reviews a disposable worktree at the exact PR head", async () => {
+    const r = await root();
+    const commit = "a".repeat(40);
+    const state = newState(false, false);
+    state.branch = "feat/test";
+    state.prNumber = 9;
+    state.commit = commit;
+    state.ciStatus = "PASSED";
+    state.milestone = {
+      id: "002",
+      title: "Two",
+      slug: "002-two",
+      source: "prompts/v/002_two.md",
+    };
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch") return { stdout: "feat/test\n" };
+      if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${commit}"}` };
+      if (command[0] === "reviewer")
+        return {
+          stdout: `{"reviewedCommit":"${commit}","verdict":"APPROVED","findings":[]}`,
+        };
+      return {};
+    });
+    const result = await requestIndependentReview(
+      r,
+      { ...config, reviewAgentCommand: ["reviewer"] },
+      runner,
+      state,
+    );
+    expect(result.phase).toBe("READY_TO_MERGE");
+    expect(result.reviewedCommit).toBe(commit);
+    expect(
+      runner.calls.some(
+        (command) => command[0] === "git" && command[1] === "worktree" && command[2] === "add",
+      ),
+    ).toBe(true);
+    expect(
+      runner.calls.some(
+        (command) => command[0] === "git" && command[1] === "worktree" && command[2] === "remove",
+      ),
+    ).toBe(true);
+  });
+
+  it("refuses review when the PR head changed after CI", async () => {
+    const state = newState(false, false);
+    state.branch = "feat/test";
+    state.prNumber = 9;
+    state.commit = "a".repeat(40);
+    state.ciStatus = "PASSED";
+    state.milestone = {
+      id: "002",
+      title: "Two",
+      slug: "002-two",
+      source: "prompts/v/002_two.md",
+    };
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch") return { stdout: "feat/test\n" };
+      if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${"b".repeat(40)}"}` };
+      return {};
+    });
+    await expect(requestIndependentReview(".", config, runner, state)).rejects.toMatchObject({
+      code: "CI_STALE",
+    });
+    expect(runner.calls.some((command) => command[1] === "worktree")).toBe(false);
+  });
+
+  it("rejects a review that names a different commit", async () => {
+    const commit = "a".repeat(40);
+    const state = newState(false, false);
+    state.branch = "feat/test";
+    state.prNumber = 9;
+    state.commit = commit;
+    state.ciStatus = "PASSED";
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch") return { stdout: "feat/test\n" };
+      if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${commit}"}` };
+      return {};
+    });
+    await expect(
+      applyReviewResult(
+        ".",
+        config,
+        runner,
+        state,
+        `{"reviewedCommit":"${"b".repeat(40)}","verdict":"APPROVED","findings":[]}`,
+      ),
+    ).rejects.toMatchObject({ code: "REVIEW_STALE" });
   });
 
   it("redacts authorization, bearer, GitHub, and API tokens", () => {
@@ -289,12 +440,13 @@ describe("Autopilot", () => {
     const state = newState(false, false);
     state.branch = "feat/test";
     state.prNumber = 9;
-    state.reviewedCommit = "old-sha";
+    state.reviewedCommit = "a".repeat(40);
+    state.commit = "a".repeat(40);
     const runner = new FakeRunner((command) => {
       if (command[0] === "git" && command[1] === "branch") return { stdout: "feat/test\n" };
       if (command.includes("mergeable,state"))
         return { stdout: '{"mergeable":"MERGEABLE","state":"OPEN"}' };
-      if (command.includes("headRefOid")) return { stdout: '{"headRefOid":"new-sha"}' };
+      if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${"b".repeat(40)}"}` };
       return {};
     });
     await expect(
@@ -307,7 +459,8 @@ describe("Autopilot", () => {
     const state = newState(false, false);
     state.branch = "feat/test";
     state.prNumber = 9;
-    state.reviewedCommit = "reviewed-sha";
+    state.reviewedCommit = "a".repeat(40);
+    state.commit = "a".repeat(40);
     state.phase = "READY_TO_MERGE";
     state.ciStatus = "PASSED";
     state.reviewVerdict = "APPROVED";
@@ -319,7 +472,7 @@ describe("Autopilot", () => {
         return { stdout: "feat/test\n" };
       if (command.includes("mergeable,state"))
         return { stdout: '{"mergeable":"MERGEABLE","state":"OPEN"}' };
-      if (command.includes("headRefOid")) return { stdout: '{"headRefOid":"reviewed-sha"}' };
+      if (command.includes("headRefOid")) return { stdout: `{"headRefOid":"${"a".repeat(40)}"}` };
       return {};
     });
     await mergeReady(r, { ...config, autoMerge: true }, runner, state);
@@ -329,9 +482,8 @@ describe("Autopilot", () => {
       "merge",
       "9",
       "--merge",
-      "--delete-branch",
       "--match-head-commit",
-      "reviewed-sha",
+      "a".repeat(40),
     ]);
   });
 
