@@ -84,6 +84,25 @@ describe("generateBlueprint", () => {
     expect(generateBlueprint(brief())).toEqual(generateBlueprint(brief()));
   });
 
+  it("normalizes user punctuation without creating broken intent sentences", () => {
+    const bp = generateBlueprint(
+      brief({
+        projectType: "Documentary.",
+        creativeGoal: "Tell the story of starting over!!!",
+        targetAudience: "New audiences.",
+        desiredEmotion: "Hopeful.",
+      }),
+    );
+
+    expect(bp.projectSummary).toContain("Creative goal: Tell the story of starting over!");
+    expect(bp.projectSummary).toContain("Intended audience: New audiences.");
+    expect(bp.projectSummary).toContain("Intended feeling: hopeful.");
+    expect(bp.storyObjective).toBe(
+      "Objective: Tell the story of starting over! Use each creative choice to help the audience leave feeling hopeful.",
+    );
+    expect(`${bp.projectSummary} ${bp.storyObjective}`).not.toMatch(/\.{2,}|!{2,}|\bto Tell\b/);
+  });
+
   it("omits interview strategy for a short-form reel", () => {
     expect(generateBlueprint(brief()).interviewStrategy).toBeNull();
   });

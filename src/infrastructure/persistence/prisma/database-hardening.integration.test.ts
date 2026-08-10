@@ -438,12 +438,16 @@ describe("Prompt 017 database workspace constraints (real PostgreSQL)", () => {
       ORDER BY indexname
     `;
 
-    expect(indexes.map(({ indexname }) => indexname)).toEqual([
-      "entities_owner_id_created_at_idx",
-      "knowledge_sources_owner_id_created_at_idx",
-      "knowledge_observations_document_alignment_idx",
-      "knowledge_observations_run_alignment_idx",
-      "story_angles_project_id_created_at_idx",
-    ]);
+    const indexNames = indexes.map(({ indexname }) => indexname);
+    expect(indexNames).toHaveLength(5);
+    expect(indexNames).toEqual(
+      expect.arrayContaining([
+        "entities_owner_id_created_at_idx",
+        "knowledge_sources_owner_id_created_at_idx",
+        "knowledge_observations_document_alignment_idx",
+        "knowledge_observations_run_alignment_idx",
+        "story_angles_project_id_created_at_idx",
+      ]),
+    );
   });
 });

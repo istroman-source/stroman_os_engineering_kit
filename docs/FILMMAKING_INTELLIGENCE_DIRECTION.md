@@ -1,5 +1,53 @@
 # Filmmaking Intelligence Product Direction
 
+## Product north star
+
+Stroman OS is a filmmaker's creative operating system and one connected workspace across the
+full filmmaking continuum:
+
+**IDEA → DEVELOPMENT → STORY → PRE-PRODUCTION → PRODUCTION → SOURCE/MEDIA UNDERSTANDING →
+EDITORIAL → REVISION → DELIVERY**
+
+Filmmakers may enter at any point. The product must support both paths below without turning
+them into separate products or forcing either path to exist first.
+
+### Develop & Plan — useful before footage exists
+
+Starting from an idea, objective, brief, product, person, campaign, documentary subject, or
+creative problem, Stroman should help a filmmaker develop concepts, audience and objective,
+creative directions, story and character arcs, treatments, interview strategy, scenes,
+storyboards, shot planning, production needs, alternatives, gaps, and unanswered questions.
+
+### Analyze & Edit — useful when source material already exists
+
+Starting from footage, transcripts, interviews, scripts, notes, selects, rough cuts, or other
+source material, Stroman should help reveal characters, chronology, themes, emotional beats,
+turning points, contradictions, strong moments, evidence, missing coverage, alternative
+narratives, editorial structure, and edit recommendations.
+
+### The intent–evidence bridge
+
+Both paths share one evolving project understanding. Stroman's differentiator is helping the
+filmmaker compare:
+
+- What were we trying to make?
+- What did we actually capture?
+- What story does the evidence now support?
+- What exceeded the original plan?
+- What is missing?
+- What should we do next?
+
+Evidence grounding is mandatory, but grounding alone is not creative intelligence. The product
+must distinguish source-backed facts from editorially meaningful interpretations, explain why
+an interpretation may matter, expose uncertainty and counter-evidence, and leave every creative
+decision with the filmmaker. Internal evidence IDs, graph structures, and workflow machinery
+must support that experience without becoming the experience.
+
+This north star is a sequencing constraint. Autonomous work must not optimize Stroman into only
+a transcript-analysis application, only a pre-production planner, or a generic knowledge tool.
+Each material product milestone must either improve one path or strengthen the bridge between
+them while preserving the other path.
+
 ## Executive verdict
 
 Stroman OS has strong foundations for ownership, projects, provenance, media and

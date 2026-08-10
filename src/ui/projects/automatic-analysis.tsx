@@ -21,6 +21,46 @@ interface AnalysisResult {
   }>;
 }
 
+type AnalysisOutput = AnalysisResult["outputs"][number];
+
+function FindingList({
+  outputs,
+  interpretation,
+}: {
+  outputs: AnalysisOutput[];
+  interpretation: boolean;
+}) {
+  if (outputs.length === 0) {
+    return (
+      <p className="text-muted-foreground mt-2 text-sm">
+        {interpretation
+          ? "No strong editorial interpretation is supported yet. More substantive source material may help."
+          : "No substantive source-backed moments were identified yet."}
+      </p>
+    );
+  }
+  return (
+    <ul className="mt-2 space-y-2">
+      {outputs.map((output) => (
+        <li key={output.id} className="border-border rounded border p-3">
+          <div className="text-muted-foreground flex flex-wrap gap-2 text-xs tracking-wide uppercase">
+            <span>
+              {interpretation
+                ? `Editorial interpretation · ${output.kind.replaceAll("_", " ")}`
+                : "Source-backed"}
+            </span>
+            <span>
+              · {output.evidenceReferenceIds.length} source
+              {output.evidenceReferenceIds.length === 1 ? "" : "s"}
+            </span>
+          </div>
+          <p className="mt-1 text-sm">{output.content.replace(/^Source-backed moment:\s*/, "")}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function AutomaticAnalysis({ projectId }: { projectId: string }) {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [busy, setBusy] = useState(false);
@@ -108,24 +148,32 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
             Analysis version {result.run.version} · {result.run.status.toLowerCase()}
           </p>
           <div>
-            <h3 className="text-sm font-semibold">Findings</h3>
-            <ul className="mt-2 space-y-2">
-              {result.outputs.map((output) => (
-                <li key={output.id} className="border-border rounded border p-3">
-                  <div className="text-muted-foreground flex gap-2 text-xs tracking-wide uppercase">
-                    <span>{output.kind.replaceAll("_", " ")}</span>
-                    <span>
-                      · {output.evidenceReferenceIds.length} source
-                      {output.evidenceReferenceIds.length === 1 ? "" : "s"}
-                    </span>
-                  </div>
-                  <p className="mt-1 text-sm">{output.content}</p>
-                </li>
-              ))}
-            </ul>
+            <h3 className="text-sm font-semibold">Source-backed moments</h3>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Direct transcript evidence. These moments are factual source material, not story
+              conclusions.
+            </p>
+            <FindingList
+              outputs={result.outputs.filter((output) => output.kind === "OBSERVATION")}
+              interpretation={false}
+            />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">Advisory next step</h3>
+            <h3 className="text-sm font-semibold">Editorial interpretations to test</h3>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Evidence-grounded patterns and possible story connections. Confirm, revise, or reject
+              them against the fuller material.
+            </p>
+            <FindingList
+              outputs={result.outputs.filter((output) => output.kind !== "OBSERVATION")}
+              interpretation
+            />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold">Filmmaker-controlled editorial tests</h3>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Suggestions are starting points, never automatic creative decisions.
+            </p>
             {result.recommendations.map((recommendation) => (
               <article
                 key={recommendation.id}
