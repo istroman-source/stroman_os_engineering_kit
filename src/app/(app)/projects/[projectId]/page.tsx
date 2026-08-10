@@ -14,11 +14,11 @@ export default async function ProjectHomePage({
   const { projectId } = await params;
   return (
     <>
+      <AnalyzeWorkspace projectId={projectId} />
       <SourceIntake projectId={projectId} />
       <AutomaticAnalysis projectId={projectId} />
       <EditEngine projectId={projectId} />
       <PromptHandoff projectId={projectId} />
-      <AnalyzeWorkspace projectId={projectId} />
     </>
   );
 }

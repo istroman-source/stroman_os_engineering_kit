@@ -183,12 +183,12 @@ export type CreateInsightRequest = z.infer<typeof CreateInsightRequest>;
 export const AnalyzeProjectRequest = z
   .object({
     title: z.string().min(1).max(200),
-    client: z.string().min(1).max(200),
-    projectType: z.string().min(1).max(120),
-    creativeGoal: z.string().min(1).max(2000),
-    targetAudience: z.string().min(1).max(2000),
-    desiredEmotion: z.string().min(1).max(200),
-    context: z.string().min(1).max(5000),
+    client: z.string().max(200).default(""),
+    projectType: z.string().max(120).default(""),
+    creativeGoal: z.string().max(2000).default(""),
+    targetAudience: z.string().max(2000).default(""),
+    desiredEmotion: z.string().max(200).default(""),
+    context: z.string().max(5000).default(""),
   })
   .strict();
 export type AnalyzeProjectRequest = z.infer<typeof AnalyzeProjectRequest>;

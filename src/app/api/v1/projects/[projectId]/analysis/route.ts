@@ -19,6 +19,18 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
   const actorId = (await authenticateRequest(req)).ownerId;
   const projectId = parsePathId(params.projectId, ProjectId.parse);
   const body = await parseJson(req, AnalyzeProjectRequest);
-  const result = await saveCreativeBrief(getApiContext(), { actorId, projectId, fields: body });
+  const result = await saveCreativeBrief(getApiContext(), {
+    actorId,
+    projectId,
+    fields: {
+      title: body.title,
+      client: body.client ?? "",
+      projectType: body.projectType ?? "",
+      creativeGoal: body.creativeGoal ?? "",
+      targetAudience: body.targetAudience ?? "",
+      desiredEmotion: body.desiredEmotion ?? "",
+      context: body.context ?? "",
+    },
+  });
   return sendResult(result, { requestId, serialize: serializeAnalysis });
 });

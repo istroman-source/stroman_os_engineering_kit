@@ -65,6 +65,32 @@ Prompt 018 remains unauthorized by this rollout. Future autonomous work must eva
 highest-value filmmaker outcome against the intent–evidence bridge before advancing a numbered
 prompt.
 
+## Owner-authorized creative-intelligence continuation
+
+The 2026-08-10 Autonomous Continuation Directive authorizes the next human-test vertical slice:
+idea-first creative development, distinct candidate search and critique, purposeful rule-breaking,
+decision-changing questions, sequence thinking, and a production-literate director blueprint.
+This product slice is governed by `docs/CREATIVE_INTELLIGENCE_DOCTRINE.md`.
+
+The shortest safe acceptance path is:
+
+1. require only a basic idea; preserve missing audience, emotion, format, access, and constraints as
+   explicit unknowns rather than invented facts;
+2. recommend one direction with a defensible point of view, audience effect, execution test, and
+   tradeoff;
+3. compare genuinely distinct alternatives and include at least one purposeful rule-break;
+4. ask only questions that identify the creative decision they change;
+5. expose sequence thinking and a provider-neutral director blueprint covering composition,
+   blocking, lens/camera, light, design, color/grade, movement, and sound;
+6. clearly label idea-stage output as creative hypothesis rather than evidence, and clearly report
+   when no visual renderer is configured;
+7. add a benchmark contract and regression fixture, then require canonical verification,
+   exact-head CI, independent exact-SHA review, atomic merge, and post-merge `main` CI.
+
+This continuation does not select the legacy Prompt 018 seeded-demonstration objective and does not
+open the remaining numbered backlog. Autopilot's configured Prompt 017 stop remains a deliberate
+safeguard while this owner-directed vertical slice runs through the same lifecycle manually.
+
 ## Accelerated delivery sequence
 
 ### Project Source Intake & Transcript Import — complete

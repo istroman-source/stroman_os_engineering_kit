@@ -43,26 +43,36 @@ export function AnalyzeForm({
     onSubmit(fields);
   }
 
-  const complete = Object.values(fields).every((value) => value.trim() !== "");
+  const complete = fields.title.trim() !== "";
 
   return (
-    <form onSubmit={handleSubmit} aria-label="Describe video" className="flex flex-col gap-4">
-      <Field label="Video concept">
+    <form onSubmit={handleSubmit} aria-label="Develop idea" className="flex flex-col gap-4">
+      <div className="border-primary/30 bg-primary/5 rounded-lg border p-4">
+        <p className="text-sm font-medium">Start with the idea</p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          This is the only required field. Add details below only when they change the creative
+          direction.
+        </p>
+      </div>
+      <Field label="Video concept" required>
         <input
           className={inputClass}
           value={fields.title}
           onChange={(e) => set("title", e.target.value)}
           maxLength={200}
           aria-label="Video concept"
+          required
+          placeholder="e.g. A night-shift baker teaches his daughter the family recipe before selling the bakery"
         />
       </Field>
-      <Field label="Client">
+      <Field label="Client or owner">
         <input
           className={inputClass}
           value={fields.client}
           onChange={(e) => set("client", e.target.value)}
           maxLength={200}
-          aria-label="Client"
+          aria-label="Client or owner"
+          placeholder="Optional"
         />
       </Field>
       <Field label="Project type">
@@ -70,7 +80,7 @@ export function AnalyzeForm({
           className={inputClass}
           value={fields.projectType}
           onChange={(e) => set("projectType", e.target.value)}
-          placeholder="e.g. Instagram reel, brand documentary, testimonial"
+          placeholder="Optional — documentary, short film, commercial, performance…"
           maxLength={120}
           aria-label="Project type"
         />
@@ -83,6 +93,7 @@ export function AnalyzeForm({
           onChange={(e) => set("creativeGoal", e.target.value)}
           maxLength={2000}
           aria-label="Creative intent"
+          placeholder="Optional — what should change for the audience?"
         />
       </Field>
       <Field label="Target audience">
@@ -93,6 +104,7 @@ export function AnalyzeForm({
           onChange={(e) => set("targetAudience", e.target.value)}
           maxLength={2000}
           aria-label="Target audience"
+          placeholder="Optional — who has the most at stake?"
         />
       </Field>
       <Field label="Desired emotion">
@@ -100,7 +112,7 @@ export function AnalyzeForm({
           className={inputClass}
           value={fields.desiredEmotion}
           onChange={(e) => set("desiredEmotion", e.target.value)}
-          placeholder="e.g. inspired, hungry, trusting"
+          placeholder="Optional — e.g. unsettled, hungry, hopeful, implicated"
           maxLength={200}
           aria-label="Desired emotion"
         />
@@ -111,7 +123,7 @@ export function AnalyzeForm({
           rows={4}
           value={fields.context}
           onChange={(e) => set("context", e.target.value)}
-          placeholder="Summarize available footage, transcripts, references, required beats, duration, platform, and other constraints."
+          placeholder="Optional — access, people, locations, source material, duration, platform, resources, and hard constraints."
           maxLength={5000}
           aria-label="Source material and constraints"
         />
@@ -123,17 +135,30 @@ export function AnalyzeForm({
       ) : null}
       <div>
         <Button type="submit" disabled={busy || !complete}>
-          {busy ? "Building…" : "Build story plan"}
+          {busy ? "Developing…" : "Develop creative direction"}
         </Button>
       </div>
     </form>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  required = false,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <label className="flex flex-col gap-1 text-sm">
-      <span className="font-medium">{label}</span>
+      <span className="font-medium">
+        {label}
+        <span className="text-muted-foreground ml-1 text-xs font-normal">
+          {required ? "Required" : "Optional"}
+        </span>
+      </span>
       {children}
     </label>
   );

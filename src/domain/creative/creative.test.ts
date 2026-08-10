@@ -51,6 +51,24 @@ describe("createCreativeBrief", () => {
     });
     expect(result.ok).toBe(false);
   });
+
+  it("accepts an idea while preserving unsupplied development context as empty", () => {
+    const result = createCreativeBrief({
+      id: CreativeBriefId.unsafe("brief_IDEAONLY1"),
+      projectId: ProjectId.unsafe("proj_AAAAAAA1"),
+      now: T0,
+      title: "A baker teaches his daughter the family recipe before selling the bakery",
+      client: "",
+      projectType: "",
+      creativeGoal: "",
+      targetAudience: "",
+      desiredEmotion: "",
+      context: "",
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.value.targetAudience).toBe("");
+  });
 });
 
 describe("reviseCreativeBrief", () => {
@@ -65,7 +83,7 @@ describe("reviseCreativeBrief", () => {
 });
 
 describe("generateBlueprint", () => {
-  it("produces all eleven sections", () => {
+  it("produces the legacy handoff plus an idea-first development blueprint", () => {
     const bp = generateBlueprint(brief());
     expect(bp.projectSummary).toContain("Signature Dish Reel");
     expect(bp.projectSummary).toContain("Jimmy's Famous Seafood");
@@ -78,6 +96,13 @@ describe("generateBlueprint", () => {
     expect(bp.brollPriorities.length).toBeGreaterThan(0);
     expect(bp.risks.length).toBeGreaterThan(0);
     expect(bp.masterPrompt).toContain("Desired emotion: hungry");
+    expect(bp.development.basis).toBe("PROJECT_INTENT_ONLY");
+    expect(bp.development.recommendedDirection.title).toBe("Proof before promise");
+    expect(bp.development.alternatives).toHaveLength(3);
+    expect(bp.development.alternatives.some((direction) => direction.unconventional)).toBe(true);
+    expect(new Set(bp.development.alternatives.map((item) => item.organizingPrinciple)).size).toBe(
+      3,
+    );
   });
 
   it("is deterministic", () => {
@@ -113,5 +138,47 @@ describe("generateBlueprint", () => {
     );
     expect(bp.interviewStrategy).not.toBeNull();
     expect((bp.interviewStrategy ?? []).length).toBeGreaterThan(0);
+  });
+
+  it("turns a title-only documentary idea into specific hypotheses without inventing facts", () => {
+    const bp = generateBlueprint(
+      brief({
+        title: "A baker teaches his daughter the family recipe before selling the bakery",
+        client: "",
+        projectType: "",
+        creativeGoal: "",
+        targetAudience: "",
+        desiredEmotion: "",
+        context: "",
+      }),
+    );
+
+    expect(bp.development.mode).toBe("DOCUMENTARY");
+    expect(bp.development.objectiveRead).toContain("premise, not yet a finished objective");
+    expect(bp.development.recommendedDirection.title).toBe("Build around the irreversible handoff");
+    expect(bp.development.recommendedDirection).not.toHaveProperty("score");
+    expect(bp.development.alternatives.every((direction) => !("score" in direction))).toBe(true);
+    expect(bp.development.creativeChallenge).toContain("subject but not yet a story");
+    expect(bp.development.questions.length).toBeGreaterThanOrEqual(5);
+    expect(bp.development.questions.every((item) => item.decisionItChanges.length > 20)).toBe(true);
+    expect(bp.development.directorBlueprint.rendering).toEqual(
+      expect.objectContaining({ capability: "STRUCTURED_BLUEPRINT_ONLY", provider: null }),
+    );
+    expect(bp.development.directorBlueprint.risk).toContain("none supplied");
+    expect(`${bp.projectSummary} ${bp.masterPrompt}`).not.toContain("for  in the");
+  });
+
+  it("uses the idea when a generic format label does not identify the filmmaking mode", () => {
+    const bp = generateBlueprint(
+      brief({
+        title: "A live concert captured in one unbroken breath",
+        projectType: "video",
+      }),
+    );
+
+    expect(bp.development.mode).toBe("PERFORMANCE");
+    expect(bp.development.recommendedDirection.title).toBe(
+      "Let the constraint shape the performance",
+    );
   });
 });

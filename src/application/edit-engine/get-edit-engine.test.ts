@@ -7,6 +7,7 @@ describe("composeEditEngine", () => {
       {
         brief: {} as never,
         blueprint: {
+          development: {} as never,
           projectSummary: "A portrait of a working artist.",
           storyObjective: "Reveal the cost behind the craft.",
           audienceAnalysis: "Artists",
@@ -80,6 +81,7 @@ describe("composeEditEngine", () => {
       {
         brief: {} as never,
         blueprint: {
+          development: {} as never,
           projectSummary: "Summary",
           storyObjective: "Objective",
           audienceAnalysis: "Audience",
