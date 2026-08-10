@@ -1,5 +1,31 @@
 # Build Progress
 
+## Idea-First Creative Development and Director Blueprint
+
+**Date:** 2026-08-10 · **Status:** Complete — READY FOR HUMAN TESTING
+
+Added the first Develop & Plan vertical slice without weakening the existing Analyze & Edit path.
+A filmmaker can submit a title-only idea, receive an objective read and one opinionated
+recommendation, compare three distinct directions including a purposeful rule-break, answer
+questions that name the decision they change, inspect a picture-and-sound sequence sketch, and
+take a production-literate director notebook into pre-production. The notebook covers composition,
+blocking, camera/lens, practicals and lighting, background/design, grade, movement, sound, must-get
+material, optional exploration, and risk, with distinct craft grammar for documentary, commercial,
+performance, narrative, and open development rather than one shared coverage template.
+
+The implementation is deterministic and provider-neutral. Idea-stage material is labeled as
+creative hypothesis rather than source evidence, missing context remains unknown, internal ranking
+scores are not exposed, and the structured rendering contract explicitly says no storyboard
+provider is connected. No visual frame is fabricated. Existing creative-brief records and legacy
+edit-engine handoffs remain compatible; no schema migration was required.
+
+The authoritative Creative Intelligence Doctrine, evaluation fixture, domain/UI/API regressions,
+and normal repository release gates protect the new behavior. Exact review and CI evidence remain
+attached to the release pull request and immutable commit history rather than being represented as
+provider-quality proof in this document.
+
+---
+
 ## Prompt 017 — Database Indexes and Constraints
 
 **Date:** 2026-08-10 · **Volume:** Foundation · **Status:** Complete — READY FOR HUMAN TESTING

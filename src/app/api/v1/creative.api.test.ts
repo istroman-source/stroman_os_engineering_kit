@@ -56,13 +56,19 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(analyzed.status).toBe(200);
     const body = analyzed.body as {
       brief: { title: string; projectId: string };
-      blueprint: { hookConcepts: unknown[]; interviewStrategy: unknown; masterPrompt: string };
+      blueprint: {
+        hookConcepts: unknown[];
+        interviewStrategy: unknown;
+        masterPrompt: string;
+        development: { recommendedDirection: { title: string } };
+      };
     };
     expect(body.brief.title).toBe("Signature Dish Reel");
     expect(body.brief.projectId).toBe(projectId);
     expect(body.blueprint.hookConcepts).toHaveLength(3);
     expect(body.blueprint.interviewStrategy).toBeNull(); // reel → no interviews
     expect(body.blueprint.masterPrompt).toContain("hungry");
+    expect(body.blueprint.development.recommendedDirection.title).toBe("Proof before promise");
 
     const after = await call(getAnalysis, { principal: ACTOR, params: { projectId } });
     expect(after.status).toBe(200);
@@ -122,14 +128,44 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(get.status).toBe(403);
   });
 
-  it("rejects an incomplete brief (400)", async () => {
+  it("accepts a title-only idea and rejects a missing title", async () => {
     const projectId = await makeProject();
-    const res = await call(analyzeProject, {
+    const ideaOnly = await call(analyzeProject, {
       method: "POST",
       principal: ACTOR,
       params: { projectId },
-      json: { title: "Only a title" },
+      json: {
+        title: "A baker teaches his daughter the family recipe before selling the bakery",
+      },
     });
-    expect(res.status).toBe(400);
+    expect(ideaOnly.status).toBe(200);
+    const ideaBody = ideaOnly.body as {
+      brief: { targetAudience: string };
+      blueprint: {
+        development: {
+          mode: string;
+          basis: string;
+          alternatives: unknown[];
+          directorBlueprint: { rendering: { capability: string; provider: unknown } };
+        };
+      };
+    };
+    expect(ideaBody.brief.targetAudience).toBe("");
+    expect(ideaBody.blueprint.development).toMatchObject({
+      mode: "DOCUMENTARY",
+      basis: "PROJECT_INTENT_ONLY",
+    });
+    expect(ideaBody.blueprint.development.alternatives).toHaveLength(3);
+    expect(ideaBody.blueprint.development.directorBlueprint.rendering).toEqual(
+      expect.objectContaining({ capability: "STRUCTURED_BLUEPRINT_ONLY", provider: null }),
+    );
+
+    const invalid = await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: { title: "" },
+    });
+    expect(invalid.status).toBe(400);
   });
 });

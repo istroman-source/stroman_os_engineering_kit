@@ -29,20 +29,26 @@ export interface CreativeBrief extends CreativeBriefFields {
   readonly lockVersion: number;
 }
 
-const FIELD_SPECS: ReadonlyArray<readonly [keyof CreativeBriefFields, string, number]> = [
-  ["title", "Project title", 200],
-  ["client", "Client", 200],
-  ["projectType", "Project type", 120],
-  ["creativeGoal", "Creative goal", 2000],
-  ["targetAudience", "Target audience", 2000],
-  ["desiredEmotion", "Desired emotion", 200],
-  ["context", "Context", 5000],
+const FIELD_SPECS: ReadonlyArray<
+  readonly [keyof CreativeBriefFields, string, number, "REQUIRED" | "OPTIONAL"]
+> = [
+  ["title", "Project title", 200, "REQUIRED"],
+  ["client", "Client", 200, "OPTIONAL"],
+  ["projectType", "Project type", 120, "OPTIONAL"],
+  ["creativeGoal", "Creative goal", 2000, "OPTIONAL"],
+  ["targetAudience", "Target audience", 2000, "OPTIONAL"],
+  ["desiredEmotion", "Desired emotion", 200, "OPTIONAL"],
+  ["context", "Context", 5000, "OPTIONAL"],
 ];
 
 function validateFields(input: CreativeBriefFields): Result<CreativeBriefFields, DomainError> {
   const out: Record<string, string> = {};
-  for (const [key, label, max] of FIELD_SPECS) {
-    const result = validateBoundedText(input[key], { label, max });
+  for (const [key, label, max, requirement] of FIELD_SPECS) {
+    const result = validateBoundedText(input[key], {
+      label,
+      min: requirement === "REQUIRED" ? 1 : 0,
+      max,
+    });
     if (!result.ok) return result;
     out[key] = result.value;
   }

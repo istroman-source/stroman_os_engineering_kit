@@ -1,5 +1,9 @@
 # Filmmaking Intelligence Product Direction
 
+The behavior, search, anti-genericness, purposeful rule-breaking, visual language, and benchmark
+standards in `docs/CREATIVE_INTELLIGENCE_DOCTRINE.md` are authoritative alongside this product
+direction.
+
 ## Product north star
 
 Stroman OS is a filmmaker's creative operating system and one connected workspace across the

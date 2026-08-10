@@ -1,25 +1,9 @@
 "use client";
 
 import { apiGetWithEtag, apiPostWithEtag } from "@/ui/auth/api-client";
+import type { Blueprint as DomainBlueprint } from "@/domain/creative";
 
-export interface HookConcept {
-  readonly title: string;
-  readonly description: string;
-}
-
-export interface Blueprint {
-  readonly projectSummary: string;
-  readonly storyObjective: string;
-  readonly audienceAnalysis: string;
-  readonly emotionalArc: readonly string[];
-  readonly recommendedStructure: string;
-  readonly hookConcepts: readonly HookConcept[];
-  readonly editingBlueprint: readonly string[];
-  readonly interviewStrategy: readonly string[] | null;
-  readonly brollPriorities: readonly string[];
-  readonly risks: readonly string[];
-  readonly masterPrompt: string;
-}
+export type Blueprint = DomainBlueprint;
 
 export interface CreativeBrief {
   readonly id: string;

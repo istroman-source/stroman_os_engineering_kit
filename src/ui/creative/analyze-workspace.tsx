@@ -11,8 +11,8 @@ import { type Analysis, type AnalyzeFields, analyzeProject, getAnalysis } from "
 type Mode = "loading" | "form" | "blueprint";
 
 /**
- * "Analyze Project": the creator enters context and Stroman OS returns a Creative
- * Blueprint. If the project was already analyzed, the blueprint loads immediately
+ * The creator can begin with one idea and Stroman OS returns a Creative Blueprint.
+ * If the project was already developed, the blueprint loads immediately
  * (with a Re-analyze path back to the form, prefilled).
  */
 export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
@@ -89,10 +89,11 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
     <div className="flex flex-col gap-6">
       {nav}
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Describe the video</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Develop the idea</h1>
         <p className="text-muted-foreground text-sm">
-          Share the concept, creative intent, audience, source context, and constraints. Stroman OS
-          will turn them into a story and edit plan.
+          Begin with a concept. Stroman will recommend a direction, challenge it, search distinct
+          alternatives, expose the decisions that matter, and sketch a shootable director blueprint.
+          It will not pretend proposed material already exists.
         </p>
       </header>
       <AnalyzeForm initial={analysis?.brief} busy={busy} error={error} onSubmit={onAnalyze} />

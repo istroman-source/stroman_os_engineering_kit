@@ -1,5 +1,30 @@
 # Release Notes
 
+## Human-test alpha 3 — idea-first development and director blueprint (2026-08-10)
+
+- A filmmaker can now begin with only an idea. Audience, objective, emotion, format, access, and
+  production constraints remain visible unknowns instead of required setup or invented facts.
+- Develop & Plan recommends a specific creative direction with an audience effect, execution test,
+  and tradeoff; compares three structurally distinct alternatives; and includes a defensible
+  purposeful rule-break.
+- Decision-changing questions, a mode-specific three-part picture-and-sound sequence sketch,
+  production next steps, and a production-literate director notebook make the result useful before
+  footage exists.
+- The director notebook adapts its craft grammar to documentary, commercial, performance,
+  narrative, or open development and covers composition, blocking, camera/lens, practicals and lighting,
+  background/design, color/grade, movement, sound, must-get material, optional exploration, and
+  production risk.
+- Idea-stage output is explicitly labeled as creative hypothesis rather than source evidence. The
+  provider-neutral rendering contract reports that no visual renderer is configured and never
+  pretends that storyboard frames were generated.
+- The permanent creative-intelligence doctrine and evaluation fixture now protect specialized
+  search, anti-genericness, purposeful innovation, filmmaker authority, and the connected Develop
+  & Plan / Analyze & Edit product direction.
+
+Existing ownership, project isolation, provenance, source integrity, evidence grounding, review
+independence, and human creative authority remain unchanged. This alpha is a deterministic,
+provider-neutral development baseline; it does not claim hosted-model or visual-renderer quality.
+
 ## Human-test alpha 2 — import reliability and editorial signal (2026-08-10)
 
 - Successful transcript imports no longer become false client failures when the upload form is

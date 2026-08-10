@@ -19,7 +19,8 @@ prompts—not backend data structures.
 
 The capability inventory below records useful editorial foundations. It does not imply
 that each capability is a separate screen or manual workflow. The concept-first product
-direction and priority order in `docs/FILMMAKING_INTELLIGENCE_DIRECTION.md` and
+direction, specialized creative behavior, and priority order in
+`docs/CREATIVE_INTELLIGENCE_DOCTRINE.md`, `docs/FILMMAKING_INTELLIGENCE_DIRECTION.md`, and
 `roadmap/PRODUCT_ROADMAP.md` are authoritative.
 
 ## Primary users
@@ -32,6 +33,8 @@ direction and priority order in `docs/FILMMAKING_INTELLIGENCE_DIRECTION.md` and
 7. Social content editor
 
 ## Core jobs to be done
+- Develop an initial idea into distinct, testable creative directions before footage exists
+- Translate a selected direction into sequences and an intentional director blueprint
 - Understand why a project exists
 - Discover the strongest available story
 - Evaluate footage and interviews
