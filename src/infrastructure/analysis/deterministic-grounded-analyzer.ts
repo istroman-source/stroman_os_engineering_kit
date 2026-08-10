@@ -241,7 +241,7 @@ export class DeterministicGroundedAnalyzer implements GroundedEditorialAnalyzer 
       outputs: [
         ...strongest.map((segment) => ({
           kind: "OBSERVATION" as const,
-          content: `Source-backed moment: ${excerpt(segment)}`,
+          content: excerpt(segment),
           confidence: 1,
           sourceSegmentIds: [segment.source.transcriptSegmentId],
         })),
@@ -279,7 +279,7 @@ export class DeterministicGroundedAnalyzer implements GroundedEditorialAnalyzer 
           rationale:
             progression.length >= 2
               ? `Why it may matter: connecting these moments could give the audience a legible sense of change instead of a chronology of isolated quotes.${themeClause} This is an editorial hypothesis: verify context, look for counter-evidence, and keep, revise, or reject it under filmmaker judgment.`
-              : `Why it may matter: these moments contain the transcript's most concrete substantive language.${themeClause} Test whether they serve the project intent; length and repetition alone do not make them important. The filmmaker decides what belongs in the story.`,
+              : `Why it may matter: these moments contain the transcript's most concrete substantive language.${themeClause} Test whether they serve the project intent, look for counter-evidence, and reject the hypothesis if fuller context does not support it; length and repetition alone do not make them important. The filmmaker decides what belongs in the story.`,
           confidence: progression.length >= 2 ? 0.68 : 0.6,
           sourceSegmentIds: recommendationSources.map(
             (segment) => segment.source.transcriptSegmentId,

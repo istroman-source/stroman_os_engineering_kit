@@ -125,6 +125,7 @@ describe("DeterministicGroundedAnalyzer", () => {
       ],
     });
     expect(imperative.outputs[0]?.content).toContain("Take control of the frame");
+    expect(imperative.recommendations[0]?.rationale).toContain("look for counter-evidence");
   });
 
   it("returns no editorial claims when the transcript contains only slate and closing chatter", async () => {

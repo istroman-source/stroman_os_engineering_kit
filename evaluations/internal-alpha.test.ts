@@ -87,9 +87,7 @@ describe("internal-alpha reliability gate", () => {
       .toLowerCase();
 
     expect(observations.length).toBeGreaterThan(0);
-    expect(observations.every((output) => output.content.startsWith("Source-backed moment:"))).toBe(
-      true,
-    );
+    expect(observations.every((output) => output.content.startsWith("“"))).toBe(true);
     expect(interpretations.some((output) => output.kind === "NARRATIVE")).toBe(true);
     expect(interpretations.every((output) => output.confidence < 1)).toBe(true);
     expect(rendered).not.toContain("unknown");
