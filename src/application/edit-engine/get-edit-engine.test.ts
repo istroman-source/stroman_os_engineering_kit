@@ -21,7 +21,6 @@ describe("composeEditEngine", () => {
           interviewStrategy: null,
           brollPriorities: [],
           risks: [],
-          masterPrompt: "",
         },
       },
       {
@@ -92,7 +91,6 @@ describe("composeEditEngine", () => {
           interviewStrategy: null,
           brollPriorities: [],
           risks: [],
-          masterPrompt: "",
         },
       },
       { run: { version: 1 }, outputs, recommendations: [] },

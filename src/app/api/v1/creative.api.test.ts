@@ -31,13 +31,14 @@ async function makeProject(principal = ACTOR): Promise<string> {
 }
 
 const brief = {
-  title: "Signature Dish Reel",
-  client: "Jimmy's Famous Seafood",
-  projectType: "Instagram reel",
-  creativeGoal: "make viewers crave the crab cake",
-  targetAudience: "Baltimore food lovers",
-  desiredEmotion: "hungry",
-  context: "20s vertical, fast cuts.",
+  title: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+  client: "Jimmy's Famous Meals",
+  projectType: "Commercial",
+  creativeGoal: "Conversion",
+  targetAudience: "Parents who need convenience",
+  desiredEmotion: "Understood, relatable, sentimental",
+  context:
+    "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
 };
 
 describe("Analyze Project (real HTTP + PostgreSQL)", () => {
@@ -59,20 +60,21 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       blueprint: {
         hookConcepts: unknown[];
         interviewStrategy: unknown;
-        masterPrompt: string;
-        development: { recommendedDirection: { title: string } };
+        development: { directionDecision: { title: string } };
       };
     };
-    expect(body.brief.title).toBe("Signature Dish Reel");
+    expect(body.brief.title).toContain("Jimmy's Famous Meals");
     expect(body.brief.projectId).toBe(projectId);
     expect(body.blueprint.hookConcepts).toHaveLength(3);
-    expect(body.blueprint.interviewStrategy).toBeNull(); // reel → no interviews
-    expect(body.blueprint.masterPrompt).toContain("hungry");
-    expect(body.blueprint.development.recommendedDirection.title).toBe("Proof before promise");
+    expect(body.blueprint.interviewStrategy).toBeNull();
+    expect(body.blueprint).not.toHaveProperty("masterPrompt");
+    expect(body.blueprint.development.directionDecision.title).toBe("The first quiet bite");
 
     const after = await call(getAnalysis, { principal: ACTOR, params: { projectId } });
     expect(after.status).toBe(200);
-    expect((after.body as { brief: { title: string } }).brief.title).toBe("Signature Dish Reel");
+    expect((after.body as { brief: { title: string } }).brief.title).toContain(
+      "Jimmy's Famous Meals",
+    );
   });
 
   it("re-analysis replaces the brief (one brief per project)", async () => {
@@ -96,7 +98,7 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(await prisma.creativeBrief.count()).toBe(1);
   });
 
-  it("includes interview strategy for a documentary format", async () => {
+  it("fails closed for an unsupported deterministic documentary draft", async () => {
     const projectId = await makeProject();
     const res = await call(analyzeProject, {
       method: "POST",
@@ -104,9 +106,8 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       params: { projectId },
       json: { ...brief, projectType: "brand documentary with founder interview" },
     });
-    expect(
-      (res.body as { blueprint: { interviewStrategy: unknown[] } }).blueprint.interviewStrategy,
-    ).not.toBeNull();
+    expect(res.status).toBe(503);
+    expect(await prisma.creativeBrief.count()).toBe(0);
   });
 
   it("denies analyzing or viewing another owner's project (403)", async () => {
@@ -128,7 +129,7 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(get.status).toBe(403);
   });
 
-  it("accepts a title-only idea and rejects a missing title", async () => {
+  it("rejects an unverified title-only fallback and a missing title", async () => {
     const projectId = await makeProject();
     const ideaOnly = await call(analyzeProject, {
       method: "POST",
@@ -138,27 +139,8 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
         title: "A baker teaches his daughter the family recipe before selling the bakery",
       },
     });
-    expect(ideaOnly.status).toBe(200);
-    const ideaBody = ideaOnly.body as {
-      brief: { targetAudience: string };
-      blueprint: {
-        development: {
-          mode: string;
-          basis: string;
-          alternatives: unknown[];
-          directorBlueprint: { rendering: { capability: string; provider: unknown } };
-        };
-      };
-    };
-    expect(ideaBody.brief.targetAudience).toBe("");
-    expect(ideaBody.blueprint.development).toMatchObject({
-      mode: "DOCUMENTARY",
-      basis: "PROJECT_INTENT_ONLY",
-    });
-    expect(ideaBody.blueprint.development.alternatives).toHaveLength(3);
-    expect(ideaBody.blueprint.development.directorBlueprint.rendering).toEqual(
-      expect.objectContaining({ capability: "STRUCTURED_BLUEPRINT_ONLY", provider: null }),
-    );
+    expect(ideaOnly.status).toBe(503);
+    expect(await prisma.creativeBrief.count()).toBe(0);
 
     const invalid = await call(analyzeProject, {
       method: "POST",

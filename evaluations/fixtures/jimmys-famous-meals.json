@@ -1,0 +1,30 @@
+{
+  "fixtureId": "negative-golden-pr28-jimmys-famous-meals",
+  "status": "NEGATIVE_GOLDEN",
+  "brief": {
+    "title": "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+    "client": "Jimmy's Famous Meals",
+    "projectType": "Commercial",
+    "creativeGoal": "Conversion",
+    "targetAudience": "Parents who need convenience",
+    "desiredEmotion": "Understood, relatable, sentimental",
+    "context": "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed."
+  },
+  "reviewedFailure": {
+    "source": "PR #28 output",
+    "summary": "Structurally complete but creatively generic; prose templates substituted the project nouns without discovering a film.",
+    "representativeLanguage": [
+      "Turn the concept into a specific organizing decision, an audience effect, and a production test.",
+      "Tactile foreground detail with an active background held soft.",
+      "Choose camera and lens after scouting.",
+      "Structured director notebook; frame renderer not connected."
+    ],
+    "blockingFailures": [
+      "No new human insight beyond the brief",
+      "No actual scene actions or dramatic turns",
+      "No recommendation sacrifice or change-my-mind fact",
+      "No argued innovation case",
+      "No rendered storyboard, blocking diagram, or look artifact"
+    ]
+  }
+}

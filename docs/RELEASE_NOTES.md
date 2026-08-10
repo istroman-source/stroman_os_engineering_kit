@@ -1,5 +1,40 @@
 # Release Notes
 
+## Corrective creative-development candidate — hosted proof pending (2026-08-10)
+
+- Deep development now runs through a provider-neutral four-stage reasoning boundary:
+  project understanding, distinct candidate generation, independent candidate critique, and
+  synthesis. A strict OpenAI Responses/Structured Outputs adapter is selected when configured;
+  the deterministic specialist remains an offline and safety fallback.
+- Every result must clear a semantic gate for transformation, project specificity, actionability,
+  distinctiveness, judgment, innovation, humanness, craft coherence, honesty, and visual
+  completion before it can be persisted or shown.
+- The offline deterministic engine is now an honest calibration/safety fallback: the tracked Jimmy
+  reference can render reproducibly, while templated drafts for unsupported projects fail closed
+  instead of being labeled complete. General creative development therefore requires the hosted
+  provider path to be configured and proven.
+- The reviewed PR #28 Jimmy's Famous Meals result is now a negative golden. Its replacement turns
+  the brief into a film-specific thesis, four physical scene hypotheses, a recommendation with
+  assumptions/sacrifice/change-my-mind evidence, and a fully argued convention break.
+- The Director Notebook is now a concise set of shot/beat cards. The default creative screen no
+  longer exposes the master prompt or provider plumbing.
+- Stroman renders an actual pencil-style visual artifact: four storyboard drawings, a camera/
+  subject/light blocking map, motion paths, and a project-specific look palette. The exact fixture
+  output and two running-app screenshots live under `evaluations/artifacts/` for independent review.
+- Accepted blueprints are persisted with their server-side provider id, so a refresh cannot silently
+  regenerate a different creative decision. A migration adds the nullable JSON blueprint and
+  provider-audit fields without rewriting existing briefs.
+- Legacy template fields are stripped from the public and persisted blueprint. In particular, the
+  retired “renderer not connected” contract can no longer contradict the rendered artifact.
+
+Automated proof covers the negative golden, the Jimmy output, noun-substitution resistance,
+embedded-instruction attacks, all five filmmaking modes, provider selection/fail-closed behavior,
+strict hosted request construction, full unit/API suites, all migrations, and a production build.
+The deterministic Jimmy artifact has also been inspected in the running app with zero browser
+console errors. This candidate does **not** claim hosted creative quality until an owner supplies a
+server-side hosted-reasoning credential and the real configured path clears the same fixture and
+independent review.
+
 ## Human-test alpha 3 — idea-first development and director blueprint (2026-08-10)
 
 - A filmmaker can now begin with only an idea. Audience, objective, emotion, format, access, and

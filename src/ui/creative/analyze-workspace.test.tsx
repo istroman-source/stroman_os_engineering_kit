@@ -36,7 +36,10 @@ describe("AnalyzeWorkspace", () => {
     vi.mocked(getAnalysis).mockResolvedValue(creativeAnalysisFixture());
     render(<AnalyzeWorkspace projectId="proj_1" />);
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Signature Dish Reel" }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+      }),
     ).toBeInTheDocument();
   });
 
@@ -47,12 +50,18 @@ describe("AnalyzeWorkspace", () => {
     render(<AnalyzeWorkspace projectId="proj_1" />);
 
     await screen.findByRole("form", { name: /develop idea/i });
-    await user.type(screen.getByLabelText("Video concept"), "Signature Dish Reel");
+    await user.type(
+      screen.getByLabelText("Video concept"),
+      "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+    );
     await user.click(screen.getByRole("button", { name: /develop creative direction/i }));
 
     await waitFor(() => expect(analyzeProject).toHaveBeenCalledWith("proj_1", expect.any(Object)));
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Signature Dish Reel" }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+      }),
     ).toBeInTheDocument();
   });
 });

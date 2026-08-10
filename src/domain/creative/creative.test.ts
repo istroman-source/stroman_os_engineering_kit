@@ -5,6 +5,7 @@ import {
   CreativeBriefId,
   createCreativeBrief,
   generateBlueprint,
+  generateDevelopmentBlueprint,
   reviseCreativeBrief,
 } from "./index";
 
@@ -33,6 +34,10 @@ function brief(overrides: Partial<CreativeBrief> = {}): CreativeBrief {
   });
   if (!result.ok) throw result.error;
   return result.value;
+}
+
+function blueprintFor(value: CreativeBrief = brief()) {
+  return generateBlueprint(value, generateDevelopmentBlueprint(value));
 }
 
 describe("createCreativeBrief", () => {
@@ -83,8 +88,8 @@ describe("reviseCreativeBrief", () => {
 });
 
 describe("generateBlueprint", () => {
-  it("produces the legacy handoff plus an idea-first development blueprint", () => {
-    const bp = generateBlueprint(brief());
+  it("produces the public handoff plus a meaningful development blueprint", () => {
+    const bp = blueprintFor();
     expect(bp.projectSummary).toContain("Signature Dish Reel");
     expect(bp.projectSummary).toContain("Jimmy's Famous Seafood");
     expect(bp.storyObjective).not.toBe("");
@@ -95,22 +100,23 @@ describe("generateBlueprint", () => {
     expect(bp.editingBlueprint.length).toBeGreaterThan(0);
     expect(bp.brollPriorities.length).toBeGreaterThan(0);
     expect(bp.risks.length).toBeGreaterThan(0);
-    expect(bp.masterPrompt).toContain("Desired emotion: hungry");
+    expect(bp).not.toHaveProperty("masterPrompt");
     expect(bp.development.basis).toBe("PROJECT_INTENT_ONLY");
-    expect(bp.development.recommendedDirection.title).toBe("Proof before promise");
-    expect(bp.development.alternatives).toHaveLength(3);
-    expect(bp.development.alternatives.some((direction) => direction.unconventional)).toBe(true);
-    expect(new Set(bp.development.alternatives.map((item) => item.organizingPrinciple)).size).toBe(
-      3,
+    expect(bp.development.directionDecision.title).toBe("Proof before promise");
+    expect(bp.development.alternativeDecisions).toHaveLength(3);
+    expect(bp.development.alternativeDecisions.some((direction) => direction.innovation)).toBe(
+      true,
     );
+    expect(bp.development).not.toHaveProperty("directorBlueprint");
+    expect(bp.development).not.toHaveProperty("recommendedDirection");
   });
 
   it("is deterministic", () => {
-    expect(generateBlueprint(brief())).toEqual(generateBlueprint(brief()));
+    expect(blueprintFor()).toEqual(blueprintFor());
   });
 
   it("normalizes user punctuation without creating broken intent sentences", () => {
-    const bp = generateBlueprint(
+    const bp = blueprintFor(
       brief({
         projectType: "Documentary.",
         creativeGoal: "Tell the story of starting over!!!",
@@ -129,19 +135,17 @@ describe("generateBlueprint", () => {
   });
 
   it("omits interview strategy for a short-form reel", () => {
-    expect(generateBlueprint(brief()).interviewStrategy).toBeNull();
+    expect(blueprintFor().interviewStrategy).toBeNull();
   });
 
   it("includes interview strategy for a documentary/interview format", () => {
-    const bp = generateBlueprint(
-      brief({ projectType: "brand documentary with founder interview" }),
-    );
+    const bp = blueprintFor(brief({ projectType: "brand documentary with founder interview" }));
     expect(bp.interviewStrategy).not.toBeNull();
     expect((bp.interviewStrategy ?? []).length).toBeGreaterThan(0);
   });
 
   it("turns a title-only documentary idea into specific hypotheses without inventing facts", () => {
-    const bp = generateBlueprint(
+    const bp = blueprintFor(
       brief({
         title: "A baker teaches his daughter the family recipe before selling the bakery",
         client: "",
@@ -154,22 +158,24 @@ describe("generateBlueprint", () => {
     );
 
     expect(bp.development.mode).toBe("DOCUMENTARY");
-    expect(bp.development.objectiveRead).toContain("premise, not yet a finished objective");
-    expect(bp.development.recommendedDirection.title).toBe("Build around the irreversible handoff");
-    expect(bp.development.recommendedDirection).not.toHaveProperty("score");
-    expect(bp.development.alternatives.every((direction) => !("score" in direction))).toBe(true);
-    expect(bp.development.creativeChallenge).toContain("subject but not yet a story");
-    expect(bp.development.questions.length).toBeGreaterThanOrEqual(5);
-    expect(bp.development.questions.every((item) => item.decisionItChanges.length > 20)).toBe(true);
-    expect(bp.development.directorBlueprint.rendering).toEqual(
-      expect.objectContaining({ capability: "STRUCTURED_BLUEPRINT_ONLY", provider: null }),
+    expect(bp.development.insight.humanTruth).toContain("premise, not yet a finished objective");
+    expect(bp.development.directionDecision.title).toBe("Build around the irreversible handoff");
+    expect(bp.development.directionDecision).not.toHaveProperty("score");
+    expect(bp.development.alternativeDecisions.every((direction) => !("score" in direction))).toBe(
+      true,
     );
-    expect(bp.development.directorBlueprint.risk).toContain("none supplied");
-    expect(`${bp.projectSummary} ${bp.masterPrompt}`).not.toContain("for  in the");
+    expect(bp.development.questions.length).toBeGreaterThanOrEqual(1);
+    expect(bp.development.questions.length).toBeLessThanOrEqual(3);
+    expect(bp.development.questions.every((item) => item.decisionItChanges.length > 20)).toBe(true);
+    expect(bp.development.storyboard.status).toBe("RENDERED");
+    expect(bp.development.sceneHypotheses[0]?.constraintHandling).toMatch(
+      /scout-dependent|unverified/,
+    );
+    expect(`${bp.projectSummary} ${bp.storyObjective}`).not.toContain("for  in the");
   });
 
   it("uses the idea when a generic format label does not identify the filmmaking mode", () => {
-    const bp = generateBlueprint(
+    const bp = blueprintFor(
       brief({
         title: "A live concert captured in one unbroken breath",
         projectType: "video",
@@ -177,8 +183,6 @@ describe("generateBlueprint", () => {
     );
 
     expect(bp.development.mode).toBe("PERFORMANCE");
-    expect(bp.development.recommendedDirection.title).toBe(
-      "Let the constraint shape the performance",
-    );
+    expect(bp.development.directionDecision.title).toBe("Let the constraint shape the performance");
   });
 });
