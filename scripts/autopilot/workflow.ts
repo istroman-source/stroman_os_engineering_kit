@@ -47,12 +47,7 @@ export async function startWorkflow(
   const s = newState(continuous, o.dryRun ?? false);
   try {
     await preflight(r, root, s.dryRun);
-    if (continuous)
-      throw new AutopilotError(
-        "Continuous mode is disabled until the roadmap has one unambiguous next milestone",
-        "APPROVAL_REQUIRED",
-      );
-    if (!s.dryRun && !o.milestone)
+    if (!continuous && !s.dryRun && !o.milestone)
       throw new AutopilotError(
         "Choose one explicit milestone with --milestone before starting automation",
         "APPROVAL_REQUIRED",
@@ -106,6 +101,49 @@ export async function startWorkflow(
     throw e;
   } finally {
     await store.release();
+  }
+}
+
+export async function runWorkflow(
+  root: string,
+  c: Config,
+  r: CommandRunner,
+  o: { milestone?: string; continuous?: boolean; dryRun?: boolean },
+) {
+  const continuous = o.continuous ?? c.continuous;
+  if (!continuous) return await startWorkflow(root, c, r, { ...o, continuous: false });
+  if (!c.autoMerge)
+    throw new AutopilotError("Continuous mode requires auto-merge", "CONTINUOUS_UNSAFE");
+  const stop = c.continuousStopAfterMilestone;
+  if (!stop)
+    throw new AutopilotError(
+      "Continuous mode requires an explicit stop milestone",
+      "CONTINUOUS_UNBOUNDED",
+    );
+  if (o.milestone && o.milestone.padStart(3, "0") > stop)
+    throw new AutopilotError(
+      `Milestone ${o.milestone} is beyond the continuous stop milestone ${stop}`,
+      "CONTINUOUS_TARGET_EXCEEDED",
+    );
+
+  let milestone = o.milestone;
+  while (true) {
+    const next = await selectMilestone(root, c, milestone);
+    if (next.id > stop) {
+      const previous = await new StateStore(root).load();
+      if (previous?.phase === "COMPLETE" && previous.milestone?.id === stop) return previous;
+      throw new AutopilotError(
+        `Next milestone ${next.id} is beyond the continuous stop milestone ${stop}`,
+        "CONTINUOUS_TARGET_REACHED",
+      );
+    }
+    const state = await startWorkflow(root, c, r, {
+      ...o,
+      milestone: next.id,
+      continuous: true,
+    });
+    if (o.dryRun || state.phase !== "COMPLETE" || state.milestone?.id === stop) return state;
+    milestone = undefined;
   }
 }
 export async function prepareReview(root: string, c: Config, r: CommandRunner) {

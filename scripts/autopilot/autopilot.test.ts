@@ -8,7 +8,7 @@ import { selectMilestone, branchFor } from "./roadmap";
 import { verify } from "./verification";
 import { StateStore, withLock } from "./state-store";
 import { mergeGate } from "./policy";
-import { newState } from "./workflow";
+import { newState, runWorkflow } from "./workflow";
 import { monitorCi } from "./github";
 import { implementationPrompt, reviewPrompt } from "./prompts";
 import { ProcessCommandRunner, redact } from "./command-runner";
@@ -65,6 +65,7 @@ const config: Config = {
   remediationLoopLimit: 2,
   autoMerge: false,
   continuous: false,
+  continuousStopAfterMilestone: null,
   branchTemplate: "feat/{slug}",
   protectedPaths: [],
   approvalPolicies: [],
@@ -140,6 +141,78 @@ describe("Autopilot", () => {
     expect(
       branchFor("feat/{slug}", { id: "002", title: "Two", slug: "002-two", source: "x" }),
     ).toBe("feat/002-two");
+  });
+  it("refuses continuous mode without automatic exact-SHA merge", async () => {
+    await expect(
+      runWorkflow(await root(), config, new FakeRunner(), { continuous: true }),
+    ).rejects.toMatchObject({ code: "CONTINUOUS_UNSAFE" });
+  });
+  it("refuses an unbounded continuous run", async () => {
+    await expect(
+      runWorkflow(await root(), { ...config, autoMerge: true }, new FakeRunner(), {
+        continuous: true,
+      }),
+    ).rejects.toMatchObject({ code: "CONTINUOUS_UNBOUNDED" });
+  });
+  it("refuses a continuous milestone beyond the configured stop", async () => {
+    await expect(
+      runWorkflow(
+        await root(),
+        { ...config, autoMerge: true, continuousStopAfterMilestone: "001" },
+        new FakeRunner(),
+        { milestone: "002", continuous: true },
+      ),
+    ).rejects.toMatchObject({ code: "CONTINUOUS_TARGET_EXCEEDED" });
+  });
+  it("selects one milestone without mutation for a continuous dry run", async () => {
+    const runner = new FakeRunner((command) => {
+      if (command[0] === "git" && command[1] === "branch") return { stdout: "main\n" };
+      if (command[0] === "git" && command[1] === "show-ref") return { exitCode: 1 };
+      return {};
+    });
+    const state = await runWorkflow(
+      await root(),
+      { ...config, autoMerge: true, continuousStopAfterMilestone: "002" },
+      runner,
+      { continuous: true, dryRun: true },
+    );
+    expect(state.milestone?.id).toBe("002");
+    expect(state.phase).toBe("AWAITING_IMPLEMENTATION");
+    expect(runner.calls).not.toContainEqual(expect.arrayContaining(["checkout", "-b"]));
+  });
+  it("cannot drift past a completed continuous stop on a later invocation", async () => {
+    const r = await root();
+    const previous = newState(true, false);
+    previous.milestone = {
+      id: "001",
+      title: "One",
+      slug: "001-one",
+      source: "prompts/v/001_one.md",
+    };
+    previous.phase = "COMPLETE";
+    previous.completedAt = new Date().toISOString();
+    await new StateStore(r).save(previous);
+    const runner = new FakeRunner();
+    const state = await runWorkflow(
+      r,
+      { ...config, autoMerge: true, continuousStopAfterMilestone: "001" },
+      runner,
+      { continuous: true },
+    );
+    expect(state.runId).toBe(previous.runId);
+    expect(runner.calls).toHaveLength(0);
+  });
+  it("fails closed before mutation when the next milestone is beyond the stop", async () => {
+    const runner = new FakeRunner();
+    await expect(
+      runWorkflow(
+        await root(),
+        { ...config, autoMerge: true, continuousStopAfterMilestone: "001" },
+        runner,
+        { continuous: true },
+      ),
+    ).rejects.toMatchObject({ code: "CONTINUOUS_TARGET_REACHED" });
+    expect(runner.calls).toHaveLength(0);
   });
   it("records verification success", async () => {
     const out = await verify(await root(), config, new FakeRunner(), "r");
