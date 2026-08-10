@@ -1,6 +1,7 @@
 import type { CreativeBrief } from "./creative-brief";
-import { generateDevelopmentBlueprint, type DevelopmentBlueprint } from "./development-blueprint";
+import type { CreativeMode, DevelopmentBlueprint } from "./development-blueprint";
 import { isMeaningfulDevelopment } from "./creative-quality";
+import type { MeaningfulDevelopment } from "./meaningful-development";
 
 /** A single hook concept the creator can open the piece with. */
 export interface HookConcept {
@@ -13,8 +14,13 @@ export interface HookConcept {
  * produced before editing begins. Pure data so it can be regenerated
  * deterministically from a brief and serialized without transformation.
  */
+export interface BlueprintDevelopment extends MeaningfulDevelopment {
+  readonly basis: "PROJECT_INTENT_ONLY";
+  readonly mode: CreativeMode;
+}
+
 export interface Blueprint {
-  readonly development: DevelopmentBlueprint;
+  readonly development: BlueprintDevelopment;
   readonly projectSummary: string;
   readonly storyObjective: string;
   readonly audienceAnalysis: string;
@@ -61,10 +67,21 @@ function sentence(value: string): string {
  * rule-based reasoning engine — the seam a provider-backed engine can later sit
  * behind. Given the same brief it always produces the same blueprint.
  */
-export function generateBlueprint(
-  brief: CreativeBrief,
-  development: DevelopmentBlueprint = generateDevelopmentBlueprint(brief),
-): Blueprint {
+export function generateBlueprint(brief: CreativeBrief, source: DevelopmentBlueprint): Blueprint {
+  const development: BlueprintDevelopment = {
+    basis: source.basis,
+    mode: source.mode,
+    version: source.version,
+    reasoningSource: source.reasoningSource,
+    insight: source.insight,
+    directionDecision: source.directionDecision,
+    alternativeDecisions: source.alternativeDecisions,
+    sceneHypotheses: source.sceneHypotheses,
+    directorNotebook: source.directorNotebook,
+    storyboard: source.storyboard,
+    questions: source.questions,
+    productionNextSteps: source.productionNextSteps,
+  };
   const shortForm = isShortForm(brief.projectType);
   const projectType = phrase(brief.projectType) || "format still to be chosen";
   const targetAudience = phrase(brief.targetAudience) || "audience still to be defined";
@@ -80,28 +97,26 @@ export function generateBlueprint(
 
   const storyObjective = brief.creativeGoal
     ? `Objective: ${sentence(brief.creativeGoal)} Use each creative choice to help the audience leave feeling ${desiredEmotion}.`
-    : development.objectiveRead;
+    : development.insight.humanTruth;
 
   const audienceAnalysis = brief.targetAudience
     ? `Primary audience: ${sentence(targetAudience)} Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.`
     : "Audience is an unresolved creative decision. Define who has the most at stake and what they already believe before locking tone, duration, or explanation.";
 
-  const emotionalArc = development.sequencePlan.map(
-    (sequence) => `${sequence.title} — ${sequence.purpose}`,
+  const emotionalArc = development.sceneHypotheses.map(
+    (scene) => `${scene.title} — ${scene.purpose}`,
   );
 
-  const recommendedStructure = `Recommended organizing principle — ${development.recommendedDirection.organizingPrinciple} ${development.recommendedDirection.execution}`;
+  const recommendedStructure = `Recommended story engine — ${development.directionDecision.storyEngine} ${development.directionDecision.formalStrategy}`;
 
-  const hookConcepts: HookConcept[] = development.alternatives.map((direction) => ({
+  const hookConcepts: HookConcept[] = development.alternativeDecisions.map((direction) => ({
     title: direction.title,
-    description: `${direction.thesis} ${direction.audienceEffect}`,
+    description: `${direction.pointOfView} ${direction.audienceJourney}`,
   }));
 
   const editingBlueprint = [
-    development.recommendedDirection.execution,
-    ...development.sequencePlan.map(
-      (sequence) => `${sequence.title}: ${sequence.picture} ${sequence.sound}`,
-    ),
+    development.directionDecision.formalStrategy,
+    ...development.sceneHypotheses.map((scene) => `${scene.title}: ${scene.action} ${scene.turn}`),
     ...(shortForm
       ? [
           "For short-form delivery, compress context before removing the decisive action or its aftermath.",
@@ -118,11 +133,13 @@ export function generateBlueprint(
       ]
     : null;
 
-  const brollPriorities = development.directorBlueprint.mustGet;
+  const brollPriorities = development.sceneHypotheses.map(
+    (scene) => `${scene.title}: ${scene.visual}`,
+  );
 
   const risks = [
-    development.creativeChallenge,
-    development.recommendedDirection.tradeoff,
+    development.directionDecision.sacrifice,
+    development.directionDecision.changeMyMindIf,
     `Do not lock production around an unverified audience (${targetAudience}) or emotional destination (${desiredEmotion}).`,
     "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve.",
   ];
@@ -148,6 +165,8 @@ export function isBlueprint(value: unknown): value is Blueprint {
   const candidate = value as Partial<Blueprint>;
   return (
     isMeaningfulDevelopment(candidate.development) &&
+    candidate.development?.basis === "PROJECT_INTENT_ONLY" &&
+    typeof candidate.development.mode === "string" &&
     typeof candidate.projectSummary === "string" &&
     typeof candidate.storyObjective === "string" &&
     typeof candidate.audienceAnalysis === "string" &&

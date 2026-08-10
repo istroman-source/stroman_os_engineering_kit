@@ -8,7 +8,10 @@ describe("BlueprintView", () => {
   it("renders the concept-first story workspace and the project title", () => {
     render(<BlueprintView analysis={creativeAnalysisFixture()} onReanalyze={vi.fn()} />);
     expect(
-      screen.getByRole("heading", { level: 1, name: "Signature Dish Reel" }),
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+      }),
     ).toBeInTheDocument();
     for (const title of [
       "The creative thesis",

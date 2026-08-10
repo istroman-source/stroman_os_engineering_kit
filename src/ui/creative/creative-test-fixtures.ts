@@ -2,6 +2,7 @@ import type { Analysis } from "./creative-api";
 import {
   CreativeBriefId,
   generateBlueprint,
+  generateDevelopmentBlueprint,
   type CreativeBrief as DomainCreativeBrief,
 } from "@/domain/creative";
 import { ProjectId } from "@/domain/project";
@@ -11,30 +12,31 @@ export function creativeAnalysisFixture(interviewStrategy: string[] | null = nul
   const brief: DomainCreativeBrief = {
     id: CreativeBriefId.unsafe("brief_fixture1"),
     projectId: ProjectId.unsafe("proj_fixture1"),
-    title: "Signature Dish Reel",
-    client: "Jimmy's",
-    projectType: "Instagram reel",
-    creativeGoal: "crave the crab cake",
-    targetAudience: "Baltimore foodies",
-    desiredEmotion: "hungry",
-    context: "20s vertical",
+    title: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+    client: "Jimmy's Famous Meals",
+    projectType: "Commercial",
+    creativeGoal: "Conversion",
+    targetAudience: "Parents who need convenience",
+    desiredEmotion: "Understood, relatable, sentimental",
+    context:
+      "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
     createdAt: now,
     updatedAt: now,
     lockVersion: 1,
   };
-  const generated = generateBlueprint(brief);
+  const generated = generateBlueprint(brief, generateDevelopmentBlueprint(brief));
 
   return {
     brief: {
       id: "brief_1",
       projectId: "proj_1",
-      title: "Signature Dish Reel",
-      client: "Jimmy's",
-      projectType: "Instagram reel",
-      creativeGoal: "crave the crab cake",
-      targetAudience: "Baltimore foodies",
-      desiredEmotion: "hungry",
-      context: "20s vertical",
+      title: brief.title,
+      client: brief.client,
+      projectType: brief.projectType,
+      creativeGoal: brief.creativeGoal,
+      targetAudience: brief.targetAudience,
+      desiredEmotion: brief.desiredEmotion,
+      context: brief.context,
       createdAt: "",
       updatedAt: "",
     },

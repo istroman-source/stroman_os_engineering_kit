@@ -42,6 +42,13 @@ export async function developCreativeBlueprint(
     }
     const quality = evaluateCreativeQuality(brief, meaningful);
     if (!quality.passed) {
+      if (deps.creativeReasoning.mode === "DETERMINISTIC") {
+        return err(
+          new CreativeReasoningError(
+            "Deep creative development is unavailable for this project until a hosted reasoning provider is configured.",
+          ),
+        );
+      }
       return err(
         new CreativeQualityError(
           `Creative development failed the semantic quality gate (${quality.total}/100).`,

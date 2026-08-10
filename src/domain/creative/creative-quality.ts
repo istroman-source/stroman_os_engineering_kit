@@ -38,6 +38,10 @@ const GENERIC_PHRASES = [
   "active background held soft",
   "choose after scouting",
   "the supplied intent is true",
+  "choose distance and perspective after the real geography is known",
+  "the project establishes its governing action",
+  "must be tested against the verified subject",
+  "not approved as category advice",
 ];
 
 function words(value: string): string[] {
@@ -105,6 +109,10 @@ export function evaluateCreativeQuality(
   const scenesWithActions = output.sceneHypotheses.filter(
     (scene) => words(scene.action).length >= 8 && scene.turn.trim() !== scene.purpose.trim(),
   ).length;
+  const projectSpecificScenes = output.sceneHypotheses.filter((scene) => {
+    const sceneText = `${scene.action} ${scene.visual} ${scene.turn}`.toLowerCase();
+    return terms.some((term) => sceneText.includes(term));
+  }).length;
   const craftComplete = output.sceneHypotheses.filter((scene) =>
     [
       scene.craft.blocking,
@@ -154,8 +162,11 @@ export function evaluateCreativeQuality(
     ),
     score(
       "ACTIONABILITY",
-      Math.min(10, scenesWithActions * 2 + (output.directorNotebook.length >= 3 ? 2 : 0)),
-      `${scenesWithActions} scenes contain physical action and a distinct dramatic turn.`,
+      Math.min(
+        10,
+        scenesWithActions + projectSpecificScenes + (output.directorNotebook.length >= 3 ? 2 : 0),
+      ),
+      `${scenesWithActions} scenes contain physical action and a distinct dramatic turn; ${projectSpecificScenes} make that action depend on project-specific material.`,
     ),
     score(
       "DISTINCTIVENESS",
@@ -211,6 +222,11 @@ export function evaluateCreativeQuality(
   const blockingFindings: string[] = [];
   if (output.sceneHypotheses.length < 3)
     blockingFindings.push("Fewer than three executable scene hypotheses.");
+  if (projectSpecificScenes < Math.max(2, Math.ceil(output.sceneHypotheses.length * 0.75))) {
+    blockingFindings.push(
+      "Physical scene actions are not causally dependent on enough project-specific material.",
+    );
+  }
   if (!visualComplete) blockingFindings.push("No complete visual storyboard artifact.");
   if (!hasFullInnovation) blockingFindings.push("No fully argued innovation case.");
   if (weakSubstitutionSignal) {

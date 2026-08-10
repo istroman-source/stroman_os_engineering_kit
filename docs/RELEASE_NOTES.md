@@ -9,6 +9,10 @@
 - Every result must clear a semantic gate for transformation, project specificity, actionability,
   distinctiveness, judgment, innovation, humanness, craft coherence, honesty, and visual
   completion before it can be persisted or shown.
+- The offline deterministic engine is now an honest calibration/safety fallback: the tracked Jimmy
+  reference can render reproducibly, while templated drafts for unsupported projects fail closed
+  instead of being labeled complete. General creative development therefore requires the hosted
+  provider path to be configured and proven.
 - The reviewed PR #28 Jimmy's Famous Meals result is now a negative golden. Its replacement turns
   the brief into a film-specific thesis, four physical scene hypotheses, a recommendation with
   assumptions/sacrifice/change-my-mind evidence, and a fully argued convention break.
@@ -20,6 +24,8 @@
 - Accepted blueprints are persisted with their server-side provider id, so a refresh cannot silently
   regenerate a different creative decision. A migration adds the nullable JSON blueprint and
   provider-audit fields without rewriting existing briefs.
+- Legacy template fields are stripped from the public and persisted blueprint. In particular, the
+  retired “renderer not connected” contract can no longer contradict the rendered artifact.
 
 Automated proof covers the negative golden, the Jimmy output, noun-substitution resistance,
 embedded-instruction attacks, all five filmmaking modes, provider selection/fail-closed behavior,

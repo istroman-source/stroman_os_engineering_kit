@@ -185,7 +185,7 @@ function clean(value: string): string {
     .replace(/[.!?]+$/, "");
 }
 
-function isEverydayParentMealCommercial(brief: CreativeBrief, mode: CreativeMode): boolean {
+function isJimmyReferenceFixture(brief: CreativeBrief, mode: CreativeMode): boolean {
   const text = [
     brief.title,
     brief.client,
@@ -199,6 +199,7 @@ function isEverydayParentMealCommercial(brief: CreativeBrief, mode: CreativeMode
     .toLowerCase();
   return (
     mode === "COMMERCIAL" &&
+    /jimmy'?s famous meals/.test(text) &&
     /\b(?:mom|mother|parent)\b/.test(text) &&
     /\b(?:meals?|food|breakfast|dinner)\b/.test(text) &&
     /\b(?:morning|routine|convenience|easier)\b/.test(text)
@@ -776,7 +777,7 @@ export function createMeaningfulDevelopment(
   brief: CreativeBrief,
   seed: DevelopmentSeed,
 ): MeaningfulDevelopment {
-  if (!isEverydayParentMealCommercial(brief, seed.mode)) {
+  if (!isJimmyReferenceFixture(brief, seed.mode)) {
     return genericMeaningfulDevelopment(brief, seed);
   }
   const directions = jimmyDirections();

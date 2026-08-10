@@ -14,13 +14,14 @@ const PROJECT = ProjectId.unsafe("proj_AAAAAAA1");
 
 function fields() {
   return {
-    title: "Signature Dish Reel",
-    client: "Jimmy's Famous Seafood",
-    projectType: "Instagram reel",
-    creativeGoal: "make viewers crave the crab cake",
-    targetAudience: "Baltimore food lovers",
-    desiredEmotion: "hungry",
-    context: "20s vertical, fast cuts.",
+    title: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+    client: "Jimmy's Famous Meals",
+    projectType: "Commercial",
+    creativeGoal: "Conversion",
+    targetAudience: "Parents who need convenience",
+    desiredEmotion: "Understood, relatable, sentimental",
+    context:
+      "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
   };
 }
 
@@ -50,7 +51,7 @@ describe("saveCreativeBrief", () => {
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.brief.title).toBe("Signature Dish Reel");
+    expect(result.value.brief.title).toContain("Jimmy's Famous Meals");
     expect(result.value.blueprint.hookConcepts).toHaveLength(3);
     const persisted = await d.creativeBriefs.findByProject(PROJECT);
     expect(persisted?.blueprint).toEqual(result.value.blueprint);
@@ -105,7 +106,7 @@ describe("getCreativeBrief", () => {
     const after = await getCreativeBrief(d, { actorId: OWNER, projectId: PROJECT });
     expect(after.ok).toBe(true);
     if (after.ok) {
-      expect(after.value.blueprint.projectSummary).toContain("Signature Dish Reel");
+      expect(after.value.blueprint.projectSummary).toContain("Jimmy's Famous Meals");
       expect(after.value.blueprint).not.toHaveProperty("masterPrompt");
     }
   });

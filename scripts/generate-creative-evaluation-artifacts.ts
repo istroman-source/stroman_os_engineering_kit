@@ -5,6 +5,7 @@ import {
   createCreativeBrief,
   evaluateCreativeQuality,
   generateBlueprint,
+  generateDevelopmentBlueprint,
   type CreativeBriefFields,
 } from "../src/domain/creative/index";
 import { ProjectId } from "../src/domain/project/index";
@@ -20,7 +21,7 @@ const created = createCreativeBrief({
   ...fixture.brief,
 });
 if (!created.ok) throw created.error;
-const blueprint = generateBlueprint(created.value);
+const blueprint = generateBlueprint(created.value, generateDevelopmentBlueprint(created.value));
 const quality = evaluateCreativeQuality(created.value, blueprint.development);
 if (!quality.passed) {
   throw new Error(`Jimmy fixture failed: ${quality.blockingFindings.join("; ")}`);

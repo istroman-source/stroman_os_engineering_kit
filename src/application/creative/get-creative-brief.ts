@@ -1,5 +1,5 @@
 import { err, ok, type Result } from "@/lib/result";
-import { type CreativeBriefRepository, generateBlueprint } from "@/domain/creative";
+import { type CreativeBriefRepository } from "@/domain/creative";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
 import { attempt } from "../shared/attempt";
 import { ensureOwner } from "../shared/authorization";
@@ -21,7 +21,7 @@ export type GetCreativeBriefResult = Result<
   NotFoundError | NotAuthorizedError | RepositoryError
 >;
 
-/** Fetch a project's brief + regenerated blueprint. NotFound when not yet analyzed. */
+/** Fetch a project's exact persisted blueprint. Legacy briefs must be re-analyzed. */
 export async function getCreativeBrief(
   deps: GetCreativeBriefDeps,
   input: GetCreativeBriefInput,
@@ -40,9 +40,12 @@ export async function getCreativeBrief(
   );
   if (!briefLoad.ok) return briefLoad;
   if (briefLoad.value === null) return err(new NotFoundError("CreativeBrief", input.projectId));
+  if (!briefLoad.value.blueprint) {
+    return err(new NotFoundError("CreativeBlueprint", input.projectId));
+  }
 
   return ok({
     brief: toCreativeBriefView(briefLoad.value),
-    blueprint: briefLoad.value.blueprint ?? generateBlueprint(briefLoad.value),
+    blueprint: briefLoad.value.blueprint,
   });
 }

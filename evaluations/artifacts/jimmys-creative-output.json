@@ -18,7 +18,7 @@
       {
         "dimension": "ACTIONABILITY",
         "score": 10,
-        "evidence": "4 scenes contain physical action and a distinct dramatic turn."
+        "evidence": "4 scenes contain physical action and a distinct dramatic turn; 4 make that action depend on project-specific material."
       },
       {
         "dimension": "DISTINCTIVENESS",
@@ -81,113 +81,6 @@
     "development": {
       "basis": "PROJECT_INTENT_ONLY",
       "mode": "COMMERCIAL",
-      "objectiveRead": "The stated job is to Conversion. For Parents who need convenience, success is not coverage of “Morning routine of an everyday mom who eats Jimmy's Famous Meals”; it is a specific change in attention, feeling, or action that the film can earn.",
-      "recommendedDirection": {
-        "title": "Proof before promise",
-        "thesis": "Do not begin the film with a claim. Let the audience experience the product, service, or outcome working before the brand explains itself.",
-        "organizingPrinciple": "A visible proof beat earns every later message.",
-        "audienceEffect": "The audience moves from skepticism to desire through evidence, serving the stated goal (“Conversion”).",
-        "execution": "Open on the consequence or sensory payoff, trace back to the decisive process, then land the brand only after proof.",
-        "tradeoff": "The product must have a demonstrable effect; polish without proof will expose the weakness faster.",
-        "unconventional": false,
-        "whyThisWins": "It turns “Morning routine of an everyday mom who eats Jimmy's Famous Meals” into a specific organizing decision, an audience effect, and a production test while leaving unknown facts visibly unresolved. It addresses the stated goal (“Conversion”) without pretending that proposed scenes or evidence already exist."
-      },
-      "alternatives": [
-        {
-          "title": "Make the process the drama",
-          "thesis": "Treat every act of making, choosing, or using as a sequence of consequential decisions rather than coverage.",
-          "organizingPrinciple": "Each craft step raises anticipation and removes one barrier to the payoff.",
-          "audienceEffect": "Specific process detail makes quality credible and desire tactile.",
-          "execution": "Use macro detail, cause-and-effect cutting, and sound-led transitions; reveal the final result only after the process earns it.",
-          "tradeoff": "Process becomes empty fetish if the audience never understands why a choice changes the result.",
-          "unconventional": false
-        },
-        {
-          "title": "Center the customer's cost",
-          "thesis": "Frame the film around the friction, time, risk, or compromise removed for the audience.",
-          "organizingPrinciple": "Before/after is organized by lived consequence rather than feature list.",
-          "audienceEffect": "The audience recognizes its own problem before encountering the offer.",
-          "execution": "Stage one precise moment of friction, show the intervention, then hold long enough for the changed behavior to register.",
-          "tradeoff": "A vague or exaggerated problem will feel manipulative; use only a defensible customer truth.",
-          "unconventional": false
-        },
-        {
-          "title": "Withhold the hero",
-          "thesis": "Keep the expected hero image in the film off-screen until the audience has built a sensory picture of it.",
-          "organizingPrinciple": "Sound, reaction, shadow, aftermath, or negative space creates the first half; the reveal becomes structural.",
-          "audienceEffect": "Curiosity turns a familiar product reveal into an earned event.",
-          "execution": "Design the opening around consequences and reactions, then spend the hero image once, at maximum value.",
-          "tradeoff": "Withholding cannot become confusion; identity cues and duration must fit the platform constraint.",
-          "unconventional": true
-        }
-      ],
-      "creativeChallenge": "If the promise cannot be shown without copy, the concept is still an assertion. Strengthen the proof before increasing polish.",
-      "questions": [
-        {
-          "prompt": "Which burden is actually hardest in her real morning: deciding, cleanup, feeding the baby, or getting out the door?",
-          "decisionItChanges": "Changes the pressure choreography, the product proof, and the exact action that earns the moment of relief."
-        },
-        {
-          "prompt": "Is Jimmy's already part of her routine at frame one, or is this the morning she discovers it?",
-          "decisionItChanges": "Chooses between a preparedness story and a discovery/conversion story; those are different character actions, not copy variations."
-        },
-        {
-          "prompt": "Should relief register as private stillness, shared play with the baby, or enough time to leave calmly?",
-          "decisionItChanges": "Changes the ending performance, sound release, color transition, and final proof the audience sees."
-        }
-      ],
-      "sequencePlan": [
-        {
-          "title": "01 · Evidence of the world",
-          "purpose": "Make the film legible without explaining everything.",
-          "picture": "Begin on the audience-visible result or sensory consequence; no introductory claim.",
-          "sound": "Make the proof tactile with the real action sound at close perspective; reserve music for momentum after credibility is earned."
-        },
-        {
-          "title": "02 · Pressure changes the meaning",
-          "purpose": "Introduce the choice, obstruction, contradiction, or test that makes the stated goal (“Conversion”) consequential.",
-          "picture": "Trace cause to effect in readable screen direction: process detail, intervention, then the audience-visible result in the same sequence.",
-          "sound": "Build rhythm from process detail, then remove one layer at the proof beat so the result is heard rather than announced by copy."
-        },
-        {
-          "title": "03 · Return with a difference",
-          "purpose": "Revisit the opening image or action so the audience can feel understood, relatable, sentimental through changed context.",
-          "picture": "Return to the opening result with the cause now understood and the product or service legible once, without adding an unrelated hero montage.",
-          "sound": "Resolve the sensory motif at the payoff and give brand or call-to-action audio its own clean beat only after the proof lands."
-        }
-      ],
-      "directorBlueprint": {
-        "sequenceTitle": "Proof before promise",
-        "scenePurpose": "The audience moves from skepticism to desire through evidence, serving the stated goal (“Conversion”).",
-        "emotionalTarget": "Move from observation toward understood, relatable, sentimental without announcing the feeling.",
-        "composition": "Place the demonstrable action in tactile foreground and its audience-visible consequence in a second readable plane; reserve clean negative space for one earned brand beat, not default copy coverage.",
-        "blocking": "Stage one continuous cause-and-effect path: user encounters friction, product or service intervenes, behavior changes. Keep hands, product, and result in consistent screen direction so the proof cannot be mistaken for montage implication.",
-        "camera": "Pair one 85–105mm-equivalent detail perspective for material texture with one 35–50mm proof frame that contains action and result. Lock the proof shot; spend any push, slider move, or hero angle only on the verified change.",
-        "practicalsAndLighting": "Build a broad motivated key for people, then add a controlled edge or glancing source that reveals the product's real shape and texture. Protect labels, food, screens, and reflective highlights from false color or unreadable glare.",
-        "backgroundAndDesign": "Use the actual use environment and only props that clarify the customer problem or process. Echo an approved brand color once; remove decorative lifestyle objects that imply an unsupported audience or product claim.",
-        "colorAndGrade": "Prioritize product and skin color accuracy, clean separation, and platform-safe contrast. Let the result become slightly richer only through a defensible lighting or exposure change, not an artificial before/after grade deception.",
-        "movement": "Keep the friction and proof frames stable enough to audit. Use one precise motivated move to connect intervention to result; reject orbiting, speed ramps, and gimbal drift that obscure how the benefit occurs.",
-        "soundAndAtmosphere": "Capture the hero action, material texture, and user response separately. Build the transition from real cause-and-effect sound; leave copy and music out of the proof beat until the visual claim is understandable on its own.",
-        "mustGet": [
-          "A single readable proof shot in which the intervention and its result can be understood without copy.",
-          "Clean tactile details of the actual process or product, including any limitation the final claim must not conceal.",
-          "A held user consequence or changed behavior, followed by one legally and visually clean brand or call-to-action frame."
-        ],
-        "optionalExploration": "Test withholding the conventional hero image while sound and consequence establish desire; reveal it only if recognition stays clear and the delayed image becomes more valuable.",
-        "risk": "The product must have a demonstrable effect; polish without proof will expose the weakness faster. Known constraints: An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed",
-        "rendering": {
-          "capability": "STRUCTURED_BLUEPRINT_ONLY",
-          "provider": null,
-          "aestheticContract": "HAND_DRAWN_DIRECTOR_NOTEBOOK",
-          "limitation": "No visual storyboard provider is configured. This is a shootable structured blueprint, not a claim that frames were rendered."
-        }
-      },
-      "productionNextSteps": [
-        "Observe or rehearse one truthful morning pass and identify the real burden before locking the storyboard.",
-        "Verify which preparation and cleanup steps the Jimmy's meal actually removes; delete any absent-work image the product cannot substantiate.",
-        "Run the fridge-to-counter action as one held shot with approved baby-safe framing; keep the direction only if relief reads without copy.",
-        "Record the pressure sound bed and the first clean room tone separately so the emotional turn can be built from real domestic sound."
-      ],
       "version": 2,
       "reasoningSource": "DETERMINISTIC_SPECIALIST",
       "insight": {
@@ -769,46 +662,69 @@
           ],
           "texture": "Natural mixed practicals, soft highlight roll-off, visible morning shadow, worn domestic surfaces, no glossy lifestyle finish."
         }
-      }
+      },
+      "questions": [
+        {
+          "prompt": "Which burden is actually hardest in her real morning: deciding, cleanup, feeding the baby, or getting out the door?",
+          "decisionItChanges": "Changes the pressure choreography, the product proof, and the exact action that earns the moment of relief."
+        },
+        {
+          "prompt": "Is Jimmy's already part of her routine at frame one, or is this the morning she discovers it?",
+          "decisionItChanges": "Chooses between a preparedness story and a discovery/conversion story; those are different character actions, not copy variations."
+        },
+        {
+          "prompt": "Should relief register as private stillness, shared play with the baby, or enough time to leave calmly?",
+          "decisionItChanges": "Changes the ending performance, sound release, color transition, and final proof the audience sees."
+        }
+      ],
+      "productionNextSteps": [
+        "Observe or rehearse one truthful morning pass and identify the real burden before locking the storyboard.",
+        "Verify which preparation and cleanup steps the Jimmy's meal actually removes; delete any absent-work image the product cannot substantiate.",
+        "Run the fridge-to-counter action as one held shot with approved baby-safe framing; keep the direction only if relief reads without copy.",
+        "Record the pressure sound bed and the first clean room tone separately so the emotional turn can be built from real domestic sound."
+      ]
     },
     "projectSummary": "“Morning routine of an everyday mom who eats Jimmy's Famous Meals” is for Jimmy's Famous Meals; current format: commercial. Creative goal: Conversion. Intended audience: Parents who need convenience. Intended feeling: understood, relatable, sentimental.",
     "storyObjective": "Objective: Conversion. Use each creative choice to help the audience leave feeling understood, relatable, sentimental.",
     "audienceAnalysis": "Primary audience: Parents who need convenience. Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.",
     "emotionalArc": [
-      "01 · Evidence of the world — Make the film legible without explaining everything.",
-      "02 · Pressure changes the meaning — Introduce the choice, obstruction, contradiction, or test that makes the stated goal (“Conversion”) consequential.",
-      "03 · Return with a difference — Revisit the opening image or action so the audience can feel understood, relatable, sentimental through changed context."
+      "The house asks first — Make parents feel the mental switching cost before any product appears.",
+      "One hand, five decisions — Turn convenience from a slogan into visible decision fatigue.",
+      "The task that is already finished — Make removed labor—not advertising language—the product proof.",
+      "The morning stops fighting her — End on being cared for, not on a performed testimonial."
     ],
-    "recommendedStructure": "Recommended organizing principle — A visible proof beat earns every later message. Open on the consequence or sensory payoff, trace back to the decisive process, then land the brand only after proof.",
+    "recommendedStructure": "Recommended story engine — Interruptions accumulate until one prepared meal removes a branch from the morning; camera and sound settle when she does. Begin with restless, physically present fragments and layered domestic sound. After the fridge opens, lengthen the shot, simplify the frame, and let room tone return.",
     "hookConcepts": [
       {
-        "title": "Make the process the drama",
-        "description": "Treat every act of making, choosing, or using as a sequence of consequential decisions rather than coverage. Specific process detail makes quality credible and desire tactile."
+        "title": "One hand is the whole story",
+        "description": "Tell the morning through everything she completes one-handed while the unseen baby occupies the other side of her body. Physical recognition → admiration without idealization → relief that feels designed for real life."
       },
       {
-        "title": "Center the customer's cost",
-        "description": "Frame the film around the friction, time, risk, or compromise removed for the audience. The audience recognizes its own problem before encountering the offer."
+        "title": "Show the work that disappears",
+        "description": "Photograph the missing labor: the cutting board that stays clean, the pan that never heats, and the sink that does not gain another dish. Curiosity → recognition of avoided work → relief → reconsideration of what meal prep can mean."
       },
       {
-        "title": "Withhold the hero",
-        "description": "Keep the expected hero image in the film off-screen until the audience has built a sensory picture of it. Curiosity turns a familiar product reveal into an earned event."
+        "title": "Care from the version of her who planned ahead",
+        "description": "Treat the meal as a small act of care sent forward by the version of her who knew this morning would be difficult. Pressure → recognition → self-compassion → readiness to prepare for a future hard morning."
       }
     ],
     "editingBlueprint": [
-      "Open on the consequence or sensory payoff, trace back to the decisive process, then land the brand only after proof.",
-      "01 · Evidence of the world: Begin on the audience-visible result or sensory consequence; no introductory claim. Make the proof tactile with the real action sound at close perspective; reserve music for momentum after credibility is earned.",
-      "02 · Pressure changes the meaning: Trace cause to effect in readable screen direction: process detail, intervention, then the audience-visible result in the same sequence. Build rhythm from process detail, then remove one layer at the proof beat so the result is heard rather than announced by copy.",
-      "03 · Return with a difference: Return to the opening result with the cause now understood and the product or service legible once, without adding an unrelated hero montage. Resolve the sensory motif at the payoff and give brand or call-to-action audio its own clean beat only after the proof lands."
+      "Begin with restless, physically present fragments and layered domestic sound. After the fridge opens, lengthen the shot, simplify the frame, and let room tone return.",
+      "The house asks first: Before we see anyone, the baby monitor crackles. A mother enters the dark kitchen carrying the baby just below frame and reaches for three morning tasks with one free hand. A second off-screen need interrupts the first task before it is finished.",
+      "One hand, five decisions: Her free hand alternates between bottle, phone, lunch item, cupboard, and baby fingers reaching into frame; nothing receives her full attention. She opens the fridge not for inspiration but because she cannot absorb another decision.",
+      "The task that is already finished: The refrigerator opens onto a Jimmy's meal. She takes it with the same one hand; the cutting board, stove, and sink remain untouched. For the first time, she completes one action without interruption.",
+      "The morning stops fighting her: She leans against the counter and takes the first bite while the baby's feet move softly in the foreground. She does not smile for camera; she simply stops moving. The brand arrives after the audience has already felt what it provided."
     ],
     "interviewStrategy": null,
     "brollPriorities": [
-      "A single readable proof shot in which the intervention and its result can be understood without copy.",
-      "Clean tactile details of the actual process or product, including any limitation the final claim must not conceal.",
-      "A held user consequence or changed behavior, followed by one legally and visually clean brand or call-to-action frame."
+      "The house asks first: Blue-black kitchen, refrigerator edge, monitor LED, her shoulder and working hand; the baby's hand briefly grips her shirt, never revealing a face.",
+      "One hand, five decisions: Waist-height fragments share one screen direction. Baby feet kick at frame edge while her hand repeatedly leaves one task for another.",
+      "The task that is already finished: Warm fridge light lands on her hand and the meal. Three brief locked images confirm the work that will not happen: clean board, cold burner, empty sink.",
+      "The morning stops fighting her: One held two-plane frame: meal and her resting hand in focus, baby feet near foreground, her face partial or profile only if naturally available."
     ],
     "risks": [
-      "If the promise cannot be shown without copy, the concept is still an assertion. Strengthen the proof before increasing polish.",
-      "The product must have a demonstrable effect; polish without proof will expose the weakness faster.",
+      "The product receives less early glamour and the film avoids a conventional appetite montage until relief has been earned.",
+      "If the real morning problem is cleanup, feeding the baby, or getting out the door rather than deciding what to eat, rebuild the turn around that verified friction instead of forcing stillness.",
       "Do not lock production around an unverified audience (Parents who need convenience) or emotional destination (understood, relatable, sentimental).",
       "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve."
     ]

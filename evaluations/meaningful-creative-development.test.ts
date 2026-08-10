@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   CreativeBriefId,
+  CreativeReasoningError,
   createCreativeBrief,
   evaluateCreativeQuality,
   generateDevelopmentBlueprint,
@@ -127,7 +128,7 @@ describe("meaningful creative development release gate", () => {
     expect(result.questions.length).toBeLessThanOrEqual(3);
   });
 
-  it("runs all five filmmaking modes through the same staged provider and semantic gate", async () => {
+  it("rejects templated offline drafts in all five modes instead of claiming creative quality", async () => {
     const shared = {
       client: "Northstar Collective",
       creativeGoal: "make the cost of commitment physically legible",
@@ -148,11 +149,10 @@ describe("meaningful creative development release gate", () => {
         { creativeReasoning: new DeterministicCreativeReasoningProvider() },
         project,
       );
-      expect(result.ok, result.ok ? "" : result.error.message).toBe(true);
-      if (result.ok) {
-        expect(result.value.development.mode).toBe(mode);
-        expect(result.value.development.storyboard.status).toBe("RENDERED");
-        expect(result.value.development.questions.length).toBeLessThanOrEqual(3);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error).toBeInstanceOf(CreativeReasoningError);
+        expect(result.error.message).toMatch(/hosted reasoning provider/i);
       }
     }
   });

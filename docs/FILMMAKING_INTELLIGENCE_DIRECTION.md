@@ -28,6 +28,8 @@ critique, and synthesis. A hosted reasoning adapter may supply the primary creat
 configured; deterministic logic remains valuable for offline operation, contract validation,
 semantic gates, safety, and reproducible regression fixtures. Deterministic output must never be
 marketed as equivalent to an unexercised hosted creative path.
+When deterministic logic cannot produce project-dependent physical scenes, it must fail closed and
+ask for the configured reasoning path rather than completing a polished template.
 
 A development result is incomplete until it includes a rendered visual artifact. The renderer is
 provider-neutral and consumes structured storyboard frames, blocking/light/camera geometry, motion
