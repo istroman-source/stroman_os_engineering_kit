@@ -23,6 +23,15 @@ The next incomplete dependency is Prompt 017. Prompts 004–007, 009, and 010 ar
 completed through previous bundled work in `docs/BUILD_PROGRESS.md`; Prompt 008 completes the
 previously missing safe reset and seed boundary. These foundations must not be rebuilt.
 
+## Approved autonomous first rollout
+
+Prompt 017 is the sole approved post-alpha hardening milestone for the first continuous
+Autopilot rollout. After its exact-reviewed change passes local verification and CI and is
+merged, automation must stop at **READY FOR HUMAN TESTING**. Prompt 018 and later work are
+not part of this activation and require a new explicit roadmap stop.
+
+Autopilot continuous stop milestone is Prompt 017.
+
 ## Accelerated delivery sequence
 
 ### Project Source Intake & Transcript Import — complete

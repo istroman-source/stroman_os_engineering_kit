@@ -1,6 +1,6 @@
 # Repository Autopilot
 
-`./autopilot` runs one explicitly selected engineering milestone through implementation,
+`./autopilot` runs engineering milestones through implementation,
 verification, pull request creation, fresh CI, independent review, bounded remediation,
 and guarded merge. The repository owns Git and GitHub lifecycle actions; coding agents
 only edit or review code. Herdr and interactive terminal panes are not part of the
@@ -27,22 +27,27 @@ two-hour timeout configured by `agentTimeoutSeconds`. Autopilot tests exercise b
 adapters against provider-shaped fake executables; repeat a no-edit smoke test with the
 real installed CLIs whenever their versions or flags change.
 
-## Start one clean run
+## Start the guarded continuous rollout
 
-Start from a clean, synchronized `main` and always name one milestone:
+Start from a clean, synchronized `main`:
 
 ```bash
 ./autopilot --dry-run
-./autopilot --milestone NNN
+./autopilot
 ```
 
-Replace `NNN` with the explicitly approved incomplete milestone ID. Already completed
-milestones are rejected.
+The activated first rollout selects the roadmap's declared next incomplete dependency,
+runs the complete lifecycle, and stops after Prompt 017. The stop is enforced by
+`continuousStopAfterMilestone`; continuous configuration is invalid unless auto-merge is
+also enabled and a three-digit stop milestone is present. `--dry-run` performs only the
+first selection without looping or mutating Git. An explicit `--milestone NNN` remains a
+single run unless paired with `--continuous`; already completed milestones are rejected.
 
-Do not start Prompt 017 until the roadmap source is intentionally reconciled with the
-current controlled-internal-alpha stop condition. A real run without `--milestone` is
-rejected. Continuous mode is also rejected until the roadmap identifies one unambiguous
-next milestone; `continuous` therefore remains `false`.
+The owner approved Prompt 017 as the first post-alpha hardening milestone. This reconciles
+the prior stop condition without authorizing Prompt 018 or later work. Changing or removing
+the configured stop remains a product-direction approval gate. Runtime startup requires
+the configured stop to match the exact approved stop declaration in the roadmap and requires
+that milestone to exist under the configured prompt directories.
 
 Useful recovery and inspection commands are:
 
@@ -82,18 +87,19 @@ after their parent exits. Structured BLOCKED responses are preserved as the reco
 failure message, and remediation exceptions persist their failure and approval gates
 before the lock is released.
 
-`autoMerge` remains disabled for the first rollout. A successful run stops at
-`READY_TO_MERGE`; inspect `./autopilot status`, then run `./autopilot merge` as the final
-human approval. That command rechecks local verification, exact-head CI, independent
+The first continuous rollout has `autoMerge` enabled under an explicit owner approval and
+an explicit Prompt 017 stop. Auto-merge rechecks local verification, exact-head CI, independent
 approval, zero objective findings, GitHub mergeability, no human approval gate, and the
 atomic `--match-head-commit` condition. Enable `autoMerge` only after one real milestone
-has completed this lifecycle end to end. The merge uses a merge commit. The remote
+has completed this lifecycle end to end unless the owner explicitly approves the bounded
+first rollout, as here. The merge uses a merge commit. The remote
 feature branch is retained for recovery; only the local branch is cleaned after `main` is
 synchronized.
 
 ## State, review format, and recovery
 
-A lock prevents concurrent runs. State is written atomically to
+A lock covers the entire continuous session, including the gap between milestones, and
+prevents concurrent runs. State is written atomically to
 `.autopilot/state/current.json`; detailed redacted logs and generated prompts live under
 `.autopilot/`. All are gitignored. `status` is read-only, and `abort` marks the run without
 resetting, cleaning, or discarding user files.

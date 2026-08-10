@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { loadConfig } from "./config";
 import { ProcessCommandRunner } from "./command-runner";
 import { StateStore, withLock } from "./state-store";
-import { prepareReview, startWorkflow } from "./workflow";
+import { prepareReview, runWorkflow } from "./workflow";
 import { verify } from "./verification";
 import { AutopilotError } from "./errors";
 import {
@@ -96,9 +96,17 @@ async function main() {
   }
   if (command !== "start")
     throw new AutopilotError(`Unknown command ${command}`, "UNKNOWN_COMMAND");
-  const s = await startWorkflow(root, c, runner, {
-    milestone: valueAfter("--milestone"),
-    continuous: args.includes("--continuous"),
+  const milestone = valueAfter("--milestone");
+  const continuous = args.includes("--continuous")
+    ? true
+    : args.includes("--no-continuous")
+      ? false
+      : milestone
+        ? false
+        : undefined;
+  const s = await runWorkflow(root, c, runner, {
+    milestone,
+    continuous,
     dryRun: args.includes("--dry-run"),
   });
   console.log(JSON.stringify(s, null, 2));

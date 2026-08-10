@@ -46,6 +46,11 @@ export async function selectMilestone(root: string, config: Config, override?: s
   ]);
   const roadmap = await readFile(resolve(root, config.roadmapFile), "utf8");
   const declaredNext = roadmap.match(/next incomplete dependency is Prompt (\d{3})/i)?.[1];
+  if (declaredNext && done.has(declaredNext))
+    throw new AutopilotError(
+      `Roadmap still declares completed milestone ${declaredNext} as next`,
+      "ROADMAP_STALE",
+    );
   const next = declaredNext
     ? milestones.find((milestone) => milestone.id === declaredNext)
     : milestones.find((milestone) => !done.has(milestone.id));
@@ -61,5 +66,23 @@ export async function selectMilestone(root: string, config: Config, override?: s
       `Milestone ${chosen.id} would skip prerequisites: ${skipped.map((m) => m.id).join(", ")}`,
     );
   return chosen;
+}
+
+export async function approvedContinuousStopMilestone(root: string, config: Config) {
+  const [roadmap, milestones] = await Promise.all([
+    readFile(resolve(root, config.roadmapFile), "utf8"),
+    listMilestones(root, config),
+  ]);
+  const approved = roadmap.match(/Autopilot continuous stop milestone is Prompt (\d{3})/i)?.[1];
+  if (!approved)
+    throw new ApprovalRequiredError(
+      "Roadmap does not declare an approved Autopilot continuous stop milestone",
+    );
+  if (!milestones.some((milestone) => milestone.id === approved))
+    throw new AutopilotError(
+      `Roadmap continuous stop milestone ${approved} does not exist`,
+      "CONTINUOUS_TARGET_UNKNOWN",
+    );
+  return approved;
 }
 export const branchFor = (template: string, m: Milestone) => template.replace("{slug}", m.slug);

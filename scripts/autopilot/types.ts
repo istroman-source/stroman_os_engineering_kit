@@ -71,6 +71,7 @@ export interface Config {
   remediationLoopLimit: number;
   autoMerge: boolean;
   continuous: boolean;
+  continuousStopAfterMilestone: string | null;
   branchTemplate: string;
   protectedPaths: string[];
   approvalPolicies: string[];
