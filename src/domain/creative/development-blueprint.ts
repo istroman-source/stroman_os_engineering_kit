@@ -500,29 +500,79 @@ function sequencePlan(mode: CreativeMode, c: Context): SequenceIdea[] {
     NARRATIVE: "Enter on the first consequence after the safe choice is gone.",
     OPEN: "Open on the concrete action or consequence that makes the premise matter.",
   };
+  const firstSound: Record<CreativeMode, string> = {
+    DOCUMENTARY:
+      "Lead with close production sound from the real routine plus clean room tone; withhold score until the human stakes are legible.",
+    COMMERCIAL:
+      "Make the proof tactile with the real action sound at close perspective; reserve music for momentum after credibility is earned.",
+    PERFORMANCE:
+      "Establish the full live sound perspective and room response before isolating a voice, instrument, breath, or footfall.",
+    NARRATIVE:
+      "Anchor the opening in one character's sound perspective; use off-screen activity to imply the consequence without explanatory dialogue.",
+    OPEN: "Record the central action cleanly and let its natural rhythm establish the world before adding a musical interpretation.",
+  };
+  const turnPicture: Record<CreativeMode, string> = {
+    DOCUMENTARY:
+      "Hold the real geography across the decisive action and both affected people; change distance only after the handoff or contradiction occurs.",
+    COMMERCIAL:
+      "Trace cause to effect in readable screen direction: process detail, intervention, then the audience-visible result in the same sequence.",
+    PERFORMANCE:
+      "Move from the readable master into one closer physical detail only when the performer begins to strain against the established constraint.",
+    NARRATIVE:
+      "Recompose the objective and obstruction as their power changes; preserve eyelines and let the losing character inherit less frame space.",
+    OPEN: "Test the premise by introducing one real obstruction or absence; keep action and consequence visible in the same geography.",
+  };
+  const turnSound: Record<CreativeMode, string> = {
+    DOCUMENTARY:
+      "Protect the complete answer and the sound of the action beneath it; let contradiction or interruption create the turn without editorial music pressure.",
+    COMMERCIAL:
+      "Build rhythm from process detail, then remove one layer at the proof beat so the result is heard rather than announced by copy.",
+    PERFORMANCE:
+      "Shift from room perspective toward the performer at the strain point; preserve dynamics and let the musical event—not an edit effect—mark the turn.",
+    NARRATIVE:
+      "Narrow into the character's subjective perspective as the cost lands; use silence or an off-screen cue that changes the next choice.",
+    OPEN: "Let one interruption, failure, or withheld sound test the current reading; avoid a generic rise that predetermines the answer.",
+  };
+  const returnPicture: Record<CreativeMode, string> = {
+    DOCUMENTARY:
+      "Revisit the opening routine with the changed participant, object, or responsibility now visible; hold long enough to admit counter-evidence.",
+    COMMERCIAL:
+      "Return to the opening result with the cause now understood and the product or service legible once, without adding an unrelated hero montage.",
+    PERFORMANCE:
+      "Return to the original master after the rule is broken; make the altered body, room, or audience relationship visible in one sustained frame.",
+    NARRATIVE:
+      "Echo the opening geometry after the consequence, reversing or emptying one position so the power change reads before dialogue.",
+    OPEN: "Repeat the central action with one verified difference; if nothing meaningful changes, end on the unresolved absence rather than fake closure.",
+  };
+  const returnSound: Record<CreativeMode, string> = {
+    DOCUMENTARY:
+      "Bring back the opening room or tool motif in its real environment; leave the final image uninterpreted if the evidence remains mixed.",
+    COMMERCIAL:
+      "Resolve the sensory motif at the payoff and give brand or call-to-action audio its own clean beat only after the proof lands.",
+    PERFORMANCE:
+      "Restore the full room perspective and audience response; avoid flattening the release with over-compression or a pasted-on sting.",
+    NARRATIVE:
+      "Return the opening sound cue altered in distance, ownership, or absence; stop before dialogue explains the visual consequence.",
+    OPEN: "Return or withhold the opening sound motif according to what the test revealed; let ambiguity remain when it is truthful.",
+  };
   return [
     {
       title: "01 · Evidence of the world",
       purpose: `Make ${c.project} legible without explaining everything.`,
       picture: firstPicture[mode],
-      sound:
-        "Use production sound to establish place and effort; delay score until it has a dramatic job.",
+      sound: firstSound[mode],
     },
     {
       title: "02 · Pressure changes the meaning",
       purpose: `Introduce the choice, obstruction, contradiction, or test that makes ${c.goalReference} consequential.`,
-      picture:
-        "Change distance or geography only when the power relationship changes; keep the decisive action readable.",
-      sound:
-        "Let interruption, silence, or a change in perspective mark the turn rather than a generic music rise.",
+      picture: turnPicture[mode],
+      sound: turnSound[mode],
     },
     {
       title: "03 · Return with a difference",
       purpose: `Revisit the opening image or action so the audience can feel ${c.emotion || "a changed emotional state"} through changed context.`,
-      picture:
-        "Echo the first composition with one meaningful alteration; hold the result long enough to register.",
-      sound:
-        "Resolve or deliberately withhold the opening motif; avoid explaining the image after it lands.",
+      picture: returnPicture[mode],
+      sound: returnSound[mode],
     },
   ];
 }
@@ -532,45 +582,154 @@ function directorBlueprint(
   c: Context,
   direction: Candidate,
 ): DirectorBlueprint {
-  const composition: Record<CreativeMode, string> = {
-    DOCUMENTARY:
-      "Medium-tight two-plane frame: decisive action foreground, affected person or environment held in a separate depth plane.",
-    COMMERCIAL:
-      "Tactile foreground detail with the consequence readable behind it; preserve negative space for the reveal, not copy by default.",
-    PERFORMANCE:
-      "Readable master establishes body and room; a second depth plane holds the constraint the performer will challenge.",
-    NARRATIVE:
-      "Frame the active objective and obstruction in the same geography; power should be readable with dialogue muted.",
-    OPEN: "One concrete action dominates foreground; leave enough negative space for the consequence or missing element to register.",
+  type CraftPlan = Pick<
+    DirectorBlueprint,
+    | "composition"
+    | "blocking"
+    | "camera"
+    | "practicalsAndLighting"
+    | "backgroundAndDesign"
+    | "colorAndGrade"
+    | "movement"
+    | "soundAndAtmosphere"
+    | "mustGet"
+    | "optionalExploration"
+  >;
+  const craftPlans: Record<CreativeMode, CraftPlan> = {
+    DOCUMENTARY: {
+      composition:
+        "Hold the decisive work in the foreground and the person affected by it in a separate depth plane; the frame should preserve both action and response without forcing a reaction insert.",
+      blocking:
+        "Follow the real routine and let the participants choose their own distance. Preserve the handoff in one geography; do not direct an observed action to repeat unless the staging is disclosed and accepted.",
+      camera:
+        "Use an eye-level 40–65mm-equivalent observational frame for the routine, then earn one tighter perspective after the irreversible action. Keep a clean master running through the handoff rather than collecting lens-variety coverage.",
+      practicalsAndLighting:
+        "Preserve the location's truthful window and practical direction. Augment one existing source, add restrained negative fill, and protect mixed-color texture instead of relighting the space into a generic interview look.",
+      backgroundAndDesign:
+        "Retain verified tools, wear, family traces, or work-in-progress that reveal the real environment. Remove only accidental clutter and protected information; do not plant symbolic props as documentary evidence.",
+      colorAndGrade:
+        "Keep skin and practical color credible, with modest contrast and highlight roll-off that preserves the room. If time periods or responsibilities differ, separate them through exposure or warmth only when the source supports that distinction.",
+      movement:
+        "Stay locked or use quiet shoulder movement while the routine is stable. Reposition in response to a real transfer or contradiction, never in anticipation of a beat the subjects have not created.",
+      soundAndAtmosphere:
+        "Isolate the decisive action, both voices, and a full room bed. Protect pauses and overlapping reality; introduce music only after the human relationship is clear, and retain contradictory words or sounds rather than smoothing them away.",
+      mustGet: [
+        "An uninterrupted geography frame showing who performs the work, who receives it, and what can change hands.",
+        "The real handoff or refusal with synchronous production sound and enough lead-in and aftermath to judge its meaning.",
+        "Independent reactions from both sides plus any observable counter-evidence that complicates the preferred interpretation.",
+      ],
+      optionalExploration:
+        "Test the recurring-object direction with one verified tool, recipe, place, or gesture; keep it only if its meaning changes through real events rather than editorial symbolism.",
+    },
+    COMMERCIAL: {
+      composition:
+        "Place the demonstrable action in tactile foreground and its audience-visible consequence in a second readable plane; reserve clean negative space for one earned brand beat, not default copy coverage.",
+      blocking:
+        "Stage one continuous cause-and-effect path: user encounters friction, product or service intervenes, behavior changes. Keep hands, product, and result in consistent screen direction so the proof cannot be mistaken for montage implication.",
+      camera:
+        "Pair one 85–105mm-equivalent detail perspective for material texture with one 35–50mm proof frame that contains action and result. Lock the proof shot; spend any push, slider move, or hero angle only on the verified change.",
+      practicalsAndLighting:
+        "Build a broad motivated key for people, then add a controlled edge or glancing source that reveals the product's real shape and texture. Protect labels, food, screens, and reflective highlights from false color or unreadable glare.",
+      backgroundAndDesign:
+        "Use the actual use environment and only props that clarify the customer problem or process. Echo an approved brand color once; remove decorative lifestyle objects that imply an unsupported audience or product claim.",
+      colorAndGrade:
+        "Prioritize product and skin color accuracy, clean separation, and platform-safe contrast. Let the result become slightly richer only through a defensible lighting or exposure change, not an artificial before/after grade deception.",
+      movement:
+        "Keep the friction and proof frames stable enough to audit. Use one precise motivated move to connect intervention to result; reject orbiting, speed ramps, and gimbal drift that obscure how the benefit occurs.",
+      soundAndAtmosphere:
+        "Capture the hero action, material texture, and user response separately. Build the transition from real cause-and-effect sound; leave copy and music out of the proof beat until the visual claim is understandable on its own.",
+      mustGet: [
+        "A single readable proof shot in which the intervention and its result can be understood without copy.",
+        "Clean tactile details of the actual process or product, including any limitation the final claim must not conceal.",
+        "A held user consequence or changed behavior, followed by one legally and visually clean brand or call-to-action frame.",
+      ],
+      optionalExploration:
+        "Test withholding the conventional hero image while sound and consequence establish desire; reveal it only if recognition stays clear and the delayed image becomes more valuable.",
+    },
+    PERFORMANCE: {
+      composition:
+        "Begin with a full-body master that makes performer, room, and governing spatial or sonic constraint readable; hold a second plane for the boundary the performer will approach or break.",
+      blocking:
+        "Map the performer's authentic path, breath points, instrument reach, and audience relationship before adding camera marks. Preserve one boundary or axis long enough that crossing it registers as progression rather than coverage variation.",
+      camera:
+        "Protect an uninterrupted 28–35mm-equivalent master, then assign a 50–85mm detail frame to the physical strain or release. Save the closest distance and any axis break for the exact performance turn.",
+      practicalsAndLighting:
+        "Motivate from verified stage, window, or room fixtures and pre-cue one exposure-safe change at the musical or physical turn. Keep faces, hands, and instruments readable; darkness must be designed, monitored, and emotionally justified.",
+      backgroundAndDesign:
+        "Show enough floor, audience, instruments, cables, architecture, or rehearsal evidence to locate the performance. Remove visual conflicts but do not sterilize the working room or invent backstage ritual.",
+      colorAndGrade:
+        "Preserve skin and highlight detail under practical or stage color, with a stable baseline before the turn. If palette changes, tie the shift to a performance section and maintain continuity across the master and detail cameras.",
+      movement:
+        "Give each section one camera grammar: stable geography, then motivated approach, then a single release or rupture. Do not chase every gesture; performer motion should lead and camera motion should answer.",
+      soundAndAtmosphere:
+        "Record the complete performance, isolated primary sources where available, and a time-aligned room or audience pair. Protect dynamics, breath, count-ins, and the transition into silence; never substitute montage sound for the governing performance take.",
+      mustGet: [
+        "An uninterrupted master containing the complete performance arc and the established constraint.",
+        "The physical or musical turn in a usable closer perspective without losing sync or the decisive action.",
+        "The room or audience response and a clean post-performance hold before anyone breaks the emotional release.",
+      ],
+      optionalExploration:
+        "Previsualize one meaningful passage in silhouette or near-darkness and let sound carry it; retain the removal only if the returning image changes attention rather than merely looking dramatic.",
+    },
+    NARRATIVE: {
+      composition:
+        "Frame the active objective and obstruction in the same geography, assigning each character a readable zone and depth. The power relationship should remain legible with dialogue muted.",
+      blocking:
+        "Give each character a physical objective, boundary, and changed end position. Let crossings, withheld movement, and eyelines express the scene turn; remove business that does not alter choice or power.",
+      camera:
+        "Establish geography on a restrained 35–50mm-equivalent perspective, then choose the scene's owner before assigning closer lenses. Change height, focal length, or axis only when point of view or power changes—not for coverage insurance.",
+      practicalsAndLighting:
+        "Motivate key direction from a story-world window or practical and design one controllable falloff zone for the obstruction. Cue any contrast or color shift to the consequential choice while preserving continuity for the full scene action.",
+      backgroundAndDesign:
+        "Place only props, wardrobe, texture, and background behavior that reveal objective, history, or pressure. Give the decisive object a consistent home and prevent extras or set dressing from stealing the scene turn.",
+      colorAndGrade:
+        "Define a restrained baseline palette for the character's safe state, then alter density, separation, or temperature after the costly choice. Preserve skin and matching latitude so the change can be shaped without discontinuity.",
+      movement:
+        "Lock the camera while a character believes they control the scene; begin one motivated track, pan, or handheld shift when that control fails. End in a new geometry instead of returning automatically to coverage positions.",
+      soundAndAtmosphere:
+        "Capture dialogue perspective, the decisive prop or action, room tone, and the off-screen cue that changes the choice. Use silence subjectively after the cost lands; score must not tell the audience what blocking and performance have not earned.",
+      mustGet: [
+        "A master that contains the objective, obstruction, spatial boundary, and changed end position in one playable take.",
+        "The consequential action and the other character's receiving reaction with matching eyelines and clean production sound.",
+        "Only the insert or atmosphere detail that causally changes the scene; no generic cutaway list as a substitute for performance coverage.",
+      ],
+      optionalExploration:
+        "Shoot one inversion from the normally background character, place, or system; keep it only if it reveals a consequence the primary coverage cannot express.",
+    },
+    OPEN: {
+      composition:
+        "Let one concrete action dominate the foreground and reserve a second plane for its consequence or missing element; the premise should become readable through behavior rather than labels.",
+      blocking:
+        "Stage or observe one testable action with a clear start, obstruction, and result. Keep the subject and consequence in the same geography until the project proves which form—observed, performed, scripted, or persuasive—fits best.",
+      camera:
+        "Begin the scene test at eye level on one normal lens and record the full action before adding a second distance. Change lens or height only to answer a defined question about point of view, scale, or consequence.",
+      practicalsAndLighting:
+        "Use the strongest verified practical or daylight direction and shape only enough contrast to keep action and consequence readable. Avoid committing to a stylized lighting grammar before format, access, and emotion are known.",
+      backgroundAndDesign:
+        "Limit the test to real objects required by the action and one potential motif whose meaning remains explicitly unproven. Remove décor that prematurely locks genre, period, audience, or brand assumptions.",
+      colorAndGrade:
+        "Keep a neutral, flexible baseline with accurate skin and controlled highlights. Record any proposed palette shift as a test tied to the audience objective, not as an assumed final look.",
+      movement:
+        "Use a locked baseline take to judge the idea, then test one motivated move at the obstruction or result. Compare meaning and clarity before adopting movement as the project's grammar.",
+      soundAndAtmosphere:
+        "Capture the central action close, the full environment, and one useful silence. Test music only after the unscored sequence reveals what emotion or ambiguity the project actually needs.",
+      mustGet: [
+        "A complete baseline take that makes the action, obstruction, and result understandable without format-specific tricks.",
+        "One alternate point of view designed to answer a named creative question, not to create generic coverage.",
+        "Clean action detail, environment, and aftermath sound so the filmmaker can judge whether the premise holds without music.",
+      ],
+      optionalExploration:
+        "Remove the expected explanation, subject, or image from one pass and test whether the real absence creates meaning; restore it immediately if the result is only vague.",
+    },
   };
+  const craftPlan = craftPlans[mode];
   return {
     sequenceTitle: direction.title,
     scenePurpose: direction.audienceEffect,
     emotionalTarget: c.emotion
       ? `Move from observation toward ${c.emotion} without announcing the feeling.`
       : "Move from observation to investment; the precise final emotion remains an open creative decision.",
-    composition: composition[mode],
-    blocking:
-      "Let the primary subject cross or refuse a boundary in the frame. Background movement continues only when it increases pressure or reveals consequence.",
-    camera:
-      "Start at human eye level on a restrained normal-to-long lens. Move closer only after the story turn; avoid floaty coverage without a point of view.",
-    practicalsAndLighting:
-      "Motivate from one believable practical or window direction; shape faces with negative fill, keep highlights controlled, and let one textured source define depth.",
-    backgroundAndDesign:
-      "Use real objects tied to the subject and story world; remove decorative clutter. Keep one recurring object or color in the deep background as a possible motif, pending verification.",
-    colorAndGrade:
-      "Separate subject and environment with color temperature rather than heavy saturation; preserve skin, restrained contrast, and a grade that can tolerate mixed practicals.",
-    movement:
-      "Locked or slight handheld drift while the situation is stable; one motivated reposition when the relationship changes. No default gimbal float.",
-    soundAndAtmosphere:
-      "Record the action at close perspective plus clean room tone. Build rhythm from real detail, protect one useful silence, and treat music as counterpoint rather than emotional instruction.",
-    mustGet: [
-      "A clean geography frame that makes the action and relationship understandable.",
-      "The decisive action in uninterrupted duration, with usable production sound.",
-      "A held reaction or aftermath that proves what changed without explanatory dialogue.",
-    ],
-    optionalExploration:
-      "Test one frame where the expected subject stays off-screen and consequence carries the beat; keep it only if meaning becomes clearer.",
+    ...craftPlan,
     risk: `${direction.tradeoff} Known constraints: ${c.constraints}`,
     rendering: {
       capability: "STRUCTURED_BLUEPRINT_ONLY",

@@ -136,5 +136,33 @@ describe("Stroman creative-intelligence benchmark contract", () => {
     expect(documentary.mode).toBe("DOCUMENTARY");
     expect(commercial.mode).toBe("COMMERCIAL");
     expect(performance.mode).toBe("PERFORMANCE");
+
+    const outputs = [documentary, commercial, performance];
+    for (const field of [
+      "composition",
+      "blocking",
+      "camera",
+      "practicalsAndLighting",
+      "backgroundAndDesign",
+      "colorAndGrade",
+      "movement",
+      "soundAndAtmosphere",
+      "optionalExploration",
+    ] as const) {
+      expect(new Set(outputs.map((output) => output.directorBlueprint[field])).size).toBe(3);
+    }
+    expect(
+      new Set(outputs.map((output) => JSON.stringify(output.directorBlueprint.mustGet))).size,
+    ).toBe(3);
+    expect(
+      new Set(
+        outputs.map((output) =>
+          JSON.stringify(output.sequencePlan.map(({ picture, sound }) => ({ picture, sound }))),
+        ),
+      ).size,
+    ).toBe(3);
+    expect(documentary.directorBlueprint.blocking).toContain("real routine");
+    expect(commercial.directorBlueprint.camera).toContain("proof frame");
+    expect(performance.directorBlueprint.soundAndAtmosphere).toContain("complete performance");
   });
 });

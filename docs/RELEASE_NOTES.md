@@ -7,9 +7,11 @@
 - Develop & Plan recommends a specific creative direction with an audience effect, execution test,
   and tradeoff; compares three structurally distinct alternatives; and includes a defensible
   purposeful rule-break.
-- Decision-changing questions, a three-part picture-and-sound sequence sketch, production next
-  steps, and a production-literate director notebook make the result useful before footage exists.
-- The director notebook covers composition, blocking, camera/lens, practicals and lighting,
+- Decision-changing questions, a mode-specific three-part picture-and-sound sequence sketch,
+  production next steps, and a production-literate director notebook make the result useful before
+  footage exists.
+- The director notebook adapts its craft grammar to documentary, commercial, performance,
+  narrative, or open development and covers composition, blocking, camera/lens, practicals and lighting,
   background/design, color/grade, movement, sound, must-get material, optional exploration, and
   production risk.
 - Idea-stage output is explicitly labeled as creative hypothesis rather than source evidence. The

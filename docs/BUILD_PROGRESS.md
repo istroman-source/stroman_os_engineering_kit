@@ -10,7 +10,8 @@ recommendation, compare three distinct directions including a purposeful rule-br
 questions that name the decision they change, inspect a picture-and-sound sequence sketch, and
 take a production-literate director notebook into pre-production. The notebook covers composition,
 blocking, camera/lens, practicals and lighting, background/design, grade, movement, sound, must-get
-material, optional exploration, and risk.
+material, optional exploration, and risk, with distinct craft grammar for documentary, commercial,
+performance, narrative, and open development rather than one shared coverage template.
 
 The implementation is deterministic and provider-neutral. Idea-stage material is labeled as
 creative hypothesis rather than source evidence, missing context remains unknown, internal ranking
