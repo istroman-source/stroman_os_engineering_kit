@@ -40,12 +40,14 @@ The activated first rollout selects the roadmap's declared next incomplete depen
 runs the complete lifecycle, and stops after Prompt 017. The stop is enforced by
 `continuousStopAfterMilestone`; continuous configuration is invalid unless auto-merge is
 also enabled and a three-digit stop milestone is present. `--dry-run` performs only the
-first selection without looping or mutating Git. Use `--no-continuous --milestone NNN`
-for a manually bounded single run; already completed milestones are rejected.
+first selection without looping or mutating Git. An explicit `--milestone NNN` remains a
+single run unless paired with `--continuous`; already completed milestones are rejected.
 
 The owner approved Prompt 017 as the first post-alpha hardening milestone. This reconciles
 the prior stop condition without authorizing Prompt 018 or later work. Changing or removing
-the configured stop remains a product-direction approval gate.
+the configured stop remains a product-direction approval gate. Runtime startup requires
+the configured stop to match the exact approved stop declaration in the roadmap and requires
+that milestone to exist under the configured prompt directories.
 
 Useful recovery and inspection commands are:
 

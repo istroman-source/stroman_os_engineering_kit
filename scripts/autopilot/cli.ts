@@ -96,13 +96,16 @@ async function main() {
   }
   if (command !== "start")
     throw new AutopilotError(`Unknown command ${command}`, "UNKNOWN_COMMAND");
+  const milestone = valueAfter("--milestone");
   const continuous = args.includes("--continuous")
     ? true
     : args.includes("--no-continuous")
       ? false
-      : undefined;
+      : milestone
+        ? false
+        : undefined;
   const s = await runWorkflow(root, c, runner, {
-    milestone: valueAfter("--milestone"),
+    milestone,
     continuous,
     dryRun: args.includes("--dry-run"),
   });

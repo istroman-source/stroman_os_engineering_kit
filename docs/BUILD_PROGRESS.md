@@ -6,7 +6,8 @@
 
 Activated the repository-owned continuous loop for one bounded rollout through Prompt 017.
 Continuous mode now requires automatic exact-SHA merge and a three-digit stop milestone;
-dry runs select only one milestone, and explicit single-milestone runs remain available.
+the configured stop must match an existing, explicitly roadmap-approved milestone. Dry runs
+select only one milestone, and explicit milestone requests remain single-run by default.
 The approved boundary stops after Prompt 017 at **READY FOR HUMAN TESTING** and cannot drift
 into Prompt 018 without a new roadmap and configuration change through the same review gates.
 

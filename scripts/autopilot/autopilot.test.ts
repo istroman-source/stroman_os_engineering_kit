@@ -8,7 +8,7 @@ import { selectMilestone, branchFor } from "./roadmap";
 import { verify } from "./verification";
 import { StateStore, withLock } from "./state-store";
 import { mergeGate } from "./policy";
-import { newState, runWorkflow } from "./workflow";
+import { newState, runWorkflow, startWorkflow } from "./workflow";
 import { monitorCi } from "./github";
 import { implementationPrompt, reviewPrompt } from "./prompts";
 import { ProcessCommandRunner, redact } from "./command-runner";
@@ -44,7 +44,10 @@ async function root() {
   await writeFile(join(r, "prompts/v/001_one.md"), "# Prompt 001 — One\n");
   await writeFile(join(r, "prompts/v/002_two.md"), "# Prompt 002 — Two\n");
   await writeFile(join(r, "docs/progress.md"), "## Prompt 001 — One\n");
-  await writeFile(join(r, "roadmap/roadmap.md"), "# Roadmap\n");
+  await writeFile(
+    join(r, "roadmap/roadmap.md"),
+    "# Roadmap\n\nAutopilot continuous stop milestone is Prompt 002.\n",
+  );
   return r;
 }
 afterEach(async () => {
@@ -125,6 +128,14 @@ describe("Autopilot", () => {
   it("selects the next incomplete milestone", async () => {
     expect((await selectMilestone(await root(), config)).id).toBe("002");
   });
+  it("fails closed when the roadmap still declares a completed milestone", async () => {
+    const r = await root();
+    await writeFile(
+      join(r, "roadmap/roadmap.md"),
+      "The next incomplete dependency is Prompt 001.\n",
+    );
+    await expect(selectMilestone(r, config)).rejects.toMatchObject({ code: "ROADMAP_STALE" });
+  });
   it("refuses to rerun a completed milestone", async () => {
     await expect(selectMilestone(await root(), config, "001")).rejects.toMatchObject({
       code: "MILESTONE_COMPLETE",
@@ -155,9 +166,14 @@ describe("Autopilot", () => {
     ).rejects.toMatchObject({ code: "CONTINUOUS_UNBOUNDED" });
   });
   it("refuses a continuous milestone beyond the configured stop", async () => {
+    const r = await root();
+    await writeFile(
+      join(r, "roadmap/roadmap.md"),
+      "Autopilot continuous stop milestone is Prompt 001.\n",
+    );
     await expect(
       runWorkflow(
-        await root(),
+        r,
         { ...config, autoMerge: true, continuousStopAfterMilestone: "001" },
         new FakeRunner(),
         { milestone: "002", continuous: true },
@@ -182,6 +198,10 @@ describe("Autopilot", () => {
   });
   it("cannot drift past a completed continuous stop on a later invocation", async () => {
     const r = await root();
+    await writeFile(
+      join(r, "roadmap/roadmap.md"),
+      "Autopilot continuous stop milestone is Prompt 001.\n",
+    );
     const previous = newState(true, false);
     previous.milestone = {
       id: "001",
@@ -203,16 +223,62 @@ describe("Autopilot", () => {
     expect(runner.calls).toHaveLength(0);
   });
   it("fails closed before mutation when the next milestone is beyond the stop", async () => {
+    const r = await root();
+    await writeFile(
+      join(r, "roadmap/roadmap.md"),
+      "Autopilot continuous stop milestone is Prompt 001.\n",
+    );
     const runner = new FakeRunner();
+    await expect(
+      runWorkflow(r, { ...config, autoMerge: true, continuousStopAfterMilestone: "001" }, runner, {
+        continuous: true,
+      }),
+    ).rejects.toMatchObject({ code: "CONTINUOUS_TARGET_REACHED" });
+    expect(runner.calls).toHaveLength(0);
+  });
+  it("requires the configured stop to match the roadmap-approved stop", async () => {
     await expect(
       runWorkflow(
         await root(),
         { ...config, autoMerge: true, continuousStopAfterMilestone: "001" },
-        runner,
+        new FakeRunner(),
         { continuous: true },
       ),
-    ).rejects.toMatchObject({ code: "CONTINUOUS_TARGET_REACHED" });
-    expect(runner.calls).toHaveLength(0);
+    ).rejects.toMatchObject({ code: "CONTINUOUS_TARGET_MISMATCH" });
+  });
+  it("chains completed milestones until the approved stop", async () => {
+    const r = await root();
+    await writeFile(join(r, "prompts/v/003_three.md"), "# Prompt 003 — Three\n");
+    await writeFile(
+      join(r, "roadmap/roadmap.md"),
+      "Autopilot continuous stop milestone is Prompt 003.\n",
+    );
+    const calls: string[] = [];
+    const runMilestone: typeof startWorkflow = async (_root, _config, _runner, options) => {
+      const id = options.milestone!;
+      calls.push(id);
+      const state = newState(true, false);
+      state.milestone = {
+        id,
+        title: id === "002" ? "Two" : "Three",
+        slug: `${id}-${id === "002" ? "two" : "three"}`,
+        source: `prompts/v/${id}_${id === "002" ? "two" : "three"}.md`,
+      };
+      state.phase = "COMPLETE";
+      state.completedAt = new Date().toISOString();
+      if (id === "002")
+        await writeFile(join(r, "docs/progress.md"), "## Prompt 001 — One\n## Prompt 002 — Two\n");
+      return state;
+    };
+    const state = await runWorkflow(
+      r,
+      { ...config, autoMerge: true, continuousStopAfterMilestone: "003" },
+      new FakeRunner(),
+      { continuous: true },
+      runMilestone,
+    );
+    expect(calls).toEqual(["002", "003"]);
+    expect(state.milestone?.id).toBe("003");
   });
   it("records verification success", async () => {
     const out = await verify(await root(), config, new FakeRunner(), "r");

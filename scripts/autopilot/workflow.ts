@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import type { CommandRunner, Config, RunState } from "./types";
 import { StateStore } from "./state-store";
 import { preflight } from "./preflight";
-import { branchFor, selectMilestone } from "./roadmap";
+import { approvedContinuousStopMilestone, branchFor, selectMilestone } from "./roadmap";
 import { implementationPrompt } from "./prompts";
 import { AutopilotError } from "./errors";
 import { advanceImplemented, requestIndependentReview } from "./lifecycle";
@@ -109,6 +109,7 @@ export async function runWorkflow(
   c: Config,
   r: CommandRunner,
   o: { milestone?: string; continuous?: boolean; dryRun?: boolean },
+  runMilestone: typeof startWorkflow = startWorkflow,
 ) {
   const continuous = o.continuous ?? c.continuous;
   if (!continuous) return await startWorkflow(root, c, r, { ...o, continuous: false });
@@ -119,6 +120,12 @@ export async function runWorkflow(
     throw new AutopilotError(
       "Continuous mode requires an explicit stop milestone",
       "CONTINUOUS_UNBOUNDED",
+    );
+  const approvedStop = await approvedContinuousStopMilestone(root, c);
+  if (stop !== approvedStop)
+    throw new AutopilotError(
+      `Configured stop milestone ${stop} does not match roadmap approval ${approvedStop}`,
+      "CONTINUOUS_TARGET_MISMATCH",
     );
   if (o.milestone && o.milestone.padStart(3, "0") > stop)
     throw new AutopilotError(
@@ -137,7 +144,7 @@ export async function runWorkflow(
         "CONTINUOUS_TARGET_REACHED",
       );
     }
-    const state = await startWorkflow(root, c, r, {
+    const state = await runMilestone(root, c, r, {
       ...o,
       milestone: next.id,
       continuous: true,

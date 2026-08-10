@@ -30,6 +30,8 @@ Autopilot rollout. After its exact-reviewed change passes local verification and
 merged, automation must stop at **READY FOR HUMAN TESTING**. Prompt 018 and later work are
 not part of this activation and require a new explicit roadmap stop.
 
+Autopilot continuous stop milestone is Prompt 017.
+
 ## Accelerated delivery sequence
 
 ### Project Source Intake & Transcript Import — complete
