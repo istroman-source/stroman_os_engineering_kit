@@ -46,7 +46,10 @@ export async function monitorCi(
       ["gh", "pr", "view", String(pr), "--json", "headRefOid,statusCheckRollup"],
       { timeoutMs: Math.min(30_000, remaining) },
     );
-    if (result.exitCode === 124) continue;
+    if (result.exitCode === 124) {
+      await wait(Math.min(1_000, Math.max(1, deadline - Date.now())));
+      continue;
+    }
     if (result.exitCode !== 0)
       throw new AutopilotError(result.stderr || "CI status could not be read", "CI_FAILED");
     const parsed = JSON.parse(result.stdout) as {

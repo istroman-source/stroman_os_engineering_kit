@@ -78,7 +78,10 @@ try {
       throw new Error("Codex returned an invalid implementation result.");
     }
     process.stdout.write(`${JSON.stringify(parsed)}\n`);
-    if (parsed.status === "BLOCKED") process.exitCode = 3;
+    if (parsed.status === "BLOCKED") {
+      console.error(parsed.blocker || parsed.summary || "Codex reported a blocker.");
+      process.exitCode = 3;
+    }
   }
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));

@@ -8,6 +8,7 @@ import { verify } from "./verification";
 import { monitorCi } from "./github";
 import { mergeGate } from "./policy";
 import { remediationPrompt, reviewPrompt, unresolvedObjectiveFindings } from "./prompts";
+import { agentFailureMessage } from "./agent-output";
 
 type RunOptions = { cwd?: string; logFile?: string; timeoutMs?: number };
 type ReviewResult = {
@@ -158,6 +159,8 @@ export async function advanceImplemented(
       config.requiredCiChecks,
     );
     state.ciStatus = "PASSED";
+    state.phase = "AWAITING_REVIEW";
+    await store.save(state);
   } catch (error) {
     state.ciStatus = "FAILED";
     state.phase = "FAILED";
@@ -243,7 +246,10 @@ export async function requestIndependentReview(
   try {
     const result = await runReviewAtCommit(root, config, runner, state, expectedCommit, promptPath);
     if (result.exitCode !== 0)
-      throw new AutopilotError(result.stderr || "Independent review failed", "REVIEW_FAILED");
+      throw new AutopilotError(
+        agentFailureMessage(result, "Independent review failed"),
+        "REVIEW_FAILED",
+      );
     parsed = parseReviewResult(result.stdout);
   } catch (error) {
     state.phase = "AWAITING_REVIEW";
@@ -327,7 +333,10 @@ async function applyParsedReviewResult(
         agentOptions(root, state, config, `remediation-${state.remediationAttempts}`),
       );
       if (fixed.exitCode !== 0)
-        throw new AutopilotError(fixed.stderr || "Remediation agent failed", "REMEDIATION_FAILED");
+        throw new AutopilotError(
+          agentFailureMessage(fixed, "Remediation agent failed"),
+          "REMEDIATION_FAILED",
+        );
       state.verification = await verify(root, config, runner, state.runId);
       if (state.verification.some((value) => value.status === "FAILED")) {
         state.phase = "FAILED";

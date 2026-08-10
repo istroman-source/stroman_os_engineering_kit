@@ -23,7 +23,9 @@ gh auth status
 
 Use `CODEX_BIN` or `CLAUDE_BIN` only when either executable is not on the normal command
 path. The adapters disable session persistence, require structured output, and have a
-two-hour timeout configured by `agentTimeoutSeconds`.
+two-hour timeout configured by `agentTimeoutSeconds`. Autopilot tests exercise both
+adapters against provider-shaped fake executables; repeat a no-edit smoke test with the
+real installed CLIs whenever their versions or flags change.
 
 ## Start one clean run
 
@@ -73,6 +75,12 @@ Codex with a focused prompt, then repeats local verification, commit, push, exac
 and independent exact-commit review. OPTIONAL findings are recorded but are never
 implemented automatically. An approved result with no objective findings enters the
 merge gate.
+
+Every agent and GitHub call has a bounded timeout. On Unix, timeout escalation signals the
+entire subprocess group so spawned tool processes cannot continue mutating a checkout
+after their parent exits. Structured BLOCKED responses are preserved as the recorded
+failure message, and remediation exceptions persist their failure and approval gates
+before the lock is released.
 
 `autoMerge` remains disabled for the first rollout. A successful run stops at
 `READY_TO_MERGE`; inspect `./autopilot status`, then run `./autopilot merge` as the final

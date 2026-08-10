@@ -8,6 +8,7 @@ import { branchFor, selectMilestone } from "./roadmap";
 import { implementationPrompt } from "./prompts";
 import { AutopilotError } from "./errors";
 import { advanceImplemented, requestIndependentReview } from "./lifecycle";
+import { agentFailureMessage } from "./agent-output";
 export const newState = (continuous: boolean, dryRun: boolean): RunState => {
   const now = new Date().toISOString();
   return {
@@ -92,7 +93,11 @@ export async function startWorkflow(
       timeoutMs: c.agentTimeoutSeconds * 1000,
       logFile: resolve(root, `.autopilot/logs/${s.runId}/implementation.log`),
     });
-    if (result.exitCode !== 0) throw new AutopilotError(result.stderr, "IMPLEMENTATION_FAILED");
+    if (result.exitCode !== 0)
+      throw new AutopilotError(
+        agentFailureMessage(result, "Implementation agent failed"),
+        "IMPLEMENTATION_FAILED",
+      );
     return await advanceImplemented(root, c, r, s);
   } catch (e) {
     if (s.phase !== "AWAITING_REVIEW" && s.phase !== "READY_TO_MERGE") s.phase = "FAILED";

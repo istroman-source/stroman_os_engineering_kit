@@ -12,6 +12,7 @@ import { newState } from "./workflow";
 import { monitorCi } from "./github";
 import { implementationPrompt, reviewPrompt } from "./prompts";
 import { ProcessCommandRunner, redact } from "./command-runner";
+import { agentFailureMessage } from "./agent-output";
 import {
   assertRecordedBranch,
   enforceChangeSafety,
@@ -477,6 +478,82 @@ describe("Autopilot", () => {
       expect(output).not.toContain(secret);
   });
 
+  it("surfaces a structured agent blocker as the failure message", () => {
+    expect(
+      agentFailureMessage(
+        {
+          stdout: JSON.stringify({
+            status: "BLOCKED",
+            summary: "Stopped",
+            blocker: "Roadmap approval is required",
+          }),
+          stderr: "",
+        },
+        "Agent failed",
+      ),
+    ).toBe("Roadmap approval is required");
+  });
+
+  it("exercises both subprocess adapters against provider-shaped fake CLIs", async () => {
+    const r = await root();
+    const prompt = join(r, "prompt.txt");
+    const fakeCodex = join(r, "fake-codex.mjs");
+    const fakeClaude = join(r, "fake-claude.mjs");
+    await writeFile(prompt, "Adapter smoke test");
+    await writeFile(
+      fakeCodex,
+      `#!/usr/bin/env node
+import { readFileSync, writeFileSync } from "node:fs";
+const args = process.argv.slice(2);
+const required = ["-s", "workspace-write", "-a", "never", "exec", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--output-schema", "-o", "-"];
+if (!required.every((value) => args.includes(value))) process.exit(11);
+JSON.parse(readFileSync(args[args.indexOf("--output-schema") + 1], "utf8"));
+process.stdin.resume();
+process.stdin.on("end", () => writeFileSync(args[args.indexOf("-o") + 1], JSON.stringify({ status: "IMPLEMENTED", summary: "ok", blocker: null })));
+`,
+      { mode: 0o755 },
+    );
+    await writeFile(
+      fakeClaude,
+      `#!/usr/bin/env node
+const args = process.argv.slice(2);
+const required = ["-p", "--output-format", "json", "--json-schema", "--permission-mode", "dontAsk", "--safe-mode", "--tools", "--allowedTools", "--disallowedTools", "--no-session-persistence"];
+if (!required.every((value) => args.includes(value))) process.exit(12);
+JSON.parse(args[args.indexOf("--json-schema") + 1]);
+process.stdin.resume();
+process.stdin.on("end", () => process.stdout.write(JSON.stringify({ structured_output: { reviewedCommit: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", verdict: "APPROVED", findings: [] } })));
+`,
+      { mode: 0o755 },
+    );
+    const previousCodex = process.env.CODEX_BIN;
+    const previousClaude = process.env.CLAUDE_BIN;
+    process.env.CODEX_BIN = fakeCodex;
+    process.env.CLAUDE_BIN = fakeClaude;
+    try {
+      const runner = new ProcessCommandRunner();
+      const codex = await runner.run(
+        [process.execPath, join(import.meta.dirname, "agents", "codex-agent.mjs"), prompt],
+        { cwd: r },
+      );
+      const claude = await runner.run(
+        [process.execPath, join(import.meta.dirname, "agents", "claude-reviewer.mjs"), prompt],
+        { cwd: r },
+      );
+      expect(codex).toMatchObject({ exitCode: 0 });
+      expect(JSON.parse(codex.stdout)).toMatchObject({ status: "IMPLEMENTED" });
+      expect(claude).toMatchObject({ exitCode: 0 });
+      expect(JSON.parse(claude.stdout)).toMatchObject({
+        reviewedCommit: "a".repeat(40),
+        verdict: "APPROVED",
+      });
+    } finally {
+      if (previousCodex === undefined) delete process.env.CODEX_BIN;
+      else process.env.CODEX_BIN = previousCodex;
+      if (previousClaude === undefined) delete process.env.CLAUDE_BIN;
+      else process.env.CLAUDE_BIN = previousClaude;
+    }
+  });
+
   it("never writes command or output secrets to logs", async () => {
     const r = await root();
     const log = join(r, "command.log");
@@ -492,12 +569,31 @@ describe("Autopilot", () => {
 
   it("force-kills a subprocess that ignores the configured timeout", async () => {
     const result = await new ProcessCommandRunner().run(
-      [process.execPath, "-e", "process.on('SIGTERM',()=>{});setInterval(()=>{},1000)"],
+      [
+        process.execPath,
+        "-e",
+        `const {spawn}=require("node:child_process");spawn(process.execPath,["-e",'process.on("SIGTERM",()=>{});setInterval(()=>{},1000)'],{stdio:"inherit"});process.on("SIGTERM",()=>{});setInterval(()=>{},1000)`,
+      ],
       { timeoutMs: 500 },
     );
     expect(result.exitCode).toBe(124);
     expect(result.durationMs).toBeGreaterThan(1_000);
     expect(result.durationMs).toBeLessThan(2_000);
+  });
+
+  it("does not resolve a Unix timeout while descendants can still mutate", async () => {
+    if (process.platform === "win32") return;
+    const r = await root();
+    const marker = join(r, "orphan-marker");
+    const grandchild = `const {writeFileSync}=require("node:fs");process.on("SIGTERM",()=>{});setTimeout(()=>writeFileSync(${JSON.stringify(marker)},"orphan"),1700);setInterval(()=>{},1000)`;
+    const parent = `const {spawn}=require("node:child_process");spawn(process.execPath,["-e",${JSON.stringify(grandchild)}],{stdio:"ignore"});setInterval(()=>{},1000)`;
+    const result = await new ProcessCommandRunner().run([process.execPath, "-e", parent], {
+      timeoutMs: 500,
+    });
+    expect(result.exitCode).toBe(124);
+    expect(result.durationMs).toBeGreaterThan(1_000);
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    await expect(readFile(marker, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("pins merge to the independently reviewed PR head", async () => {
