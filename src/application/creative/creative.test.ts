@@ -6,6 +6,7 @@ import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repo
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
 import { getCreativeBrief } from "./get-creative-brief";
 import { saveCreativeBrief } from "./save-creative-brief";
+import { FakeCreativeReasoningProvider } from "../../../test/adapters/fake-creative-reasoning-provider";
 
 const OWNER = OwnerId.unsafe("usr_OWNER001");
 const OTHER = OwnerId.unsafe("usr_OTHER001");
@@ -35,6 +36,7 @@ function deps() {
     creativeBriefs: new InMemoryCreativeBriefRepository(),
     ids: new SequentialIdGenerator(),
     clock: new FixedClock(new Date("2026-07-19T00:00:00.000Z")),
+    creativeReasoning: new FakeCreativeReasoningProvider(),
   };
 }
 
@@ -50,6 +52,9 @@ describe("saveCreativeBrief", () => {
     if (!result.ok) return;
     expect(result.value.brief.title).toBe("Signature Dish Reel");
     expect(result.value.blueprint.hookConcepts).toHaveLength(3);
+    const persisted = await d.creativeBriefs.findByProject(PROJECT);
+    expect(persisted?.blueprint).toEqual(result.value.blueprint);
+    expect(persisted?.reasoningProvider).toBe("deterministic-specialist-v2");
   });
 
   it("updates the brief on re-analysis (same project)", async () => {
@@ -99,7 +104,10 @@ describe("getCreativeBrief", () => {
     await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
     const after = await getCreativeBrief(d, { actorId: OWNER, projectId: PROJECT });
     expect(after.ok).toBe(true);
-    if (after.ok) expect(after.value.blueprint.masterPrompt).toContain("Signature Dish Reel");
+    if (after.ok) {
+      expect(after.value.blueprint.projectSummary).toContain("Signature Dish Reel");
+      expect(after.value.blueprint).not.toHaveProperty("masterPrompt");
+    }
   });
 
   it("denies another owner", async () => {

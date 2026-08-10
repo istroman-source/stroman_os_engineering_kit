@@ -43,6 +43,6 @@ export async function getCreativeBrief(
 
   return ok({
     brief: toCreativeBriefView(briefLoad.value),
-    blueprint: generateBlueprint(briefLoad.value),
+    blueprint: briefLoad.value.blueprint ?? generateBlueprint(briefLoad.value),
   });
 }

@@ -22,6 +22,19 @@ creative problem, Stroman should help a filmmaker develop concepts, audience and
 creative directions, story and character arcs, treatments, interview strategy, scenes,
 storyboards, shot planning, production needs, alternatives, gaps, and unanswered questions.
 
+Deep creative development sits behind `CreativeReasoningProvider`, not inside UI templates. Its
+minimum process is project understanding, genuinely distinct candidate generation, candidate
+critique, and synthesis. A hosted reasoning adapter may supply the primary creative work when
+configured; deterministic logic remains valuable for offline operation, contract validation,
+semantic gates, safety, and reproducible regression fixtures. Deterministic output must never be
+marketed as equivalent to an unexercised hosted creative path.
+
+A development result is incomplete until it includes a rendered visual artifact. The renderer is
+provider-neutral and consumes structured storyboard frames, blocking/light/camera geometry, motion
+paths, and look/color references. Default filmmaker UI shows the artifact and the decisions it
+communicates; provider names, credentials, system instructions, master prompts, and internal
+deliberation remain behind the product surface.
+
 ### Analyze & Edit — useful when source material already exists
 
 Starting from footage, transcripts, interviews, scripts, notes, selects, rough cuts, or other
@@ -107,10 +120,9 @@ materialization are not primary navigation concepts.
   broad taxonomy tooling.
 - Marketplace, plugin ecosystem, team billing, generalized analytics, generic admin
   interfaces, and enterprise identity extensions.
-- Multi-provider AI infrastructure beyond the provider needed for the first automatic
-  editorial workflow.
-- Wideframe synchronization until supported capabilities are verified. Production prompts
-  remain provider-neutral until then.
+- Additional hosted creative-reasoning adapters beyond the first provider-neutral boundary.
+- Wideframe synchronization until supported capabilities are verified. Editor handoffs remain
+  provider-neutral, collapsed by default, and explicit exports until then.
 
 ### Deleted from the product surface
 

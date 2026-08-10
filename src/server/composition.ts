@@ -9,7 +9,7 @@ import type { AuditIntegrationRepository } from "@/domain/audit-integration";
 import type { AnalysisRepository, GroundedEditorialAnalyzer } from "@/domain/analysis";
 import type { DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceRepository } from "@/domain/evidence";
-import type { CreativeBriefRepository } from "@/domain/creative";
+import type { CreativeBriefRepository, CreativeReasoningProvider } from "@/domain/creative";
 import type {
   EvaluationRepository,
   ReviewRunRepository,
@@ -72,6 +72,7 @@ import {
 } from "@/infrastructure/persistence/prisma";
 import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
 import { DeterministicGroundedAnalyzer } from "@/infrastructure/analysis";
+import { createCreativeReasoningProvider } from "@/infrastructure/creative";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
 import { isCookieSecure } from "@/server/auth/config";
 import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
@@ -94,6 +95,7 @@ export interface ApiContext {
   readonly decisions: DecisionRepository;
   readonly identity: IdentityRepository;
   readonly creativeBriefs: CreativeBriefRepository;
+  readonly creativeReasoning: CreativeReasoningProvider;
   readonly entities: EntityRepository;
   readonly sources: SourceRepository;
   readonly memories: MemoryRepository;
@@ -131,6 +133,7 @@ export function createApiContext(): ApiContext {
     decisions: new PrismaDecisionRepository(prisma),
     identity: new PrismaIdentityRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),
+    creativeReasoning: createCreativeReasoningProvider(),
     entities: new PrismaEntityRepository(prisma),
     sources: new PrismaSourceRepository(prisma),
     memories: new PrismaMemoryRepository(prisma),

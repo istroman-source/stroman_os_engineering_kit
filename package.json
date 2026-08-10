@@ -24,6 +24,7 @@
     "test:e2e": "playwright test",
     "test:autopilot": "vitest run --config vitest.autopilot.config.ts",
     "test:evaluations": "vitest run --config vitest.evaluation.config.ts",
+    "artifacts:creative": "tsx scripts/generate-creative-evaluation-artifacts.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:reset": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/database-maintenance.ts reset",

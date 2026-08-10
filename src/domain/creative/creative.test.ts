@@ -95,7 +95,7 @@ describe("generateBlueprint", () => {
     expect(bp.editingBlueprint.length).toBeGreaterThan(0);
     expect(bp.brollPriorities.length).toBeGreaterThan(0);
     expect(bp.risks.length).toBeGreaterThan(0);
-    expect(bp.masterPrompt).toContain("Desired emotion: hungry");
+    expect(bp).not.toHaveProperty("masterPrompt");
     expect(bp.development.basis).toBe("PROJECT_INTENT_ONLY");
     expect(bp.development.recommendedDirection.title).toBe("Proof before promise");
     expect(bp.development.alternatives).toHaveLength(3);
@@ -159,13 +159,14 @@ describe("generateBlueprint", () => {
     expect(bp.development.recommendedDirection).not.toHaveProperty("score");
     expect(bp.development.alternatives.every((direction) => !("score" in direction))).toBe(true);
     expect(bp.development.creativeChallenge).toContain("subject but not yet a story");
-    expect(bp.development.questions.length).toBeGreaterThanOrEqual(5);
+    expect(bp.development.questions.length).toBeGreaterThanOrEqual(1);
+    expect(bp.development.questions.length).toBeLessThanOrEqual(3);
     expect(bp.development.questions.every((item) => item.decisionItChanges.length > 20)).toBe(true);
     expect(bp.development.directorBlueprint.rendering).toEqual(
       expect.objectContaining({ capability: "STRUCTURED_BLUEPRINT_ONLY", provider: null }),
     );
     expect(bp.development.directorBlueprint.risk).toContain("none supplied");
-    expect(`${bp.projectSummary} ${bp.masterPrompt}`).not.toContain("for  in the");
+    expect(`${bp.projectSummary} ${bp.storyObjective}`).not.toContain("for  in the");
   });
 
   it("uses the idea when a generic format label does not identify the filmmaking mode", () => {

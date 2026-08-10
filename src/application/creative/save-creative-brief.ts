@@ -5,8 +5,8 @@ import {
   CreativeBriefId,
   type CreativeBriefFields,
   type CreativeBriefRepository,
+  attachCreativeBlueprint,
   createCreativeBrief,
-  generateBlueprint,
   reviseCreativeBrief,
 } from "@/domain/creative";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
@@ -16,8 +16,12 @@ import { ensureOwner } from "../shared/authorization";
 import type { Clock, IdGenerator } from "../shared";
 import { NotAuthorizedError, NotFoundError, type RepositoryError } from "../shared/errors";
 import { type AnalysisView, toCreativeBriefView } from "./creative-view";
+import {
+  developCreativeBlueprint,
+  type DevelopCreativeBlueprintDeps,
+} from "./develop-creative-blueprint";
 
-export interface SaveCreativeBriefDeps {
+export interface SaveCreativeBriefDeps extends DevelopCreativeBlueprintDeps {
   readonly projects: ProjectRepository;
   readonly creativeBriefs: CreativeBriefRepository;
   readonly ids: IdGenerator;
@@ -60,6 +64,7 @@ export async function saveCreativeBrief(
   const now = deps.clock.now();
 
   let brief: CreativeBrief;
+  const creating = existingLoad.value === null;
   if (existingLoad.value === null) {
     const created = createCreativeBrief({
       id: CreativeBriefId.unsafe(deps.ids.generate(CreativeBriefId.prefix)),
@@ -68,20 +73,27 @@ export async function saveCreativeBrief(
       ...input.fields,
     });
     if (!created.ok) return created;
-    const inserted = await attempt("creativeBrief.insert", () =>
-      deps.creativeBriefs.insert(created.value),
-    );
-    if (!inserted.ok) return inserted;
     brief = created.value;
   } else {
     const revised = reviseCreativeBrief(existingLoad.value, input.fields, now);
     if (!revised.ok) return revised;
-    const saved = await attemptUpdate("creativeBrief.update", () =>
-      deps.creativeBriefs.update(revised.value),
-    );
-    if (!saved.ok) return saved;
-    brief = { ...revised.value, lockVersion: revised.value.lockVersion + 1 };
+    brief = revised.value;
   }
 
-  return ok({ brief: toCreativeBriefView(brief), blueprint: generateBlueprint(brief) });
+  const developed = await developCreativeBlueprint(deps, brief);
+  if (!developed.ok) return developed;
+  brief = attachCreativeBlueprint(brief, developed.value, deps.creativeReasoning.id);
+
+  if (creating) {
+    const inserted = await attempt("creativeBrief.insert", () => deps.creativeBriefs.insert(brief));
+    if (!inserted.ok) return inserted;
+  } else {
+    const saved = await attemptUpdate("creativeBrief.update", () =>
+      deps.creativeBriefs.update(brief),
+    );
+    if (!saved.ok) return saved;
+    brief = { ...brief, lockVersion: brief.lockVersion + 1 };
+  }
+
+  return ok({ brief: toCreativeBriefView(brief), blueprint: developed.value });
 }

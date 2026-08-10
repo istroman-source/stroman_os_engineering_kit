@@ -59,7 +59,6 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       blueprint: {
         hookConcepts: unknown[];
         interviewStrategy: unknown;
-        masterPrompt: string;
         development: { recommendedDirection: { title: string } };
       };
     };
@@ -67,7 +66,7 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(body.brief.projectId).toBe(projectId);
     expect(body.blueprint.hookConcepts).toHaveLength(3);
     expect(body.blueprint.interviewStrategy).toBeNull(); // reel → no interviews
-    expect(body.blueprint.masterPrompt).toContain("hungry");
+    expect(body.blueprint).not.toHaveProperty("masterPrompt");
     expect(body.blueprint.development.recommendedDirection.title).toBe("Proof before promise");
 
     const after = await call(getAnalysis, { principal: ACTOR, params: { projectId } });

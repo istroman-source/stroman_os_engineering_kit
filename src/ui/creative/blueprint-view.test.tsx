@@ -11,22 +11,26 @@ describe("BlueprintView", () => {
       screen.getByRole("heading", { level: 1, name: "Signature Dish Reel" }),
     ).toBeInTheDocument();
     for (const title of [
-      "Creative read",
-      "Distinct directions worth testing",
-      "Questions that change the plan",
-      "Sequence sketch",
-      "Production next steps",
-      "Production prompt",
+      "The creative thesis",
+      "Recommendation",
+      "Real alternatives",
+      "Scenes worth making",
+      "Director notebook",
+      "Questions that could change the plan",
+      "Next production tests",
     ]) {
       expect(screen.getByRole("heading", { name: new RegExp(title, "i") })).toBeInTheDocument();
     }
   });
 
-  it("distinguishes hypotheses from evidence and reports the missing visual renderer", () => {
+  it("distinguishes hypotheses from evidence and renders the visual artifact", () => {
     render(<BlueprintView analysis={creativeAnalysisFixture()} onReanalyze={vi.fn()} />);
     expect(screen.getByText(/creative hypothesis, not source evidence/i)).toBeInTheDocument();
-    expect(screen.getByText(/no visual storyboard provider is configured/i)).toBeInTheDocument();
+    expect(screen.getByText(/drawn visual blueprint/i)).toBeInTheDocument();
+    expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(4);
     expect(screen.getByText(/purposeful rule-break/i)).toBeInTheDocument();
+    expect(screen.queryByText(/production prompt/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/untrusted creative context/i)).not.toBeInTheDocument();
   });
 
   it("shows interview steps when applicable", () => {

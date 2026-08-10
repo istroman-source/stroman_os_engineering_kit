@@ -1,6 +1,29 @@
 import type { Analysis } from "./creative-api";
+import {
+  CreativeBriefId,
+  generateBlueprint,
+  type CreativeBrief as DomainCreativeBrief,
+} from "@/domain/creative";
+import { ProjectId } from "@/domain/project";
 
 export function creativeAnalysisFixture(interviewStrategy: string[] | null = null): Analysis {
+  const now = new Date("2026-08-10T12:00:00.000Z");
+  const brief: DomainCreativeBrief = {
+    id: CreativeBriefId.unsafe("brief_fixture1"),
+    projectId: ProjectId.unsafe("proj_fixture1"),
+    title: "Signature Dish Reel",
+    client: "Jimmy's",
+    projectType: "Instagram reel",
+    creativeGoal: "crave the crab cake",
+    targetAudience: "Baltimore foodies",
+    desiredEmotion: "hungry",
+    context: "20s vertical",
+    createdAt: now,
+    updatedAt: now,
+    lockVersion: 1,
+  };
+  const generated = generateBlueprint(brief);
+
   return {
     brief: {
       id: "brief_1",
@@ -15,104 +38,6 @@ export function creativeAnalysisFixture(interviewStrategy: string[] | null = nul
       createdAt: "",
       updatedAt: "",
     },
-    blueprint: {
-      development: {
-        basis: "PROJECT_INTENT_ONLY",
-        mode: "COMMERCIAL",
-        objectiveRead: "Make desire credible through proof.",
-        recommendedDirection: {
-          title: "Proof before promise",
-          thesis: "Show the result before the claim.",
-          organizingPrinciple: "Visible proof earns the message.",
-          audienceEffect: "Skepticism becomes appetite through evidence.",
-          execution: "Open on the sensory consequence.",
-          tradeoff: "Requires a demonstrable result.",
-          unconventional: false,
-          whyThisWins: "It has a point of view and a production test.",
-        },
-        alternatives: [
-          {
-            title: "Process as drama",
-            thesis: "Make each craft choice consequential.",
-            organizingPrinciple: "Process escalates toward payoff.",
-            audienceEffect: "Specificity makes quality credible.",
-            execution: "Use cause-and-effect cutting.",
-            tradeoff: "Process without consequence becomes fetish.",
-            unconventional: false,
-          },
-          {
-            title: "Customer cost",
-            thesis: "Center the friction removed.",
-            organizingPrinciple: "Lived consequence replaces features.",
-            audienceEffect: "The viewer recognizes the problem.",
-            execution: "Stage one precise friction beat.",
-            tradeoff: "The problem must be defensible.",
-            unconventional: false,
-          },
-          {
-            title: "Withhold the hero",
-            thesis: "Delay the expected product image.",
-            organizingPrinciple: "Consequence precedes reveal.",
-            audienceEffect: "Curiosity makes the reveal earned.",
-            execution: "Use sound and reaction first.",
-            tradeoff: "Withholding cannot become confusion.",
-            unconventional: true,
-          },
-        ],
-        creativeChallenge: "If the promise cannot be shown, it is still an assertion.",
-        questions: [
-          {
-            prompt: "What visible proof works without copy?",
-            decisionItChanges: "Determines the hero action.",
-          },
-        ],
-        sequencePlan: [
-          {
-            title: "01 · Evidence",
-            purpose: "Establish the result.",
-            picture: "Tactile foreground detail.",
-            sound: "Close production sound.",
-          },
-        ],
-        directorBlueprint: {
-          sequenceTitle: "Proof before promise",
-          scenePurpose: "Turn skepticism into desire.",
-          emotionalTarget: "Move from curiosity to appetite.",
-          composition: "Tactile foreground, consequence behind.",
-          blocking: "Let the action cross the frame.",
-          camera: "Medium-tight, restrained long lens.",
-          practicalsAndLighting: "Warm practical, cooler room.",
-          backgroundAndDesign: "Active kitchen held soft.",
-          colorAndGrade: "Muted greens, clean skin.",
-          movement: "Slight handheld drift.",
-          soundAndAtmosphere: "Protect sizzle and room tone.",
-          mustGet: ["One uninterrupted hero action."],
-          optionalExploration: "Try one off-screen reveal.",
-          risk: "Do not confuse withholding with vagueness.",
-          rendering: {
-            capability: "STRUCTURED_BLUEPRINT_ONLY",
-            provider: null,
-            aestheticContract: "HAND_DRAWN_DIRECTOR_NOTEBOOK",
-            limitation: "No visual storyboard provider is configured.",
-          },
-        },
-        productionNextSteps: ["Run one low-cost scene test."],
-      },
-      projectSummary: "Summary text",
-      storyObjective: "Objective text",
-      audienceAnalysis: "Audience text",
-      emotionalArc: ["Setup", "Tension", "Payoff"],
-      recommendedStructure: "Hook-led",
-      hookConcepts: [
-        { title: "Result-first hook", description: "d1" },
-        { title: "Tension hook", description: "d2" },
-        { title: "Emotion-first hook", description: "d3" },
-      ],
-      editingBlueprint: ["Cut fast"],
-      interviewStrategy,
-      brollPriorities: ["Signature visuals"],
-      risks: ["Weak open"],
-      masterPrompt: "You are a senior creative director…",
-    },
+    blueprint: { ...generated, interviewStrategy },
   };
 }

@@ -1,6 +1,7 @@
 import { ok, type Result } from "@/lib/result";
 import type { ProjectId } from "../project";
 import { type Brand, defineId, type DomainError, validateBoundedText } from "../shared";
+import type { Blueprint } from "./blueprint";
 
 /** Identity of a Creative Brief — the structured context Stroman OS analyzes. */
 export type CreativeBriefId = Brand<string, "CreativeBriefId">;
@@ -27,6 +28,10 @@ export interface CreativeBrief extends CreativeBriefFields {
   readonly updatedAt: Date;
   /** Optimistic-concurrency token, managed by the persistence layer. */
   readonly lockVersion: number;
+  /** The exact quality-gated result shown to the filmmaker. */
+  readonly blueprint?: Blueprint | null;
+  /** Server-side adapter id for auditability; never exposes credentials. */
+  readonly reasoningProvider?: string | null;
 }
 
 const FIELD_SPECS: ReadonlyArray<
@@ -73,6 +78,8 @@ export function createCreativeBrief(
     createdAt: input.now,
     updatedAt: input.now,
     lockVersion: 1,
+    blueprint: null,
+    reasoningProvider: null,
   });
 }
 
@@ -84,5 +91,19 @@ export function reviseCreativeBrief(
 ): Result<CreativeBrief, DomainError> {
   const validated = validateFields(fields);
   if (!validated.ok) return validated;
-  return ok({ ...brief, ...validated.value, updatedAt: now });
+  return ok({
+    ...brief,
+    ...validated.value,
+    updatedAt: now,
+    blueprint: null,
+    reasoningProvider: null,
+  });
+}
+
+export function attachCreativeBlueprint(
+  brief: CreativeBrief,
+  blueprint: Blueprint,
+  reasoningProvider: string,
+): CreativeBrief {
+  return { ...brief, blueprint, reasoningProvider };
 }

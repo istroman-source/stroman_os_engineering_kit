@@ -79,17 +79,18 @@ describe("Stroman creative-intelligence benchmark contract", () => {
     expect(
       new Set(result.alternatives.map((direction) => direction.organizingPrinciple)).size,
     ).toBe(3);
-    expect(result.questions.length).toBeGreaterThanOrEqual(5);
+    expect(result.questions.length).toBeGreaterThanOrEqual(1);
+    expect(result.questions.length).toBeLessThanOrEqual(3);
     expect(result.questions.every((question) => question.decisionItChanges.length > 20)).toBe(true);
     expect(result.sequencePlan).toHaveLength(3);
     expect(result.sequencePlan.every((sequence) => sequence.picture && sequence.sound)).toBe(true);
-    expect(result.directorBlueprint).toMatchObject({
-      rendering: {
-        capability: "STRUCTURED_BLUEPRINT_ONLY",
-        provider: null,
-        aestheticContract: "HAND_DRAWN_DIRECTOR_NOTEBOOK",
-      },
+    expect(result.storyboard).toMatchObject({
+      status: "RENDERED",
+      renderer: "STROMAN_PENCIL_SVG_V1",
     });
+    expect(result.storyboard.frames.length).toBeGreaterThanOrEqual(3);
+    expect(result.storyboard.blocking.zones.length).toBeGreaterThan(0);
+    expect(result.storyboard.look.swatches.length).toBeGreaterThanOrEqual(3);
     for (const craftField of [
       result.directorBlueprint.composition,
       result.directorBlueprint.blocking,

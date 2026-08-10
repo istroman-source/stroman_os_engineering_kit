@@ -1,4 +1,5 @@
 import type { CreativeBrief } from "./creative-brief";
+import { createMeaningfulDevelopment, type MeaningfulDevelopment } from "./meaningful-development";
 
 export type CreativeMode = "DOCUMENTARY" | "COMMERCIAL" | "PERFORMANCE" | "NARRATIVE" | "OPEN";
 
@@ -47,7 +48,7 @@ export interface DirectorBlueprint {
   };
 }
 
-export interface DevelopmentBlueprint {
+export interface DevelopmentBlueprint extends MeaningfulDevelopment {
   readonly basis: "PROJECT_INTENT_ONLY";
   readonly mode: CreativeMode;
   readonly objectiveRead: string;
@@ -769,8 +770,8 @@ export function generateDevelopmentBlueprint(brief: CreativeBrief): DevelopmentB
     ? `The stated job is to ${context.goal}. For ${context.audience}, success is not coverage of ${context.concept}; it is a specific change in attention, feeling, or action that the film can earn.`
     : `${context.concept} is a premise, not yet a finished objective. The first creative decision is to identify the human consequence that makes it worth watching; all directions below are hypotheses until the filmmaker supplies or verifies that consequence.`;
 
-  return {
-    basis: "PROJECT_INTENT_ONLY",
+  const seed = {
+    basis: "PROJECT_INTENT_ONLY" as const,
     mode,
     objectiveRead,
     recommendedDirection: {
@@ -798,4 +799,5 @@ export function generateDevelopmentBlueprint(brief: CreativeBrief): DevelopmentB
       `Compare the recommended direction against “${alternatives.find((item) => item.unconventional)?.title ?? alternatives[0]?.title}”; keep the less familiar option only if it improves meaning and execution.`,
     ],
   };
+  return { ...seed, ...createMeaningfulDevelopment(brief, seed) };
 }
