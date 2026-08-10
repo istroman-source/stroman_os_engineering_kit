@@ -7,10 +7,11 @@
 - Knowledge observations must reference documents, acquisition runs, and sources belonging to
   the same owner and source lineage.
 - Compound indexes now match owner/source/project list filters and deterministic creation-time
-  ordering.
+  ordering; knowledge-observation alignment indexes use explicit PostgreSQL-safe catalog names.
 - No filmmaker-facing behavior or terminology changed; this is persistence hardening only.
 
-Automated evidence: Prisma client generation passed, and focused real-PostgreSQL regression
-coverage was added. Manual evidence: none required for this database-only milestone. Unverified
-blocker in this sandbox: PostgreSQL startup is denied by the host's shared-memory policy, so the
-migration and integration suite require Autopilot/CI verification.
+Automated evidence: the Autopilot host gate passed Prisma formatting and generation,
+typecheck, lint, format check, unit tests, real-PostgreSQL integration tests, production build,
+and diff validation after remediation. The database suite checks every owner-aligned foreign
+key and the exact alignment-index catalog names. Fresh exact-head CI and independent review
+remain required before merge; manual SQL inspection is not represented as runtime proof.

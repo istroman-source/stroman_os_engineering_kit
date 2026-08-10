@@ -998,9 +998,9 @@ model KnowledgeObservation {
 
   @@unique([id, ownerId])
   @@index([ownerId, createdAt])
-  @@index([sourceDocumentId, ownerId, knowledgeSourceId])
+  @@index([sourceDocumentId, ownerId, knowledgeSourceId], map: "knowledge_observations_document_alignment_idx")
   @@index([sourceDocumentId, createdAt])
-  @@index([acquisitionRunId, ownerId, knowledgeSourceId])
+  @@index([acquisitionRunId, ownerId, knowledgeSourceId], map: "knowledge_observations_run_alignment_idx")
   @@index([acquisitionRunId, createdAt])
   @@index([knowledgeSourceId, ownerId])
   @@map("knowledge_observations")

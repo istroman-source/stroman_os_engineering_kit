@@ -2,7 +2,7 @@
 
 ## In Progress — Prompt 017 Database Indexes and Constraints
 
-**Date:** 2026-08-10 · **Volume:** Foundation · **Status:** Implemented; database verification pending outside sandbox
+**Date:** 2026-08-10 · **Volume:** Foundation · **Status:** Implemented; host verification passed; awaiting fresh CI and independent review
 
 Hardened the older Memory, Story Reasoning, and Knowledge Acquisition persistence domains
 so PostgreSQL—not only application services—rejects cross-owner references. Composite
@@ -14,17 +14,20 @@ were introduced.
 
 Replaced single-column owner/list indexes with query-backed compound indexes that match
 repository filters and deterministic `created_at` ordering, while retaining the indexes
-needed for composite referential checks. Added real-PostgreSQL negative-path tests for
-cross-owner memory, project/story, and knowledge-source links, plus runtime catalog checks
-for representative compound indexes.
+needed for composite referential checks. The two knowledge-observation alignment indexes now
+have explicit catalog-safe names shared by the migration and Prisma mappings. Added
+real-PostgreSQL negative-path tests for every owner-aligned relationship, including independent
+source-document and acquisition-run lineage mismatches, plus exact runtime catalog checks for
+both renamed indexes.
 
-Files changed: `prisma/schema.prisma`, migration
+Files changed: the reusable Prompt 017 instructions, `prisma/schema.prisma`, migration
 `20260810120000_harden_workspace_indexes_constraints`, focused database integration tests,
-the persistence architecture, roadmap, and release notes. `prisma generate` passed. The
-focused integration command was attempted but the managed sandbox denied PostgreSQL SysV
-shared-memory creation (`shmget: Operation not permitted`), so migration application and
-database assertions remain explicitly unverified here and must pass Autopilot/CI's real
-PostgreSQL gate. Other canonical verification results are recorded in the handoff.
+the persistence architecture, roadmap, and release notes. The inner Codex sandbox could not
+start PostgreSQL or fetch the existing Google font, so Autopilot reran the canonical gate in
+the authorized host environment after remediation. All nine configured checks passed there:
+Prisma format/generate, typecheck, lint, format check, unit tests, real-PostgreSQL integration
+tests, production build, and diff validation. Fresh exact-head CI and independent review remain
+required before merge; manual SQL inspection is not represented as runtime evidence.
 
 Known limitation: this milestone hardens relationships that already persist workspace scope;
 it does not add speculative tenant columns to global or child-only tables. Prompt 018 remains

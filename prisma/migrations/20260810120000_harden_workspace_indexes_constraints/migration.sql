@@ -114,9 +114,9 @@ CREATE INDEX "source_documents_knowledge_source_id_created_at_idx" ON "source_do
 CREATE INDEX "acquisition_runs_owner_id_created_at_idx" ON "acquisition_runs"("owner_id", "created_at");
 CREATE INDEX "acquisition_runs_knowledge_source_id_created_at_idx" ON "acquisition_runs"("knowledge_source_id", "created_at");
 CREATE INDEX "knowledge_observations_owner_id_created_at_idx" ON "knowledge_observations"("owner_id", "created_at");
-CREATE INDEX "knowledge_observations_source_document_id_owner_id_knowledge_source_id_idx" ON "knowledge_observations"("source_document_id", "owner_id", "knowledge_source_id");
+CREATE INDEX "knowledge_observations_document_alignment_idx" ON "knowledge_observations"("source_document_id", "owner_id", "knowledge_source_id");
 CREATE INDEX "knowledge_observations_source_document_id_created_at_idx" ON "knowledge_observations"("source_document_id", "created_at");
-CREATE INDEX "knowledge_observations_acquisition_run_id_owner_id_knowledge_source_id_idx" ON "knowledge_observations"("acquisition_run_id", "owner_id", "knowledge_source_id");
+CREATE INDEX "knowledge_observations_run_alignment_idx" ON "knowledge_observations"("acquisition_run_id", "owner_id", "knowledge_source_id");
 CREATE INDEX "knowledge_observations_acquisition_run_id_created_at_idx" ON "knowledge_observations"("acquisition_run_id", "created_at");
 CREATE INDEX "knowledge_observations_knowledge_source_id_owner_id_idx" ON "knowledge_observations"("knowledge_source_id", "owner_id");
 CREATE INDEX "knowledge_reviews_owner_id_reviewed_at_idx" ON "knowledge_reviews"("owner_id", "reviewed_at");
