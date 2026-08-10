@@ -90,13 +90,16 @@ function detectMode(brief: CreativeBrief): CreativeMode {
   const combined =
     `${explicit} ${brief.title} ${brief.creativeGoal} ${brief.context}`.toLowerCase();
   const modeSignals: ReadonlyArray<readonly [CreativeMode, RegExp]> = [
-    ["PERFORMANCE", /performance|music|concert|dance|song|artist|stage|live session/],
+    ["PERFORMANCE", /\b(?:performance|music|concert|dance|song|artist|stage|live session)\b/],
     [
       "DOCUMENTARY",
-      /documentary|interview|profile|portrait|testimonial|real[- ]life|founder story/,
+      /\b(?:documentary|interview|profile|portrait|testimonial|real[- ]life|founder story)\b/,
     ],
-    ["COMMERCIAL", /commercial|campaign|brand|product|advert|spot|promo|launch|social|reel/],
-    ["NARRATIVE", /narrative|short film|feature|scripted|fiction|drama|comedy/],
+    [
+      "COMMERCIAL",
+      /\b(?:commercial|campaign|brand|product|advert|spot|promo|launch|social|reel)\b/,
+    ],
+    ["NARRATIVE", /\b(?:narrative|short film|feature|scripted|fiction|drama|comedy)\b/],
   ];
   for (const [mode, signal] of modeSignals) {
     if (signal.test(explicit)) return mode;
@@ -104,10 +107,14 @@ function detectMode(brief: CreativeBrief): CreativeMode {
   for (const [mode, signal] of modeSignals) {
     if (signal.test(combined)) return mode;
   }
-  if (/family|community|legacy|craft|portrait|interview|documentary|real person/.test(combined)) {
+  if (
+    /\b(?:family|community|legacy|craft|portrait|interview|documentary|real person)\b/.test(
+      combined,
+    )
+  ) {
     return "DOCUMENTARY";
   }
-  if (/product|restaurant|food|campaign|customer|brand|launch/.test(combined)) {
+  if (/\b(?:product|restaurant|food|campaign|customer|brand|launch)\b/.test(combined)) {
     return "COMMERCIAL";
   }
   return "OPEN";

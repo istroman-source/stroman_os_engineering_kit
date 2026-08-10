@@ -125,19 +125,37 @@ describe("Stroman creative-intelligence benchmark contract", () => {
     const performance = generateBlueprint(
       brief({ ...shared, title: "One Breath", projectType: "live music performance" }),
     ).development;
+    const narrative = generateBlueprint(
+      brief({
+        ...shared,
+        title: "The Door She Locked Behind Her",
+        projectType: "narrative short film",
+      }),
+    ).development;
+    const open = generateBlueprint(
+      brief({
+        ...shared,
+        title: "The Weight of an Empty Chair",
+        projectType: "experimental video",
+      }),
+    ).development;
 
     expect(
       new Set([
         documentary.recommendedDirection.title,
         commercial.recommendedDirection.title,
         performance.recommendedDirection.title,
+        narrative.recommendedDirection.title,
+        open.recommendedDirection.title,
       ]).size,
-    ).toBe(3);
+    ).toBe(5);
     expect(documentary.mode).toBe("DOCUMENTARY");
     expect(commercial.mode).toBe("COMMERCIAL");
     expect(performance.mode).toBe("PERFORMANCE");
+    expect(narrative.mode).toBe("NARRATIVE");
+    expect(open.mode).toBe("OPEN");
 
-    const outputs = [documentary, commercial, performance];
+    const outputs = [documentary, commercial, performance, narrative, open];
     for (const field of [
       "composition",
       "blocking",
@@ -149,20 +167,22 @@ describe("Stroman creative-intelligence benchmark contract", () => {
       "soundAndAtmosphere",
       "optionalExploration",
     ] as const) {
-      expect(new Set(outputs.map((output) => output.directorBlueprint[field])).size).toBe(3);
+      expect(new Set(outputs.map((output) => output.directorBlueprint[field])).size).toBe(5);
     }
     expect(
       new Set(outputs.map((output) => JSON.stringify(output.directorBlueprint.mustGet))).size,
-    ).toBe(3);
+    ).toBe(5);
     expect(
       new Set(
         outputs.map((output) =>
           JSON.stringify(output.sequencePlan.map(({ picture, sound }) => ({ picture, sound }))),
         ),
       ).size,
-    ).toBe(3);
+    ).toBe(5);
     expect(documentary.directorBlueprint.blocking).toContain("real routine");
     expect(commercial.directorBlueprint.camera).toContain("proof frame");
     expect(performance.directorBlueprint.soundAndAtmosphere).toContain("complete performance");
+    expect(narrative.directorBlueprint.blocking).toContain("physical objective");
+    expect(open.directorBlueprint.camera).toContain("one normal lens");
   });
 });
