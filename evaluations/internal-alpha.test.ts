@@ -4,12 +4,17 @@ import { TranscriptDocumentId, TranscriptSegmentId } from "../src/domain/media-t
 import type { AnalysisSourceSegment } from "../src/domain/analysis";
 import { DeterministicGroundedAnalyzer } from "../src/infrastructure/analysis";
 
-const segment = (id: string, sequence: number, text: string): AnalysisSourceSegment => ({
+const segment = (
+  id: string,
+  sequence: number,
+  text: string,
+  speakerLabel: string | null = "Speaker",
+): AnalysisSourceSegment => ({
   transcriptDocumentId: TranscriptDocumentId.unsafe("trdoc_EVAL0001"),
   transcriptSegmentId: TranscriptSegmentId.unsafe(id),
   transcriptTitle: "Internal alpha fixture",
   sequence,
-  speakerLabel: "Speaker",
+  speakerLabel,
   text,
   startMs: sequence * 1_000,
   endMs: sequence * 1_000 + 900,
@@ -45,6 +50,52 @@ describe("internal-alpha reliability gate", () => {
     expect(await analyzer.analyze({ segments: fixture })).toEqual(
       await analyzer.analyze({ segments: fixture }),
     );
+  });
+
+  it("separates source facts from a useful, explicitly interpretive story hypothesis", async () => {
+    const humanTestFixture = [
+      segment("trseg_EVAL0010", 0, "Slate. Take three. Testing, testing.", "Unknown"),
+      segment(
+        "trseg_EVAL0011",
+        1,
+        "When I arrived, everything was unfamiliar and I could not speak the language.",
+        "Unknown",
+      ),
+      segment(
+        "trseg_EVAL0012",
+        2,
+        "I started at the bottom, but I learned the work and slowly found where I could contribute.",
+        "Unknown",
+      ),
+      segment(
+        "trseg_EVAL0013",
+        3,
+        "Eventually that contribution became part of the foundation the next group could build on.",
+        "Unknown",
+      ),
+      segment("trseg_EVAL0014", 4, "Okay, thank you, that's all.", "Unknown"),
+    ];
+
+    const result = await new DeterministicGroundedAnalyzer().analyze({
+      segments: humanTestFixture,
+    });
+    const observations = result.outputs.filter((output) => output.kind === "OBSERVATION");
+    const interpretations = result.outputs.filter((output) => output.kind !== "OBSERVATION");
+    const rendered = result.outputs
+      .map((output) => output.content)
+      .join(" ")
+      .toLowerCase();
+
+    expect(observations.length).toBeGreaterThan(0);
+    expect(observations.every((output) => output.content.startsWith("“"))).toBe(true);
+    expect(interpretations.some((output) => output.kind === "NARRATIVE")).toBe(true);
+    expect(interpretations.every((output) => output.confidence < 1)).toBe(true);
+    expect(rendered).not.toContain("unknown");
+    expect(rendered).not.toContain("testing, testing");
+    expect(rendered).not.toContain("thank you, that's all");
+    expect(rendered).toContain("interpretation");
+    expect(result.recommendations[0]?.rationale).toContain("look for counter-evidence");
+    expect(result.recommendations[0]?.rationale).toContain("filmmaker judgment");
   });
 
   it("returns insufficient evidence without throwing when no segments exist", async () => {

@@ -8,6 +8,12 @@ Knowledge Acquisition, Memory, entities, relationships, evidence linking, cluste
 workflow state are backend capabilities, not separate user journeys. See
 `docs/FILMMAKING_INTELLIGENCE_DIRECTION.md`.
 
+The durable product boundary is the full filmmaking continuum from idea and development through
+production, source understanding, editorial, revision, and delivery. Stroman must remain useful
+before footage exists and when footage already exists. Every product slice must preserve or
+strengthen the shared intent–evidence bridge; transcript analysis is one input path, not the
+product definition.
+
 ## Current progress
 
 Foundation Prompts 001–017 are complete. Prompt 017 passed the canonical real-database gate,
@@ -33,6 +39,31 @@ passed post-merge `main` CI. Automation has stopped at **READY FOR HUMAN TESTING
 018 and later work are not part of this activation and require a new explicit roadmap stop.
 
 Autopilot continuous stop milestone is Prompt 017.
+
+## Current human-test corrective rollout
+
+The first real filmmaker test validated authentication, persistence, the story workspace,
+transcript ingestion, evidence-backed analysis, recommendations, alternatives, and analysis UI.
+It also exposed a false client error after successful transcript import and weak editorial
+selection in the deterministic analysis baseline.
+
+The explicitly authorized corrective rollout is independent of the numbered Prompt 018 sequence
+and does not move the Autopilot stop beyond Prompt 017. Its shortest safe acceptance path is:
+
+1. preserve the working end-to-end path and fix the successful-import false error;
+2. suppress metadata, slate, test, and closing chatter from editorial selection;
+3. replace length/first/last shortcuts with source-backed substantive-moment and progression
+   selection;
+4. distinguish factual source moments from editorial interpretations and explain why proposed
+   connections may matter;
+5. normalize project-intent prose while preserving the filmmaker's meaning;
+6. encode the pre-footage and post-footage product north star as a durable test;
+7. require the canonical local gate, exact-head CI, independent exact-SHA review, atomic merge,
+   and green post-merge `main` before returning to human testing.
+
+Prompt 018 remains unauthorized by this rollout. Future autonomous work must evaluate the next
+highest-value filmmaker outcome against the intent–evidence bridge before advancing a numbered
+prompt.
 
 ## Accelerated delivery sequence
 

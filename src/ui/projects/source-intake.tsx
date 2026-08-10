@@ -46,7 +46,8 @@ export function SourceIntake({ projectId }: { projectId: string }) {
 
   async function upload(event: FormEvent<HTMLFormElement>, kind: "Media" | "Transcript") {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const file = form.get("file");
     if (!(file instanceof File) || file.size === 0) return;
     if (kind === "Transcript") {
@@ -78,7 +79,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
         } | null;
         throw new Error(body?.error?.message ?? "Import failed.");
       }
-      event.currentTarget.reset();
+      formElement.reset();
       await refresh();
     } catch (caught) {
       setItems((current) => current.filter((item) => item.id !== temporary.id));

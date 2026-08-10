@@ -43,9 +43,6 @@ function segmentKey(id: TranscriptSegmentId): string {
 
 function validateGrounding(draft: GroundedAnalysisDraft, available: ReadonlySet<string>) {
   const claims = [...draft.outputs, ...draft.recommendations];
-  if (claims.length === 0) {
-    return err(new InvalidValueError("Analysis produced no grounded claims"));
-  }
   for (const claim of claims) {
     if (claim.sourceSegmentIds.length === 0) {
       return err(new InvalidValueError("Every analysis claim must cite transcript evidence"));

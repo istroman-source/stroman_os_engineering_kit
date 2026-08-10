@@ -41,6 +41,19 @@ function interviewApplies(brief: CreativeBrief): boolean {
   );
 }
 
+function phrase(value: string): string {
+  return value
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/[.!?]+$/, "");
+}
+
+function sentence(value: string): string {
+  const normalized = value.trim().replace(/\s+/g, " ");
+  const terminal = normalized.endsWith("?") ? "?" : normalized.endsWith("!") ? "!" : ".";
+  return `${normalized.replace(/[.!?]+$/, "")}${terminal}`;
+}
+
 /**
  * Turn a creative brief into a Creative Blueprint. This is the deterministic,
  * rule-based reasoning engine — the seam a provider-backed engine can later sit
@@ -48,25 +61,29 @@ function interviewApplies(brief: CreativeBrief): boolean {
  */
 export function generateBlueprint(brief: CreativeBrief): Blueprint {
   const shortForm = isShortForm(brief.projectType);
+  const projectType = phrase(brief.projectType);
+  const creativeGoal = phrase(brief.creativeGoal);
+  const targetAudience = phrase(brief.targetAudience);
+  const desiredEmotion = phrase(brief.desiredEmotion).toLowerCase();
 
   const projectSummary =
-    `“${brief.title}” is a ${brief.projectType.toLowerCase()} project for ${brief.client}. ` +
-    `The creative goal is to ${brief.creativeGoal.trim().replace(/\.$/, "")}, ` +
-    `reaching ${brief.targetAudience} and leaving them feeling ${brief.desiredEmotion.toLowerCase()}.`;
+    `“${phrase(brief.title)}” is for ${phrase(brief.client)} in the ${projectType.toLowerCase()} format. ` +
+    `Creative goal: ${sentence(brief.creativeGoal)} Intended audience: ${sentence(brief.targetAudience)} ` +
+    `Intended feeling: ${sentence(desiredEmotion)}`;
 
   const storyObjective =
-    `Every creative choice should serve one objective: ${brief.creativeGoal.trim().replace(/\.$/, "")}. ` +
-    `Success looks like the audience feeling ${brief.desiredEmotion.toLowerCase()} and acting on it.`;
+    `Objective: ${sentence(brief.creativeGoal)} ` +
+    `Use each creative choice to help the audience leave feeling ${desiredEmotion}.`;
 
   const audienceAnalysis =
-    `Primary audience: ${brief.targetAudience}. ` +
+    `Primary audience: ${sentence(targetAudience)} ` +
     `Speak to what they already care about, open in their world, and earn attention in the first seconds. ` +
-    `Tone and pacing should track how this audience actually watches ${brief.projectType.toLowerCase()} content.`;
+    `Tone and pacing should track how this audience actually watches ${projectType.toLowerCase()} content.`;
 
   const emotionalArc = [
-    `Setup — establish context and signal the promise of feeling ${brief.desiredEmotion.toLowerCase()}.`,
+    `Setup — establish context and signal the promise of feeling ${desiredEmotion}.`,
     `Tension — introduce the stakes or contrast that make the payoff matter.`,
-    `Payoff — deliver the ${brief.desiredEmotion.toLowerCase()} beat and resolve the promise.`,
+    `Payoff — deliver the ${desiredEmotion} beat and resolve the promise.`,
   ];
 
   const recommendedStructure = shortForm
@@ -78,15 +95,15 @@ export function generateBlueprint(brief: CreativeBrief): Blueprint {
   const hookConcepts: HookConcept[] = [
     {
       title: "Result-first hook",
-      description: `Open on the most striking outcome or image tied to “${brief.title}”, then rewind to show how it happened.`,
+      description: `Open on the most striking outcome or image tied to “${phrase(brief.title)}”, then rewind to show how it happened.`,
     },
     {
       title: "Tension hook",
-      description: `Lead with the problem or question your audience (${brief.targetAudience}) feels most, and promise the resolution.`,
+      description: `Lead with the problem or question your audience (${targetAudience}) feels most, and promise the resolution.`,
     },
     {
       title: "Emotion-first hook",
-      description: `Start in the ${brief.desiredEmotion.toLowerCase()} moment — put the feeling on screen in the first two seconds before any exposition.`,
+      description: `Start in the ${desiredEmotion} moment — put the feeling on screen in the first two seconds before any exposition.`,
     },
   ];
 
@@ -95,45 +112,45 @@ export function generateBlueprint(brief: CreativeBrief): Blueprint {
         "Cut the first 3 seconds ruthlessly — the hook must land immediately.",
         "One idea per cut; remove any shot that doesn't advance the single message.",
         "Match pacing to the platform; keep momentum with motion, sound design, and captions.",
-        `Land the final beat on the ${brief.desiredEmotion.toLowerCase()} payoff, then the call to action.`,
+        `Land the final beat on the ${desiredEmotion} payoff, then the call to action.`,
       ]
     : [
         "Open on the strongest hook, not the chronological beginning.",
         "Sequence for emotional escalation, not just chronology.",
-        `Use sound and music to underline the ${brief.desiredEmotion.toLowerCase()} arc.`,
+        `Use sound and music to underline the ${desiredEmotion} arc.`,
         "Reserve the most powerful visual for the payoff; earn it.",
       ];
 
   const interviewStrategy = interviewApplies(brief)
     ? [
         "Pre-interview to find the real story before rolling; note the exact quotes you need.",
-        `Ask questions that surface ${brief.desiredEmotion.toLowerCase()} — feelings and turning points, not just facts.`,
+        `Ask questions that surface ${desiredEmotion} — feelings and turning points, not just facts.`,
         "Ask subjects to answer in full sentences that restate the question, so clips stand alone.",
         "Capture room tone and reaction shots for flexible editing.",
       ]
     : null;
 
   const brollPriorities = [
-    `Signature visuals that establish ${brief.client} and the world of “${brief.title}”.`,
+    `Signature visuals that establish ${phrase(brief.client)} and the world of “${phrase(brief.title)}”.`,
     "Detail/insert shots that make the core idea tangible.",
-    `Moments that visually carry the ${brief.desiredEmotion.toLowerCase()} beat.`,
+    `Moments that visually carry the ${desiredEmotion} beat.`,
     "Transitional motion (movement, hands, environment) to sustain pace.",
   ];
 
   const risks = [
-    `Diluting the single message — protect the goal: ${brief.creativeGoal.trim().replace(/\.$/, "")}.`,
+    `Diluting the single message — protect the goal: ${sentence(creativeGoal)}`,
     "A weak or slow open; the hook is the highest-leverage edit.",
-    `Missing the target emotion — verify each act moves toward ${brief.desiredEmotion.toLowerCase()}.`,
-    `Losing the audience (${brief.targetAudience}) with insider references or pacing that doesn't fit the format.`,
+    `Missing the target emotion — verify each act moves toward ${desiredEmotion}.`,
+    `Losing the audience (${targetAudience}) with insider references or pacing that doesn't fit the format.`,
   ];
 
   const masterPrompt = [
-    `You are a senior creative director editing “${brief.title}” for ${brief.client}.`,
-    `Format: ${brief.projectType}.`,
-    `Goal: ${brief.creativeGoal}.`,
-    `Audience: ${brief.targetAudience}.`,
-    `Desired emotion: ${brief.desiredEmotion}.`,
-    `Context: ${brief.context}.`,
+    `You are a senior creative director editing “${phrase(brief.title)}” for ${phrase(brief.client)}.`,
+    `Format: ${sentence(projectType)}`,
+    `Goal: ${sentence(creativeGoal)}`,
+    `Audience: ${sentence(targetAudience)}`,
+    `Desired emotion: ${sentence(desiredEmotion)}`,
+    `Context: ${sentence(brief.context)}`,
     `Recommend the edit that best achieves the goal and lands the desired emotion, and justify each major choice.`,
   ].join("\n");
 
