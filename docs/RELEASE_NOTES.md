@@ -13,5 +13,6 @@
 Automated evidence: the Autopilot host gate passed Prisma formatting and generation,
 typecheck, lint, format check, unit tests, real-PostgreSQL integration tests, production build,
 and diff validation after remediation. The database suite checks every owner-aligned foreign
-key and the exact alignment-index catalog names. Fresh exact-head CI and independent review
-remain required before merge; manual SQL inspection is not represented as runtime proof.
+key and the exact alignment-index catalog names. Exact-head CI passed, independent Claude
+review approved the remediated commit with only OPTIONAL findings, and post-merge `main` CI
+passed. Manual SQL inspection is not represented as runtime proof.

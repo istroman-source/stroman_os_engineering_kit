@@ -10,28 +10,27 @@ workflow state are backend capabilities, not separate user journeys. See
 
 ## Current progress
 
-Foundation Prompts 001–016 are complete. Prompt 017 is implemented in the working branch but
-remains incomplete until the canonical database, CI, and review gates pass. The repository baseline,
-architecture decision coverage, bundled repository/tooling foundations, the domain glossary,
-the initial domain model,
+Foundation Prompts 001–017 are complete. Prompt 017 passed the canonical real-database gate,
+exact-head CI, independent exact-commit review, bounded remediation, atomic merge, and
+post-merge `main` CI. The repository baseline, architecture decision coverage, bundled
+repository/tooling foundations, the domain glossary, the initial domain model,
 media/transcript provenance, durable Evidence,
 versioned analysis with human-authoritative Decision linkage, review runs, and approved
 project learning. Delivery now follows
 the accelerated vertical slices below instead of implementing unrelated numbered
 foundation prompts before visible filmmaker value.
 
-The next incomplete dependency is Prompt 017, which adds database-enforced owner alignment and
-query-backed compound indexes to the older persistence domains. Prompts 004–007, 009, and 010 are recorded as completed through
-previous bundled work in `docs/BUILD_PROGRESS.md`; Prompt 008 completes the previously missing
-safe reset and seed boundary. These foundations must not be rebuilt. Prompt 018 is not
-authorized by the current rollout.
+The next incomplete dependency is Prompt 018. Prompts 004–007, 009, and 010 are recorded as
+completed through previous bundled work in `docs/BUILD_PROGRESS.md`; Prompt 008 completes the
+previously missing safe reset and seed boundary. These foundations must not be rebuilt.
+Prompt 018 is not authorized by the current rollout.
 
 ## Approved autonomous first rollout
 
 Prompt 017 is the sole approved post-alpha hardening milestone for the first continuous
-Autopilot rollout. After its exact-reviewed change passes local verification and CI and is
-merged, automation must stop at **READY FOR HUMAN TESTING**. Prompt 018 and later work are
-not part of this activation and require a new explicit roadmap stop.
+Autopilot rollout. Its exact-reviewed change passed local verification and CI, merged, and
+passed post-merge `main` CI. Automation has stopped at **READY FOR HUMAN TESTING**. Prompt
+018 and later work are not part of this activation and require a new explicit roadmap stop.
 
 Autopilot continuous stop milestone is Prompt 017.
 

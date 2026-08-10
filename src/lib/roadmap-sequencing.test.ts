@@ -1,7 +1,11 @@
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { loadConfig } from "../../scripts/autopilot/config";
-import { listMilestones, selectMilestone } from "../../scripts/autopilot/roadmap";
+import {
+  approvedContinuousStopMilestone,
+  listMilestones,
+  selectMilestone,
+} from "../../scripts/autopilot/roadmap";
 
 describe("bundled foundation roadmap sequencing", () => {
   const root = resolve(process.cwd());
@@ -11,9 +15,10 @@ describe("bundled foundation roadmap sequencing", () => {
     const milestones = await listMilestones(root, config);
 
     expect(milestones.find(({ id }) => id === "004")?.title).toBe("Monorepo and folder structure");
+    await expect(approvedContinuousStopMilestone(root, config)).resolves.toBe("017");
     await expect(selectMilestone(root, config)).resolves.toMatchObject({
-      id: "017",
-      title: "Database indexes and constraints",
+      id: "018",
+      title: "Seeded demonstration workspace",
     });
   });
 });
