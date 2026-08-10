@@ -281,7 +281,7 @@ for use-case results.
   1. `20260719050215_init_persistence` — tables, enums, constraints, indexes, FKs.
   2. `20260719050216_add_check_constraints` — hand-authored CHECK constraints.
   3. `20260719050217_add_optimistic_concurrency` — the `lock_version` columns.
-- `migrate deploy` applies all three **in order** on an empty database, and
+- `migrate deploy` applies every timestamped migration **in order** on an empty database, and
   `migrate status` reports "up to date" (verified every integration run, which
   starts a fresh database).
 - **Reconciliation for constraints Prisma cannot express (documented, not an
@@ -301,6 +301,15 @@ for use-case results.
   embedded PostgreSQL; they never target development or production.
 
 ## Integration-test strategy
+
+Prompt 017 reconciles legacy owner-scoped relationships in the Memory, Story Reasoning, and
+Knowledge Acquisition tables. Composite foreign keys make each persisted `owner_id` part of
+the relationship itself, including source-document/acquisition-run alignment for observations.
+Repository list indexes lead with the actual filter and include deterministic time ordering;
+focused integration tests query PostgreSQL's live catalog rather than treating schema text as
+runtime evidence. The Memory-to-Source composite foreign key uses PostgreSQL 15's column-list
+`SET NULL (source_id)` so source removal preserves the existing nullable provenance behavior
+without clearing required owner scope; Prisma cannot express that specific referential action.
 
 `npm run test:integration` (config `vitest.integration.config.ts`, node
 environment) starts one real PostgreSQL via `test/db/global-setup.ts`, applies

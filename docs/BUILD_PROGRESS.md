@@ -1,5 +1,37 @@
 # Build Progress
 
+## In Progress — Prompt 017 Database Indexes and Constraints
+
+**Date:** 2026-08-10 · **Volume:** Foundation · **Status:** Implemented; database verification pending outside sandbox
+
+Hardened the older Memory, Story Reasoning, and Knowledge Acquisition persistence domains
+so PostgreSQL—not only application services—rejects cross-owner references. Composite
+candidate keys and foreign keys now align every relationship that already carries an
+`owner_id`; Knowledge observations additionally align their source document and optional
+acquisition run to the same owner and source. Existing project, provenance, ordering, human
+authority, and append-only behavior are unchanged. No media binaries or new product surface
+were introduced.
+
+Replaced single-column owner/list indexes with query-backed compound indexes that match
+repository filters and deterministic `created_at` ordering, while retaining the indexes
+needed for composite referential checks. Added real-PostgreSQL negative-path tests for
+cross-owner memory, project/story, and knowledge-source links, plus runtime catalog checks
+for representative compound indexes.
+
+Files changed: `prisma/schema.prisma`, migration
+`20260810120000_harden_workspace_indexes_constraints`, focused database integration tests,
+the persistence architecture, roadmap, and release notes. `prisma generate` passed. The
+focused integration command was attempted but the managed sandbox denied PostgreSQL SysV
+shared-memory creation (`shmget: Operation not permitted`), so migration application and
+database assertions remain explicitly unverified here and must pass Autopilot/CI's real
+PostgreSQL gate. Other canonical verification results are recorded in the handoff.
+
+Known limitation: this milestone hardens relationships that already persist workspace scope;
+it does not add speculative tenant columns to global or child-only tables. Prompt 018 remains
+outside the approved rollout and is not recommended until a new roadmap decision authorizes it.
+
+---
+
 ## Continuous Autopilot First-Rollout Activation
 
 **Date:** 2026-08-10 · **Status:** Implemented; awaiting CI and independent review
