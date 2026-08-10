@@ -98,7 +98,8 @@ synchronized.
 
 ## State, review format, and recovery
 
-A lock prevents concurrent runs. State is written atomically to
+A lock covers the entire continuous session, including the gap between milestones, and
+prevents concurrent runs. State is written atomically to
 `.autopilot/state/current.json`; detailed redacted logs and generated prompts live under
 `.autopilot/`. All are gitignored. `status` is read-only, and `abort` marks the run without
 resetting, cleaning, or discarding user files.

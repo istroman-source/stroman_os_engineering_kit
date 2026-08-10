@@ -255,6 +255,7 @@ describe("Autopilot", () => {
     );
     const calls: string[] = [];
     const runMilestone: typeof startWorkflow = async (_root, _config, _runner, options) => {
+      await expect(new StateStore(r).acquire()).rejects.toMatchObject({ code: "LOCKED" });
       const id = options.milestone!;
       calls.push(id);
       const state = newState(true, false);
@@ -279,6 +280,37 @@ describe("Autopilot", () => {
     );
     expect(calls).toEqual(["002", "003"]);
     expect(state.milestone?.id).toBe("003");
+  });
+  it("stops a continuous chain immediately when a milestone is not complete", async () => {
+    const r = await root();
+    await writeFile(join(r, "prompts/v/003_three.md"), "# Prompt 003 — Three\n");
+    await writeFile(
+      join(r, "roadmap/roadmap.md"),
+      "Autopilot continuous stop milestone is Prompt 003.\n",
+    );
+    const calls: string[] = [];
+    const runMilestone: typeof startWorkflow = async (_root, _config, _runner, options) => {
+      calls.push(options.milestone!);
+      const state = newState(true, false);
+      state.milestone = {
+        id: options.milestone!,
+        title: "Two",
+        slug: "002-two",
+        source: "prompts/v/002_two.md",
+      };
+      state.phase = "FAILED";
+      state.failure = "recoverable milestone failure";
+      return state;
+    };
+    const state = await runWorkflow(
+      r,
+      { ...config, autoMerge: true, continuousStopAfterMilestone: "003" },
+      new FakeRunner(),
+      { continuous: true },
+      runMilestone,
+    );
+    expect(state.phase).toBe("FAILED");
+    expect(calls).toEqual(["002"]);
   });
   it("records verification success", async () => {
     const out = await verify(await root(), config, new FakeRunner(), "r");

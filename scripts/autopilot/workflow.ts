@@ -35,14 +35,16 @@ export const newState = (continuous: boolean, dryRun: boolean): RunState => {
     dryRun,
   };
 };
-export async function startWorkflow(
+
+type WorkflowOptions = { milestone?: string; continuous?: boolean; dryRun?: boolean };
+
+async function executeWorkflow(
   root: string,
   c: Config,
   r: CommandRunner,
-  o: { milestone?: string; continuous?: boolean; dryRun?: boolean },
+  o: WorkflowOptions,
+  store: StateStore,
 ) {
-  const store = new StateStore(root);
-  await store.acquire();
   const continuous = o.continuous ?? c.continuous;
   const s = newState(continuous, o.dryRun ?? false);
   try {
@@ -99,6 +101,14 @@ export async function startWorkflow(
     s.failure = e instanceof Error ? e.message : String(e);
     await store.save(s);
     throw e;
+  }
+}
+
+export async function startWorkflow(root: string, c: Config, r: CommandRunner, o: WorkflowOptions) {
+  const store = new StateStore(root);
+  await store.acquire();
+  try {
+    return await executeWorkflow(root, c, r, o, store);
   } finally {
     await store.release();
   }
@@ -108,8 +118,8 @@ export async function runWorkflow(
   root: string,
   c: Config,
   r: CommandRunner,
-  o: { milestone?: string; continuous?: boolean; dryRun?: boolean },
-  runMilestone: typeof startWorkflow = startWorkflow,
+  o: WorkflowOptions,
+  runMilestone?: typeof startWorkflow,
 ) {
   const continuous = o.continuous ?? c.continuous;
   if (!continuous) return await startWorkflow(root, c, r, { ...o, continuous: false });
@@ -133,24 +143,28 @@ export async function runWorkflow(
       "CONTINUOUS_TARGET_EXCEEDED",
     );
 
-  let milestone = o.milestone;
-  while (true) {
-    const next = await selectMilestone(root, c, milestone);
-    if (next.id > stop) {
-      const previous = await new StateStore(root).load();
-      if (previous?.phase === "COMPLETE" && previous.milestone?.id === stop) return previous;
-      throw new AutopilotError(
-        `Next milestone ${next.id} is beyond the continuous stop milestone ${stop}`,
-        "CONTINUOUS_TARGET_REACHED",
-      );
+  const store = new StateStore(root);
+  await store.acquire();
+  try {
+    let milestone = o.milestone;
+    while (true) {
+      const next = await selectMilestone(root, c, milestone);
+      if (next.id > stop) {
+        const previous = await store.load();
+        if (previous?.phase === "COMPLETE" && previous.milestone?.id === stop) return previous;
+        throw new AutopilotError(
+          `Next milestone ${next.id} is beyond the continuous stop milestone ${stop}`,
+          "CONTINUOUS_TARGET_REACHED",
+        );
+      }
+      const state = runMilestone
+        ? await runMilestone(root, c, r, { ...o, milestone: next.id, continuous: true })
+        : await executeWorkflow(root, c, r, { ...o, milestone: next.id, continuous: true }, store);
+      if (o.dryRun || state.phase !== "COMPLETE" || state.milestone?.id === stop) return state;
+      milestone = undefined;
     }
-    const state = await runMilestone(root, c, r, {
-      ...o,
-      milestone: next.id,
-      continuous: true,
-    });
-    if (o.dryRun || state.phase !== "COMPLETE" || state.milestone?.id === stop) return state;
-    milestone = undefined;
+  } finally {
+    await store.release();
   }
 }
 export async function prepareReview(root: string, c: Config, r: CommandRunner) {
