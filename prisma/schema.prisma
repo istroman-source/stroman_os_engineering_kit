@@ -728,7 +728,8 @@ model Entity {
   relationshipsFrom Relationship[] @relation("RelationshipFrom")
   relationshipsTo   Relationship[] @relation("RelationshipTo")
 
-  @@index([ownerId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
   @@map("entities")
 }
 
@@ -744,7 +745,8 @@ model Source {
 
   memories Memory[]
 
-  @@index([ownerId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
   @@map("sources")
 }
 
@@ -757,14 +759,19 @@ model Memory {
   content   String
   createdAt DateTime @map("created_at") @db.Timestamptz(3)
 
-  entity        Entity          @relation(fields: [entityId], references: [id], onDelete: Restrict)
-  source        Source?         @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+  entity        Entity          @relation(fields: [entityId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  // The migration uses PostgreSQL's column-list SET NULL to clear sourceId only;
+  // Prisma cannot express that referential action for this composite relation.
+  source        Source?         @relation(fields: [sourceId, ownerId], references: [id, ownerId], onDelete: NoAction)
   insightRefs   InsightMemory[]
   storyEvidence StoryEvidence[]
 
-  @@index([ownerId])
-  @@index([entityId])
-  @@index([sourceId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
+  @@index([entityId, ownerId])
+  @@index([entityId, createdAt])
+  @@index([sourceId, ownerId])
+  @@index([sourceId, createdAt])
   @@map("memories")
 }
 
@@ -777,12 +784,14 @@ model Relationship {
   relationType String   @map("relation_type")
   createdAt    DateTime @map("created_at") @db.Timestamptz(3)
 
-  fromEntity Entity @relation("RelationshipFrom", fields: [fromEntityId], references: [id], onDelete: Restrict)
-  toEntity   Entity @relation("RelationshipTo", fields: [toEntityId], references: [id], onDelete: Restrict)
+  fromEntity Entity @relation("RelationshipFrom", fields: [fromEntityId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  toEntity   Entity @relation("RelationshipTo", fields: [toEntityId, ownerId], references: [id, ownerId], onDelete: Restrict)
 
-  @@index([ownerId])
-  @@index([fromEntityId])
-  @@index([toEntityId])
+  @@index([ownerId, createdAt])
+  @@index([fromEntityId, ownerId])
+  @@index([fromEntityId, createdAt])
+  @@index([toEntityId, ownerId])
+  @@index([toEntityId, createdAt])
   @@map("relationships")
 }
 
@@ -798,7 +807,8 @@ model Insight {
   memories      InsightMemory[]
   storyEvidence StoryEvidence[]
 
-  @@index([ownerId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
   @@map("insights")
 }
 
@@ -836,12 +846,13 @@ model StoryAngle {
   createdAt       DateTime         @map("created_at") @db.Timestamptz(3)
   lockVersion     Int              @default(1) @map("lock_version")
 
-  project   Project         @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  project   Project         @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
   evidence  StoryEvidence[]
   critiques StoryCritique[]
 
-  @@index([ownerId])
-  @@index([projectId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
+  @@index([projectId, createdAt])
   @@map("story_angles")
 }
 
@@ -858,14 +869,15 @@ model StoryEvidence {
   reason       String
   createdAt    DateTime     @map("created_at") @db.Timestamptz(3)
 
-  storyAngle StoryAngle @relation(fields: [storyAngleId], references: [id], onDelete: Cascade)
-  memory     Memory?    @relation(fields: [memoryId], references: [id], onDelete: Restrict)
-  insight    Insight?   @relation(fields: [insightId], references: [id], onDelete: Restrict)
+  storyAngle StoryAngle @relation(fields: [storyAngleId, ownerId], references: [id, ownerId], onDelete: Cascade)
+  memory     Memory?    @relation(fields: [memoryId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  insight    Insight?   @relation(fields: [insightId, ownerId], references: [id, ownerId], onDelete: Restrict)
 
-  @@index([ownerId])
-  @@index([storyAngleId])
-  @@index([memoryId])
-  @@index([insightId])
+  @@index([ownerId, createdAt])
+  @@index([storyAngleId, ownerId])
+  @@index([storyAngleId, createdAt])
+  @@index([memoryId, ownerId])
+  @@index([insightId, ownerId])
   @@map("story_evidence")
 }
 
@@ -890,10 +902,11 @@ model StoryCritique {
   rationale          String
   createdAt          DateTime            @map("created_at") @db.Timestamptz(3)
 
-  storyAngle StoryAngle @relation(fields: [storyAngleId], references: [id], onDelete: Cascade)
+  storyAngle StoryAngle @relation(fields: [storyAngleId, ownerId], references: [id, ownerId], onDelete: Cascade)
 
-  @@index([ownerId])
-  @@index([storyAngleId])
+  @@index([ownerId, createdAt])
+  @@index([storyAngleId, ownerId])
+  @@index([storyAngleId, createdAt])
   @@map("story_critiques")
 }
 
@@ -912,7 +925,8 @@ model KnowledgeSource {
   runs         AcquisitionRun[]
   observations KnowledgeObservation[]
 
-  @@index([ownerId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
   @@map("knowledge_sources")
 }
 
@@ -927,12 +941,13 @@ model SourceDocument {
   byteSize          Int?         @map("byte_size")
   createdAt         DateTime     @map("created_at") @db.Timestamptz(3)
 
-  knowledgeSource KnowledgeSource        @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
+  knowledgeSource KnowledgeSource        @relation(fields: [knowledgeSourceId, ownerId], references: [id, ownerId], onDelete: Restrict)
   observations    KnowledgeObservation[]
 
   @@unique([knowledgeSourceId, contentHash])
-  @@index([ownerId])
-  @@index([knowledgeSourceId])
+  @@unique([id, ownerId, knowledgeSourceId])
+  @@index([ownerId, createdAt])
+  @@index([knowledgeSourceId, createdAt])
   @@map("source_documents")
 }
 
@@ -951,11 +966,12 @@ model AcquisitionRun {
   createdAt           DateTime             @map("created_at") @db.Timestamptz(3)
   lockVersion         Int                  @default(1) @map("lock_version")
 
-  knowledgeSource KnowledgeSource        @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
+  knowledgeSource KnowledgeSource        @relation(fields: [knowledgeSourceId, ownerId], references: [id, ownerId], onDelete: Restrict)
   observations    KnowledgeObservation[]
 
-  @@index([ownerId])
-  @@index([knowledgeSourceId])
+  @@unique([id, ownerId, knowledgeSourceId])
+  @@index([ownerId, createdAt])
+  @@index([knowledgeSourceId, createdAt])
   @@map("acquisition_runs")
 }
 
@@ -974,16 +990,19 @@ model KnowledgeObservation {
   createdAt         DateTime          @map("created_at") @db.Timestamptz(3)
   lockVersion       Int               @default(1) @map("lock_version")
 
-  sourceDocument   SourceDocument               @relation(fields: [sourceDocumentId], references: [id], onDelete: Restrict)
-  knowledgeSource  KnowledgeSource              @relation(fields: [knowledgeSourceId], references: [id], onDelete: Restrict)
-  acquisitionRun   AcquisitionRun?              @relation(fields: [acquisitionRunId], references: [id], onDelete: Restrict)
+  sourceDocument   SourceDocument               @relation(fields: [sourceDocumentId, ownerId, knowledgeSourceId], references: [id, ownerId, knowledgeSourceId], onDelete: Restrict)
+  knowledgeSource  KnowledgeSource              @relation(fields: [knowledgeSourceId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  acquisitionRun   AcquisitionRun?              @relation(fields: [acquisitionRunId, ownerId, knowledgeSourceId], references: [id, ownerId, knowledgeSourceId], onDelete: Restrict)
   review           KnowledgeReview?
   materializations ObservationMaterialization[]
 
-  @@index([ownerId])
-  @@index([sourceDocumentId])
-  @@index([acquisitionRunId])
-  @@index([knowledgeSourceId])
+  @@unique([id, ownerId])
+  @@index([ownerId, createdAt])
+  @@index([sourceDocumentId, ownerId, knowledgeSourceId], map: "knowledge_observations_document_alignment_idx")
+  @@index([sourceDocumentId, createdAt])
+  @@index([acquisitionRunId, ownerId, knowledgeSourceId], map: "knowledge_observations_run_alignment_idx")
+  @@index([acquisitionRunId, createdAt])
+  @@index([knowledgeSourceId, ownerId])
   @@map("knowledge_observations")
 }
 
@@ -998,10 +1017,12 @@ model KnowledgeReview {
   reviewedAt             DateTime      @map("reviewed_at") @db.Timestamptz(3)
   createdAt              DateTime      @map("created_at") @db.Timestamptz(3)
 
-  knowledgeObservation KnowledgeObservation         @relation(fields: [knowledgeObservationId], references: [id], onDelete: Restrict)
+  knowledgeObservation KnowledgeObservation         @relation(fields: [knowledgeObservationId, ownerId], references: [id, ownerId], onDelete: Restrict)
   materializations     ObservationMaterialization[]
 
-  @@index([ownerId])
+  @@unique([knowledgeObservationId, ownerId])
+  @@unique([id, ownerId])
+  @@index([ownerId, reviewedAt])
   @@map("knowledge_reviews")
 }
 
@@ -1013,13 +1034,13 @@ model ObservationMaterialization {
   ownerId                String          @map("owner_id")
   createdAt              DateTime        @map("created_at") @db.Timestamptz(3)
 
-  knowledgeObservation KnowledgeObservation @relation(fields: [knowledgeObservationId], references: [id], onDelete: Restrict)
-  knowledgeReview      KnowledgeReview      @relation(fields: [knowledgeReviewId], references: [id], onDelete: Restrict)
+  knowledgeObservation KnowledgeObservation @relation(fields: [knowledgeObservationId, ownerId], references: [id, ownerId], onDelete: Restrict)
+  knowledgeReview      KnowledgeReview      @relation(fields: [knowledgeReviewId, ownerId], references: [id, ownerId], onDelete: Restrict)
 
   @@id([knowledgeObservationId, recordType])
   @@index([recordType, recordId])
-  @@index([ownerId])
-  @@index([knowledgeReviewId])
+  @@index([ownerId, createdAt])
+  @@index([knowledgeReviewId, ownerId])
   @@map("observation_materializations")
 }
 

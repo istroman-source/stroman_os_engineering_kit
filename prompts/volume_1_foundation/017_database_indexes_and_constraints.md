@@ -62,6 +62,15 @@ At minimum, add the most appropriate tests from this set:
 
 Do not claim a check passed unless you actually ran it. If the environment prevents a check, state the exact command, failure, and remaining risk.
 
+For PostgreSQL hardening, treat every composite foreign key as an independent invariant: add
+negative-path coverage for each relationship and for every additional alignment column, not
+only a representative sample. Prove installed index and constraint identifiers through the
+live PostgreSQL catalog, require every explicit identifier to fit PostgreSQL's 63-byte limit,
+and assert the exact catalog-visible names that future migrations will address. Schema text,
+configuration, generated SQL, and mocks are not runtime evidence. Keep automated database
+evidence, manual inspection, and unverified operational blockers explicitly separate, and do
+not mark the milestone ready until the real PostgreSQL migration and integration gate passes.
+
 ## Documentation updates
 
 Update all directly affected documents. At minimum append to `docs/BUILD_PROGRESS.md`:
