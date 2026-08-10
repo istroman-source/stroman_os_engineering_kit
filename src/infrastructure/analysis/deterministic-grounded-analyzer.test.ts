@@ -94,6 +94,39 @@ describe("DeterministicGroundedAnalyzer", () => {
     expect(observation?.content).not.toContain("detai…");
   });
 
+  it("keeps substantive quotes that begin with common production cues", async () => {
+    const analyzer = new DeterministicGroundedAnalyzer();
+    const result = await analyzer.analyze({
+      segments: [
+        segment(
+          "trseg_00000021",
+          0,
+          "Cut the toxic relationships out of my life so I could rebuild.",
+          "Speaker A",
+        ),
+        segment(
+          "trseg_00000022",
+          1,
+          "Testing our assumptions was the hardest part of this project.",
+        ),
+        segment("trseg_00000023", 2, "Thank you for believing in me when no one else did."),
+      ],
+    });
+
+    const rendered = result.outputs.map((output) => output.content).join(" ");
+    expect(rendered).toContain("Cut the toxic relationships");
+    expect(rendered).toContain("Testing our assumptions");
+    expect(rendered).toContain("Thank you for believing");
+    expect(rendered).not.toContain("Speaker A");
+
+    const imperative = await analyzer.analyze({
+      segments: [
+        segment("trseg_00000024", 0, "Take control of the frame and let the silence hold."),
+      ],
+    });
+    expect(imperative.outputs[0]?.content).toContain("Take control of the frame");
+  });
+
   it("returns no editorial claims when the transcript contains only slate and closing chatter", async () => {
     await expect(
       new DeterministicGroundedAnalyzer().analyze({

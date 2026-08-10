@@ -23,6 +23,19 @@ interface AnalysisResult {
 
 type AnalysisOutput = AnalysisResult["outputs"][number];
 
+function interpretationLabel(kind: string): string {
+  switch (kind) {
+    case "THEME":
+      return "Theme";
+    case "NARRATIVE":
+      return "Story progression";
+    case "INFERENCE":
+      return "Inference";
+    default:
+      return "Interpretation";
+  }
+}
+
 function FindingList({
   outputs,
   interpretation,
@@ -46,7 +59,7 @@ function FindingList({
           <div className="text-muted-foreground flex flex-wrap gap-2 text-xs tracking-wide uppercase">
             <span>
               {interpretation
-                ? `Editorial interpretation · ${output.kind.replaceAll("_", " ")}`
+                ? `Editorial interpretation · ${interpretationLabel(output.kind)}`
                 : "Source-backed"}
             </span>
             <span>

@@ -83,8 +83,12 @@ const STOP_WORDS = new Set([
   "your",
 ]);
 
-const LOW_SIGNAL_CUE =
-  /^(?:(?:okay|ok|all right|right|yeah|yes)[,!. ]*)?(?:camera|cut|marker|rolling|scene|slate|sound|speed|take|test|testing|thanks?|thank you|that(?:'s| is) (?:all|it)|we(?:'re| are) done)\b/i;
+const LOW_SIGNAL_CUES = [
+  /^(?:(?:slate|scene\s+(?:\d+[a-z]?|[a-z]\d+|one|two|three|four|five|six|seven|eight|nine|ten)|take\s+(?:\d+[a-z]?|[a-z]\d+|one|two|three|four|five|six|seven|eight|nine|ten)|test|testing)[\s,.:!-]*)+$/i,
+  /^(?:camera(?: rolling)?|sound(?: speed)?|marker|rolling|speed)[.! ]*$/i,
+  /^(?:cut|thanks?|thank you|okay|ok|all right|right|yeah|yes|that(?:'s| is) (?:all|it)|we(?:'re| are) done)[.! ]*$/i,
+  /^(?:okay|ok|all right|right|yeah|yes)[,!. ]+(?:thanks?|thank you)[,!. ]+(?:that(?:'s| is) (?:all|it)|we(?:'re| are) done)[.! ]*$/i,
+];
 
 const STORY_SIGNALS = [
   /\b(?:after|before|eventually|finally|first|later|now|started|then|until|used to)\b/i,
@@ -106,7 +110,7 @@ function cleanText(value: string): string {
     .replace(/\s+/g, " ")
     .trim()
     .replace(/^(?:\[)?(?:unknown|unidentified)(?: speaker)?(?:\])?\s*:\s*/i, "")
-    .replace(/^speaker\s*\d*\s*:\s*/i, "")
+    .replace(/^speaker(?:\s+(?:\d+|[a-z]))?\s*:\s*/i, "")
     .trim();
 }
 
@@ -121,8 +125,7 @@ function storySignalCount(text: string): number {
 }
 
 function isLowSignal(text: string): boolean {
-  const tokenCount = text.match(/[a-z0-9]+(?:'[a-z]+)?/gi)?.length ?? 0;
-  return text.length < 12 || (tokenCount <= 12 && LOW_SIGNAL_CUE.test(text));
+  return text.length === 0 || LOW_SIGNAL_CUES.some((pattern) => pattern.test(text));
 }
 
 function prepare(segment: AnalysisSourceSegment): PreparedSegment {
@@ -139,7 +142,7 @@ function prepare(segment: AnalysisSourceSegment): PreparedSegment {
 
 function displaySpeaker(label: string | null): string | null {
   const normalized = label?.trim() ?? "";
-  return /^(?:unknown|unidentified(?: speaker)?|speaker\s*\d*)$/i.test(normalized)
+  return /^(?:unknown|unidentified(?: speaker)?|speaker(?:\s+(?:\d+|[a-z]))?)$/i.test(normalized)
     ? null
     : normalized || null;
 }

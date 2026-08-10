@@ -57,7 +57,7 @@ describe("AutomaticAnalysis", () => {
     expect(
       screen.getByRole("heading", { name: "Editorial interpretations to test" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Editorial interpretation · NARRATIVE/i)).toBeInTheDocument();
+    expect(screen.getByText(/Editorial interpretation · Story progression/i)).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Filmmaker-controlled editorial tests" }),
     ).toBeInTheDocument();

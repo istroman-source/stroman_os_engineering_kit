@@ -138,6 +138,34 @@ describe("runAutomaticAnalysis", () => {
     expect(await deps.evidenceReferences.listByProject(PROJECT)).toHaveLength(2);
   });
 
+  it("completes with an explicit empty result when no substantive claims are supported", async () => {
+    const analyzer: GroundedEditorialAnalyzer = {
+      async analyze() {
+        return { outputs: [], recommendations: [] };
+      },
+    };
+    const deps = setup(analyzer);
+    seedTranscript(deps);
+
+    const result = await runAutomaticAnalysis(deps, { actorId: OWNER, projectId: PROJECT });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.run.status).toBe("COMPLETED");
+    expect(result.value.outputs).toEqual([]);
+    expect(result.value.recommendations).toEqual([]);
+    expect(await deps.evidenceReferences.listByProject(PROJECT)).toHaveLength(2);
+    const latest = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(latest.ok && latest.value.run.status).toBe("COMPLETED");
+    if (latest.ok) {
+      expect(latest.value.outputs).toEqual([]);
+      expect(latest.value.recommendations).toEqual([]);
+    }
+  });
+
   it("creates a new run version while reusing immutable transcript evidence", async () => {
     const deps = setup();
     seedTranscript(deps);
