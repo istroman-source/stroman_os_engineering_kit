@@ -53,6 +53,8 @@ export async function selectMilestone(root: string, config: Config, override?: s
   if (!override) return next;
   const chosen = milestones.find((m) => m.id === override.padStart(3, "0"));
   if (!chosen) throw new AutopilotError(`Unknown milestone ${override}`, "MILESTONE_UNKNOWN");
+  if (done.has(chosen.id))
+    throw new AutopilotError(`Milestone ${chosen.id} is already complete`, "MILESTONE_COMPLETE");
   const skipped = milestones.filter((m) => m.id < chosen.id && !done.has(m.id));
   if (skipped.length)
     throw new ApprovalRequiredError(

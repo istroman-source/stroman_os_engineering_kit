@@ -7,6 +7,7 @@ const AUTHORIZATION = /(authorization\s*:\s*)(?:bearer|basic)\s+[^\s]+/gi;
 const BEARER = /\bbearer\s+[A-Za-z0-9._~+/=-]+/gi;
 const COMMON_TOKENS =
   /\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9_-]{16,}|sb_(?:secret|publishable)_[A-Za-z0-9_-]{16,})\b/g;
+const FORCE_KILL_GRACE_MS = 1_000;
 export const redact = (value: string) =>
   value
     .replace(AUTHORIZATION, "$1[REDACTED]")
@@ -24,23 +25,46 @@ export class ProcessCommandRunner implements CommandRunner {
         cwd: options.cwd,
         env: process.env,
         shell: false,
+        detached: process.platform !== "win32",
       });
+      const signalTree = (signal: NodeJS.Signals) => {
+        if (child.pid && process.platform !== "win32") {
+          try {
+            process.kill(-child.pid, signal);
+            return;
+          } catch {
+            // Fall back to signalling the direct child below.
+          }
+        }
+        child.kill(signal);
+      };
       let stdout = "",
         stderr = "",
-        timedOut = false;
+        timedOut = false,
+        forceTimer: NodeJS.Timeout | null = null,
+        closed = false,
+        closeCode = 1,
+        settled = false;
       child.stdout.on("data", (c) => (stdout += String(c)));
       child.stderr.on("data", (c) => (stderr += String(c)));
       const timer = options.timeoutMs
         ? setTimeout(() => {
             timedOut = true;
-            child.kill("SIGTERM");
+            signalTree("SIGTERM");
+            forceTimer = setTimeout(() => {
+              signalTree("SIGKILL");
+              forceTimer = null;
+              if (closed) void finish();
+            }, FORCE_KILL_GRACE_MS);
           }, options.timeoutMs)
         : null;
       child.on("error", reject);
-      child.on("close", async (code) => {
+      const finish = async () => {
+        if (settled) return;
+        settled = true;
         if (timer) clearTimeout(timer);
         const result = {
-          exitCode: timedOut ? 124 : (code ?? 1),
+          exitCode: timedOut ? 124 : closeCode,
           stdout: redact(stdout),
           stderr: redact(stderr),
           durationMs: Date.now() - started,
@@ -53,6 +77,12 @@ export class ProcessCommandRunner implements CommandRunner {
           );
         }
         resolve(result);
+      };
+      child.on("close", (code) => {
+        closed = true;
+        closeCode = code ?? 1;
+        if (timedOut && forceTimer) return;
+        void finish();
       });
     });
   }

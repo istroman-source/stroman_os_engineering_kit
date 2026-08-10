@@ -73,7 +73,9 @@ async function main() {
       if (!s) throw new AutopilotError("No interrupted run exists", "NO_RUN");
       if (s.phase === "AWAITING_IMPLEMENTATION")
         console.log(JSON.stringify(await advanceImplemented(root, c, runner, s), null, 2));
-      else if (s.phase === "READY_TO_MERGE")
+      else if (s.phase === "AWAITING_REVIEW")
+        console.log(JSON.stringify(await prepareReview(root, c, runner), null, 2));
+      else if (s.phase === "READY_TO_MERGE" && c.autoMerge)
         console.log(JSON.stringify(await mergeReady(root, c, runner, s), null, 2));
       else {
         console.log(JSON.stringify(s, null, 2));
@@ -86,7 +88,9 @@ async function main() {
     await withLock(store, async () => {
       const state = await store.load();
       if (!state) throw new AutopilotError("No run is ready to merge", "NO_RUN");
-      console.log(JSON.stringify(await mergeReady(root, c, runner, state), null, 2));
+      console.log(
+        JSON.stringify(await mergeReady(root, c, runner, state, { manual: true }), null, 2),
+      );
     });
     return;
   }
