@@ -1,8 +1,8 @@
 # Build Progress
 
-## In Progress — Prompt 017 Database Indexes and Constraints
+## Prompt 017 — Database Indexes and Constraints
 
-**Date:** 2026-08-10 · **Volume:** Foundation · **Status:** Implemented; host verification passed; awaiting fresh CI and independent review
+**Date:** 2026-08-10 · **Volume:** Foundation · **Status:** Complete — READY FOR HUMAN TESTING
 
 Hardened the older Memory, Story Reasoning, and Knowledge Acquisition persistence domains
 so PostgreSQL—not only application services—rejects cross-owner references. Composite
@@ -26,8 +26,11 @@ the persistence architecture, roadmap, and release notes. The inner Codex sandbo
 start PostgreSQL or fetch the existing Google font, so Autopilot reran the canonical gate in
 the authorized host environment after remediation. All nine configured checks passed there:
 Prisma format/generate, typecheck, lint, format check, unit tests, real-PostgreSQL integration
-tests, production build, and diff validation. Fresh exact-head CI and independent review remain
-required before merge; manual SQL inspection is not represented as runtime evidence.
+tests, production build, and diff validation. Exact-head CI passed, independent Claude review
+approved commit `99105274997530ea3d6988df73acecbbe25cac2e` with only OPTIONAL findings,
+PR #25 merged atomically, and post-merge `main` CI passed at merge commit
+`59010285c4e8249e6cb23de7e27be570c3f3d5e1`. Manual SQL inspection is not represented as
+runtime evidence.
 
 Known limitation: this milestone hardens relationships that already persist workspace scope;
 it does not add speculative tenant columns to global or child-only tables. Prompt 018 remains
@@ -37,7 +40,7 @@ outside the approved rollout and is not recommended until a new roadmap decision
 
 ## Continuous Autopilot First-Rollout Activation
 
-**Date:** 2026-08-10 · **Status:** Implemented; awaiting CI and independent review
+**Date:** 2026-08-10 · **Status:** Complete — first bounded rollout verified
 
 Activated the repository-owned continuous loop for one bounded rollout through Prompt 017.
 Continuous mode now requires automatic exact-SHA merge and a three-digit stop milestone;
