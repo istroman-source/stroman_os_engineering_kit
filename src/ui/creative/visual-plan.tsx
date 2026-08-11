@@ -533,7 +533,7 @@ function LightingDiagram({ plan }: { plan: LightingPlan }) {
             />
             <text
               x={zone.x + 1.5}
-              y={zone.y + 3.5}
+              y={zone.y + zone.height - 2}
               textAnchor="start"
               fontSize="2.2"
               fill="#4d4942"

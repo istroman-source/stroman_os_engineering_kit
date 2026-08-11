@@ -37,17 +37,29 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
   if (files.length === 0 || files.length > MAX_PHOTOS) {
     throw new HttpError(400, "VALIDATION_FAILED", "Choose between one and six scout photos.");
   }
+  if (
+    files.some(
+      (file) => !ALLOWED_TYPES.has(file.type) || file.size === 0 || file.size > MAX_PHOTO_BYTES,
+    )
+  ) {
+    throw new HttpError(
+      400,
+      "VALIDATION_FAILED",
+      "Scout photos must be PNG, JPEG, or WebP and no larger than 8 MB each.",
+    );
+  }
+  const prepared = await Promise.all(
+    files.map(async (file) => {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      return {
+        file,
+        bytes,
+        contentHash: `sha256:${createHash("sha256").update(bytes).digest("hex")}`,
+      };
+    }),
+  );
   const photos = [];
-  for (const [index, file] of files.entries()) {
-    if (!ALLOWED_TYPES.has(file.type) || file.size === 0 || file.size > MAX_PHOTO_BYTES) {
-      throw new HttpError(
-        400,
-        "VALIDATION_FAILED",
-        "Scout photos must be PNG, JPEG, or WebP and no larger than 8 MB each.",
-      );
-    }
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const contentHash = `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+  for (const [index, { file, bytes, contentHash }] of prepared.entries()) {
     const imported = await importProjectSource(
       { ...context, imports: context.sourceImports, storage: context.sourceStorage },
       {

@@ -237,6 +237,32 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(await prisma.mediaAsset.count()).toBe(0);
   });
 
+  it("rejects an invalid scout batch before importing any earlier valid file", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const form = new FormData();
+    form.append("files", new File([new Uint8Array([1, 2, 3])], "valid.png", { type: "image/png" }));
+    form.append(
+      "files",
+      new File([new Uint8Array([4, 5, 6])], "invalid.txt", { type: "text/plain" }),
+    );
+    const uploaded = await call(uploadScoutPhotos, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: form,
+      headers: { "content-length": "4096" },
+    });
+    expect(uploaded.status).toBe(400);
+    expect(await prisma.sourceImport.count()).toBe(0);
+    expect(await prisma.mediaAsset.count()).toBe(0);
+  });
+
   it("fails closed for an unsupported deterministic documentary draft", async () => {
     const projectId = await makeProject();
     const res = await call(analyzeProject, {

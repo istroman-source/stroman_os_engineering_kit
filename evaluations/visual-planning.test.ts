@@ -164,6 +164,9 @@ describe("frame-accurate visual planning release gate", () => {
         detail: scoutFixture.calibrationCorrection,
       }),
     );
+    expect(output.location.claims).not.toContainEqual(
+      expect.objectContaining({ id: "inferred_camera_lane" }),
+    );
     expect(output.blocking.cameras.find((camera) => camera.id === "c2")?.use).toMatch(/rejected/i);
     expect(output.lighting.sources.find((source) => source.id === "pendant")).toMatchObject({
       control: "CONFIRMED",
@@ -171,6 +174,8 @@ describe("frame-accurate visual planning release gate", () => {
     });
     expect(output.delta.trigger).toBe("Filmmaker correction applied");
     expect(output.delta.changed).toContain(scoutFixture.calibrationCorrection);
+    expect(output.location.confirmationQuestion).toMatch(/remaining clearance, power, or safety/i);
+    expect(evaluateVisualPlanQuality(output)).toEqual({ passed: true, findings: [] });
   });
 
   it("prioritizes must-get coverage and explicitly permits restraint", () => {

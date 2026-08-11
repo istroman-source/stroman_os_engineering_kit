@@ -528,6 +528,88 @@ components:
         targetAudience: { type: string, maxLength: 2000 }
         desiredEmotion: { type: string, maxLength: 200 }
         context: { type: string, maxLength: 5000 }
+    ProductionReality:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          crew,
+          cameraBody,
+          lenses,
+          support,
+          lighting,
+          sound,
+          shootTime,
+          access,
+          talent,
+          budget,
+          timeOfDay,
+        ]
+      properties:
+        crew: { type: string }
+        cameraBody: { type: string }
+        lenses: { type: string }
+        support: { type: string }
+        lighting: { type: string }
+        sound: { type: string }
+        shootTime: { type: string }
+        access: { type: string }
+        talent: { type: string }
+        budget: { type: string }
+        timeOfDay: { type: string }
+    ScoutPhotoRef:
+      type: object
+      additionalProperties: false
+      required: [id, mediaAssetId, fileName, contentType, contentHash, angleLabel]
+      properties:
+        id: { type: string }
+        mediaAssetId: { type: string }
+        fileName: { type: string }
+        contentType: { type: string }
+        contentHash: { type: string }
+        angleLabel: { type: string }
+    SpatialClaim:
+      type: object
+      additionalProperties: false
+      required: [id, state, label, detail, evidencePhotoIds, affects]
+      properties:
+        id: { type: string }
+        state:
+          type: string
+          enum: [VISIBLE_FACT, INFERRED_GEOMETRY, FILMMAKER_CONFIRMED_GEOMETRY]
+        label: { type: string }
+        detail: { type: string }
+        evidencePhotoIds: { type: array, items: { type: string } }
+        affects:
+          type: array
+          items: { type: string, enum: [STORYBOARD, BLOCKING, LIGHTING] }
+    SpatialCorrection:
+      type: object
+      additionalProperties: false
+      required: [id, statement, replacesClaimId]
+      properties:
+        id: { type: string }
+        statement: { type: string }
+        replacesClaimId: { type: [string, "null"] }
+    CreativePlanningContext:
+      type: object
+      additionalProperties: false
+      required: [version, stage, production, scoutPhotos, spatialClaims, corrections]
+      properties:
+        version: { type: integer, const: 1 }
+        stage:
+          type: string
+          enum: [IDEA, SCOUTING, PRE_PRODUCTION, SHOOTING, POST]
+        production: { $ref: "#/components/schemas/ProductionReality" }
+        scoutPhotos:
+          type: array
+          items: { $ref: "#/components/schemas/ScoutPhotoRef" }
+        spatialClaims:
+          type: array
+          items: { $ref: "#/components/schemas/SpatialClaim" }
+        corrections:
+          type: array
+          items: { $ref: "#/components/schemas/SpatialCorrection" }
     CreativeBrief:
       type: object
       required:
@@ -543,6 +625,7 @@ components:
           context,
           createdAt,
           updatedAt,
+          planningContext,
         ]
       properties:
         id: { type: string }
@@ -556,6 +639,7 @@ components:
         context: { type: string }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+        planningContext: { $ref: "#/components/schemas/CreativePlanningContext" }
     HookConcept:
       type: object
       required: [title, description]

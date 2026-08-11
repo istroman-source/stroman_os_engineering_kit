@@ -57,6 +57,13 @@ describe("BlueprintView", () => {
     await user.click(screen.getByRole("button", { name: "Lighting" }));
     expect(screen.getByText(/where are the meaningful sources/i)).toBeInTheDocument();
     expect(screen.queryByText(/where are the people and cameras/i)).not.toBeInTheDocument();
+    const diagram = screen.getByRole("img", { name: /motivated source hypothesis/i });
+    const labels = [...diagram.querySelectorAll("text")];
+    const zoneLabel = labels.find((label) => label.textContent === "SINK + WINDOW")!;
+    const sourceLabel = labels.find((label) => label.textContent === "WINDOW")!;
+    expect(
+      Number(zoneLabel.getAttribute("y")) - Number(sourceLabel.getAttribute("y")),
+    ).toBeGreaterThan(4);
   });
 
   it("keeps alternatives and craft reasoning in the optional Deep room", async () => {

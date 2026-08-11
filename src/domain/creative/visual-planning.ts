@@ -315,37 +315,48 @@ export function isScoutKitchenCalibration(photos: readonly ScoutPhotoRef[]): boo
 }
 
 export function analyzeScoutPhotoSet(context: CreativePlanningContext): CreativePlanningContext {
-  const confirmed = context.corrections.map((correction) => ({
-    id: `confirmed_${correction.id}`,
-    state: "FILMMAKER_CONFIRMED_GEOMETRY" as const,
-    label: "Filmmaker correction",
-    detail: correction.statement,
-    evidencePhotoIds: [] as readonly string[],
-    affects: ["STORYBOARD", "BLOCKING", "LIGHTING"] as const,
-  }));
+  const replacedClaimIds = new Set(
+    context.corrections.flatMap((correction) =>
+      correction.replacesClaimId ? [correction.replacesClaimId] : [],
+    ),
+  );
+  const active = (claims: readonly SpatialClaim[]) =>
+    claims.filter((claim) => !replacedClaimIds.has(claim.id));
+  const confirmed = active(
+    context.corrections.map((correction) => ({
+      id: `confirmed_${correction.id}`,
+      state: "FILMMAKER_CONFIRMED_GEOMETRY" as const,
+      label: "Filmmaker correction",
+      detail: correction.statement,
+      evidencePhotoIds: [] as readonly string[],
+      affects: ["STORYBOARD", "BLOCKING", "LIGHTING"] as const,
+    })),
+  );
   if (!isScoutKitchenCalibration(context.scoutPhotos)) {
     return {
       ...context,
-      spatialClaims: context.scoutPhotos.length
-        ? [
-            {
-              id: "visible_scout_set_received",
-              state: "VISIBLE_FACT",
-              label: "Scout image set received",
-              detail: `${context.scoutPhotos.length} project-scoped scout ${context.scoutPhotos.length === 1 ? "image is" : "images are"} available. This deterministic pass has not interpreted physical layout, shared landmarks, dimensions, or operating clearance from their pixels.`,
-              evidencePhotoIds: context.scoutPhotos.map((photo) => photo.id),
-              affects: [] as const,
-            },
-            ...confirmed,
-          ]
-        : confirmed,
+      spatialClaims: active(
+        context.scoutPhotos.length
+          ? [
+              {
+                id: "visible_scout_set_received",
+                state: "VISIBLE_FACT",
+                label: "Scout image set received",
+                detail: `${context.scoutPhotos.length} project-scoped scout ${context.scoutPhotos.length === 1 ? "image is" : "images are"} available. This deterministic pass has not interpreted physical layout, shared landmarks, dimensions, or operating clearance from their pixels.`,
+                evidencePhotoIds: context.scoutPhotos.map((photo) => photo.id),
+                affects: [] as const,
+              },
+              ...confirmed,
+            ]
+          : confirmed,
+      ),
     };
   }
   const threshold = context.scoutPhotos.find((photo) => photo.contentHash === THRESHOLD_HASH)!;
   const reverse = context.scoutPhotos.find((photo) => photo.contentHash === REVERSE_HASH)!;
   return {
     ...context,
-    spatialClaims: [
+    spatialClaims: active([
       {
         id: "visible_island",
         state: "VISIBLE_FACT",
@@ -392,7 +403,7 @@ export function analyzeScoutPhotoSet(context: CreativePlanningContext): Creative
         affects: ["STORYBOARD", "BLOCKING"],
       },
       ...confirmed,
-    ],
+    ]),
   };
 }
 
@@ -831,8 +842,8 @@ function jimmyLighting(photoAnchored: boolean, context: CreativePlanningContext)
     title: photoAnchored ? "Use the visible window and pendant" : "Motivated source hypothesis",
     question: "Where are the meaningful sources, modifiers, and practicals?",
     zones: [
-      { id: "island", label: "ISLAND", x: 34, y: 31, width: 40, height: 27 },
-      { id: "sink_window", label: "SINK + WINDOW", x: 74, y: 7, width: 21, height: 20 },
+      { id: "island", label: "ISLAND", x: 34, y: 36, width: 40, height: 22 },
+      { id: "sink_window", label: "SINK + WINDOW", x: 74, y: 4, width: 21, height: 23 },
       { id: "fridge", label: "FRIDGE", x: 5, y: 8, width: 19, height: 26 },
     ],
     sources: [
@@ -910,6 +921,7 @@ const JIMMY_LOOK: LookPlan = {
 
 function jimmyLocation(context: CreativePlanningContext): LocationGrounding {
   const anchored = isScoutKitchenCalibration(context.scoutPhotos);
+  const hasCorrection = context.corrections.length > 0;
   return {
     mode: anchored
       ? "PHOTO_ANCHORED"
@@ -919,7 +931,9 @@ function jimmyLocation(context: CreativePlanningContext): LocationGrounding {
     photos: context.scoutPhotos,
     claims: context.spatialClaims,
     confirmationQuestion: anchored
-      ? "Is there usable camera space behind the island at full operating depth, and can the pendant be dimmed?"
+      ? hasCorrection
+        ? "Is there any remaining clearance, power, or safety constraint that would change C1, C2, or the lighting plan?"
+        : "Is there usable camera space behind the island at full operating depth, and can the pendant be dimmed?"
       : context.scoutPhotos.length
         ? "Which landmarks repeat across these angles, and which camera lanes or fixture controls can you confirm?"
         : "Can you add two location photos—one wide and one reverse—or confirm the fridge, counter, window, and camera lanes?",
@@ -1430,7 +1444,12 @@ export function evaluateVisualPlanQuality(plan: VisualPlan): VisualPlanQualityRe
     if (!plan.location.claims.some((claim) => claim.state === "VISIBLE_FACT")) {
       findings.push("Photo-anchored mode identifies no visible location facts.");
     }
-    if (!plan.location.claims.some((claim) => claim.state === "INFERRED_GEOMETRY")) {
+    if (
+      !plan.location.claims.some(
+        (claim) =>
+          claim.state === "INFERRED_GEOMETRY" || claim.state === "FILMMAKER_CONFIRMED_GEOMETRY",
+      )
+    ) {
       findings.push("Photo-anchored mode hides spatial uncertainty instead of representing it.");
     }
     if (!plan.location.confirmationQuestion) {
