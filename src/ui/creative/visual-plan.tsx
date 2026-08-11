@@ -688,10 +688,25 @@ function ScoutPanel({
   projectId: string;
   busy: boolean;
   onUpload: (files: readonly File[]) => Promise<void>;
-  onCorrection: (statement: string) => Promise<void>;
+  onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
 }) {
   const [files, setFiles] = useState<File[]>([]);
   const [correction, setCorrection] = useState("");
+  const replaceableClaims = useMemo(
+    () => plan.location.claims.filter((claim) => claim.state === "INFERRED_GEOMETRY"),
+    [plan.location.claims],
+  );
+  const replaceableKey = replaceableClaims.map((claim) => claim.id).join("|");
+  const defaultReplacementId = replaceableClaims.length === 1 ? replaceableClaims[0]!.id : "";
+  const [replacementChoice, setReplacementChoice] = useState({
+    key: replaceableKey,
+    value: defaultReplacementId,
+  });
+  const replacementId =
+    replacementChoice.key === replaceableKey &&
+    replaceableClaims.some((claim) => claim.id === replacementChoice.value)
+      ? replacementChoice.value
+      : defaultReplacementId;
   async function submitPhotos(event: FormEvent) {
     event.preventDefault();
     if (!files.length) return;
@@ -701,7 +716,7 @@ function ScoutPanel({
   async function submitCorrection(event: FormEvent) {
     event.preventDefault();
     if (!correction.trim()) return;
-    await onCorrection(correction.trim());
+    await onCorrection(correction.trim(), replacementId || null);
     setCorrection("");
   }
   return (
@@ -763,6 +778,25 @@ function ScoutPanel({
           className="mt-4 rounded-md border border-amber-500/30 bg-amber-500/5 p-3"
         >
           <p className="text-sm font-medium">{plan.location.confirmationQuestion}</p>
+          {replaceableClaims.length ? (
+            <label className="mt-2 block text-xs">
+              <span className="text-muted-foreground font-medium">This correction replaces</span>
+              <select
+                className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm"
+                value={replacementId}
+                onChange={(event) =>
+                  setReplacementChoice({ key: replaceableKey, value: event.target.value })
+                }
+              >
+                <option value="">No existing claim — add a confirmed fact</option>
+                {replaceableClaims.map((claim) => (
+                  <option key={claim.id} value={claim.id}>
+                    {claim.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <div className="mt-2 flex flex-col gap-2 sm:flex-row">
             <input
               value={correction}
@@ -850,7 +884,7 @@ export function VisualPlanView({
   projectId: string;
   busy: boolean;
   onUpload: (files: readonly File[]) => Promise<void>;
-  onCorrection: (statement: string) => Promise<void>;
+  onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
 }) {
   const stagePanel: BlueprintPanel =
     plan.stage === "SCOUTING"

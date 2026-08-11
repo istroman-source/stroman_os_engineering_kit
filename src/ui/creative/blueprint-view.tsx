@@ -232,7 +232,7 @@ export function BlueprintView({
   onStage: (stage: ProductionStage) => Promise<void>;
   onProduction: (production: Partial<ProductionReality>) => Promise<void>;
   onUploadScoutPhotos: (files: readonly File[]) => Promise<void>;
-  onCorrection: (statement: string) => Promise<void>;
+  onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
 }) {
   const plan = analysis.blueprint.development.visualPlan;
   const defaultDepth: Depth = plan.stage === "IDEA" ? "SPINE" : "BLUEPRINT";

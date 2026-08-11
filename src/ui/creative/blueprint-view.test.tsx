@@ -84,4 +84,52 @@ describe("BlueprintView", () => {
     await user.click(screen.getByRole("button", { name: /update intent/i }));
     expect(onReanalyze).toHaveBeenCalled();
   });
+
+  it("sends the selected inferred claim when a filmmaker applies a correction", async () => {
+    const base = creativeAnalysisFixture();
+    const visualPlan = base.blueprint.development.visualPlan;
+    const analysis = {
+      ...base,
+      blueprint: {
+        ...base.blueprint,
+        development: {
+          ...base.blueprint.development,
+          visualPlan: {
+            ...visualPlan,
+            stage: "PRE_PRODUCTION" as const,
+            location: {
+              ...visualPlan.location,
+              mode: "PHOTO_ANCHORED" as const,
+              claims: [
+                {
+                  id: "inferred_camera_lane",
+                  state: "INFERRED_GEOMETRY" as const,
+                  label: "Reverse camera lane",
+                  detail: "The lane may exist, pending operating-clearance confirmation.",
+                  evidencePhotoIds: ["scout_reverse"],
+                  affects: ["STORYBOARD", "BLOCKING"] as const,
+                },
+              ],
+              confirmationQuestion: "Can the camera operate behind the island?",
+            },
+          },
+        },
+      },
+    };
+    const onCorrection = vi.fn().mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ analysis, onCorrection })} />);
+    expect(screen.getByRole("combobox", { name: /this correction replaces/i })).toHaveValue(
+      "inferred_camera_lane",
+    );
+    await user.type(
+      screen.getByPlaceholderText(/quick correction/i),
+      "Camera cannot go behind the island.",
+    );
+    await user.click(screen.getByRole("button", { name: "Apply correction" }));
+    expect(onCorrection).toHaveBeenCalledWith(
+      "Camera cannot go behind the island.",
+      "inferred_camera_lane",
+    );
+  });
 });

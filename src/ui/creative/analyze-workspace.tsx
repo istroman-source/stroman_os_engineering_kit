@@ -110,8 +110,10 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
             runPlanning(() => updatePlanning(projectId, { production }))
           }
           onUploadScoutPhotos={(files) => runPlanning(() => uploadScoutPhotos(projectId, files))}
-          onCorrection={(statement) =>
-            runPlanning(() => updatePlanning(projectId, { correction: { statement } }))
+          onCorrection={(statement, replacesClaimId) =>
+            runPlanning(() =>
+              updatePlanning(projectId, { correction: { statement, replacesClaimId } }),
+            )
           }
         />
       </div>
