@@ -1,4 +1,4 @@
-import type { Blueprint, CreativeBrief } from "@/domain/creative";
+import type { Blueprint, CreativeBrief, CreativePlanningContext } from "@/domain/creative";
 import type { ProjectId } from "@/domain/project";
 import type { CreativeBriefId } from "@/domain/creative";
 
@@ -15,6 +15,7 @@ export interface CreativeBriefView {
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly lockVersion: number;
+  readonly planningContext: CreativePlanningContext;
 }
 
 /** A project's analyzed brief together with the generated blueprint. */
@@ -37,5 +38,6 @@ export function toCreativeBriefView(brief: CreativeBrief): CreativeBriefView {
     createdAt: brief.createdAt,
     updatedAt: brief.updatedAt,
     lockVersion: brief.lockVersion,
+    planningContext: brief.planningContext,
   };
 }

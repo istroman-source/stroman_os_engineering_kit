@@ -7,6 +7,8 @@ import { errorStatus, friendlyError } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
 import { BlueprintView } from "./blueprint-view";
 import { type Analysis, type AnalyzeFields, analyzeProject, getAnalysis } from "./creative-api";
+import { updatePlanning, uploadScoutPhotos } from "./creative-api";
+import type { ProductionReality, ProductionStage } from "@/domain/creative";
 
 type Mode = "loading" | "form" | "blueprint";
 
@@ -64,6 +66,22 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
     }
   }
 
+  async function runPlanning(operation: () => Promise<Analysis>) {
+    setBusy(true);
+    setError(null);
+    try {
+      setAnalysis(await operation());
+    } catch (caught) {
+      if (errorStatus(caught) === 401) {
+        router.replace("/login");
+        return;
+      }
+      setError(friendlyError(caught));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (mode === "loading") {
     return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
@@ -80,7 +98,22 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
     return (
       <div className="flex flex-col gap-6">
         {nav}
-        <BlueprintView analysis={analysis} onReanalyze={() => setMode("form")} />
+        <BlueprintView
+          analysis={analysis}
+          busy={busy}
+          error={error}
+          onReanalyze={() => setMode("form")}
+          onStage={(stage: ProductionStage) =>
+            runPlanning(() => updatePlanning(projectId, { stage }))
+          }
+          onProduction={(production: Partial<ProductionReality>) =>
+            runPlanning(() => updatePlanning(projectId, { production }))
+          }
+          onUploadScoutPhotos={(files) => runPlanning(() => uploadScoutPhotos(projectId, files))}
+          onCorrection={(statement) =>
+            runPlanning(() => updatePlanning(projectId, { correction: { statement } }))
+          }
+        />
       </div>
     );
   }

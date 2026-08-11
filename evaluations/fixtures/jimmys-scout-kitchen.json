@@ -1,0 +1,30 @@
+{
+  "fixtureId": "jimmys-scout-kitchen-v1",
+  "purpose": "Multi-angle calibration for photo-grounded storyboard, blocking, lighting, uncertainty, and correction behavior.",
+  "photos": [
+    {
+      "id": "scout_threshold",
+      "mediaAssetId": "mast_SCOUT001",
+      "fileName": "/evaluations/scout-kitchen/threshold-angle.png",
+      "contentType": "image/png",
+      "contentHash": "sha256:256f5714e3ada933de706cb5d8d47caad2f3b3899dcd4a438e794078b97de626",
+      "angleLabel": "Threshold wide"
+    },
+    {
+      "id": "scout_reverse",
+      "mediaAssetId": "mast_SCOUT002",
+      "fileName": "/evaluations/scout-kitchen/reverse-angle.png",
+      "contentType": "image/png",
+      "contentHash": "sha256:e222ebf5190d36e8962d646dfad2f0d3e0f6b9ca5be78cf0fcdb257630514ddb",
+      "angleLabel": "Sink-side reverse"
+    }
+  ],
+  "expectedVisibleFacts": [
+    "Freestanding island",
+    "Window over sink",
+    "Pendant over island",
+    "Fridge and hall relationship"
+  ],
+  "expectedUncertainty": "Reverse camera lane",
+  "calibrationCorrection": "Camera cannot go behind the island; keep C2 at the island end. The pendant cannot be dimmed."
+}

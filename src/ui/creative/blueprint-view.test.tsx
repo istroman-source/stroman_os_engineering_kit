@@ -4,52 +4,76 @@ import { describe, expect, it, vi } from "vitest";
 import { BlueprintView } from "./blueprint-view";
 import { creativeAnalysisFixture } from "./creative-test-fixtures";
 
+function props(overrides: Record<string, unknown> = {}) {
+  return {
+    analysis: creativeAnalysisFixture(),
+    busy: false,
+    error: null,
+    onReanalyze: vi.fn(),
+    onStage: vi.fn().mockResolvedValue(undefined),
+    onProduction: vi.fn().mockResolvedValue(undefined),
+    onUploadScoutPhotos: vi.fn().mockResolvedValue(undefined),
+    onCorrection: vi.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+}
+
 describe("BlueprintView", () => {
-  it("renders the concept-first story workspace and the project title", () => {
-    render(<BlueprintView analysis={creativeAnalysisFixture()} onReanalyze={vi.fn()} />);
+  it("defaults to a concise creative spine and one obvious next decision", () => {
+    render(<BlueprintView {...props()} />);
     expect(
       screen.getByRole("heading", {
         level: 1,
         name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
       }),
     ).toBeInTheDocument();
-    for (const title of [
-      "The creative thesis",
-      "Recommendation",
-      "Real alternatives",
-      "Scenes worth making",
-      "Director notebook",
-      "Questions that could change the plan",
-      "Next production tests",
-    ]) {
-      expect(screen.getByRole("heading", { name: new RegExp(title, "i") })).toBeInTheDocument();
-    }
+    expect(screen.getByText(/film stroman believes/i)).toBeInTheDocument();
+    expect(screen.getByText(/next important decision/i)).toBeInTheDocument();
+    expect(
+      screen.queryByText(/horizontal and vertical are separate setups/i),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/discarded directions and tradeoffs/i)).not.toBeInTheDocument();
   });
 
-  it("distinguishes hypotheses from evidence and renders the visual artifact", () => {
-    render(<BlueprintView analysis={creativeAnalysisFixture()} onReanalyze={vi.fn()} />);
-    expect(screen.getByText(/creative hypothesis, not source evidence/i)).toBeInTheDocument();
-    expect(screen.getByText(/drawn visual blueprint/i)).toBeInTheDocument();
-    expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(4);
-    expect(screen.getByText(/purposeful rule-break/i)).toBeInTheDocument();
-    expect(screen.queryByText(/production prompt/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/untrusted creative context/i)).not.toBeInTheDocument();
+  it("reveals independently composed 16:9 and 9:16 previs only in Blueprint depth", async () => {
+    const user = userEvent.setup();
+    render(<BlueprintView {...props()} />);
+    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    expect(screen.getByText(/horizontal and vertical are separate setups/i)).toBeInTheDocument();
+    expect(screen.getAllByText("16:9")).toHaveLength(4);
+    expect(screen.getAllByText("9:16")).toHaveLength(4);
+    expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(8);
+    expect(screen.getByRole("button", { name: "Blocking" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Lighting" })).toBeInTheDocument();
   });
 
-  it("shows interview steps when applicable", () => {
-    render(
-      <BlueprintView
-        analysis={creativeAnalysisFixture(["Pre-interview first"])}
-        onReanalyze={vi.fn()}
-      />,
-    );
-    expect(screen.getByText("Pre-interview first")).toBeInTheDocument();
+  it("keeps blocking and lighting in separate single-question diagrams", async () => {
+    const user = userEvent.setup();
+    render(<BlueprintView {...props()} />);
+    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: "Blocking" }));
+    expect(screen.getByText(/where are the people and cameras/i)).toBeInTheDocument();
+    expect(screen.queryByText(/where are the meaningful sources/i)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Lighting" }));
+    expect(screen.getByText(/where are the meaningful sources/i)).toBeInTheDocument();
+    expect(screen.queryByText(/where are the people and cameras/i)).not.toBeInTheDocument();
   });
 
-  it("invokes onReanalyze", async () => {
+  it("keeps alternatives and craft reasoning in the optional Deep room", async () => {
+    const user = userEvent.setup();
+    render(<BlueprintView {...props()} />);
+    await user.click(screen.getByRole("button", { name: /deep roomreasoning/i }));
+    expect(screen.getByText(/discarded directions and tradeoffs/i)).toBeInTheDocument();
+    expect(screen.getByText(/detailed scene and craft reasoning/i)).toBeInTheDocument();
+  });
+
+  it("changes stage and invokes intent editing", async () => {
+    const onStage = vi.fn().mockResolvedValue(undefined);
     const onReanalyze = vi.fn();
     const user = userEvent.setup();
-    render(<BlueprintView analysis={creativeAnalysisFixture()} onReanalyze={onReanalyze} />);
+    render(<BlueprintView {...props({ onStage, onReanalyze })} />);
+    await user.click(screen.getByRole("button", { name: "Scouting" }));
+    expect(onStage).toHaveBeenCalledWith("SCOUTING");
     await user.click(screen.getByRole("button", { name: /update intent/i }));
     expect(onReanalyze).toHaveBeenCalled();
   });

@@ -130,6 +130,7 @@ export function serializeAnalysis(view: AnalysisView) {
       context: b.context,
       createdAt: iso(b.createdAt),
       updatedAt: iso(b.updatedAt),
+      planningContext: b.planningContext,
     },
     // The blueprint is pure JSON-safe data (strings/arrays) — passed through as-is.
     blueprint: view.blueprint,

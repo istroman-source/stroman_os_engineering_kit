@@ -1,4 +1,4 @@
-type RouteHandler<P> = (req: Request, context?: { params: Promise<P> }) => Promise<Response>;
+type RouteHandler<P> = (req: Request, context: { params: Promise<P> }) => Promise<Response>;
 
 /** The app's own origin in the test environment (NEXT_PUBLIC_APP_URL default). */
 export const TEST_ORIGIN = "http://localhost:3000";
@@ -10,6 +10,7 @@ export interface CallOptions<P> {
   readonly params?: P;
   readonly json?: unknown;
   readonly rawBody?: string;
+  readonly body?: BodyInit;
   /** Explicit content-type; pass null to omit it. Defaults to application/json when a body is present. */
   readonly contentType?: string | null;
   /** Synthetic verified subject for the test authenticator (omit → anonymous). */
@@ -50,8 +51,8 @@ export async function call<P extends Record<string, string> = Record<string, nev
 ): Promise<CallResult> {
   const method = opts.method ?? "GET";
   const headers = new Headers();
-  const hasBody = opts.json !== undefined || opts.rawBody !== undefined;
-  if (hasBody && opts.contentType !== null) {
+  const hasBody = opts.json !== undefined || opts.rawBody !== undefined || opts.body !== undefined;
+  if (hasBody && opts.body === undefined && opts.contentType !== null) {
     headers.set("content-type", opts.contentType ?? "application/json");
   } else if (opts.contentType) {
     headers.set("content-type", opts.contentType);
@@ -75,9 +76,12 @@ export async function call<P extends Record<string, string> = Record<string, nev
 
   for (const [key, value] of Object.entries(opts.headers ?? {})) headers.set(key, value);
 
-  const body = opts.rawBody ?? (opts.json !== undefined ? JSON.stringify(opts.json) : undefined);
+  const body =
+    opts.body ?? opts.rawBody ?? (opts.json !== undefined ? JSON.stringify(opts.json) : undefined);
   const req = new Request("http://localhost/api", { method, headers, body });
-  const context = opts.params ? { params: Promise.resolve(opts.params) } : undefined;
+  const context = {
+    params: Promise.resolve((opts.params ?? {}) as P),
+  };
 
   const res = await handler(req, context);
   const text = await res.text();

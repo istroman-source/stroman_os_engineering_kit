@@ -1,139 +1,130 @@
 "use client";
 
+import { useState } from "react";
+import type { ProductionReality, ProductionStage } from "@/domain/creative";
 import { Button } from "@/ui/primitives/button";
-import type { DirectionDecision, SceneCraft } from "@/domain/creative";
 import type { Analysis } from "./creative-api";
-import { StoryboardArtifactView } from "./storyboard-artifact";
+import { ProductionRealityForm, VisualPlanView } from "./visual-plan";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+type Depth = "SPINE" | "BLUEPRINT" | "DEEP_ROOM";
+
+const stages: ReadonlyArray<readonly [ProductionStage, string]> = [
+  ["IDEA", "Idea"],
+  ["SCOUTING", "Scouting"],
+  ["PRE_PRODUCTION", "Pre-production"],
+  ["SHOOTING", "Shooting"],
+  ["POST", "Post"],
+];
+
+const depths: ReadonlyArray<readonly [Depth, string, string]> = [
+  ["SPINE", "Creative spine", "What matters now"],
+  ["BLUEPRINT", "Blueprint", "How to execute"],
+  ["DEEP_ROOM", "Deep room", "Reasoning and alternatives"],
+];
+
+function PriorityLabel({ value }: { value: string }) {
+  const labels: Record<string, string> = {
+    MUST_SOLVE_NOW: "Must solve now",
+    IMPORTANT: "Important",
+    WORTH_EXPLORING: "Worth exploring",
+    OPTIONAL: "Optional",
+  };
   return (
-    <section className="border-border bg-card flex flex-col gap-3 rounded-lg border p-4">
-      <h2 className="text-base font-semibold">{title}</h2>
-      {children}
-    </section>
+    <span className="text-muted-foreground font-mono text-[0.65rem] font-semibold tracking-wide uppercase">
+      {labels[value] ?? value}
+    </span>
   );
 }
 
-function List({ items }: { items: readonly string[] }) {
+function Spine({ analysis }: { analysis: Analysis }) {
+  const spine = analysis.blueprint.development.visualPlan.creativeSpine;
+  const priorities = analysis.blueprint.development.visualPlan.priorities;
   return (
-    <ul className="text-muted-foreground flex list-disc flex-col gap-1.5 pl-5 text-sm">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-}
+    <div className="space-y-5">
+      <section className="border-border bg-card rounded-lg border p-5">
+        <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+          The film Stroman believes you are making
+        </p>
+        <p className="mt-2 max-w-4xl text-xl leading-relaxed">{spine.film}</p>
+        <div className="mt-5 grid gap-4 border-t pt-4 md:grid-cols-2">
+          <div>
+            <p className="text-muted-foreground text-xs tracking-wide uppercase">Why this film</p>
+            <p className="mt-1 text-sm leading-relaxed">{spine.why}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground text-xs tracking-wide uppercase">Audience effect</p>
+            <p className="mt-1 text-sm leading-relaxed">{spine.audienceEffect}</p>
+          </div>
+        </div>
+      </section>
 
-function Note({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-muted-foreground text-[0.68rem] tracking-[0.14em] uppercase">{label}</dt>
-      <dd className="mt-1 text-sm leading-relaxed">{value}</dd>
+      <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="border-border bg-card rounded-lg border p-5">
+          <h2 className="font-semibold">Key beats</h2>
+          <ol className="mt-3 space-y-3">
+            {spine.keyBeats.map((beat, index) => (
+              <li key={beat} className="grid grid-cols-[2rem_1fr] items-start gap-2 text-sm">
+                <span className="text-muted-foreground font-mono">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="font-medium">{beat}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+        <section className="rounded-lg border border-[#69877c] bg-[#eef4f1] p-5">
+          <p className="text-xs font-semibold tracking-wide text-[#345448] uppercase">
+            Next important decision
+          </p>
+          <p className="mt-2 text-lg leading-relaxed text-[#243b33]">{spine.nextDecision}</p>
+        </section>
+      </div>
+
+      <section className="border-border bg-card rounded-lg border p-5">
+        <h2 className="font-semibold">Priority</h2>
+        <div className="mt-3 divide-y">
+          {priorities.map((item) => (
+            <article
+              key={`${item.priority}-${item.label}`}
+              className="grid gap-1 py-3 first:pt-0 last:pb-0 sm:grid-cols-[9rem_1fr]"
+            >
+              <PriorityLabel value={item.priority} />
+              <div>
+                <p className="text-sm font-semibold">{item.label}</p>
+                <p className="text-muted-foreground mt-1 text-sm">{item.decision}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
 
-function Innovation({ direction }: { direction: DirectionDecision }) {
-  const innovation = direction.innovation;
-  if (!innovation) return null;
-  return (
-    <aside className="mt-3 rounded-md border border-amber-500/35 bg-amber-500/5 p-3">
-      <p className="text-xs font-semibold tracking-wide uppercase">Purposeful rule-break</p>
-      <dl className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
-        <Note label="Convention" value={innovation.convention} />
-        <Note label="Why it works" value={innovation.whyConventionWorks} />
-        <Note label="Exact departure" value={innovation.departure} />
-        <Note label="Why here" value={innovation.projectBenefit} />
-        <Note label="Execution risk" value={innovation.executionRisk} />
-      </dl>
-    </aside>
-  );
-}
-
-function CraftLine({ craft }: { craft: SceneCraft }) {
-  return (
-    <dl className="mt-3 grid gap-2 border-t border-dashed pt-3 text-xs md:grid-cols-2">
-      <Note label="Blocking" value={craft.blocking} />
-      <Note label="Camera" value={craft.camera} />
-      <Note label="Light" value={craft.light} />
-      <Note label="Design / color" value={`${craft.design} ${craft.color}`} />
-      <Note label="Sound" value={craft.sound} />
-    </dl>
-  );
-}
-
-export function BlueprintView({
-  analysis,
-  onReanalyze,
-}: {
-  analysis: Analysis;
-  onReanalyze: () => void;
-}) {
-  const { brief, blueprint } = analysis;
-  const development = blueprint.development;
+function DeepRoom({ analysis }: { analysis: Analysis }) {
+  const development = analysis.blueprint.development;
   const recommendation = development.directionDecision;
-
   return (
-    <div className="mb-8 flex flex-col gap-6">
-      <header className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-muted-foreground text-xs tracking-wide uppercase">
-            Develop &amp; Plan · {development.mode.toLowerCase()}
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">{brief.title}</h1>
-          <p className="text-muted-foreground text-sm">
-            {[brief.client, brief.projectType].filter(Boolean).join(" · ") || "Idea-stage project"}
-          </p>
+    <div className="space-y-4">
+      <details open className="border-border bg-card rounded-lg border p-5">
+        <summary className="cursor-pointer font-semibold">
+          Why “{recommendation.title}” wins
+        </summary>
+        <div className="mt-4 grid gap-4 text-sm md:grid-cols-2">
+          <DeepNote label="Point of view" value={recommendation.pointOfView} />
+          <DeepNote label="Story engine" value={recommendation.storyEngine} />
+          <DeepNote label="Formal strategy" value={recommendation.formalStrategy} />
+          <DeepNote label="Audience journey" value={recommendation.audienceJourney} />
+          <DeepNote label="Real sacrifice" value={recommendation.sacrifice} />
+          <DeepNote label="Change course if" value={recommendation.changeMyMindIf} />
         </div>
-        <Button variant="outline" size="sm" onClick={onReanalyze}>
-          Update intent
-        </Button>
-      </header>
+      </details>
 
-      <p className="border-primary/30 bg-primary/5 rounded-lg border px-4 py-3 text-sm">
-        <span className="font-medium">Creative hypothesis, not source evidence.</span>{" "}
-        <span className="text-muted-foreground">
-          Scenes and meanings below are proposals to test. Supplied constraints remain binding; the
-          filmmaker retains final authority.
-        </span>
-      </p>
-
-      <Section title="The creative thesis">
-        <p className="text-lg leading-relaxed">{development.insight.thesis}</p>
-        <dl className="grid gap-4 border-t border-dashed pt-3 md:grid-cols-3">
-          <Note label="Human truth" value={development.insight.humanTruth} />
-          <Note label="Dramatic tension" value={development.insight.dramaticTension} />
-          <Note label="Audience promise" value={development.insight.audiencePromise} />
-        </dl>
-      </Section>
-
-      <Section title="Recommendation">
-        <article className="border-primary/50 rounded-lg border p-4">
-          <p className="text-primary text-xs font-semibold tracking-wide uppercase">
-            Commit to this direction
-          </p>
-          <h3 className="mt-1 text-xl font-semibold">{recommendation.title}</h3>
-          <p className="mt-2 text-sm leading-relaxed">{recommendation.pointOfView}</p>
-          <dl className="mt-4 grid gap-4 md:grid-cols-2">
-            <Note label="Story engine" value={recommendation.storyEngine} />
-            <Note label="Formal strategy" value={recommendation.formalStrategy} />
-            <Note label="Audience journey" value={recommendation.audienceJourney} />
-            <Note label="Why this project" value={recommendation.whyThisProject} />
-          </dl>
-          <div className="bg-muted/45 mt-4 grid gap-3 rounded-md p-3 md:grid-cols-2">
-            <Note label="What we sacrifice" value={recommendation.sacrifice} />
-            <Note label="Change this recommendation if…" value={recommendation.changeMyMindIf} />
-          </div>
-          <h4 className="mt-4 text-xs font-semibold tracking-wide uppercase">
-            Assumptions to verify
-          </h4>
-          <List items={recommendation.assumptions} />
-          <Innovation direction={recommendation} />
-        </article>
-      </Section>
-
-      <Section title="Real alternatives">
-        <div className="grid gap-3 lg:grid-cols-3">
+      <details className="border-border bg-card rounded-lg border p-5">
+        <summary className="cursor-pointer font-semibold">
+          Discarded directions and tradeoffs
+        </summary>
+        <div className="mt-4 grid gap-3 lg:grid-cols-3">
           {development.alternativeDecisions.map((direction) => (
             <article key={direction.title} className="border-border rounded-md border p-3">
               <h3 className="text-sm font-semibold">{direction.title}</h3>
@@ -141,96 +132,201 @@ export function BlueprintView({
               <p className="text-muted-foreground mt-2 text-xs">
                 <span className="text-foreground font-medium">Gives up:</span> {direction.sacrifice}
               </p>
-              <p className="text-muted-foreground mt-2 text-xs">
-                <span className="text-foreground font-medium">Change course if:</span>{" "}
-                {direction.changeMyMindIf}
-              </p>
-              <Innovation direction={direction} />
+              {direction.innovation ? (
+                <p className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/5 p-2 text-xs">
+                  <strong>Purposeful rule-break:</strong> {direction.innovation.departure}
+                </p>
+              ) : null}
             </article>
           ))}
         </div>
-      </Section>
+      </details>
 
-      <Section title="Scenes worth making">
-        <div className="space-y-4">
+      <details className="border-border bg-card rounded-lg border p-5">
+        <summary className="cursor-pointer font-semibold">
+          Detailed scene and craft reasoning
+        </summary>
+        <div className="mt-4 space-y-3">
           {development.sceneHypotheses.map((scene, index) => (
             <article key={scene.id} className="border-border rounded-md border p-4">
-              <div className="grid gap-1 sm:grid-cols-[2.5rem_1fr]">
-                <span className="text-muted-foreground font-mono text-sm">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3 className="font-semibold">{scene.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed">
-                    <span className="font-medium">Action:</span> {scene.action}
-                  </p>
-                  <p className="text-muted-foreground mt-2 text-sm">
-                    <span className="text-foreground font-medium">Turn:</span> {scene.turn}
-                  </p>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    <span className="text-foreground font-medium">Why it matters:</span>{" "}
-                    {scene.purpose}
-                  </p>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    <span className="text-foreground font-medium">Constraint:</span>{" "}
-                    {scene.constraintHandling}
-                  </p>
-                  <CraftLine craft={scene.craft} />
-                </div>
+              <p className="text-muted-foreground font-mono text-xs">
+                SCENE {String(index + 1).padStart(2, "0")}
+              </p>
+              <h3 className="mt-1 font-semibold">{scene.title}</h3>
+              <p className="mt-2 text-sm">
+                <strong>Action:</strong> {scene.action}
+              </p>
+              <p className="text-muted-foreground mt-1 text-sm">
+                <strong className="text-foreground">Turn:</strong> {scene.turn}
+              </p>
+              <div className="mt-3 grid gap-3 border-t pt-3 text-xs sm:grid-cols-2 lg:grid-cols-3">
+                <DeepNote label="Blocking" value={scene.craft.blocking} />
+                <DeepNote label="Camera" value={scene.craft.camera} />
+                <DeepNote label="Light" value={scene.craft.light} />
+                <DeepNote label="Design" value={scene.craft.design} />
+                <DeepNote label="Color" value={scene.craft.color} />
+                <DeepNote label="Sound" value={scene.craft.sound} />
               </div>
             </article>
           ))}
         </div>
-      </Section>
+      </details>
 
-      <StoryboardArtifactView artifact={development.storyboard} />
-
-      <Section title="Director notebook · shot & beat cards">
-        <div className="grid gap-3 md:grid-cols-2">
-          {development.directorNotebook.map((beat) => (
-            <article key={beat.id} className="border-border rounded-md border p-3">
-              <h3 className="font-mono text-sm font-semibold">{beat.shot}</h3>
-              <p className="mt-2 text-sm">{beat.visual}</p>
-              <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-2">
-                <Note label="Camera" value={beat.camera} />
-                <Note label="Light" value={beat.light} />
-                <Note label="Sound" value={beat.sound} />
-                <Note label="Beat earns" value={beat.purpose} />
-              </dl>
-            </article>
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Questions that could change the plan">
-        <ol className="space-y-3">
-          {development.questions.map((question, index) => (
-            <li key={question.prompt} className="grid gap-1 sm:grid-cols-[2rem_1fr]">
-              <span className="text-muted-foreground font-mono text-sm">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div>
-                <p className="text-sm font-medium">{question.prompt}</p>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  Changes: {question.decisionItChanges}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      <Section title="Next production tests">
-        <List items={development.productionNextSteps} />
-        {blueprint.interviewStrategy ? (
-          <>
-            <h3 className="pt-2 text-xs font-semibold tracking-wide uppercase">
-              Interview strategy
+      <details className="border-border bg-card rounded-lg border p-5">
+        <summary className="cursor-pointer font-semibold">
+          Assumptions, questions, and risks
+        </summary>
+        <div className="mt-4 grid gap-5 md:grid-cols-2">
+          <div>
+            <h3 className="text-xs font-semibold tracking-wide uppercase">Assumptions</h3>
+            <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
+              {recommendation.assumptions.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-xs font-semibold tracking-wide uppercase">
+              Questions that change the plan
             </h3>
-            <List items={blueprint.interviewStrategy} />
-          </>
-        ) : null}
-      </Section>
+            <ol className="mt-2 space-y-2 text-sm">
+              {development.questions.map((question) => (
+                <li key={question.prompt}>
+                  <strong>{question.prompt}</strong>
+                  <span className="text-muted-foreground block text-xs">
+                    Changes: {question.decisionItChanges}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function DeepNote({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-muted-foreground text-[0.68rem] tracking-wide uppercase">{label}</p>
+      <p className="mt-1 leading-relaxed">{value}</p>
+    </div>
+  );
+}
+
+export function BlueprintView({
+  analysis,
+  busy,
+  error,
+  onReanalyze,
+  onStage,
+  onProduction,
+  onUploadScoutPhotos,
+  onCorrection,
+}: {
+  analysis: Analysis;
+  busy: boolean;
+  error: string | null;
+  onReanalyze: () => void;
+  onStage: (stage: ProductionStage) => Promise<void>;
+  onProduction: (production: Partial<ProductionReality>) => Promise<void>;
+  onUploadScoutPhotos: (files: readonly File[]) => Promise<void>;
+  onCorrection: (statement: string) => Promise<void>;
+}) {
+  const plan = analysis.blueprint.development.visualPlan;
+  const defaultDepth: Depth = plan.stage === "IDEA" ? "SPINE" : "BLUEPRINT";
+  const [depthChoice, setDepthChoice] = useState<{
+    readonly stage: ProductionStage;
+    readonly value: Depth;
+  }>({ stage: plan.stage, value: defaultDepth });
+  const depth = depthChoice.stage === plan.stage ? depthChoice.value : defaultDepth;
+  return (
+    <div className="mb-8 flex flex-col gap-5">
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-muted-foreground text-xs tracking-wide uppercase">
+            Develop &amp; Plan
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{analysis.brief.title}</h1>
+          <p className="text-muted-foreground text-sm">
+            {[analysis.brief.client, analysis.brief.projectType].filter(Boolean).join(" · ") ||
+              "Idea-stage project"}
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onReanalyze}>
+          Update intent
+        </Button>
+      </header>
+
+      <section className="border-border rounded-lg border p-2" aria-label="Production stage">
+        <p className="text-muted-foreground px-2 pt-1 text-[0.65rem] font-semibold tracking-wide uppercase">
+          What stage are you solving?
+        </p>
+        <div className="mt-1 flex gap-1 overflow-x-auto">
+          {stages.map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => void onStage(value)}
+              disabled={busy}
+              aria-pressed={plan.stage === value}
+              className={`shrink-0 rounded-md px-3 py-2 text-sm ${plan.stage === value ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <nav className="grid gap-2 sm:grid-cols-3" aria-label="Creative plan depth">
+        {depths.map(([value, label, note]) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setDepthChoice({ stage: plan.stage, value })}
+            aria-current={depth === value ? "page" : undefined}
+            className={`rounded-lg border px-4 py-3 text-left ${depth === value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}
+          >
+            <span className="block text-sm font-semibold">{label}</span>
+            <span className="text-muted-foreground mt-0.5 block text-xs">{note}</span>
+          </button>
+        ))}
+      </nav>
+
+      {error ? (
+        <p
+          role="alert"
+          className="text-destructive rounded-md border border-current/20 px-3 py-2 text-sm"
+        >
+          {error}
+        </p>
+      ) : null}
+      {depth === "SPINE" ? <Spine analysis={analysis} /> : null}
+      {depth === "BLUEPRINT" ? (
+        <div className="space-y-5">
+          <VisualPlanView
+            plan={plan}
+            projectId={analysis.brief.projectId}
+            busy={busy}
+            onUpload={onUploadScoutPhotos}
+            onCorrection={onCorrection}
+          />
+          <details className="border-border bg-card rounded-lg border p-4">
+            <summary className="cursor-pointer text-sm font-semibold">
+              Production reality · add only what changes the plan
+            </summary>
+            <div className="mt-4">
+              <ProductionRealityForm
+                initial={plan.productionReality}
+                busy={busy}
+                onSave={onProduction}
+              />
+            </div>
+          </details>
+        </div>
+      ) : null}
+      {depth === "DEEP_ROOM" ? <DeepRoom analysis={analysis} /> : null}
     </div>
   );
 }

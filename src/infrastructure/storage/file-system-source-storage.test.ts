@@ -39,4 +39,14 @@ describe("file-system source storage leases", () => {
       { code: "ENOENT" },
     );
   });
+
+  it("reads retained bytes for an authorized project-scoped delivery endpoint", async () => {
+    const fixture = await storage();
+    const bytes = new Uint8Array([4, 5, 6, 7]);
+    const lease = await fixture.storage.put("owner/project/sha256:photo", bytes);
+    await fixture.storage.retain("owner/project/sha256:photo", lease.leaseId);
+    expect(Buffer.from(await fixture.storage.get("owner/project/sha256:photo"))).toEqual(
+      Buffer.from(bytes),
+    );
+  });
 });

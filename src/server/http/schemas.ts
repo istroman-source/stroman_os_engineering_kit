@@ -193,6 +193,40 @@ export const AnalyzeProjectRequest = z
   .strict();
 export type AnalyzeProjectRequest = z.infer<typeof AnalyzeProjectRequest>;
 
+const ProductionRealityRequest = z
+  .object({
+    crew: z.string().max(300).optional(),
+    cameraBody: z.string().max(300).optional(),
+    lenses: z.string().max(500).optional(),
+    support: z.string().max(500).optional(),
+    lighting: z.string().max(500).optional(),
+    sound: z.string().max(500).optional(),
+    shootTime: z.string().max(300).optional(),
+    access: z.string().max(500).optional(),
+    talent: z.string().max(500).optional(),
+    budget: z.string().max(300).optional(),
+    timeOfDay: z.string().max(300).optional(),
+  })
+  .strict();
+
+export const UpdateCreativePlanningRequest = z
+  .object({
+    stage: z.enum(["IDEA", "SCOUTING", "PRE_PRODUCTION", "SHOOTING", "POST"]).optional(),
+    production: ProductionRealityRequest.optional(),
+    correction: z
+      .object({
+        statement: z.string().min(1).max(1000),
+        replacesClaimId: z.string().min(1).max(200).nullish(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict()
+  .refine((value) => Boolean(value.stage || value.production || value.correction), {
+    message: "At least one planning change is required.",
+  });
+export type UpdateCreativePlanningRequest = z.infer<typeof UpdateCreativePlanningRequest>;
+
 // ── Knowledge Acquisition request schemas ──────────────────────────────────
 export const CreateKnowledgeSourceRequest = z
   .object({

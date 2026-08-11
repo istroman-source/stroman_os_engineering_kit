@@ -34,7 +34,7 @@ beforeEach(async () => {
 
 type CreateRoute = (
   req: Request,
-  context?: { params: Promise<Record<string, never>> },
+  context: { params: Promise<Record<string, never>> },
 ) => Promise<Response>;
 
 async function id(handler: CreateRoute, json: unknown, principal = ACTOR): Promise<string> {

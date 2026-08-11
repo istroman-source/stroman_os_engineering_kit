@@ -167,7 +167,11 @@ describe("generateBlueprint", () => {
     expect(bp.development.questions.length).toBeGreaterThanOrEqual(1);
     expect(bp.development.questions.length).toBeLessThanOrEqual(3);
     expect(bp.development.questions.every((item) => item.decisionItChanges.length > 20)).toBe(true);
-    expect(bp.development.storyboard.status).toBe("RENDERED");
+    expect(bp.development.visualPlan.renderer).toBe("STROMAN_PREVIS_SVG_V2");
+    expect(bp.development.visualPlan.shots[0]).toMatchObject({
+      horizontal: { aspectRatio: "16:9" },
+      vertical: { aspectRatio: "9:16" },
+    });
     expect(bp.development.sceneHypotheses[0]?.constraintHandling).toMatch(
       /scout-dependent|unverified/,
     );

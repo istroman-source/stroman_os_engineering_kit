@@ -72,6 +72,11 @@ export async function apiPostWithEtag<T>(
   return { data: raw.body as T, etag: raw.etag };
 }
 
+/** POST browser-owned multipart data while preserving the standard typed API error contract. */
+export async function apiPostForm<T>(path: string, body: FormData): Promise<T> {
+  return request<T>(path, { method: "POST", body });
+}
+
 export interface ProjectItem {
   readonly id: string;
   readonly name: string;

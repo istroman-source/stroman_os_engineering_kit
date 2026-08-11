@@ -1,82 +1,6 @@
 {
-  "fixtureId": "negative-golden-pr28-jimmys-famous-meals",
-  "purpose": "Exact deterministic fallback output used for semantic and independent product review.",
-  "quality": {
-    "passed": true,
-    "total": 94,
-    "scores": [
-      {
-        "dimension": "TRANSFORMATION",
-        "score": 9,
-        "evidence": "The thesis must discover a human or dramatic value beyond restating the stated goal."
-      },
-      {
-        "dimension": "PROJECT_SPECIFICITY",
-        "score": 9,
-        "evidence": "14/15 distinctive title, client, or context terms survive in the reasoning."
-      },
-      {
-        "dimension": "ACTIONABILITY",
-        "score": 10,
-        "evidence": "4 scenes contain physical action and a distinct dramatic turn; 4 make that action depend on project-specific material."
-      },
-      {
-        "dimension": "DISTINCTIVENESS",
-        "score": 9,
-        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
-      },
-      {
-        "dimension": "JUDGMENT",
-        "score": 10,
-        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
-      },
-      {
-        "dimension": "INNOVATION",
-        "score": 9,
-        "evidence": "At least one departure must name the convention, its value, the violation, project fit, and execution risk."
-      },
-      {
-        "dimension": "HUMANNESS",
-        "score": 9,
-        "evidence": "The insight names a human truth and lived dramatic pressure rather than a demographic label."
-      },
-      {
-        "dimension": "CRAFT_COHERENCE",
-        "score": 10,
-        "evidence": "4/4 scenes derive complete physical craft choices."
-      },
-      {
-        "dimension": "HONESTY",
-        "score": 9,
-        "evidence": "Assumptions and constraint handling remain explicit; hypothetical scenes are not presented as captured evidence."
-      },
-      {
-        "dimension": "VISUAL_COMPLETION",
-        "score": 10,
-        "evidence": "4 drawn frames, a blocking map, and a look palette are renderable."
-      }
-    ],
-    "blockingFindings": [],
-    "substitutionSignal": {
-      "projectTermsFound": [
-        "morning",
-        "routine",
-        "eats",
-        "jimmy's",
-        "famous",
-        "meals",
-        "mother",
-        "eight-month-old",
-        "baby",
-        "show",
-        "baby's",
-        "face",
-        "hands",
-        "feet"
-      ],
-      "weak": false
-    }
-  },
+  "fixtureId": "jimmys-scout-kitchen-v1",
+  "purpose": "Exact multi-angle location-grounding output for visual and independent review.",
   "visualQuality": {
     "passed": true,
     "findings": []
@@ -310,7 +234,7 @@
       "visualPlan": {
         "version": 1,
         "renderer": "STROMAN_PREVIS_SVG_V2",
-        "stage": "IDEA",
+        "stage": "PRE_PRODUCTION",
         "creativeSpine": {
           "film": "This is not really a film about meal prep. It is about giving one decision back to a mother who is already making fifty before the house is fully awake.",
           "why": "Jimmy's promise becomes emotional without pretending the product solves motherhood: it simply gives this parent one decision and one cleanup task back.",
@@ -321,7 +245,7 @@
             "The task that is already finished",
             "The morning stops fighting her"
           ],
-          "nextDecision": "Verify which morning burden the meal actually removes."
+          "nextDecision": "Confirm C2 operating clearance and pendant control."
         },
         "priorities": [
           {
@@ -351,10 +275,10 @@
               "id": "shot_01_h",
               "aspectRatio": "16:9",
               "shotScale": "environmental medium-wide",
-              "lens": "normal perspective",
+              "lens": "≈ 40mm",
               "cameraHeight": "shoulder height",
-              "cameraDistance": "verify at scout",
-              "movement": "locked → small reactive yield",
+              "cameraDistance": "threshold side of island",
+              "movement": "locked; block action through the frame",
               "hold": "hold until the second interruption",
               "executionStrip": [
                 "≈ 40mm · shoulder height · locked → small yield",
@@ -454,19 +378,21 @@
               ],
               "constraint": "Baby face stays behind shoulder and outside the frame axis.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             },
             "vertical": {
               "id": "shot_01_v",
               "aspectRatio": "9:16",
               "shotScale": "full-height one-hand portrait",
-              "lens": "slightly wider normal perspective",
+              "lens": "≈ 32mm",
               "cameraHeight": "upper-chest height",
-              "cameraDistance": "closer than horizontal",
-              "movement": "locked",
+              "cameraDistance": "inside threshold, hall edge",
+              "movement": "locked; block action through the frame",
               "hold": "hold through hand changing direction",
               "executionStrip": [
                 "≈ 32mm · upper-chest height · locked",
@@ -556,9 +482,11 @@
               ],
               "constraint": "Crop uses body height, not a horizontal center crop; baby face remains hidden.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             }
           },
@@ -574,8 +502,8 @@
               "shotScale": "waist-height working two-shot without a second face",
               "lens": "≈ 50mm",
               "cameraHeight": "waist height",
-              "cameraDistance": "working distance",
-              "movement": "handheld reframes caused only by action",
+              "cameraDistance": "sink-side lane across island corner",
+              "movement": "locked; block action through the frame",
               "hold": "one continuous decision chain",
               "executionStrip": [
                 "≈ 50mm · waist height · action-led reframes",
@@ -667,9 +595,11 @@
               "light": [],
               "constraint": "Only approved hands and feet enter; every prop must be real morning behavior.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             },
             "vertical": {
@@ -679,7 +609,7 @@
               "lens": "≈ 40mm",
               "cameraHeight": "counter height",
               "cameraDistance": "closer, island-end position",
-              "movement": "locked with action crossing frame",
+              "movement": "locked; block action through the frame",
               "hold": "tasks enter one vertical stack",
               "executionStrip": [
                 "≈ 40mm · counter height · locked",
@@ -761,9 +691,11 @@
               "light": [],
               "constraint": "This is a new camera position, not a crop of the horizontal setup.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             }
           },
@@ -779,8 +711,8 @@
               "shotScale": "locked three-quarter medium-wide",
               "lens": "≈ 40mm",
               "cameraHeight": "counter height",
-              "cameraDistance": "verify after scout",
-              "movement": "locked",
+              "cameraDistance": "reverse corner near sink, clearance unconfirmed",
+              "movement": "locked; block action through the frame",
               "hold": "complete fridge → island action",
               "executionStrip": [
                 "≈ 40mm · counter height · locked",
@@ -880,9 +812,11 @@
               ],
               "constraint": "Confirm product preparation truth and sink-side camera operating clearance.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             },
             "vertical": {
@@ -892,7 +826,7 @@
               "lens": "≈ 32mm",
               "cameraHeight": "waist height",
               "cameraDistance": "island-end, nearer fridge axis",
-              "movement": "small downward tilt, then lock",
+              "movement": "locked; block action through the frame",
               "hold": "finish on meal and resting hand",
               "executionStrip": [
                 "≈ 32mm · waist height · tilt fridge → meal",
@@ -992,9 +926,11 @@
               ],
               "constraint": "Vertical setup preserves pendant/island hierarchy; it is not the horizontal crop.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             }
           },
@@ -1011,7 +947,7 @@
               "lens": "≈ 50mm",
               "cameraHeight": "seated-eye height",
               "cameraDistance": "threshold-side diagonal across island",
-              "movement": "locked",
+              "movement": "locked; block action through the frame",
               "hold": "four seconds after shoulder release",
               "executionStrip": [
                 "≈ 50mm · seated-eye height · locked",
@@ -1111,9 +1047,11 @@
               ],
               "constraint": "Keep unfinished morning at frame edge; do not stage a fantasy-clean room.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             },
             "vertical": {
@@ -1123,7 +1061,7 @@
               "lens": "≈ 50mm",
               "cameraHeight": "counter height",
               "cameraDistance": "island corner, close working distance",
-              "movement": "locked",
+              "movement": "locked; block action through the frame",
               "hold": "shoulders release, then four seconds",
               "executionStrip": [
                 "≈ 50mm · counter height · locked",
@@ -1205,15 +1143,17 @@
               ],
               "constraint": "Protect baby privacy and sound; no performed smile or unnecessary push-in.",
               "locationDependencies": [
-                "verify-threshold",
-                "verify-fridge-counter-path",
-                "verify-practical-control"
+                "threshold-angle",
+                "fridge-left",
+                "island-center",
+                "sink-window",
+                "warm-pendant"
               ]
             }
           }
         ],
         "blocking": {
-          "title": "Kitchen movement hypothesis",
+          "title": "Photo-anchored kitchen movement",
           "question": "Where are the people and cameras, and how do they move?",
           "zones": [
             {
@@ -1296,10 +1236,13 @@
               "use": "relief + stillness"
             }
           ],
-          "restrictions": ["Confirm island, fridge, sink, and camera lanes during the scout."]
+          "restrictions": [
+            "Do not assume full operating depth at C2 until the filmmaker confirms sink-side clearance.",
+            "Keep the hall path open for baby-safe movement."
+          ]
         },
         "lighting": {
-          "title": "Motivated source hypothesis",
+          "title": "Use the visible window and pendant",
           "question": "Where are the meaningful sources, modifiers, and practicals?",
           "zones": [
             {
@@ -1337,7 +1280,7 @@
               "toX": 56,
               "toY": 46,
               "tone": "COOL",
-              "control": "UNKNOWN",
+              "control": "VISIBLE",
               "use": "Keep pre-dawn world present behind relief."
             },
             {
@@ -1361,7 +1304,7 @@
               "toX": 39,
               "toY": 47,
               "tone": "WARM",
-              "control": "UNKNOWN",
+              "control": "VISIBLE",
               "use": "First warm field; do not let it light the whole room."
             },
             {
@@ -1490,26 +1433,90 @@
           }
         ],
         "location": {
-          "mode": "INTENT_ONLY",
-          "photos": [],
-          "claims": [],
-          "confirmationQuestion": "Can you add two location photos—one wide and one reverse—or confirm the fridge, counter, window, and camera lanes?"
+          "mode": "PHOTO_ANCHORED",
+          "photos": [
+            {
+              "id": "scout_threshold",
+              "mediaAssetId": "mast_SCOUT001",
+              "fileName": "/evaluations/scout-kitchen/threshold-angle.png",
+              "contentType": "image/png",
+              "contentHash": "sha256:256f5714e3ada933de706cb5d8d47caad2f3b3899dcd4a438e794078b97de626",
+              "angleLabel": "Threshold wide"
+            },
+            {
+              "id": "scout_reverse",
+              "mediaAssetId": "mast_SCOUT002",
+              "fileName": "/evaluations/scout-kitchen/reverse-angle.png",
+              "contentType": "image/png",
+              "contentHash": "sha256:e222ebf5190d36e8962d646dfad2f0d3e0f6b9ca5be78cf0fcdb257630514ddb",
+              "angleLabel": "Sink-side reverse"
+            }
+          ],
+          "claims": [
+            {
+              "id": "visible_island",
+              "state": "VISIBLE_FACT",
+              "label": "Freestanding island",
+              "detail": "Both angles show a long island with stools on the threshold side and walkable floor on both long edges.",
+              "evidencePhotoIds": ["scout_threshold", "scout_reverse"],
+              "affects": ["STORYBOARD", "BLOCKING"]
+            },
+            {
+              "id": "visible_window_sink",
+              "state": "VISIBLE_FACT",
+              "label": "Window over sink",
+              "detail": "The threshold angle shows one exterior window directly above the sink, giving a motivated cool back/side source.",
+              "evidencePhotoIds": ["scout_threshold"],
+              "affects": ["STORYBOARD", "LIGHTING"]
+            },
+            {
+              "id": "visible_pendant",
+              "state": "VISIBLE_FACT",
+              "label": "Pendant over island",
+              "detail": "A single warm pendant hangs over the island and appears in both angles; dimming control is not visible.",
+              "evidencePhotoIds": ["scout_threshold", "scout_reverse"],
+              "affects": ["STORYBOARD", "LIGHTING"]
+            },
+            {
+              "id": "visible_fridge_hall",
+              "state": "VISIBLE_FACT",
+              "label": "Fridge and hall relationship",
+              "detail": "The refrigerator sits left of the work triangle from the threshold; the dark hall opening is opposite it beyond the island.",
+              "evidencePhotoIds": ["scout_threshold", "scout_reverse"],
+              "affects": ["STORYBOARD", "BLOCKING"]
+            },
+            {
+              "id": "inferred_camera_lane",
+              "state": "INFERRED_GEOMETRY",
+              "label": "Reverse camera lane",
+              "detail": "The second angle suggests a camera can work near the sink-side corner, but operating depth and safe clearance behind the island are not measurable from photos.",
+              "evidencePhotoIds": ["scout_reverse"],
+              "affects": ["STORYBOARD", "BLOCKING"]
+            }
+          ],
+          "confirmationQuestion": "Is there usable camera space behind the island at full operating depth, and can the pendant be dimmed?"
         },
         "delta": {
-          "trigger": "Creative direction developed",
-          "changed": ["Intent became four independently composed horizontal and vertical setups."],
+          "trigger": "Two scout photos added",
+          "changed": [
+            "C1 now uses the real threshold and island edge.",
+            "C2 is proposed near the visible sink-side corner, pending clearance confirmation.",
+            "Lighting now uses the actual sink window, pendant, and refrigerator practical.",
+            "Vertical Shot 03 stacks the visible pendant, island, and product instead of cropping the horizontal frame."
+          ],
           "unchanged": [
-            "Location geometry remains a hypothesis until photos or confirmation arrive."
+            "The first quiet bite remains the recommendation.",
+            "Baby face stays excluded."
           ]
         },
         "productionReality": {
-          "crew": "",
+          "crew": "solo operator",
           "cameraBody": "",
           "lenses": "",
-          "support": "",
+          "support": "tripod only",
           "lighting": "",
           "sound": "",
-          "shootTime": "",
+          "shootTime": "four setups",
           "access": "",
           "talent": "",
           "budget": "",

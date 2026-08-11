@@ -5,3 +5,4 @@ export * from "./development-blueprint";
 export * from "./meaningful-development";
 export * from "./creative-reasoning-provider";
 export * from "./creative-quality";
+export * from "./visual-planning";
