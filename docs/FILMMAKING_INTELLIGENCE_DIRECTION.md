@@ -37,6 +37,48 @@ paths, and look/color references. Default filmmaker UI shows the artifact and th
 communicates; provider names, credentials, system instructions, master prompts, and internal
 deliberation remain behind the product surface.
 
+### Cognitive economy and frame-accurate planning
+
+The visual-planning surface is an execution tool, not a report. It must preserve a filmmaker's
+attention by showing the smallest useful decision layer first:
+
+1. **Creative Spine** is the default at idea stage: the film, why it matters, audience effect, key
+   beats, priorities, and one next decision.
+2. **Blueprint** contains executable storyboard, blocking, lighting, look, sound, and coverage
+   views. One diagram answers one primary question; these layers must not collapse into one dense
+   control-room graphic.
+3. **Deep Room** holds alternatives, detailed craft reasoning, assumptions, and risks. It remains
+   available without competing with the active production decision.
+
+The active stage—Idea, Scouting, Pre-production, Shooting, or Post—changes which decisions are
+prominent. Recommendations are ranked as must solve now, important, worth exploring, or optional.
+Coverage is ranked as must get, safety, or optional exploration. Sound is a first-class plan, and
+production reality—crew, camera, lenses, support, lighting, sound, time, access, talent, budget,
+and time of day—changes recommendations rather than appearing as inert metadata.
+
+Every storyboard shot has independently composed 16:9 and 9:16 frames. A crop guide is not a
+vertical plan. Each frame must place subjects and meaningful set pieces, state camera/lens/height/
+distance/movement/hold choices at an honest level of precision, and keep its execution strip to two
+short lines. Blocking directly names people, beats, movement states, and cameras. Lighting and look
+have separate diagrams so an operator never has to decode anonymous dots or mixed visual grammar.
+
+Location-aware planning is optional and additive. A filmmaker may upload multiple scout/location
+photos; those files remain private and project-scoped. Spatial statements are always labeled as:
+
+- **Visible fact** — directly supported by one or more supplied photos.
+- **Inferred geometry** — a useful spatial hypothesis whose clearance or relationship is not fully
+  visible.
+- **Filmmaker-confirmed geometry** — an explicit correction or confirmation supplied by the owner.
+
+Stroman must never invent unseen rooms, exact dimensions, operating clearances, or fixture controls.
+Photo-dependent frames identify the facts and uncertainties they use. A correction regenerates the
+affected planning layer without asking the filmmaker to re-enter project intent, and the UI reports
+the creative delta: what changed, what stayed, and why.
+
+Restraint is a product behavior. The system protects must-get material, offers a useful safety, and
+keeps optional exploration genuinely optional. It does not maximize shot count, tools, diagrams,
+or prose to appear intelligent.
+
 ### Analyze & Edit — useful when source material already exists
 
 Starting from footage, transcripts, interviews, scripts, notes, selects, rough cuts, or other

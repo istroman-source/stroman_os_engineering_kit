@@ -130,7 +130,7 @@ export function requireIfMatch(req: Request, resource: string): number {
   return outcome.version;
 }
 
-type NextRouteContext<P> = { params: Promise<P> } | undefined;
+type NextRouteContext<P> = { params: Promise<P> };
 
 /**
  * Attach any `Set-Cookie` values queued during the request (a transparent session
@@ -152,12 +152,12 @@ function drainRefreshedCookies(req: Request, response: Response): Response {
 export function apiRoute<P = Record<string, never>>(
   handler: (args: { req: Request; params: P; requestId: string }) => Promise<Response>,
 ) {
-  return async (req: Request, context?: NextRouteContext<P>): Promise<Response> => {
+  return async (req: Request, context: NextRouteContext<P>): Promise<Response> => {
     const requestId = resolveRequestId(req.headers);
     const startedAt = Date.now();
     const path = new URL(req.url).pathname;
     try {
-      const params = context ? await context.params : ({} as P);
+      const params = await context.params;
       const response = await handler({ req, params, requestId });
       log.info("request", {
         requestId,

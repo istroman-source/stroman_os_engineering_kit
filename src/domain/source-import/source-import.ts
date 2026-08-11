@@ -42,6 +42,7 @@ export interface SourceImportRepository {
 
 export interface SourceStorage {
   put(key: string, bytes: Uint8Array): Promise<{ readonly leaseId: string }>;
+  get(key: string): Promise<Uint8Array>;
   retain(key: string, leaseId: string): Promise<void>;
   discard(key: string, leaseId: string): Promise<void>;
 }

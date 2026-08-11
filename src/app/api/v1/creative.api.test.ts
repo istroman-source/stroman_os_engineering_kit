@@ -1,4 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { resetAuthForTests, setRequestAuthenticatorForTests } from "@/server/composition";
 import { createTestPrisma, resetDatabase } from "@test/db/integration-helpers";
@@ -6,6 +8,9 @@ import { TestAuthenticator } from "@test/adapters/test-auth";
 import { call } from "@test/http/call";
 import { POST as createProject } from "./projects/route";
 import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectId]/analysis/route";
+import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
+import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
+import { GET as getScoutPhoto } from "./projects/[projectId]/scout-photos/[mediaAssetId]/route";
 
 const ACTOR = "subject-owner-a";
 const OTHER = "subject-owner-b";
@@ -96,6 +101,166 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       "nostalgic",
     );
     expect(await prisma.creativeBrief.count()).toBe(1);
+  });
+
+  it("persists stage and production reality without rerunning creative intent", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const planned = await call(updatePlanning, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: {
+        stage: "PRE_PRODUCTION",
+        production: { crew: "solo operator", support: "tripod only" },
+      },
+    });
+    expect(planned.status).toBe(200);
+    expect(planned.body).toMatchObject({
+      brief: { planningContext: { stage: "PRE_PRODUCTION" } },
+      blueprint: {
+        development: {
+          directionDecision: { title: "The first quiet bite" },
+          visualPlan: {
+            stage: "PRE_PRODUCTION",
+            productionReality: { crew: "solo operator", support: "tripod only" },
+          },
+        },
+      },
+    });
+  });
+
+  it("imports two scout photos, grounds the plan, and serves only the owned image", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const threshold = readFileSync(resolve("public/evaluations/scout-kitchen/threshold-angle.png"));
+    const reverse = readFileSync(resolve("public/evaluations/scout-kitchen/reverse-angle.png"));
+    const form = new FormData();
+    form.append("files", new File([threshold], "threshold-angle.png", { type: "image/png" }));
+    form.append("files", new File([reverse], "reverse-angle.png", { type: "image/png" }));
+    const uploaded = await call(uploadScoutPhotos, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: form,
+      headers: { "content-length": String(threshold.byteLength + reverse.byteLength + 4096) },
+    });
+    expect(uploaded.status).toBe(200);
+    const result = uploaded.body as {
+      brief: { planningContext: { scoutPhotos: { mediaAssetId: string }[] } };
+      blueprint: { development: { visualPlan: { location: { mode: string; claims: unknown[] } } } };
+    };
+    expect(result.brief.planningContext.scoutPhotos).toHaveLength(2);
+    expect(result.blueprint.development.visualPlan.location).toMatchObject({
+      mode: "PHOTO_ANCHORED",
+      claims: expect.arrayContaining([expect.objectContaining({ state: "VISIBLE_FACT" })]),
+    });
+    const mediaAssetId = result.brief.planningContext.scoutPhotos[0]!.mediaAssetId;
+    const owned = await getScoutPhoto(
+      new Request("http://localhost/api", { headers: { "x-test-principal": ACTOR } }),
+      { params: Promise.resolve({ projectId, mediaAssetId }) },
+    );
+    expect(owned.status).toBe(200);
+    expect(owned.headers.get("content-type")).toBe("image/png");
+    expect((await owned.arrayBuffer()).byteLength).toBe(threshold.byteLength);
+    const denied = await getScoutPhoto(
+      new Request("http://localhost/api", { headers: { "x-test-principal": OTHER } }),
+      { params: Promise.resolve({ projectId, mediaAssetId }) },
+    );
+    expect(denied.status).toBe(404);
+  });
+
+  it("stores an arbitrary scout image as geometry-pending without inventing layout", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const bytes = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3]);
+    const form = new FormData();
+    form.append("files", new File([bytes], "real-scout.png", { type: "image/png" }));
+    const uploaded = await call(uploadScoutPhotos, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: form,
+      headers: { "content-length": "4096" },
+    });
+    expect(uploaded.status).toBe(200);
+    expect(uploaded.body).toMatchObject({
+      brief: { planningContext: { scoutPhotos: [{ fileName: "real-scout.png" }] } },
+      blueprint: {
+        development: {
+          visualPlan: {
+            location: {
+              mode: "PHOTO_INPUT_PENDING",
+              claims: [
+                {
+                  state: "VISIBLE_FACT",
+                  label: "Scout image set received",
+                  evidencePhotoIds: expect.any(Array),
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+    expect(JSON.stringify(uploaded.body)).not.toMatch(/window over sink|reverse camera lane/i);
+  });
+
+  it("rejects scout input before development without retaining an orphaned import", async () => {
+    const projectId = await makeProject();
+    const form = new FormData();
+    form.append("files", new File([new Uint8Array([1, 2, 3])], "early.png", { type: "image/png" }));
+    const uploaded = await call(uploadScoutPhotos, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: form,
+      headers: { "content-length": "4096" },
+    });
+    expect(uploaded.status).toBe(404);
+    expect(await prisma.sourceImport.count()).toBe(0);
+    expect(await prisma.mediaAsset.count()).toBe(0);
+  });
+
+  it("rejects an invalid scout batch before importing any earlier valid file", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const form = new FormData();
+    form.append("files", new File([new Uint8Array([1, 2, 3])], "valid.png", { type: "image/png" }));
+    form.append(
+      "files",
+      new File([new Uint8Array([4, 5, 6])], "invalid.txt", { type: "text/plain" }),
+    );
+    const uploaded = await call(uploadScoutPhotos, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: form,
+      headers: { "content-length": "4096" },
+    });
+    expect(uploaded.status).toBe(400);
+    expect(await prisma.sourceImport.count()).toBe(0);
+    expect(await prisma.mediaAsset.count()).toBe(0);
   });
 
   it("fails closed for an unsupported deterministic documentary draft", async () => {

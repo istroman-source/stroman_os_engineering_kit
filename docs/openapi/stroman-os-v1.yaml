@@ -528,6 +528,88 @@ components:
         targetAudience: { type: string, maxLength: 2000 }
         desiredEmotion: { type: string, maxLength: 200 }
         context: { type: string, maxLength: 5000 }
+    ProductionReality:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          crew,
+          cameraBody,
+          lenses,
+          support,
+          lighting,
+          sound,
+          shootTime,
+          access,
+          talent,
+          budget,
+          timeOfDay,
+        ]
+      properties:
+        crew: { type: string }
+        cameraBody: { type: string }
+        lenses: { type: string }
+        support: { type: string }
+        lighting: { type: string }
+        sound: { type: string }
+        shootTime: { type: string }
+        access: { type: string }
+        talent: { type: string }
+        budget: { type: string }
+        timeOfDay: { type: string }
+    ScoutPhotoRef:
+      type: object
+      additionalProperties: false
+      required: [id, mediaAssetId, fileName, contentType, contentHash, angleLabel]
+      properties:
+        id: { type: string }
+        mediaAssetId: { type: string }
+        fileName: { type: string }
+        contentType: { type: string }
+        contentHash: { type: string }
+        angleLabel: { type: string }
+    SpatialClaim:
+      type: object
+      additionalProperties: false
+      required: [id, state, label, detail, evidencePhotoIds, affects]
+      properties:
+        id: { type: string }
+        state:
+          type: string
+          enum: [VISIBLE_FACT, INFERRED_GEOMETRY, FILMMAKER_CONFIRMED_GEOMETRY]
+        label: { type: string }
+        detail: { type: string }
+        evidencePhotoIds: { type: array, items: { type: string } }
+        affects:
+          type: array
+          items: { type: string, enum: [STORYBOARD, BLOCKING, LIGHTING] }
+    SpatialCorrection:
+      type: object
+      additionalProperties: false
+      required: [id, statement, replacesClaimId]
+      properties:
+        id: { type: string }
+        statement: { type: string }
+        replacesClaimId: { type: [string, "null"] }
+    CreativePlanningContext:
+      type: object
+      additionalProperties: false
+      required: [version, stage, production, scoutPhotos, spatialClaims, corrections]
+      properties:
+        version: { type: integer, const: 1 }
+        stage:
+          type: string
+          enum: [IDEA, SCOUTING, PRE_PRODUCTION, SHOOTING, POST]
+        production: { $ref: "#/components/schemas/ProductionReality" }
+        scoutPhotos:
+          type: array
+          items: { $ref: "#/components/schemas/ScoutPhotoRef" }
+        spatialClaims:
+          type: array
+          items: { $ref: "#/components/schemas/SpatialClaim" }
+        corrections:
+          type: array
+          items: { $ref: "#/components/schemas/SpatialCorrection" }
     CreativeBrief:
       type: object
       required:
@@ -543,6 +625,7 @@ components:
           context,
           createdAt,
           updatedAt,
+          planningContext,
         ]
       properties:
         id: { type: string }
@@ -556,6 +639,7 @@ components:
         context: { type: string }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+        planningContext: { $ref: "#/components/schemas/CreativePlanningContext" }
     HookConcept:
       type: object
       required: [title, description]
@@ -1818,6 +1902,135 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/EditEngineResult" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/planning:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: updateProjectCreativePlanning
+      summary: Regenerate the visual-planning layer from stage, production reality, or a correction.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              anyOf:
+                - required: [stage]
+                - required: [production]
+                - required: [correction]
+              properties:
+                stage:
+                  type: string
+                  enum: [IDEA, SCOUTING, PRE_PRODUCTION, SHOOTING, POST]
+                production:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    crew: { type: string, maxLength: 300 }
+                    cameraBody: { type: string, maxLength: 300 }
+                    lenses: { type: string, maxLength: 500 }
+                    support: { type: string, maxLength: 500 }
+                    lighting: { type: string, maxLength: 500 }
+                    sound: { type: string, maxLength: 500 }
+                    shootTime: { type: string, maxLength: 300 }
+                    access: { type: string, maxLength: 500 }
+                    talent: { type: string, maxLength: 500 }
+                    budget: { type: string, maxLength: 300 }
+                    timeOfDay: { type: string, maxLength: 300 }
+                correction:
+                  type: object
+                  required: [statement]
+                  additionalProperties: false
+                  properties:
+                    statement: { type: string, minLength: 1, maxLength: 1000 }
+                    replacesClaimId: { type: [string, "null"], maxLength: 200 }
+      responses:
+        "200":
+          description: Existing creative decision with a regenerated, quality-gated visual plan.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Analysis" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/scout-photos:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: uploadProjectScoutPhotos
+      summary: Import private location photos and regenerate the location-grounded plan.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [files]
+              properties:
+                files:
+                  type: array
+                  minItems: 1
+                  maxItems: 6
+                  items: { type: string, format: binary }
+      responses:
+        "200":
+          description: Analysis with imported scout references and regenerated visual planning.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Analysis" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "411":
+          description: Content-Length is required before an upload body is read.
+        "413":
+          description: Upload request exceeds the bounded in-memory request limit.
+        "415":
+          description: Request is not multipart form data.
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/scout-photos/{mediaAssetId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: mediaAssetId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectScoutPhoto
+      summary: Read one owner-scoped scout photo referenced by the project's plan.
+      responses:
+        "200":
+          description: Private, non-cacheable scout-photo bytes.
+          headers:
+            Cache-Control:
+              schema: { type: string, const: "private, no-store" }
+            X-Content-Type-Options:
+              schema: { type: string, const: nosniff }
+          content:
+            image/png:
+              schema: { type: string, format: binary }
+            image/jpeg:
+              schema: { type: string, format: binary }
+            image/webp:
+              schema: { type: string, format: binary }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/prompt-handoff:

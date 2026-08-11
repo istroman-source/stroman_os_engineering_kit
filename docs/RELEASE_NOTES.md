@@ -1,5 +1,42 @@
 # Release Notes
 
+## Frame-accurate visual-planning candidate — hosted proof still pending (2026-08-10)
+
+- The symbolic storyboard has been replaced by four frame-specific shot pairs with independently
+  composed 16:9 and 9:16 previs. Each frame places the subject and physical environment and carries
+  a two-line camera/lens/height/movement/hold execution strip.
+- Blocking, lighting, and look now answer separate questions. The Jimmy fixture directly labels
+  Mom's START → 2 → END movement, attached baby privacy, and C1/C2 camera positions; anonymous
+  red-dot blocking is retired.
+- Creative Spine, Blueprint, and Deep Room provide progressive disclosure. Stage-aware defaults,
+  ranked priorities, must-get/safety/optional coverage, first-class sound, restrained alternatives,
+  and production-reality inputs keep the active decision prominent.
+- Filmmakers can optionally add bounded, private, project-scoped scout photos. The calibration
+  fixture uses two independently generated kitchen angles and distinguishes visible facts, inferred
+  geometry, and filmmaker-confirmed geometry without claiming unseen space or dimensions.
+- Arbitrary scout uploads are labeled as photo evidence awaiting geometry interpretation; they do
+  not silently become invented windows, camera lanes, dimensions, or a photo-anchored layout.
+- Spatial corrections regenerate the planning layer without re-entering project intent. The plan
+  reports what changed and what remained, and refuses a malformed or visually incomplete update
+  before persistence.
+- The correction control defaults safely when one inferred claim is available while preserving an
+  explicit “add a confirmed fact” path that does not retire any existing claim. Desktop and mobile
+  evidence captures demonstrate both additive and replacing corrections.
+- Exact deterministic intent-only and photo-anchored JSON fixtures are tracked for automated and
+  independent review, and an evaluation gate now compares both checked-in outputs with the current
+  generators to prevent stale evidence. Location photos and their hashes are tracked with the
+  evaluation evidence.
+- Existing persisted symbolic blueprints fail closed into re-analysis instead of being silently
+  presented through the new contract. The migration only adds nullable planning context and does
+  not rewrite source, provenance, project, or user data.
+
+This candidate is **not READY FOR HUMAN TESTING**. Credential-independent implementation and QA
+must clear browser inspection, exact-head CI, and independent visual/product review first. The
+final hosted creative-intelligence proof remains intentionally unstarted until the owner supplies
+`STROMAN_CREATIVE_REASONING_PROVIDER=openai`, a server-side `OPENAI_API_KEY`, and
+`STROMAN_CREATIVE_MODEL`. CI, review independence, SHA verification, repository safeguards, and
+filmmaker authority remain mandatory.
+
 ## Corrective creative-development candidate — hosted proof pending (2026-08-10)
 
 - Deep development now runs through a provider-neutral four-stage reasoning boundary:

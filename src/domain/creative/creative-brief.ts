@@ -2,6 +2,7 @@ import { ok, type Result } from "@/lib/result";
 import type { ProjectId } from "../project";
 import { type Brand, defineId, type DomainError, validateBoundedText } from "../shared";
 import type { Blueprint } from "./blueprint";
+import { emptyCreativePlanningContext, type CreativePlanningContext } from "./visual-planning";
 
 /** Identity of a Creative Brief — the structured context Stroman OS analyzes. */
 export type CreativeBriefId = Brand<string, "CreativeBriefId">;
@@ -32,6 +33,8 @@ export interface CreativeBrief extends CreativeBriefFields {
   readonly blueprint?: Blueprint | null;
   /** Server-side adapter id for auditability; never exposes credentials. */
   readonly reasoningProvider?: string | null;
+  /** Filmmaker-owned stage, production, scout, and spatial-correction state. */
+  readonly planningContext: CreativePlanningContext;
 }
 
 const FIELD_SPECS: ReadonlyArray<
@@ -80,7 +83,16 @@ export function createCreativeBrief(
     lockVersion: 1,
     blueprint: null,
     reasoningProvider: null,
+    planningContext: emptyCreativePlanningContext(),
   });
+}
+
+export function attachCreativePlanningContext(
+  brief: CreativeBrief,
+  planningContext: CreativePlanningContext,
+  blueprint: Blueprint,
+): CreativeBrief {
+  return { ...brief, planningContext, blueprint };
 }
 
 /** Replace the brief's context (a re-analysis). The persistence layer bumps lockVersion. */

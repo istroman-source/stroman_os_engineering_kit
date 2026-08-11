@@ -41,6 +41,10 @@ export class FileSystemSourceStorage implements SourceStorage {
     });
   }
 
+  async get(key: string): Promise<Uint8Array> {
+    return readFile(this.target(key));
+  }
+
   async retain(key: string, leaseId: string): Promise<void> {
     await this.exclusive(key, async () => {
       const state = this.requireLease(key, leaseId);

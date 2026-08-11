@@ -1,6 +1,7 @@
 import type { Analysis } from "./creative-api";
 import {
   CreativeBriefId,
+  emptyCreativePlanningContext,
   generateBlueprint,
   generateDevelopmentBlueprint,
   type CreativeBrief as DomainCreativeBrief,
@@ -23,6 +24,7 @@ export function creativeAnalysisFixture(interviewStrategy: string[] | null = nul
     createdAt: now,
     updatedAt: now,
     lockVersion: 1,
+    planningContext: emptyCreativePlanningContext(),
   };
   const generated = generateBlueprint(brief, generateDevelopmentBlueprint(brief));
 
@@ -39,6 +41,7 @@ export function creativeAnalysisFixture(interviewStrategy: string[] | null = nul
       context: brief.context,
       createdAt: "",
       updatedAt: "",
+      planningContext: brief.planningContext,
     },
     blueprint: { ...generated, interviewStrategy },
   };

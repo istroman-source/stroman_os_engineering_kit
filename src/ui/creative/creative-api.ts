@@ -1,7 +1,12 @@
 "use client";
 
-import { apiGetWithEtag, apiPostWithEtag } from "@/ui/auth/api-client";
-import type { Blueprint as DomainBlueprint } from "@/domain/creative";
+import { apiGetWithEtag, apiPostForm, apiPostWithEtag } from "@/ui/auth/api-client";
+import type {
+  Blueprint as DomainBlueprint,
+  CreativePlanningContext,
+  ProductionReality,
+  ProductionStage,
+} from "@/domain/creative";
 
 export type Blueprint = DomainBlueprint;
 
@@ -17,6 +22,7 @@ export interface CreativeBrief {
   readonly context: string;
   readonly createdAt: string;
   readonly updatedAt: string;
+  readonly planningContext: CreativePlanningContext;
 }
 
 export interface Analysis {
@@ -47,6 +53,30 @@ export async function analyzeProject(projectId: string, fields: AnalyzeFields): 
   const { data } = await apiPostWithEtag<Analysis>(
     `/api/v1/projects/${enc(projectId)}/analysis`,
     fields,
+  );
+  return data;
+}
+
+export async function uploadScoutPhotos(
+  projectId: string,
+  files: readonly File[],
+): Promise<Analysis> {
+  const form = new FormData();
+  for (const file of files) form.append("files", file);
+  return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/scout-photos`, form);
+}
+
+export async function updatePlanning(
+  projectId: string,
+  input: {
+    readonly stage?: ProductionStage;
+    readonly production?: Partial<ProductionReality>;
+    readonly correction?: { readonly statement: string; readonly replacesClaimId?: string | null };
+  },
+): Promise<Analysis> {
+  const { data } = await apiPostWithEtag<Analysis>(
+    `/api/v1/projects/${enc(projectId)}/planning`,
+    input,
   );
   return data;
 }

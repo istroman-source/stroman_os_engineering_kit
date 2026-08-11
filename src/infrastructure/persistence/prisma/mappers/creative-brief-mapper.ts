@@ -1,12 +1,31 @@
 import { Prisma, type CreativeBrief as CreativeBriefRow } from "@prisma/client";
-import { type CreativeBrief, CreativeBriefId, isBlueprint } from "@/domain/creative";
+import {
+  type CreativeBrief,
+  CreativeBriefId,
+  emptyCreativePlanningContext,
+  isBlueprint,
+  isCreativePlanningContext,
+  isMeaningfulDevelopment,
+} from "@/domain/creative";
 import { ProjectId } from "@/domain/project";
 import { PersistenceMappingError } from "../errors";
 import { orThrowMapping } from "./shared";
 
 export function toCreativeBrief(row: CreativeBriefRow): CreativeBrief {
-  if (row.blueprint !== null && !isBlueprint(row.blueprint)) {
+  const legacyBlueprint =
+    row.blueprint !== null &&
+    typeof row.blueprint === "object" &&
+    "development" in row.blueprint &&
+    isMeaningfulDevelopment((row.blueprint as { development?: unknown }).development) &&
+    Boolean(
+      (row.blueprint as { development?: { storyboard?: { status?: unknown } } }).development
+        ?.storyboard?.status === "RENDERED",
+    );
+  if (row.blueprint !== null && !isBlueprint(row.blueprint) && !legacyBlueprint) {
     throw new PersistenceMappingError(`creativeBrief.blueprint id="${row.id}"`);
+  }
+  if (row.planningContext !== null && !isCreativePlanningContext(row.planningContext)) {
+    throw new PersistenceMappingError(`creativeBrief.planningContext id="${row.id}"`);
   }
   return {
     id: orThrowMapping(CreativeBriefId.parse(row.id), `creativeBrief.id="${row.id}"`),
@@ -24,8 +43,9 @@ export function toCreativeBrief(row: CreativeBriefRow): CreativeBrief {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     lockVersion: row.lockVersion,
-    blueprint: row.blueprint,
+    blueprint: isBlueprint(row.blueprint) ? row.blueprint : null,
     reasoningProvider: row.reasoningProvider,
+    planningContext: row.planningContext ?? emptyCreativePlanningContext(),
   };
 }
 
@@ -44,6 +64,7 @@ export function toCreativeBriefFields(brief: CreativeBrief): Prisma.CreativeBrie
       ? (brief.blueprint as unknown as Prisma.InputJsonValue)
       : Prisma.DbNull,
     reasoningProvider: brief.reasoningProvider ?? null,
+    planningContext: brief.planningContext as unknown as Prisma.InputJsonValue,
     createdAt: brief.createdAt,
     updatedAt: brief.updatedAt,
     lockVersion: brief.lockVersion,

@@ -6,7 +6,9 @@ import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repo
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
 import { getCreativeBrief } from "./get-creative-brief";
 import { saveCreativeBrief } from "./save-creative-brief";
+import { updateCreativePlanning } from "./update-creative-planning";
 import { FakeCreativeReasoningProvider } from "../../../test/adapters/fake-creative-reasoning-provider";
+import { InvalidValueError } from "@/domain/shared";
 
 const OWNER = OwnerId.unsafe("usr_OWNER001");
 const OTHER = OwnerId.unsafe("usr_OTHER001");
@@ -117,5 +119,98 @@ describe("getCreativeBrief", () => {
     const denied = await getCreativeBrief(d, { actorId: OTHER, projectId: PROJECT });
     expect(denied.ok).toBe(false);
     if (!denied.ok) expect(denied.error).toBeInstanceOf(NotAuthorizedError);
+  });
+});
+
+describe("updateCreativePlanning", () => {
+  const scoutPhotos = [
+    {
+      id: "scout_threshold",
+      mediaAssetId: "mast_SCOUT001",
+      fileName: "threshold.png",
+      contentType: "image/png",
+      contentHash: "sha256:256f5714e3ada933de706cb5d8d47caad2f3b3899dcd4a438e794078b97de626",
+      angleLabel: "Threshold wide",
+    },
+    {
+      id: "scout_reverse",
+      mediaAssetId: "mast_SCOUT002",
+      fileName: "reverse.png",
+      contentType: "image/png",
+      contentHash: "sha256:e222ebf5190d36e8962d646dfad2f0d3e0f6b9ca5be78cf0fcdb257630514ddb",
+      angleLabel: "Sink-side reverse",
+    },
+  ] as const;
+
+  it("updates only the planning layer and persists photo-grounded spatial state", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    const result = await updateCreativePlanning(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      stage: "PRE_PRODUCTION",
+      production: { crew: "solo operator", support: "tripod only" },
+      scoutPhotos,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.blueprint.development.visualPlan).toMatchObject({
+      stage: "PRE_PRODUCTION",
+      location: { mode: "PHOTO_ANCHORED" },
+      productionReality: { crew: "solo operator", support: "tripod only" },
+    });
+    expect(result.value.blueprint.development.directionDecision.title).toBe("The first quiet bite");
+    const persisted = await d.creativeBriefs.findByProject(PROJECT);
+    expect(persisted?.planningContext.scoutPhotos).toHaveLength(2);
+    expect(persisted?.blueprint).toEqual(result.value.blueprint);
+  });
+
+  it("applies a spatial correction without re-entering project intent", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    await updateCreativePlanning(d, { actorId: OWNER, projectId: PROJECT, scoutPhotos });
+    const corrected = await updateCreativePlanning(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      correction: {
+        statement: "Camera cannot go behind the island; the pendant cannot be dimmed.",
+        replacesClaimId: "inferred_camera_lane",
+      },
+    });
+    expect(corrected.ok).toBe(true);
+    if (!corrected.ok) return;
+    expect(corrected.value.blueprint.development.visualPlan.delta.trigger).toBe(
+      "Filmmaker correction applied",
+    );
+    expect(
+      corrected.value.blueprint.development.visualPlan.blocking.cameras.find(
+        (camera) => camera.id === "c2",
+      )?.use,
+    ).toMatch(/rejected/i);
+    expect(corrected.value.brief.title).toBe(fields().title);
+  });
+
+  it("denies another owner from changing a plan", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    const result = await updateCreativePlanning(d, {
+      actorId: OTHER,
+      projectId: PROJECT,
+      stage: "SHOOTING",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(NotAuthorizedError);
+  });
+
+  it("rejects an empty filmmaker correction before changing the plan", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    const result = await updateCreativePlanning(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      correction: { statement: "   " },
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toBeInstanceOf(InvalidValueError);
   });
 });

@@ -1,7 +1,13 @@
 import type { CreativeBrief } from "./creative-brief";
 import type { CreativeMode, DevelopmentBlueprint } from "./development-blueprint";
-import { isMeaningfulDevelopment } from "./creative-quality";
 import type { MeaningfulDevelopment } from "./meaningful-development";
+import {
+  emptyCreativePlanningContext,
+  generateVisualPlan,
+  isVisualPlan,
+  type CreativePlanningContext,
+  type VisualPlan,
+} from "./visual-planning";
 
 /** A single hook concept the creator can open the piece with. */
 export interface HookConcept {
@@ -14,9 +20,10 @@ export interface HookConcept {
  * produced before editing begins. Pure data so it can be regenerated
  * deterministically from a brief and serialized without transformation.
  */
-export interface BlueprintDevelopment extends MeaningfulDevelopment {
+export interface BlueprintDevelopment extends Omit<MeaningfulDevelopment, "storyboard"> {
   readonly basis: "PROJECT_INTENT_ONLY";
   readonly mode: CreativeMode;
+  readonly visualPlan: VisualPlan;
 }
 
 export interface Blueprint {
@@ -67,7 +74,11 @@ function sentence(value: string): string {
  * rule-based reasoning engine — the seam a provider-backed engine can later sit
  * behind. Given the same brief it always produces the same blueprint.
  */
-export function generateBlueprint(brief: CreativeBrief, source: DevelopmentBlueprint): Blueprint {
+export function generateBlueprint(
+  brief: CreativeBrief,
+  source: DevelopmentBlueprint,
+  planningContext: CreativePlanningContext = emptyCreativePlanningContext(),
+): Blueprint {
   const development: BlueprintDevelopment = {
     basis: source.basis,
     mode: source.mode,
@@ -78,7 +89,7 @@ export function generateBlueprint(brief: CreativeBrief, source: DevelopmentBluep
     alternativeDecisions: source.alternativeDecisions,
     sceneHypotheses: source.sceneHypotheses,
     directorNotebook: source.directorNotebook,
-    storyboard: source.storyboard,
+    visualPlan: generateVisualPlan(brief, source.mode, source, planningContext),
     questions: source.questions,
     productionNextSteps: source.productionNextSteps,
   };
@@ -159,12 +170,39 @@ export function generateBlueprint(brief: CreativeBrief, source: DevelopmentBluep
   };
 }
 
+/** Rebuild only the visual/cognitive layer after stage, scout, or constraint changes. */
+export function refreshBlueprintVisualPlan(
+  brief: CreativeBrief,
+  blueprint: Blueprint,
+  planningContext: CreativePlanningContext,
+): Blueprint {
+  return {
+    ...blueprint,
+    development: {
+      ...blueprint.development,
+      visualPlan: generateVisualPlan(
+        brief,
+        blueprint.development.mode,
+        blueprint.development,
+        planningContext,
+      ),
+    },
+  };
+}
+
 /** Narrow persisted/provider JSON before it crosses into the product domain. */
 export function isBlueprint(value: unknown): value is Blueprint {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<Blueprint>;
   return (
-    isMeaningfulDevelopment(candidate.development) &&
+    candidate.development?.version === 2 &&
+    Boolean(candidate.development.insight && candidate.development.directionDecision) &&
+    Array.isArray(candidate.development.alternativeDecisions) &&
+    Array.isArray(candidate.development.sceneHypotheses) &&
+    Array.isArray(candidate.development.directorNotebook) &&
+    Array.isArray(candidate.development.questions) &&
+    Array.isArray(candidate.development.productionNextSteps) &&
+    isVisualPlan(candidate.development.visualPlan) &&
     candidate.development?.basis === "PROJECT_INTENT_ONLY" &&
     typeof candidate.development.mode === "string" &&
     typeof candidate.projectSummary === "string" &&

@@ -3,6 +3,7 @@ import {
   CreativeQualityError,
   CreativeReasoningError,
   evaluateCreativeQuality,
+  evaluateVisualPlanQuality,
   generateBlueprint,
   generateDevelopmentBlueprint,
   isMeaningfulDevelopment,
@@ -57,7 +58,17 @@ export async function developCreativeBlueprint(
       );
     }
     const development = { ...generateDevelopmentBlueprint(brief), ...meaningful };
-    return ok(generateBlueprint(brief, development));
+    const blueprint = generateBlueprint(brief, development, brief.planningContext);
+    const visualQuality = evaluateVisualPlanQuality(blueprint.development.visualPlan);
+    if (!visualQuality.passed) {
+      return err(
+        new CreativeQualityError(
+          "Creative development failed the visual-planning quality gate.",
+          visualQuality.findings,
+        ),
+      );
+    }
+    return ok(blueprint);
   } catch (cause) {
     if (cause instanceof CreativeReasoningError || cause instanceof CreativeQualityError) {
       return err(cause);

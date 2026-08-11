@@ -493,6 +493,7 @@ model CreativeBrief {
   context           String
   blueprint         Json?
   reasoningProvider String?  @map("reasoning_provider")
+  planningContext   Json?    @map("planning_context")
   createdAt         DateTime @map("created_at") @db.Timestamptz(3)
   updatedAt         DateTime @map("updated_at") @db.Timestamptz(3)
   lockVersion       Int      @default(1) @map("lock_version")

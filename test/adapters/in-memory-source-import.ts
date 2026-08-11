@@ -22,6 +22,12 @@ export class InMemorySourceStorage implements SourceStorage {
     return { leaseId };
   }
 
+  async get(key: string): Promise<Uint8Array> {
+    const value = this.values.get(key);
+    if (!value) throw new Error("Stored source not found");
+    return Uint8Array.from(value);
+  }
+
   async retain(key: string, leaseId: string): Promise<void> {
     const lease = this.leases.get(leaseId);
     if (!lease || lease.key !== key) throw new Error("unknown lease");
