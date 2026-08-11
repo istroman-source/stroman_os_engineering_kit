@@ -19,8 +19,13 @@
 - Spatial corrections regenerate the planning layer without re-entering project intent. The plan
   reports what changed and what remained, and refuses a malformed or visually incomplete update
   before persistence.
+- The correction control defaults safely when one inferred claim is available while preserving an
+  explicit “add a confirmed fact” path that does not retire any existing claim. Desktop and mobile
+  evidence captures demonstrate both additive and replacing corrections.
 - Exact deterministic intent-only and photo-anchored JSON fixtures are tracked for automated and
-  independent review. Location photos and their hashes are tracked with the evaluation evidence.
+  independent review, and an evaluation gate now compares both checked-in outputs with the current
+  generators to prevent stale evidence. Location photos and their hashes are tracked with the
+  evaluation evidence.
 - Existing persisted symbolic blueprints fail closed into re-analysis instead of being silently
   presented through the new contract. The migration only adds nullable planning context and does
   not rewrite source, provenance, project, or user data.

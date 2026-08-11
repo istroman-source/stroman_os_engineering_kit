@@ -178,6 +178,37 @@ describe("frame-accurate visual planning release gate", () => {
     expect(evaluateVisualPlanQuality(output)).toEqual({ passed: true, findings: [] });
   });
 
+  it("keeps checked-in JSON evidence synchronized with the deterministic generators", () => {
+    const intentBrief = project();
+    const expectedIntent = generateBlueprint(
+      intentBrief,
+      generateDevelopmentBlueprint(intentBrief),
+    );
+    const actualIntent = JSON.parse(
+      readFileSync(resolve(root, "evaluations/artifacts/jimmys-creative-output.json"), "utf8"),
+    ) as { readonly blueprint: unknown };
+    expect(actualIntent.blueprint).toEqual(expectedIntent);
+
+    const scoutContext = withPlanningSettings(
+      withScoutPhotos(emptyCreativePlanningContext(), scoutFixture.photos),
+      "PRE_PRODUCTION",
+      { crew: "solo operator", support: "tripod only", shootTime: "four setups" },
+    );
+    const scoutBrief = project(scoutContext);
+    const expectedScout = generateBlueprint(
+      scoutBrief,
+      generateDevelopmentBlueprint(scoutBrief),
+      scoutContext,
+    );
+    const actualScout = JSON.parse(
+      readFileSync(
+        resolve(root, "evaluations/artifacts/jimmys-scout-creative-output.json"),
+        "utf8",
+      ),
+    ) as { readonly blueprint: unknown };
+    expect(actualScout.blueprint).toEqual(expectedScout);
+  });
+
   it("prioritizes must-get coverage and explicitly permits restraint", () => {
     const output = plan();
     expect(output.coverage.filter((setup) => setup.priority === "MUST_GET")).toHaveLength(2);

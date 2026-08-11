@@ -704,7 +704,8 @@ function ScoutPanel({
   });
   const replacementId =
     replacementChoice.key === replaceableKey &&
-    replaceableClaims.some((claim) => claim.id === replacementChoice.value)
+    (replacementChoice.value === "" ||
+      replaceableClaims.some((claim) => claim.id === replacementChoice.value))
       ? replacementChoice.value
       : defaultReplacementId;
   async function submitPhotos(event: FormEvent) {

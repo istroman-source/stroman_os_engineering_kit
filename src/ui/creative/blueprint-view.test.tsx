@@ -85,7 +85,7 @@ describe("BlueprintView", () => {
     expect(onReanalyze).toHaveBeenCalled();
   });
 
-  it("sends the selected inferred claim when a filmmaker applies a correction", async () => {
+  it("lets a filmmaker replace the inferred claim or explicitly add a confirmed fact", async () => {
     const base = creativeAnalysisFixture();
     const visualPlan = base.blueprint.development.visualPlan;
     const analysis = {
@@ -130,6 +130,21 @@ describe("BlueprintView", () => {
     expect(onCorrection).toHaveBeenCalledWith(
       "Camera cannot go behind the island.",
       "inferred_camera_lane",
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: /this correction replaces/i }),
+      "",
+    );
+    expect(screen.getByRole("combobox", { name: /this correction replaces/i })).toHaveValue("");
+    await user.type(
+      screen.getByPlaceholderText(/quick correction/i),
+      "The practical over the island can be dimmed.",
+    );
+    await user.click(screen.getByRole("button", { name: "Apply correction" }));
+    expect(onCorrection).toHaveBeenLastCalledWith(
+      "The practical over the island can be dimmed.",
+      null,
     );
   });
 });

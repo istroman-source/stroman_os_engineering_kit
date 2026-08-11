@@ -1249,17 +1249,17 @@
               "id": "island",
               "label": "ISLAND",
               "x": 34,
-              "y": 31,
+              "y": 36,
               "width": 40,
-              "height": 27
+              "height": 22
             },
             {
               "id": "sink_window",
               "label": "SINK + WINDOW",
               "x": 74,
-              "y": 7,
+              "y": 4,
               "width": 21,
-              "height": 20
+              "height": 23
             },
             {
               "id": "fridge",
