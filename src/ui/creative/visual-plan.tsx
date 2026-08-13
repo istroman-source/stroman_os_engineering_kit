@@ -36,7 +36,15 @@ interface FrameScale {
 const frameX = (value: number, frame: FrameScale) => (value / 100) * frame.width;
 const frameY = (value: number, frame: FrameScale) => (value / 100) * frame.height;
 
-function SetPiece({ piece, frame }: { piece: PrevisSetPiece; frame: FrameScale }) {
+function SetPiece({
+  piece,
+  frame,
+  code,
+}: {
+  piece: PrevisSetPiece;
+  frame: FrameScale;
+  code: string;
+}) {
   const story = piece.emphasis === "STORY";
   const x = frameX(piece.x, frame);
   const y = frameY(piece.y, frame);
@@ -62,7 +70,7 @@ function SetPiece({ piece, frame }: { piece: PrevisSetPiece; frame: FrameScale }
           strokeWidth={(story ? 1.2 : 0.7) * frame.unit}
         />
         <text x={x + frame.unit} y={y + 5 * frame.unit} fontSize={2.8 * frame.unit} fill="#4d4a44">
-          {piece.label}
+          {code}
         </text>
       </g>
     );
@@ -103,13 +111,21 @@ function SetPiece({ piece, frame }: { piece: PrevisSetPiece; frame: FrameScale }
         fill={piece.kind === "MEAL" ? "#fffaf0" : "#4d4a44"}
         fontWeight={story ? 650 : 500}
       >
-        {piece.label}
+        {code}
       </text>
     </g>
   );
 }
 
-function Figure({ figure, frame }: { figure: PrevisFigure; frame: FrameScale }) {
+function Figure({
+  figure,
+  frame,
+  code,
+}: {
+  figure: PrevisFigure;
+  frame: FrameScale;
+  code: string;
+}) {
   const x = frameX(figure.x, frame);
   const y = frameY(figure.y, frame);
   const width = frameX(figure.width, frame);
@@ -136,7 +152,7 @@ function Figure({ figure, frame }: { figure: PrevisFigure; frame: FrameScale }) 
           fill="#4d4a44"
           fontWeight="650"
         >
-          {figure.label}
+          {code}
         </text>
       </g>
     );
@@ -167,7 +183,7 @@ function Figure({ figure, frame }: { figure: PrevisFigure; frame: FrameScale }) 
         fill="#403d38"
         fontWeight="700"
       >
-        {figure.label}
+        {code}
       </text>
     </g>
   );
@@ -243,19 +259,29 @@ function PrevisFrame({ composition }: { composition: PrevisComposition }) {
           {["BACKGROUND", "MIDGROUND", "FOREGROUND"].flatMap((plane) =>
             composition.setPieces
               .filter((piece) => piece.plane === plane)
-              .map((piece) => (
-                <SetPiece key={`${piece.kind}-${piece.label}`} piece={piece} frame={frame} />
+              .map((piece, index) => (
+                <SetPiece
+                  key={`${plane}-${piece.kind}-${piece.label}-${index}`}
+                  piece={piece}
+                  frame={frame}
+                  code={`S${composition.setPieces.indexOf(piece) + 1}`}
+                />
               )),
           )}
           {["BACKGROUND", "MIDGROUND", "FOREGROUND"].flatMap((plane) =>
             composition.figures
               .filter((item) => item.plane === plane)
-              .map((item) => (
-                <Figure key={`${item.kind}-${item.label}`} figure={item} frame={frame} />
+              .map((item, index) => (
+                <Figure
+                  key={`${plane}-${item.kind}-${item.label}-${index}`}
+                  figure={item}
+                  frame={frame}
+                  code={`P${composition.figures.indexOf(item) + 1}`}
+                />
               )),
           )}
-          {composition.motion.map((motion) => (
-            <g key={motion.label} className="text-[#963f34]">
+          {composition.motion.map((motion, index) => (
+            <g key={`${motion.label}-${index}`} className="text-[#963f34]">
               <path
                 d={`M${x(motion.fromX)} ${y(motion.fromY)} Q${x((motion.fromX + motion.toX) / 2)} ${y(Math.min(motion.fromY, motion.toY)) - 6 * frame.unit} ${x(motion.toX)} ${y(motion.toY)}`}
                 fill="none"
@@ -271,12 +297,12 @@ function PrevisFrame({ composition }: { composition: PrevisComposition }) {
                 fontSize={2.7 * frame.unit}
                 fill="currentColor"
               >
-                {motion.label}
+                {`A${index + 1}`}
               </text>
             </g>
           ))}
-          {composition.light.map((light) => (
-            <g key={light.label}>
+          {composition.light.map((light, index) => (
+            <g key={`${light.label}-${index}`}>
               <path
                 d={`M${x(light.fromX)} ${y(light.fromY)} L${x(light.toX)} ${y(light.toY)}`}
                 stroke={
@@ -313,6 +339,24 @@ function PrevisFrame({ composition }: { composition: PrevisComposition }) {
           {composition.executionStrip[0]}
         </p>
         <p className="mt-1 text-xs text-[#625d55]">{composition.executionStrip[1]}</p>
+        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-[#d8d0c3] pt-2 text-[0.67rem] text-[#5a554e]">
+          <span className="font-semibold text-[#34312c]">Frame map</span>
+          {composition.figures.map((figure, index) => (
+            <span key={`${figure.label}-${index}`}>
+              <strong className="font-mono text-[#34312c]">P{index + 1}</strong> {figure.label}
+            </span>
+          ))}
+          {composition.setPieces.map((piece, index) => (
+            <span key={`${piece.label}-${index}`}>
+              <strong className="font-mono text-[#34312c]">S{index + 1}</strong> {piece.label}
+            </span>
+          ))}
+          {composition.motion.map((motion, index) => (
+            <span key={`${motion.label}-${index}`}>
+              <strong className="font-mono text-[#963f34]">A{index + 1}</strong> {motion.label}
+            </span>
+          ))}
+        </div>
       </figcaption>
     </figure>
   );
@@ -352,13 +396,29 @@ function PersonMarker({
   label,
   note,
   baby,
+  object,
 }: {
   x: number;
   y: number;
   label: string;
   note: string;
   baby: boolean;
+  object: boolean;
 }) {
+  if (object) {
+    return (
+      <g transform={`translate(${x} ${y})`}>
+        <rect x="-5" y="-5" width="10" height="10" rx="1" fill="#b98955" stroke="#3d3933" />
+        <path d="M-3-2H3M-3 1H3M-2 4H2" stroke="#f4efe3" strokeWidth="0.7" />
+        <text x="0" y="17" textAnchor="middle" fontSize="2.3" fill="#3d3933" fontWeight="700">
+          {label}
+        </text>
+        <text x="0" y="20" textAnchor="middle" fontSize="1.6" fill="#686158">
+          {note}
+        </text>
+      </g>
+    );
+  }
   return (
     <g transform={`translate(${x} ${y})`}>
       <circle cy="-3" r="3" fill="#b37d60" stroke="#3d3933" strokeWidth="0.6" />
@@ -384,37 +444,135 @@ function PersonMarker({
 function CameraMarker({
   x,
   y,
-  label,
-  aimX,
-  aimY,
+  code,
+  aims,
 }: {
   x: number;
   y: number;
-  label: string;
-  aimX: number;
-  aimY: number;
+  code: string;
+  aims: readonly { readonly aimX: number; readonly aimY: number }[];
 }) {
+  const labelWidth = Math.max(7, Math.min(16, code.length * 1.65));
+  const lensX = labelWidth / 2;
   return (
     <g>
-      <path
-        d={`M${x} ${y} L${aimX} ${aimY}`}
-        stroke="#3e4e53"
-        strokeWidth="0.8"
-        strokeDasharray="2 1"
-      />
+      {aims.map((aim, index) => (
+        <path
+          key={`${aim.aimX}-${aim.aimY}-${index}`}
+          d={`M${x} ${y} L${aim.aimX} ${aim.aimY}`}
+          stroke="#3e4e53"
+          strokeWidth="0.8"
+          strokeDasharray="2 1"
+        />
+      ))}
       <g transform={`translate(${x} ${y})`}>
-        <rect x="-4" y="-3" width="7" height="6" rx="1" fill="#34464c" />
-        <path d="M3-2L8-5V5L3 2Z" fill="#34464c" />
-        <text x="0" y="-6" textAnchor="middle" fontSize="2.8" fill="#27383d" fontWeight="800">
-          {label}
+        <rect x={-labelWidth / 2} y="-3" width={labelWidth} height="6" rx="1" fill="#34464c" />
+        <path d={`M${lensX}-2L${lensX + 5}-5V5L${lensX} 2Z`} fill="#34464c" />
+        <text x="0" y="0.9" textAnchor="middle" fontSize="2.4" fill="#fffaf0" fontWeight="800">
+          {code}
         </text>
       </g>
     </g>
   );
 }
 
+function groupedCameraMarkers(cameras: BlockingPlan["cameras"]) {
+  const groups: Array<{
+    x: number;
+    y: number;
+    codes: string[];
+    aims: Array<{ aimX: number; aimY: number }>;
+  }> = [];
+  cameras.forEach((camera, index) => {
+    const nearby = groups.find((group) => Math.hypot(group.x - camera.x, group.y - camera.y) < 14);
+    if (nearby) {
+      const count = nearby.codes.length;
+      nearby.x = (nearby.x * count + camera.x) / (count + 1);
+      nearby.y = (nearby.y * count + camera.y) / (count + 1);
+      nearby.codes.push(`C${index + 1}`);
+      nearby.aims.push({ aimX: camera.aimX, aimY: camera.aimY });
+      return;
+    }
+    groups.push({
+      x: camera.x,
+      y: camera.y,
+      codes: [`C${index + 1}`],
+      aims: [{ aimX: camera.aimX, aimY: camera.aimY }],
+    });
+  });
+  return groups;
+}
+
+function routeCode(label: string, index: number): string {
+  const initials = label
+    .split(/\s+/)
+    .map((word) => word[0])
+    .join("")
+    .replace(/[^a-z0-9]/gi, "")
+    .slice(0, 2)
+    .toUpperCase();
+  return `${initials || "P"}${index + 1}`;
+}
+
+function RouteMarker({
+  x,
+  y,
+  code,
+  object,
+}: {
+  x: number;
+  y: number;
+  code: string;
+  object: boolean;
+}) {
+  const grouped = code.includes("·");
+  return (
+    <g transform={`translate(${x} ${y})`}>
+      {object || grouped ? (
+        <rect
+          x={grouped ? -6 : -3}
+          y="-3"
+          width={grouped ? 12 : 6}
+          height="6"
+          rx="1.2"
+          fill={object ? "#9a6237" : "#99463b"}
+          stroke="#3d3933"
+        />
+      ) : (
+        <circle r="3.3" fill="#99463b" stroke="#3d3933" strokeWidth="0.6" />
+      )}
+      <text x="0" y="0.8" textAnchor="middle" fontSize="1.9" fill="#fffaf0" fontWeight="800">
+        {code}
+      </text>
+    </g>
+  );
+}
+
+function groupedRouteMarkers(subjects: BlockingPlan["subjects"]) {
+  const groups: Array<{ x: number; y: number; codes: string[]; object: boolean }> = [];
+  subjects.forEach((subject) => {
+    subject.states.forEach((state, index) => {
+      const nearby = groups.find((group) => Math.hypot(group.x - state.x, group.y - state.y) < 4);
+      if (nearby) {
+        nearby.codes.push(routeCode(subject.label, index));
+        nearby.object ||= subject.marker === "OBJECT";
+        return;
+      }
+      groups.push({
+        x: state.x,
+        y: state.y,
+        codes: [routeCode(subject.label, index)],
+        object: subject.marker === "OBJECT",
+      });
+    });
+  });
+  return groups;
+}
+
 function BlockingDiagram({ plan }: { plan: BlockingPlan }) {
   const marker = "blocking-direction";
+  const compactRoute = plan.subjects.some((subject) => subject.states.length > 3);
+  const compactSubjects = compactRoute ? plan.subjects : [];
   return (
     <figure className="rounded-lg border border-[#c9c1b4] bg-[#f4efe3] p-4 text-[#34312c]">
       <figcaption>
@@ -479,22 +637,77 @@ function BlockingDiagram({ plan }: { plan: BlockingPlan }) {
                 />
               );
             })}
-            {subject.states.map((state) => (
-              <PersonMarker
-                key={state.label}
-                x={state.x}
-                y={state.y}
-                label={`${subject.label} — ${state.label}`}
-                note={state.note}
-                baby={Boolean(subject.carries)}
-              />
-            ))}
+            {compactRoute
+              ? null
+              : subject.states.map((state) => (
+                  <PersonMarker
+                    key={state.label}
+                    x={state.x}
+                    y={state.y}
+                    label={`${subject.label} — ${state.label}`}
+                    note={state.note}
+                    baby={Boolean(subject.carries)}
+                    object={subject.marker === "OBJECT"}
+                  />
+                ))}
           </g>
         ))}
-        {plan.cameras.map((camera) => (
-          <CameraMarker key={camera.id} {...camera} />
+        {compactRoute
+          ? groupedRouteMarkers(plan.subjects).map((group) => (
+              <RouteMarker
+                key={group.codes.join("-")}
+                x={group.x}
+                y={group.y}
+                code={group.codes.join("·")}
+                object={group.object}
+              />
+            ))
+          : null}
+        {groupedCameraMarkers(plan.cameras).map((group) => (
+          <CameraMarker
+            key={group.codes.join("-")}
+            x={group.x}
+            y={group.y}
+            code={group.codes.map((code, index) => (index === 0 ? code : code.slice(1))).join("/")}
+            aims={group.aims}
+          />
         ))}
       </svg>
+      {compactSubjects.length ? (
+        <div className="mt-3 grid gap-2 rounded-md border border-[#d1cabd] bg-white/55 px-3 py-2 text-xs">
+          {compactSubjects.map((subject) => (
+            <div key={subject.id} className="flex flex-wrap items-center gap-1.5">
+              <span className="mr-1 font-semibold">
+                {subject.label} {subject.states.length > 1 ? "route" : "position"}
+              </span>
+              {subject.states.map((state, index) => (
+                <span key={state.label} className="inline-flex items-center gap-1">
+                  {index > 0 ? <span aria-hidden="true">→</span> : null}
+                  <span className="rounded bg-[#99463b] px-1.5 py-0.5 font-mono font-semibold text-[#fffaf0]">
+                    {routeCode(subject.label, index)}
+                  </span>
+                  <span>{state.label}</span>
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {plan.cameras.length ? (
+        <div className="mt-3 grid gap-2 rounded-md border border-[#d1cabd] bg-white/55 px-3 py-2 text-xs sm:grid-cols-2">
+          {plan.cameras.map((camera, index) => (
+            <div key={camera.id} className="flex items-start gap-2">
+              <span className="rounded bg-[#34464c] px-1.5 py-0.5 font-mono font-semibold text-[#fffaf0]">
+                C{index + 1}
+              </span>
+              <span>
+                <strong>{camera.label}</strong>
+                <span className="text-[#625d55]"> · {camera.use}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : null}
       {plan.restrictions.length ? (
         <p className="mt-3 rounded-md bg-white/55 px-3 py-2 text-xs text-[#5d574f]">
           <span className="font-semibold text-[#312e2a]">Do not assume:</span>{" "}
@@ -542,9 +755,10 @@ function LightingDiagram({ plan }: { plan: LightingPlan }) {
             </text>
           </g>
         ))}
-        {plan.sources.map((source) => {
+        {plan.sources.map((source, index) => {
           const color =
             source.tone === "COOL" ? "#668998" : source.tone === "WARM" ? "#c28b32" : "#6d6b66";
+          const code = `L${index + 1}`;
           return (
             <g key={source.id}>
               <path
@@ -556,26 +770,28 @@ function LightingDiagram({ plan }: { plan: LightingPlan }) {
               <circle cx={source.x} cy={source.y} r="3.2" fill={color} />
               <text
                 x={source.x}
-                y={source.y - 5}
+                y={source.y + 0.8}
                 textAnchor="middle"
                 fontSize="1.8"
-                fill="#3e3932"
-                fontWeight="700"
+                fill="#fffaf0"
+                fontWeight="800"
               >
-                {source.label.split(" — ")[0]}
-              </text>
-              <text x={source.x} y={source.y + 6} textAnchor="middle" fontSize="1.4" fill="#625d55">
-                {source.control}
+                {code}
               </text>
             </g>
           );
         })}
       </svg>
       <div className="mx-auto mt-3 grid max-w-4xl gap-2 sm:grid-cols-2">
-        {plan.sources.map((source) => (
+        {plan.sources.map((source, index) => (
           <div key={source.id} className="rounded-md border border-[#c9c1b4] bg-white/45 px-3 py-2">
-            <p className="text-xs font-semibold">
-              {source.label} · {source.control.toLowerCase()}
+            <p className="flex items-start gap-2 text-xs font-semibold">
+              <span className="rounded bg-[#5d574f] px-1.5 py-0.5 font-mono text-[#fffaf0]">
+                L{index + 1}
+              </span>
+              <span>
+                {source.label} · {source.control.toLowerCase()}
+              </span>
             </p>
             <p className="mt-1 text-xs text-[#625d55]">{source.use}</p>
           </div>

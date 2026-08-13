@@ -91,6 +91,7 @@ function detectMode(brief: CreativeBrief): CreativeMode {
   const combined =
     `${explicit} ${brief.title} ${brief.creativeGoal} ${brief.context}`.toLowerCase();
   const modeSignals: ReadonlyArray<readonly [CreativeMode, RegExp]> = [
+    ["OPEN", /\b(?:open(?:-format)?|experimental|installation|moving-image study)\b/],
     ["PERFORMANCE", /\b(?:performance|music|concert|dance|song|artist|stage|live session)\b/],
     [
       "DOCUMENTARY",

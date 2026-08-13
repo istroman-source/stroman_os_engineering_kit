@@ -9,6 +9,13 @@ import { saveCreativeBrief } from "./save-creative-brief";
 import { updateCreativePlanning } from "./update-creative-planning";
 import { FakeCreativeReasoningProvider } from "../../../test/adapters/fake-creative-reasoning-provider";
 import { InvalidValueError } from "@/domain/shared";
+import {
+  attachCreativeBlueprint,
+  CreativeBriefId,
+  createCreativeBrief,
+  generateBlueprint,
+  generateDevelopmentBlueprint,
+} from "@/domain/creative";
 
 const OWNER = OwnerId.unsafe("usr_OWNER001");
 const OTHER = OwnerId.unsafe("usr_OTHER001");
@@ -141,6 +148,41 @@ describe("updateCreativePlanning", () => {
       angleLabel: "Sink-side reverse",
     },
   ] as const;
+
+  it("preserves hosted storyboard scene logic when the filmmaker changes planning stage", async () => {
+    const d = deps();
+    const created = createCreativeBrief({
+      id: CreativeBriefId.unsafe("brief_HOSTPLAN1"),
+      projectId: PROJECT,
+      now: new Date("2026-07-19T00:00:00.000Z"),
+      ...fields(),
+    });
+    if (!created.ok) throw created.error;
+    const hostedDevelopment = {
+      ...generateDevelopmentBlueprint(created.value),
+      reasoningSource: "HOSTED_REASONING" as const,
+    };
+    const hostedBlueprint = generateBlueprint(created.value, hostedDevelopment);
+    d.creativeBriefs.insert(
+      attachCreativeBlueprint(created.value, hostedBlueprint, "openai-responses:gpt-test"),
+    );
+
+    const result = await updateCreativePlanning(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      stage: "SCOUTING",
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.blueprint.development.reasoningSource).toBe("HOSTED_REASONING");
+    expect(result.value.blueprint.development.visualPlan.stage).toBe("SCOUTING");
+    expect(result.value.blueprint.development.visualPlan.delta.trigger).toBe(
+      "Hosted creative direction developed",
+    );
+    expect(result.value.blueprint.development.visualPlan.shots[0]?.title).toBe(
+      hostedDevelopment.sceneHypotheses[0]?.title,
+    );
+  });
 
   it("updates only the planning layer and persists photo-grounded spatial state", async () => {
     const d = deps();

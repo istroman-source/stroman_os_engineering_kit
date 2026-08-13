@@ -1,5 +1,33 @@
 # Build Progress
 
+## Hosted Creative-Reasoning Calibration and Visual Blueprint
+
+**Date:** 2026-08-11 · **Status:** Local hosted calibration complete — exact-head release gate pending
+
+The configured OpenAI Responses provider completed a real request and produced actual hosted
+creative development through the Stroman application for commercial, documentary, narrative,
+performance, and open projects. The Jimmy's Famous Meals candidate transforms the supplied brief
+into a denied-sit scene engine, an active caregiving-geometry decision, a purposeful delay of the
+first clean product read, three materially different alternatives, and explicit sacrifice and
+change-my-mind criteria. A raw same-model general-purpose baseline and an adversarial fixture make
+genericness and prompt-injection resistance reviewable rather than assumed.
+
+Hosted storyboard intent now becomes four independently composed 16:9 and 9:16 frame pairs with a
+compact frame map, route-based blocking, separate lighting/look/sound/coverage artifacts, and
+project-specific execution strips. The Jimmy hosted direction can be rerendered against the
+two-angle kitchen scout fixture: visible island, window, pendant, fridge, and hall facts ground the
+plan while unmeasured camera depth, furniture fit, dimensions, and controls remain uncertain. The
+browser evidence covers desktop and mobile progressive disclosure and the actual rendered frames,
+not only JSON or schema validity.
+
+The provider-neutral architecture, deterministic offline specialist, semantic and visual fail-
+closed gates, evidence boundaries, filmmaker authority, existing Analyze & Edit workflow, and
+security controls remain intact. Exact artifacts and the full evaluation are recorded in
+`docs/HOSTED_CREATIVE_CALIBRATION.md`. Exact-head CI, independent Claude product-meaning review,
+SHA verification, and post-merge main CI remain required release steps.
+
+---
+
 ## Idea-First Creative Development and Director Blueprint
 
 **Date:** 2026-08-10 · **Status:** Complete — READY FOR HUMAN TESTING

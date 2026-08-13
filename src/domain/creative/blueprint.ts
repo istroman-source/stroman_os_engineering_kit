@@ -1,6 +1,6 @@
 import type { CreativeBrief } from "./creative-brief";
 import type { CreativeMode, DevelopmentBlueprint } from "./development-blueprint";
-import type { MeaningfulDevelopment } from "./meaningful-development";
+import type { MeaningfulDevelopment, StoryboardArtifact } from "./meaningful-development";
 import {
   emptyCreativePlanningContext,
   generateVisualPlan,
@@ -24,6 +24,8 @@ export interface BlueprintDevelopment extends Omit<MeaningfulDevelopment, "story
   readonly basis: "PROJECT_INTENT_ONLY";
   readonly mode: CreativeMode;
   readonly visualPlan: VisualPlan;
+  /** Retained server-side plan source so stage/scout changes preserve hosted scene logic. */
+  readonly storyboardSource?: StoryboardArtifact;
 }
 
 export interface Blueprint {
@@ -89,6 +91,7 @@ export function generateBlueprint(
     alternativeDecisions: source.alternativeDecisions,
     sceneHypotheses: source.sceneHypotheses,
     directorNotebook: source.directorNotebook,
+    storyboardSource: source.storyboard,
     visualPlan: generateVisualPlan(brief, source.mode, source, planningContext),
     questions: source.questions,
     productionNextSteps: source.productionNextSteps,
@@ -183,7 +186,9 @@ export function refreshBlueprintVisualPlan(
       visualPlan: generateVisualPlan(
         brief,
         blueprint.development.mode,
-        blueprint.development,
+        blueprint.development.storyboardSource
+          ? { ...blueprint.development, storyboard: blueprint.development.storyboardSource }
+          : blueprint.development,
         planningContext,
       ),
     },

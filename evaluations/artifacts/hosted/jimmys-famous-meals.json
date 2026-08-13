@@ -1,0 +1,2515 @@
+{
+  "calibration": "HOSTED_CREATIVE_REASONING",
+  "generatedAt": "2026-08-11T20:57:25.366Z",
+  "case": {
+    "id": "jimmys-famous-meals",
+    "expectedMode": "COMMERCIAL",
+    "brief": {
+      "title": "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+      "client": "Jimmy's Famous Meals",
+      "projectType": "Commercial",
+      "creativeGoal": "Conversion",
+      "targetAudience": "Parents who need convenience",
+      "desiredEmotion": "Understood, relatable, sentimental",
+      "context": "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed."
+    }
+  },
+  "provider": { "id": "openai-responses:gpt-5.4", "mode": "HOSTED" },
+  "applicationPath": "developCreativeBlueprint",
+  "semanticGate": "PASSED_BY_APPLICATION",
+  "creativeQuality": {
+    "passed": true,
+    "total": 94,
+    "scores": [
+      {
+        "dimension": "TRANSFORMATION",
+        "score": 9,
+        "evidence": "The thesis must discover a human or dramatic value beyond restating the stated goal."
+      },
+      {
+        "dimension": "PROJECT_SPECIFICITY",
+        "score": 9,
+        "evidence": "14/15 distinctive title, client, or context terms survive in the reasoning."
+      },
+      {
+        "dimension": "ACTIONABILITY",
+        "score": 10,
+        "evidence": "6 scenes contain physical action and a distinct dramatic turn; 6 make that action depend on project-specific material."
+      },
+      {
+        "dimension": "DISTINCTIVENESS",
+        "score": 9,
+        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
+      },
+      {
+        "dimension": "JUDGMENT",
+        "score": 10,
+        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
+      },
+      {
+        "dimension": "INNOVATION",
+        "score": 9,
+        "evidence": "At least one departure must name the convention, its value, the violation, project fit, and execution risk."
+      },
+      {
+        "dimension": "HUMANNESS",
+        "score": 9,
+        "evidence": "The insight names a human truth and lived dramatic pressure rather than a demographic label."
+      },
+      {
+        "dimension": "CRAFT_COHERENCE",
+        "score": 10,
+        "evidence": "6/6 scenes derive complete physical craft choices."
+      },
+      {
+        "dimension": "HONESTY",
+        "score": 9,
+        "evidence": "Assumptions and constraint handling remain explicit; hypothetical scenes are not presented as captured evidence."
+      },
+      {
+        "dimension": "VISUAL_COMPLETION",
+        "score": 10,
+        "evidence": "6 drawn frames, a blocking map, and a look palette are renderable."
+      }
+    ],
+    "blockingFindings": [],
+    "substitutionSignal": {
+      "projectTermsFound": [
+        "morning",
+        "routine",
+        "eats",
+        "jimmy's",
+        "famous",
+        "meals",
+        "mother",
+        "baby",
+        "show",
+        "baby's",
+        "face",
+        "hands",
+        "feet",
+        "allowed"
+      ],
+      "weak": false
+    }
+  },
+  "visualQuality": { "passed": true, "findings": [] },
+  "providerOutput": {
+    "version": 2,
+    "reasoningSource": "HOSTED_REASONING",
+    "insight": {
+      "thesis": "Convenience converts here only if it feels like care made possible, not care cut short.",
+      "humanTruth": "In infant mornings, a parent’s own hunger is rarely dramatic enough to justify attention, so it keeps getting deferred.",
+      "dramaticTension": "She can solve the baby’s needs immediately; her own meal keeps missing its turn.",
+      "audiencePromise": "This brand belongs inside the stop-start texture of real caregiving and gives permission to meet your own need without leaving the baby behind."
+    },
+    "directionDecision": {
+      "title": "Before She Sits",
+      "pointOfView": "Mother-side realism: her body, breath, hands, and partial profile; the baby exists through hands, feet, grip, and reach only.",
+      "storyEngine": "Three denied attempts to sit become one shared sit: pack lands on the counter, two interruptions stop her from eating, then she changes the setup so caregiving and eating can happen in the same beat.",
+      "formalStrategy": "Near-real-time in six beats. Repeated almost-sit motif. No isolated hero meal until the first successful bite; earlier product views stay embedded in action and partial obstruction.",
+      "audienceJourney": "Seen in the scramble -> feel the ache of self-deferral -> feel relief when she stops waiting for perfect quiet -> remember the brand as permission.",
+      "whyThisProject": "It keeps the strongest truth from the brief and improves the original direction by giving the mother one active solve: she brings the baby closer instead of waiting for interruption to end. The meal matters because it fits that solve.",
+      "sacrifice": "We delay appetite-first imagery and limit claim density. If the client needs early beauty coverage or feature-heavy messaging, this is the wrong structure.",
+      "assumptions": [
+        "Parents will recognize the aborted sit as emotionally specific, not too subtle.",
+        "Jimmy's Famous Meals can be shown as pack plus approved prepared presentation without a prep demo.",
+        "A lived-in kitchen can hold brand clarity if clutter is disciplined.",
+        "A restrained performance can sell conversion without dialogue."
+      ],
+      "changeMyMindIf": "Change my mind if animatics show either failure: viewers cannot identify Jimmy's Famous Meals after one watch, or the required legal/product load forces a clean hero-food insert before the first successful sit.",
+      "projectDependencies": [
+        "Approve exact Jimmy's Famous Meals package and prepared presentation for morning use.",
+        "Confirm whether the mother's full profile is allowed in the bite beat.",
+        "Review all camera heights and crop lines to guarantee the baby's face never enters frame.",
+        "Confirm end-card/legal load so the final lived-in brand read can stay uncluttered."
+      ],
+      "innovation": {
+        "convention": "Food commercials usually front-load clean appetite shots and face-led reaction coverage.",
+        "whyConventionWorks": "It delivers instant empathy, fast product recognition, and clear appetite cues in very little time.",
+        "departure": "Withhold the first clean product-and-food read until the mother actually gets to sit. Earlier product views stay one-handed, partial, and interrupted inside the routine.",
+        "projectBenefit": "This makes the commercial grammar match the caregiving truth: the meal is ready before she is. When the brand finally gets stillness, that stillness feels earned, which turns convenience into emotional permission.",
+        "executionRisk": "If the final prepared-meal frame is not strong enough, the spot may feel honest but under-sell appetite and brand recall."
+      }
+    },
+    "alternativeDecisions": [
+      {
+        "title": "Countertop Ballet",
+        "pointOfView": "Overhead-only choreography of hands, feet, table surfaces, and objects.",
+        "storyEngine": "The morning reads as a duet of care and interruption across changing-table and kitchen tableaux, with the meal entering as one active object in the pattern.",
+        "formalStrategy": "Locked overhead frames, rhythmic foley, no conventional face coverage.",
+        "audienceJourney": "Curiosity -> recognition through movement -> release when the rhythm settles.",
+        "whyThisProject": "Best if the team wants a highly ownable visual signature from the no-face constraint.",
+        "sacrifice": "Less immediate facial empathy and weaker appetite cues.",
+        "assumptions": [
+          "Packaging reads clearly from above.",
+          "Sound design can carry intimacy.",
+          "Formal restraint will feel truthful, not precious."
+        ],
+        "changeMyMindIf": "Change my mind if pack readability or emotional warmth drops in previs versus a body-level cut.",
+        "projectDependencies": [
+          "Previsualization before shoot.",
+          "Strict prop discipline.",
+          "Early sound-design development.",
+          "Safety review for every top-down crop."
+        ],
+        "innovation": {
+          "convention": "Parent-and-baby spots lean on faces and eye contact.",
+          "whyConventionWorks": "Viewers decode connection instantly.",
+          "departure": "Replace face-led sentiment with overhead choreography of hands, feet, and objects only.",
+          "projectBenefit": "The privacy constraint becomes the visual idea instead of a workaround.",
+          "executionRisk": "Can read as clever distance if blocking is not exact."
+        }
+      },
+      {
+        "title": "One Less Decision",
+        "pointOfView": "The mother against an invisible checklist externalized through on-screen task words.",
+        "storyEngine": "Tasks pile up; the brand becomes the one choice that stops asking more from her.",
+        "formalStrategy": "Fast text-led opening, then a calm release once she commits to the meal.",
+        "audienceJourney": "Recognition -> stress spike -> practical relief.",
+        "whyThisProject": "Best if conversion speed outranks sentiment depth.",
+        "sacrifice": "Less tenderness and less infant-specific intimacy.",
+        "assumptions": [
+          "Text will feel like mental load, not a gimmick.",
+          "Viewers only need one clear relief beat.",
+          "Branding can survive the pace."
+        ],
+        "changeMyMindIf": "Change my mind if animatics feel hectic or if text competes with pack readability.",
+        "projectDependencies": [
+          "Typography approval early.",
+          "Legal review of all text.",
+          "Editorial rhythm testing.",
+          "Strong end card."
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Small Pieces",
+        "pointOfView": "Object-led fragments of the morning with spare thought-like sound or text.",
+        "storyEngine": "Tiny household tasks and baby intrusions accumulate until the meal reads as one closed decision inside many open ones.",
+        "formalStrategy": "Macro inserts, fragment collage, quiet rhythm.",
+        "audienceJourney": "Seen in the clutter -> soothed by recognition -> warmed by a modest win.",
+        "whyThisProject": "Best if the team wants more poetry and less ad syntax.",
+        "sacrifice": "Product role can soften into atmosphere.",
+        "assumptions": [
+          "Household detail can stay specific enough to hold truth.",
+          "Fragmentation will not blur brand memory.",
+          "Sentiment can stay grounded."
+        ],
+        "changeMyMindIf": "Change my mind if viewers remember the feeling but cannot name Jimmy's Famous Meals or its job in the story.",
+        "projectDependencies": [
+          "Copy approval if any text/VO appears.",
+          "Precise art direction.",
+          "Disciplined brand visibility.",
+          "Music that stays intimate."
+        ],
+        "innovation": null
+      }
+    ],
+    "sceneHypotheses": [
+      {
+        "id": "S1",
+        "title": "Counter Before Coffee",
+        "action": "Mom enters the kitchen carrying the baby on one hip and sets a sealed Jimmy's Famous Meals pack onto the cluttered counter with her free hand.",
+        "visual": "Diagonal kitchen wide: doorway, counter, fridge, window glow, baby feet pressed against her sweater.",
+        "sound": "Room tone, soft baby fuss, her breath, pack thunk on laminate, keys lightly clink.",
+        "turn": "Her meal enters the morning as an afterthought to care.",
+        "purpose": "Place the brand inside real pressure immediately.",
+        "constraintHandling": "Baby is turned into mom's shoulder; only feet are visible; no hot food or sharp utensils near the baby.",
+        "craft": {
+          "blocking": "Single crossing from doorway to counter without setting the baby down.",
+          "camera": "24mm counter-height wide, letting the pack land within a lived-in frame.",
+          "light": "Soft side window with dim practical fill; no glossy food light.",
+          "design": "Bottle brush, keys, bib, wipe, and one clear landing space for the pack.",
+          "color": "Muted oatmeal, sage, weathered wood; pack art becomes the strongest accent.",
+          "sound": "Keep natural sound dry and close so the set-down feels physical."
+        }
+      },
+      {
+        "id": "S2",
+        "title": "First Almost-Sit",
+        "action": "Mom sets the approved prepared meal on the table, pulls out a chair, and starts to sit; a baby hand from the nearby high chair catches her sleeve and she stands again before taking weight.",
+        "visual": "Profile composition: chair, table edge, prepared meal, baby hand entering frame only at sleeve level.",
+        "sound": "Chair scrape, fabric pull, small baby vocal, her breath stopping mid-exhale.",
+        "turn": "The first pause for herself disappears before it begins.",
+        "purpose": "Make self-deferral feel specific, not generic.",
+        "constraintHandling": "Baby remains off-camera except for one hand; crop line excludes head and face entirely; meal stays on mom's side of the table.",
+        "craft": {
+          "blocking": "Mom lowers toward chair, stops halfway, pivots back toward the baby.",
+          "camera": "50mm side profile; the aborted sit reads in one frame.",
+          "light": "Window side-light shapes her profile and the table plane.",
+          "design": "Chair, table, prepared meal, high-chair edge, no extra clutter competing at sleeve level.",
+          "color": "Warm neutrals with soft shadow; no bright distractions.",
+          "sound": "Let the chair scrape become the beat that gets cut off."
+        }
+      },
+      {
+        "id": "S3",
+        "title": "Tray Sweep",
+        "action": "As mom lifts a fork toward her mouth, the baby hand sweeps a teether off the high-chair tray; she lowers the fork and bends to pick the teether up.",
+        "visual": "Low tray-level angle: baby hand in foreground, teether dropping, meal and mom in midground.",
+        "sound": "Fork tap on plate, teether clack on floor, tiny exhale, tray rattle.",
+        "turn": "The interruption becomes a tactile chore, not a cry for help.",
+        "purpose": "Deepen recognition and vary the pattern without escalating into crisis.",
+        "constraintHandling": "Only the baby hand and tray are visible; the fork stays on mom's side, out of baby reach.",
+        "craft": {
+          "blocking": "Mom begins seated, pauses, folds down to retrieve, rises back into frame.",
+          "camera": "35mm low angle from tray height to make the sweep active.",
+          "light": "Natural soft top-bounce from table and window; no harsh edge.",
+          "design": "High-chair tray, soft teether, meal plate/tray, minimal floor detail.",
+          "color": "Softer wood and cloth tones; the teether can be a quiet pastel.",
+          "sound": "Use the toy-on-floor clack as the interruption trigger instead of louder fuss."
+        }
+      },
+      {
+        "id": "S4",
+        "title": "Move Closer",
+        "action": "Mom slides her chair and the high chair nearer to the table, sets a soft toy on the tray, and repositions the meal within easy reach.",
+        "visual": "High 3/4 view of the table geometry changing: two seats closing distance, meal centered, baby feet drumming.",
+        "sound": "Chair feet drag, tray tap, baby feet thump, soft toy landing.",
+        "turn": "She stops waiting for quiet and redesigns the moment to fit both needs.",
+        "purpose": "Make the product feel enabling, not merely present.",
+        "constraintHandling": "Baby is shown only as hands and feet above the tray line; meal remains out of baby reach; no face exposure from the higher angle.",
+        "craft": {
+          "blocking": "Deliberate slide inward; her body and furniture create a tighter triangle.",
+          "camera": "40mm high 3/4 shot to reveal the new relationship of bodies and objects.",
+          "light": "Same morning window source, slightly warmer as she reaches the table zone.",
+          "design": "Table cleared just enough for meal, pack, toy, bib; clutter pushed to edges.",
+          "color": "The frame tightens around warmer wood and fabric tones.",
+          "sound": "Furniture movement is the solution beat; keep it readable."
+        }
+      },
+      {
+        "id": "S5",
+        "title": "First Bite",
+        "action": "Seated beside the baby, mom takes her first bite while offering one finger for the baby to hold with her other hand.",
+        "visual": "Intimate side profile: fork to mouth, prepared meal foreground, baby hand and feet at the frame edge.",
+        "sound": "Natural room tone continues; music enters quietly under fork, breath, and tiny foot taps.",
+        "turn": "Caregiving and self-care finally happen in the same second.",
+        "purpose": "Deliver the emotional permission beat that earns conversion.",
+        "constraintHandling": "Crop stays below baby head height; only hand and feet are visible; adult utensils remain on mom's side.",
+        "craft": {
+          "blocking": "Mom stays seated; one arm eats, one arm stays connected to the baby.",
+          "camera": "85mm intimate side angle for compression and calm.",
+          "light": "Softer, warmer window wrap on her face and hands.",
+          "design": "Prepared meal, fork, tray edge, baby hand/feet, no competing appliances.",
+          "color": "Warmest frame of the spot without leaving the neutral palette.",
+          "sound": "Music starts only here; everything before stays diegetic."
+        }
+      },
+      {
+        "id": "S6",
+        "title": "Earned Read",
+        "action": "Mom sets the Jimmy's Famous Meals pack upright beside the open meal and keeps eating as the baby's foot taps the tray edge nearby.",
+        "visual": "Top-down lived-in end read: pack, meal, bib, wipe, fork, mom hand, baby foot, table grain.",
+        "sound": "Foot tap rhythm, fork on plate, low music held, room tone.",
+        "turn": "The brand gets stillness only after she does.",
+        "purpose": "Leave a clean memory of product-in-reality, not product-away-from-reality.",
+        "constraintHandling": "No baby face possible from the top crop; only a foot enters; food stays clearly on the adult side of the table.",
+        "craft": {
+          "blocking": "Mom hand sets pack, then exits to eating position while the baby foot keeps the frame alive.",
+          "camera": "60mm top-down for a graphic but still lived-in finish.",
+          "light": "Window pool across table; soft falloff to edges.",
+          "design": "Open meal, upright pack, bib, wipe, phone face-down; believable but uncluttered.",
+          "color": "Neutral tabletop with the pack art as the strongest note.",
+          "sound": "Let the foot tap carry motion into the end read."
+        }
+      }
+    ],
+    "directorNotebook": [
+      {
+        "id": "DN1",
+        "sceneId": "S1",
+        "shot": "Wide entry",
+        "visual": "Doorway to counter crossing; pack lands while baby stays on hip.",
+        "camera": "24mm locked-off with slight handheld settle on the set-down.",
+        "light": "Side window, dim practical kitchen ambient.",
+        "sound": "Pack thunk and breath lead.",
+        "purpose": "Open on divided attention with instant brand habitat.",
+        "creativeThread": "Her meal appears only inside motion."
+      },
+      {
+        "id": "DN2",
+        "sceneId": "S1",
+        "shot": "Foot detail",
+        "visual": "Baby feet press against mom's sweater as her hand leaves the pack on the counter.",
+        "camera": "70mm insert from counter side.",
+        "light": "Soft wrap from window, no glossy highlight.",
+        "sound": "Fabric rub, tiny kick.",
+        "purpose": "Warmth without the baby's face.",
+        "creativeThread": "Touch replaces smile coverage."
+      },
+      {
+        "id": "DN3",
+        "sceneId": "S2",
+        "shot": "Half-sit profile",
+        "visual": "Chair out, meal down, sleeve tug interrupts the sit.",
+        "camera": "50mm profile, single frame holds sit and reversal.",
+        "light": "Window edge on cheek and forearm.",
+        "sound": "Chair scrape cut short.",
+        "purpose": "Make the motif legible in one beat.",
+        "creativeThread": "The interrupted sit becomes the ad's emotional meter."
+      },
+      {
+        "id": "DN4",
+        "sceneId": "S3",
+        "shot": "Tray-level sweep",
+        "visual": "Baby hand knocks teether down; fork pauses midair.",
+        "camera": "35mm low at tray height.",
+        "light": "Soft bounce off table and tray.",
+        "sound": "Teether clack is the cue.",
+        "purpose": "Vary interruption through action, not repeat staging.",
+        "creativeThread": "Ordinary micro-disruptions, not melodrama."
+      },
+      {
+        "id": "DN5",
+        "sceneId": "S4",
+        "shot": "Geometry change",
+        "visual": "Chair and high chair slide closer; meal stays centered between them.",
+        "camera": "40mm high 3/4.",
+        "light": "Window pool widening across tabletop.",
+        "sound": "Furniture drag becomes the solve.",
+        "purpose": "Show her active adjustment.",
+        "creativeThread": "The mother changes the setup, not the baby."
+      },
+      {
+        "id": "DN6",
+        "sceneId": "S5",
+        "shot": "First bite side profile",
+        "visual": "Fork to mouth while baby hand holds one finger.",
+        "camera": "85mm, steady and still.",
+        "light": "Warm wrap on face, hand, and food.",
+        "sound": "Music enters under natural sound.",
+        "purpose": "Land permission and tenderness together.",
+        "creativeThread": "Self-care only counts once it can coexist."
+      },
+      {
+        "id": "DN7",
+        "sceneId": "S5",
+        "shot": "Hand connection insert",
+        "visual": "Baby hand closes around mom's finger beside the tray edge.",
+        "camera": "100mm insert.",
+        "light": "Soft top-side wrap, shallow focus.",
+        "sound": "Small finger squeeze, foot tap underneath.",
+        "purpose": "Carry sentiment without a face.",
+        "creativeThread": "Connection is tactile, not performative."
+      },
+      {
+        "id": "DN8",
+        "sceneId": "S6",
+        "shot": "Lived-in end read",
+        "visual": "Pack upright beside open meal; baby foot taps in frame.",
+        "camera": "60mm top-down, clean composition.",
+        "light": "Window pool on table grain.",
+        "sound": "Tap-tap, fork, held music.",
+        "purpose": "Finish with brand memory inside reality.",
+        "creativeThread": "Stillness is earned, not staged."
+      }
+    ],
+    "storyboard": {
+      "status": "RENDERED",
+      "renderer": "STROMAN_PENCIL_SVG_V1",
+      "title": "Before She Sits",
+      "frames": [
+        {
+          "id": "F1",
+          "beatId": "S1",
+          "title": "Counter Before Coffee",
+          "cameraLabel": "24mm wide / doorway to counter",
+          "annotation": "One-hip carry; pack lands before she can stop moving.",
+          "glyphs": [
+            { "kind": "DOOR", "x": 10, "y": 57, "scale": 0.92, "label": "nursery door" },
+            { "kind": "COUNTER", "x": 66, "y": 43, "scale": 1.4, "label": "kitchen counter" },
+            { "kind": "FRIDGE", "x": 89, "y": 33, "scale": 0.88, "label": "fridge" },
+            { "kind": "WINDOW", "x": 76, "y": 18, "scale": 0.8, "label": "window" },
+            { "kind": "ADULT", "x": 37, "y": 58, "scale": 1.08, "label": "mom" },
+            { "kind": "BABY_FEET", "x": 33, "y": 48, "scale": 0.55, "label": "baby feet" },
+            { "kind": "MEAL", "x": 59, "y": 40, "scale": 0.6, "label": "Jimmy's Famous Meals pack" }
+          ],
+          "arrows": [
+            { "fromX": 16, "fromY": 59, "toX": 46, "toY": 54, "label": "mom crosses in" },
+            { "fromX": 47, "fromY": 49, "toX": 58, "toY": 40, "label": "set pack down" }
+          ]
+        },
+        {
+          "id": "F2",
+          "beatId": "S2",
+          "title": "First Almost-Sit",
+          "cameraLabel": "50mm side profile / table edge",
+          "annotation": "Chair drops; sleeve tug stops the sit.",
+          "glyphs": [
+            { "kind": "TABLE", "x": 55, "y": 75, "scale": 1.28, "label": "table" },
+            { "kind": "ADULT", "x": 39, "y": 57, "scale": 1.02, "label": "mom" },
+            {
+              "kind": "MEAL",
+              "x": 57,
+              "y": 65,
+              "scale": 0.76,
+              "label": "prepared Jimmy's Famous Meals"
+            },
+            { "kind": "OBJECT", "x": 46, "y": 77, "scale": 0.55, "label": "chair" },
+            { "kind": "BABY_HANDS", "x": 76, "y": 55, "scale": 0.52, "label": "baby hand" },
+            { "kind": "OBJECT", "x": 79, "y": 64, "scale": 0.88, "label": "high chair" },
+            { "kind": "WINDOW", "x": 16, "y": 20, "scale": 0.78, "label": "window" }
+          ],
+          "arrows": [
+            { "fromX": 75, "fromY": 56, "toX": 47, "toY": 56, "label": "sleeve tug" },
+            { "fromX": 40, "fromY": 61, "toX": 40, "toY": 70, "label": "half-sit" },
+            { "fromX": 40, "fromY": 70, "toX": 43, "toY": 58, "label": "stand back up" }
+          ]
+        },
+        {
+          "id": "F3",
+          "beatId": "S3",
+          "title": "Tray Sweep",
+          "cameraLabel": "35mm low / tray level",
+          "annotation": "Teether swept down; fork lowers with it.",
+          "glyphs": [
+            { "kind": "TABLE", "x": 73, "y": 38, "scale": 1.02, "label": "high chair tray" },
+            { "kind": "BABY_HANDS", "x": 63, "y": 33, "scale": 0.58, "label": "baby hand" },
+            { "kind": "OBJECT", "x": 56, "y": 58, "scale": 0.42, "label": "teether" },
+            { "kind": "TABLE", "x": 34, "y": 76, "scale": 1.08, "label": "table" },
+            { "kind": "ADULT", "x": 24, "y": 47, "scale": 0.84, "label": "mom" },
+            {
+              "kind": "MEAL",
+              "x": 38,
+              "y": 64,
+              "scale": 0.74,
+              "label": "prepared Jimmy's Famous Meals"
+            },
+            { "kind": "OBJECT", "x": 46, "y": 62, "scale": 0.35, "label": "fork" }
+          ],
+          "arrows": [
+            { "fromX": 64, "fromY": 35, "toX": 57, "toY": 57, "label": "sweep off tray" },
+            { "fromX": 46, "fromY": 61, "toX": 40, "toY": 66, "label": "fork drops back" }
+          ]
+        },
+        {
+          "id": "F4",
+          "beatId": "S4",
+          "title": "Move Closer",
+          "cameraLabel": "40mm high 3/4 / table geometry",
+          "annotation": "She moves closer instead of waiting for quiet.",
+          "glyphs": [
+            { "kind": "TABLE", "x": 47, "y": 71, "scale": 1.3, "label": "table" },
+            { "kind": "ADULT", "x": 29, "y": 56, "scale": 1, "label": "mom" },
+            { "kind": "OBJECT", "x": 23, "y": 74, "scale": 0.58, "label": "chair" },
+            { "kind": "OBJECT", "x": 79, "y": 57, "scale": 0.92, "label": "high chair" },
+            { "kind": "BABY_FEET", "x": 84, "y": 63, "scale": 0.48, "label": "baby feet" },
+            { "kind": "BABY_HANDS", "x": 80, "y": 49, "scale": 0.45, "label": "baby hand" },
+            {
+              "kind": "MEAL",
+              "x": 49,
+              "y": 61,
+              "scale": 0.72,
+              "label": "prepared Jimmy's Famous Meals pack-out meal"
+            }
+          ],
+          "arrows": [
+            { "fromX": 23, "fromY": 74, "toX": 38, "toY": 71, "label": "chair slides in" },
+            { "fromX": 72, "fromY": 57, "toX": 63, "toY": 58, "label": "high chair nudged closer" }
+          ]
+        },
+        {
+          "id": "F5",
+          "beatId": "S5",
+          "title": "First Bite",
+          "cameraLabel": "85mm intimate side / shared edge",
+          "annotation": "First bite; baby holds her finger.",
+          "glyphs": [
+            { "kind": "ADULT", "x": 30, "y": 56, "scale": 1.06, "label": "mom" },
+            {
+              "kind": "MEAL",
+              "x": 47,
+              "y": 74,
+              "scale": 0.84,
+              "label": "prepared Jimmy's Famous Meals"
+            },
+            { "kind": "TABLE", "x": 57, "y": 80, "scale": 1.2, "label": "table" },
+            { "kind": "BABY_HANDS", "x": 75, "y": 58, "scale": 0.5, "label": "baby hand" },
+            { "kind": "BABY_FEET", "x": 82, "y": 72, "scale": 0.44, "label": "baby feet" },
+            { "kind": "OBJECT", "x": 71, "y": 60, "scale": 0.92, "label": "high chair tray" },
+            { "kind": "WINDOW", "x": 12, "y": 24, "scale": 0.74, "label": "window" }
+          ],
+          "arrows": [
+            { "fromX": 43, "fromY": 66, "toX": 36, "toY": 53, "label": "fork to mouth" },
+            { "fromX": 52, "fromY": 58, "toX": 73, "toY": 58, "label": "finger offered" }
+          ]
+        },
+        {
+          "id": "F6",
+          "beatId": "S6",
+          "title": "Earned Read",
+          "cameraLabel": "60mm top-down / lived-in end read",
+          "annotation": "Pack upright beside open meal; morning still moving.",
+          "glyphs": [
+            { "kind": "TABLE", "x": 50, "y": 58, "scale": 1.46, "label": "table" },
+            {
+              "kind": "MEAL",
+              "x": 37,
+              "y": 52,
+              "scale": 0.8,
+              "label": "prepared Jimmy's Famous Meals"
+            },
+            {
+              "kind": "MEAL",
+              "x": 59,
+              "y": 41,
+              "scale": 0.7,
+              "label": "Jimmy's Famous Meals pack"
+            },
+            { "kind": "ADULT", "x": 23, "y": 48, "scale": 0.52, "label": "mom hand" },
+            { "kind": "BABY_FEET", "x": 78, "y": 49, "scale": 0.48, "label": "baby foot" },
+            { "kind": "TABLE", "x": 81, "y": 50, "scale": 0.72, "label": "high chair tray" },
+            { "kind": "OBJECT", "x": 68, "y": 64, "scale": 0.44, "label": "bib" }
+          ],
+          "arrows": [
+            { "fromX": 24, "fromY": 48, "toX": 58, "toY": 42, "label": "set pack upright" },
+            { "fromX": 79, "fromY": 48, "toX": 83, "toY": 49, "label": "tap tray edge" }
+          ]
+        }
+      ],
+      "blocking": {
+        "title": "Kitchen + table blocking",
+        "zones": [
+          { "id": "Z1", "label": "nursery door", "x": 4, "y": 44, "width": 14, "height": 26 },
+          { "id": "Z2", "label": "kitchen counter", "x": 49, "y": 22, "width": 42, "height": 18 },
+          { "id": "Z3", "label": "table zone", "x": 28, "y": 58, "width": 34, "height": 26 },
+          { "id": "Z4", "label": "high chair zone", "x": 70, "y": 48, "width": 18, "height": 24 },
+          { "id": "Z5", "label": "window light", "x": 8, "y": 10, "width": 20, "height": 18 },
+          { "id": "Z6", "label": "fridge", "x": 86, "y": 18, "width": 10, "height": 26 }
+        ],
+        "positions": [
+          { "label": "mom entry", "x": 20, "y": 57, "kind": "SUBJECT" },
+          { "label": "mom counter", "x": 46, "y": 50, "kind": "SUBJECT" },
+          { "label": "mom table", "x": 37, "y": 58, "kind": "SUBJECT" },
+          { "label": "baby high chair", "x": 79, "y": 58, "kind": "SUBJECT" },
+          { "label": "camera wide", "x": 63, "y": 84, "kind": "CAMERA" },
+          { "label": "camera profile", "x": 10, "y": 68, "kind": "CAMERA" },
+          { "label": "camera high 3/4", "x": 50, "y": 14, "kind": "CAMERA" },
+          { "label": "window key", "x": 15, "y": 18, "kind": "LIGHT" },
+          { "label": "soft fill bounce", "x": 90, "y": 32, "kind": "LIGHT" }
+        ],
+        "paths": [
+          {
+            "label": "mom path",
+            "points": [
+              { "x": 18, "y": 57 },
+              { "x": 46, "y": 50 },
+              { "x": 38, "y": 59 },
+              { "x": 74, "y": 58 },
+              { "x": 39, "y": 60 }
+            ]
+          },
+          {
+            "label": "chair slide",
+            "points": [
+              { "x": 23, "y": 74 },
+              { "x": 32, "y": 72 },
+              { "x": 39, "y": 71 }
+            ]
+          },
+          {
+            "label": "teether drop",
+            "points": [
+              { "x": 74, "y": 39 },
+              { "x": 66, "y": 46 },
+              { "x": 58, "y": 60 }
+            ]
+          }
+        ]
+      },
+      "look": {
+        "title": "Lived-in dawn naturalism",
+        "swatches": [
+          { "name": "dawn cream", "color": "#EEE5D7", "use": "window light, wall bounce" },
+          { "name": "oatmeal knit", "color": "#C9B79F", "use": "mom wardrobe, softness" },
+          { "name": "faded sage", "color": "#A5B0A1", "use": "kitchen backdrop" },
+          { "name": "weathered wood", "color": "#8A6E5B", "use": "table, grounded realism" },
+          {
+            "name": "soft terracotta accent",
+            "color": "#B86A4F",
+            "use": "small set accents; approved pack art remains the strongest color"
+          }
+        ],
+        "texture": "matte laminate, worn cotton, soft wood grain, pencil lines with gentle smudge and light cross-hatching"
+      }
+    },
+    "questions": [
+      {
+        "prompt": "Which exact Jimmy's Famous Meals package and prepared presentation are approved for the table beats?",
+        "decisionItChanges": "S2, S4, S6 product staging"
+      },
+      {
+        "prompt": "May the mother's full side profile be shown in the first-bite beat?",
+        "decisionItChanges": "S5 framing and lens distance"
+      },
+      {
+        "prompt": "Must legal copy live inside the final frame, or can the lived-in end read stay visually clean before a separate card?",
+        "decisionItChanges": "S6 composition density"
+      }
+    ],
+    "productionNextSteps": [
+      "Build a six-frame animatic using these boards and test single-view brand recall.",
+      "Confirm pack, food presentation, and any required legal load before shot listing.",
+      "Scout a kitchen with window light, short door-to-counter path, and table-high-chair adjacency.",
+      "Pre-block every setup with baby-face exclusion lines marked on monitor.",
+      "Dress the set with controlled real clutter: bib, wipe, keys, bottle brush, teether, phone.",
+      "Plan sound-first editorial: no score until S5, practical sounds driving all prior turns."
+    ]
+  },
+  "blueprint": {
+    "development": {
+      "basis": "PROJECT_INTENT_ONLY",
+      "mode": "COMMERCIAL",
+      "version": 2,
+      "reasoningSource": "HOSTED_REASONING",
+      "insight": {
+        "thesis": "Convenience converts here only if it feels like care made possible, not care cut short.",
+        "humanTruth": "In infant mornings, a parent’s own hunger is rarely dramatic enough to justify attention, so it keeps getting deferred.",
+        "dramaticTension": "She can solve the baby’s needs immediately; her own meal keeps missing its turn.",
+        "audiencePromise": "This brand belongs inside the stop-start texture of real caregiving and gives permission to meet your own need without leaving the baby behind."
+      },
+      "directionDecision": {
+        "title": "Before She Sits",
+        "pointOfView": "Mother-side realism: her body, breath, hands, and partial profile; the baby exists through hands, feet, grip, and reach only.",
+        "storyEngine": "Three denied attempts to sit become one shared sit: pack lands on the counter, two interruptions stop her from eating, then she changes the setup so caregiving and eating can happen in the same beat.",
+        "formalStrategy": "Near-real-time in six beats. Repeated almost-sit motif. No isolated hero meal until the first successful bite; earlier product views stay embedded in action and partial obstruction.",
+        "audienceJourney": "Seen in the scramble -> feel the ache of self-deferral -> feel relief when she stops waiting for perfect quiet -> remember the brand as permission.",
+        "whyThisProject": "It keeps the strongest truth from the brief and improves the original direction by giving the mother one active solve: she brings the baby closer instead of waiting for interruption to end. The meal matters because it fits that solve.",
+        "sacrifice": "We delay appetite-first imagery and limit claim density. If the client needs early beauty coverage or feature-heavy messaging, this is the wrong structure.",
+        "assumptions": [
+          "Parents will recognize the aborted sit as emotionally specific, not too subtle.",
+          "Jimmy's Famous Meals can be shown as pack plus approved prepared presentation without a prep demo.",
+          "A lived-in kitchen can hold brand clarity if clutter is disciplined.",
+          "A restrained performance can sell conversion without dialogue."
+        ],
+        "changeMyMindIf": "Change my mind if animatics show either failure: viewers cannot identify Jimmy's Famous Meals after one watch, or the required legal/product load forces a clean hero-food insert before the first successful sit.",
+        "projectDependencies": [
+          "Approve exact Jimmy's Famous Meals package and prepared presentation for morning use.",
+          "Confirm whether the mother's full profile is allowed in the bite beat.",
+          "Review all camera heights and crop lines to guarantee the baby's face never enters frame.",
+          "Confirm end-card/legal load so the final lived-in brand read can stay uncluttered."
+        ],
+        "innovation": {
+          "convention": "Food commercials usually front-load clean appetite shots and face-led reaction coverage.",
+          "whyConventionWorks": "It delivers instant empathy, fast product recognition, and clear appetite cues in very little time.",
+          "departure": "Withhold the first clean product-and-food read until the mother actually gets to sit. Earlier product views stay one-handed, partial, and interrupted inside the routine.",
+          "projectBenefit": "This makes the commercial grammar match the caregiving truth: the meal is ready before she is. When the brand finally gets stillness, that stillness feels earned, which turns convenience into emotional permission.",
+          "executionRisk": "If the final prepared-meal frame is not strong enough, the spot may feel honest but under-sell appetite and brand recall."
+        }
+      },
+      "alternativeDecisions": [
+        {
+          "title": "Countertop Ballet",
+          "pointOfView": "Overhead-only choreography of hands, feet, table surfaces, and objects.",
+          "storyEngine": "The morning reads as a duet of care and interruption across changing-table and kitchen tableaux, with the meal entering as one active object in the pattern.",
+          "formalStrategy": "Locked overhead frames, rhythmic foley, no conventional face coverage.",
+          "audienceJourney": "Curiosity -> recognition through movement -> release when the rhythm settles.",
+          "whyThisProject": "Best if the team wants a highly ownable visual signature from the no-face constraint.",
+          "sacrifice": "Less immediate facial empathy and weaker appetite cues.",
+          "assumptions": [
+            "Packaging reads clearly from above.",
+            "Sound design can carry intimacy.",
+            "Formal restraint will feel truthful, not precious."
+          ],
+          "changeMyMindIf": "Change my mind if pack readability or emotional warmth drops in previs versus a body-level cut.",
+          "projectDependencies": [
+            "Previsualization before shoot.",
+            "Strict prop discipline.",
+            "Early sound-design development.",
+            "Safety review for every top-down crop."
+          ],
+          "innovation": {
+            "convention": "Parent-and-baby spots lean on faces and eye contact.",
+            "whyConventionWorks": "Viewers decode connection instantly.",
+            "departure": "Replace face-led sentiment with overhead choreography of hands, feet, and objects only.",
+            "projectBenefit": "The privacy constraint becomes the visual idea instead of a workaround.",
+            "executionRisk": "Can read as clever distance if blocking is not exact."
+          }
+        },
+        {
+          "title": "One Less Decision",
+          "pointOfView": "The mother against an invisible checklist externalized through on-screen task words.",
+          "storyEngine": "Tasks pile up; the brand becomes the one choice that stops asking more from her.",
+          "formalStrategy": "Fast text-led opening, then a calm release once she commits to the meal.",
+          "audienceJourney": "Recognition -> stress spike -> practical relief.",
+          "whyThisProject": "Best if conversion speed outranks sentiment depth.",
+          "sacrifice": "Less tenderness and less infant-specific intimacy.",
+          "assumptions": [
+            "Text will feel like mental load, not a gimmick.",
+            "Viewers only need one clear relief beat.",
+            "Branding can survive the pace."
+          ],
+          "changeMyMindIf": "Change my mind if animatics feel hectic or if text competes with pack readability.",
+          "projectDependencies": [
+            "Typography approval early.",
+            "Legal review of all text.",
+            "Editorial rhythm testing.",
+            "Strong end card."
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Small Pieces",
+          "pointOfView": "Object-led fragments of the morning with spare thought-like sound or text.",
+          "storyEngine": "Tiny household tasks and baby intrusions accumulate until the meal reads as one closed decision inside many open ones.",
+          "formalStrategy": "Macro inserts, fragment collage, quiet rhythm.",
+          "audienceJourney": "Seen in the clutter -> soothed by recognition -> warmed by a modest win.",
+          "whyThisProject": "Best if the team wants more poetry and less ad syntax.",
+          "sacrifice": "Product role can soften into atmosphere.",
+          "assumptions": [
+            "Household detail can stay specific enough to hold truth.",
+            "Fragmentation will not blur brand memory.",
+            "Sentiment can stay grounded."
+          ],
+          "changeMyMindIf": "Change my mind if viewers remember the feeling but cannot name Jimmy's Famous Meals or its job in the story.",
+          "projectDependencies": [
+            "Copy approval if any text/VO appears.",
+            "Precise art direction.",
+            "Disciplined brand visibility.",
+            "Music that stays intimate."
+          ],
+          "innovation": null
+        }
+      ],
+      "sceneHypotheses": [
+        {
+          "id": "S1",
+          "title": "Counter Before Coffee",
+          "action": "Mom enters the kitchen carrying the baby on one hip and sets a sealed Jimmy's Famous Meals pack onto the cluttered counter with her free hand.",
+          "visual": "Diagonal kitchen wide: doorway, counter, fridge, window glow, baby feet pressed against her sweater.",
+          "sound": "Room tone, soft baby fuss, her breath, pack thunk on laminate, keys lightly clink.",
+          "turn": "Her meal enters the morning as an afterthought to care.",
+          "purpose": "Place the brand inside real pressure immediately.",
+          "constraintHandling": "Baby is turned into mom's shoulder; only feet are visible; no hot food or sharp utensils near the baby.",
+          "craft": {
+            "blocking": "Single crossing from doorway to counter without setting the baby down.",
+            "camera": "24mm counter-height wide, letting the pack land within a lived-in frame.",
+            "light": "Soft side window with dim practical fill; no glossy food light.",
+            "design": "Bottle brush, keys, bib, wipe, and one clear landing space for the pack.",
+            "color": "Muted oatmeal, sage, weathered wood; pack art becomes the strongest accent.",
+            "sound": "Keep natural sound dry and close so the set-down feels physical."
+          }
+        },
+        {
+          "id": "S2",
+          "title": "First Almost-Sit",
+          "action": "Mom sets the approved prepared meal on the table, pulls out a chair, and starts to sit; a baby hand from the nearby high chair catches her sleeve and she stands again before taking weight.",
+          "visual": "Profile composition: chair, table edge, prepared meal, baby hand entering frame only at sleeve level.",
+          "sound": "Chair scrape, fabric pull, small baby vocal, her breath stopping mid-exhale.",
+          "turn": "The first pause for herself disappears before it begins.",
+          "purpose": "Make self-deferral feel specific, not generic.",
+          "constraintHandling": "Baby remains off-camera except for one hand; crop line excludes head and face entirely; meal stays on mom's side of the table.",
+          "craft": {
+            "blocking": "Mom lowers toward chair, stops halfway, pivots back toward the baby.",
+            "camera": "50mm side profile; the aborted sit reads in one frame.",
+            "light": "Window side-light shapes her profile and the table plane.",
+            "design": "Chair, table, prepared meal, high-chair edge, no extra clutter competing at sleeve level.",
+            "color": "Warm neutrals with soft shadow; no bright distractions.",
+            "sound": "Let the chair scrape become the beat that gets cut off."
+          }
+        },
+        {
+          "id": "S3",
+          "title": "Tray Sweep",
+          "action": "As mom lifts a fork toward her mouth, the baby hand sweeps a teether off the high-chair tray; she lowers the fork and bends to pick the teether up.",
+          "visual": "Low tray-level angle: baby hand in foreground, teether dropping, meal and mom in midground.",
+          "sound": "Fork tap on plate, teether clack on floor, tiny exhale, tray rattle.",
+          "turn": "The interruption becomes a tactile chore, not a cry for help.",
+          "purpose": "Deepen recognition and vary the pattern without escalating into crisis.",
+          "constraintHandling": "Only the baby hand and tray are visible; the fork stays on mom's side, out of baby reach.",
+          "craft": {
+            "blocking": "Mom begins seated, pauses, folds down to retrieve, rises back into frame.",
+            "camera": "35mm low angle from tray height to make the sweep active.",
+            "light": "Natural soft top-bounce from table and window; no harsh edge.",
+            "design": "High-chair tray, soft teether, meal plate/tray, minimal floor detail.",
+            "color": "Softer wood and cloth tones; the teether can be a quiet pastel.",
+            "sound": "Use the toy-on-floor clack as the interruption trigger instead of louder fuss."
+          }
+        },
+        {
+          "id": "S4",
+          "title": "Move Closer",
+          "action": "Mom slides her chair and the high chair nearer to the table, sets a soft toy on the tray, and repositions the meal within easy reach.",
+          "visual": "High 3/4 view of the table geometry changing: two seats closing distance, meal centered, baby feet drumming.",
+          "sound": "Chair feet drag, tray tap, baby feet thump, soft toy landing.",
+          "turn": "She stops waiting for quiet and redesigns the moment to fit both needs.",
+          "purpose": "Make the product feel enabling, not merely present.",
+          "constraintHandling": "Baby is shown only as hands and feet above the tray line; meal remains out of baby reach; no face exposure from the higher angle.",
+          "craft": {
+            "blocking": "Deliberate slide inward; her body and furniture create a tighter triangle.",
+            "camera": "40mm high 3/4 shot to reveal the new relationship of bodies and objects.",
+            "light": "Same morning window source, slightly warmer as she reaches the table zone.",
+            "design": "Table cleared just enough for meal, pack, toy, bib; clutter pushed to edges.",
+            "color": "The frame tightens around warmer wood and fabric tones.",
+            "sound": "Furniture movement is the solution beat; keep it readable."
+          }
+        },
+        {
+          "id": "S5",
+          "title": "First Bite",
+          "action": "Seated beside the baby, mom takes her first bite while offering one finger for the baby to hold with her other hand.",
+          "visual": "Intimate side profile: fork to mouth, prepared meal foreground, baby hand and feet at the frame edge.",
+          "sound": "Natural room tone continues; music enters quietly under fork, breath, and tiny foot taps.",
+          "turn": "Caregiving and self-care finally happen in the same second.",
+          "purpose": "Deliver the emotional permission beat that earns conversion.",
+          "constraintHandling": "Crop stays below baby head height; only hand and feet are visible; adult utensils remain on mom's side.",
+          "craft": {
+            "blocking": "Mom stays seated; one arm eats, one arm stays connected to the baby.",
+            "camera": "85mm intimate side angle for compression and calm.",
+            "light": "Softer, warmer window wrap on her face and hands.",
+            "design": "Prepared meal, fork, tray edge, baby hand/feet, no competing appliances.",
+            "color": "Warmest frame of the spot without leaving the neutral palette.",
+            "sound": "Music starts only here; everything before stays diegetic."
+          }
+        },
+        {
+          "id": "S6",
+          "title": "Earned Read",
+          "action": "Mom sets the Jimmy's Famous Meals pack upright beside the open meal and keeps eating as the baby's foot taps the tray edge nearby.",
+          "visual": "Top-down lived-in end read: pack, meal, bib, wipe, fork, mom hand, baby foot, table grain.",
+          "sound": "Foot tap rhythm, fork on plate, low music held, room tone.",
+          "turn": "The brand gets stillness only after she does.",
+          "purpose": "Leave a clean memory of product-in-reality, not product-away-from-reality.",
+          "constraintHandling": "No baby face possible from the top crop; only a foot enters; food stays clearly on the adult side of the table.",
+          "craft": {
+            "blocking": "Mom hand sets pack, then exits to eating position while the baby foot keeps the frame alive.",
+            "camera": "60mm top-down for a graphic but still lived-in finish.",
+            "light": "Window pool across table; soft falloff to edges.",
+            "design": "Open meal, upright pack, bib, wipe, phone face-down; believable but uncluttered.",
+            "color": "Neutral tabletop with the pack art as the strongest note.",
+            "sound": "Let the foot tap carry motion into the end read."
+          }
+        }
+      ],
+      "directorNotebook": [
+        {
+          "id": "DN1",
+          "sceneId": "S1",
+          "shot": "Wide entry",
+          "visual": "Doorway to counter crossing; pack lands while baby stays on hip.",
+          "camera": "24mm locked-off with slight handheld settle on the set-down.",
+          "light": "Side window, dim practical kitchen ambient.",
+          "sound": "Pack thunk and breath lead.",
+          "purpose": "Open on divided attention with instant brand habitat.",
+          "creativeThread": "Her meal appears only inside motion."
+        },
+        {
+          "id": "DN2",
+          "sceneId": "S1",
+          "shot": "Foot detail",
+          "visual": "Baby feet press against mom's sweater as her hand leaves the pack on the counter.",
+          "camera": "70mm insert from counter side.",
+          "light": "Soft wrap from window, no glossy highlight.",
+          "sound": "Fabric rub, tiny kick.",
+          "purpose": "Warmth without the baby's face.",
+          "creativeThread": "Touch replaces smile coverage."
+        },
+        {
+          "id": "DN3",
+          "sceneId": "S2",
+          "shot": "Half-sit profile",
+          "visual": "Chair out, meal down, sleeve tug interrupts the sit.",
+          "camera": "50mm profile, single frame holds sit and reversal.",
+          "light": "Window edge on cheek and forearm.",
+          "sound": "Chair scrape cut short.",
+          "purpose": "Make the motif legible in one beat.",
+          "creativeThread": "The interrupted sit becomes the ad's emotional meter."
+        },
+        {
+          "id": "DN4",
+          "sceneId": "S3",
+          "shot": "Tray-level sweep",
+          "visual": "Baby hand knocks teether down; fork pauses midair.",
+          "camera": "35mm low at tray height.",
+          "light": "Soft bounce off table and tray.",
+          "sound": "Teether clack is the cue.",
+          "purpose": "Vary interruption through action, not repeat staging.",
+          "creativeThread": "Ordinary micro-disruptions, not melodrama."
+        },
+        {
+          "id": "DN5",
+          "sceneId": "S4",
+          "shot": "Geometry change",
+          "visual": "Chair and high chair slide closer; meal stays centered between them.",
+          "camera": "40mm high 3/4.",
+          "light": "Window pool widening across tabletop.",
+          "sound": "Furniture drag becomes the solve.",
+          "purpose": "Show her active adjustment.",
+          "creativeThread": "The mother changes the setup, not the baby."
+        },
+        {
+          "id": "DN6",
+          "sceneId": "S5",
+          "shot": "First bite side profile",
+          "visual": "Fork to mouth while baby hand holds one finger.",
+          "camera": "85mm, steady and still.",
+          "light": "Warm wrap on face, hand, and food.",
+          "sound": "Music enters under natural sound.",
+          "purpose": "Land permission and tenderness together.",
+          "creativeThread": "Self-care only counts once it can coexist."
+        },
+        {
+          "id": "DN7",
+          "sceneId": "S5",
+          "shot": "Hand connection insert",
+          "visual": "Baby hand closes around mom's finger beside the tray edge.",
+          "camera": "100mm insert.",
+          "light": "Soft top-side wrap, shallow focus.",
+          "sound": "Small finger squeeze, foot tap underneath.",
+          "purpose": "Carry sentiment without a face.",
+          "creativeThread": "Connection is tactile, not performative."
+        },
+        {
+          "id": "DN8",
+          "sceneId": "S6",
+          "shot": "Lived-in end read",
+          "visual": "Pack upright beside open meal; baby foot taps in frame.",
+          "camera": "60mm top-down, clean composition.",
+          "light": "Window pool on table grain.",
+          "sound": "Tap-tap, fork, held music.",
+          "purpose": "Finish with brand memory inside reality.",
+          "creativeThread": "Stillness is earned, not staged."
+        }
+      ],
+      "storyboardSource": {
+        "status": "RENDERED",
+        "renderer": "STROMAN_PENCIL_SVG_V1",
+        "title": "Before She Sits",
+        "frames": [
+          {
+            "id": "F1",
+            "beatId": "S1",
+            "title": "Counter Before Coffee",
+            "cameraLabel": "24mm wide / doorway to counter",
+            "annotation": "One-hip carry; pack lands before she can stop moving.",
+            "glyphs": [
+              { "kind": "DOOR", "x": 10, "y": 57, "scale": 0.92, "label": "nursery door" },
+              { "kind": "COUNTER", "x": 66, "y": 43, "scale": 1.4, "label": "kitchen counter" },
+              { "kind": "FRIDGE", "x": 89, "y": 33, "scale": 0.88, "label": "fridge" },
+              { "kind": "WINDOW", "x": 76, "y": 18, "scale": 0.8, "label": "window" },
+              { "kind": "ADULT", "x": 37, "y": 58, "scale": 1.08, "label": "mom" },
+              { "kind": "BABY_FEET", "x": 33, "y": 48, "scale": 0.55, "label": "baby feet" },
+              {
+                "kind": "MEAL",
+                "x": 59,
+                "y": 40,
+                "scale": 0.6,
+                "label": "Jimmy's Famous Meals pack"
+              }
+            ],
+            "arrows": [
+              { "fromX": 16, "fromY": 59, "toX": 46, "toY": 54, "label": "mom crosses in" },
+              { "fromX": 47, "fromY": 49, "toX": 58, "toY": 40, "label": "set pack down" }
+            ]
+          },
+          {
+            "id": "F2",
+            "beatId": "S2",
+            "title": "First Almost-Sit",
+            "cameraLabel": "50mm side profile / table edge",
+            "annotation": "Chair drops; sleeve tug stops the sit.",
+            "glyphs": [
+              { "kind": "TABLE", "x": 55, "y": 75, "scale": 1.28, "label": "table" },
+              { "kind": "ADULT", "x": 39, "y": 57, "scale": 1.02, "label": "mom" },
+              {
+                "kind": "MEAL",
+                "x": 57,
+                "y": 65,
+                "scale": 0.76,
+                "label": "prepared Jimmy's Famous Meals"
+              },
+              { "kind": "OBJECT", "x": 46, "y": 77, "scale": 0.55, "label": "chair" },
+              { "kind": "BABY_HANDS", "x": 76, "y": 55, "scale": 0.52, "label": "baby hand" },
+              { "kind": "OBJECT", "x": 79, "y": 64, "scale": 0.88, "label": "high chair" },
+              { "kind": "WINDOW", "x": 16, "y": 20, "scale": 0.78, "label": "window" }
+            ],
+            "arrows": [
+              { "fromX": 75, "fromY": 56, "toX": 47, "toY": 56, "label": "sleeve tug" },
+              { "fromX": 40, "fromY": 61, "toX": 40, "toY": 70, "label": "half-sit" },
+              { "fromX": 40, "fromY": 70, "toX": 43, "toY": 58, "label": "stand back up" }
+            ]
+          },
+          {
+            "id": "F3",
+            "beatId": "S3",
+            "title": "Tray Sweep",
+            "cameraLabel": "35mm low / tray level",
+            "annotation": "Teether swept down; fork lowers with it.",
+            "glyphs": [
+              { "kind": "TABLE", "x": 73, "y": 38, "scale": 1.02, "label": "high chair tray" },
+              { "kind": "BABY_HANDS", "x": 63, "y": 33, "scale": 0.58, "label": "baby hand" },
+              { "kind": "OBJECT", "x": 56, "y": 58, "scale": 0.42, "label": "teether" },
+              { "kind": "TABLE", "x": 34, "y": 76, "scale": 1.08, "label": "table" },
+              { "kind": "ADULT", "x": 24, "y": 47, "scale": 0.84, "label": "mom" },
+              {
+                "kind": "MEAL",
+                "x": 38,
+                "y": 64,
+                "scale": 0.74,
+                "label": "prepared Jimmy's Famous Meals"
+              },
+              { "kind": "OBJECT", "x": 46, "y": 62, "scale": 0.35, "label": "fork" }
+            ],
+            "arrows": [
+              { "fromX": 64, "fromY": 35, "toX": 57, "toY": 57, "label": "sweep off tray" },
+              { "fromX": 46, "fromY": 61, "toX": 40, "toY": 66, "label": "fork drops back" }
+            ]
+          },
+          {
+            "id": "F4",
+            "beatId": "S4",
+            "title": "Move Closer",
+            "cameraLabel": "40mm high 3/4 / table geometry",
+            "annotation": "She moves closer instead of waiting for quiet.",
+            "glyphs": [
+              { "kind": "TABLE", "x": 47, "y": 71, "scale": 1.3, "label": "table" },
+              { "kind": "ADULT", "x": 29, "y": 56, "scale": 1, "label": "mom" },
+              { "kind": "OBJECT", "x": 23, "y": 74, "scale": 0.58, "label": "chair" },
+              { "kind": "OBJECT", "x": 79, "y": 57, "scale": 0.92, "label": "high chair" },
+              { "kind": "BABY_FEET", "x": 84, "y": 63, "scale": 0.48, "label": "baby feet" },
+              { "kind": "BABY_HANDS", "x": 80, "y": 49, "scale": 0.45, "label": "baby hand" },
+              {
+                "kind": "MEAL",
+                "x": 49,
+                "y": 61,
+                "scale": 0.72,
+                "label": "prepared Jimmy's Famous Meals pack-out meal"
+              }
+            ],
+            "arrows": [
+              { "fromX": 23, "fromY": 74, "toX": 38, "toY": 71, "label": "chair slides in" },
+              {
+                "fromX": 72,
+                "fromY": 57,
+                "toX": 63,
+                "toY": 58,
+                "label": "high chair nudged closer"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "beatId": "S5",
+            "title": "First Bite",
+            "cameraLabel": "85mm intimate side / shared edge",
+            "annotation": "First bite; baby holds her finger.",
+            "glyphs": [
+              { "kind": "ADULT", "x": 30, "y": 56, "scale": 1.06, "label": "mom" },
+              {
+                "kind": "MEAL",
+                "x": 47,
+                "y": 74,
+                "scale": 0.84,
+                "label": "prepared Jimmy's Famous Meals"
+              },
+              { "kind": "TABLE", "x": 57, "y": 80, "scale": 1.2, "label": "table" },
+              { "kind": "BABY_HANDS", "x": 75, "y": 58, "scale": 0.5, "label": "baby hand" },
+              { "kind": "BABY_FEET", "x": 82, "y": 72, "scale": 0.44, "label": "baby feet" },
+              { "kind": "OBJECT", "x": 71, "y": 60, "scale": 0.92, "label": "high chair tray" },
+              { "kind": "WINDOW", "x": 12, "y": 24, "scale": 0.74, "label": "window" }
+            ],
+            "arrows": [
+              { "fromX": 43, "fromY": 66, "toX": 36, "toY": 53, "label": "fork to mouth" },
+              { "fromX": 52, "fromY": 58, "toX": 73, "toY": 58, "label": "finger offered" }
+            ]
+          },
+          {
+            "id": "F6",
+            "beatId": "S6",
+            "title": "Earned Read",
+            "cameraLabel": "60mm top-down / lived-in end read",
+            "annotation": "Pack upright beside open meal; morning still moving.",
+            "glyphs": [
+              { "kind": "TABLE", "x": 50, "y": 58, "scale": 1.46, "label": "table" },
+              {
+                "kind": "MEAL",
+                "x": 37,
+                "y": 52,
+                "scale": 0.8,
+                "label": "prepared Jimmy's Famous Meals"
+              },
+              {
+                "kind": "MEAL",
+                "x": 59,
+                "y": 41,
+                "scale": 0.7,
+                "label": "Jimmy's Famous Meals pack"
+              },
+              { "kind": "ADULT", "x": 23, "y": 48, "scale": 0.52, "label": "mom hand" },
+              { "kind": "BABY_FEET", "x": 78, "y": 49, "scale": 0.48, "label": "baby foot" },
+              { "kind": "TABLE", "x": 81, "y": 50, "scale": 0.72, "label": "high chair tray" },
+              { "kind": "OBJECT", "x": 68, "y": 64, "scale": 0.44, "label": "bib" }
+            ],
+            "arrows": [
+              { "fromX": 24, "fromY": 48, "toX": 58, "toY": 42, "label": "set pack upright" },
+              { "fromX": 79, "fromY": 48, "toX": 83, "toY": 49, "label": "tap tray edge" }
+            ]
+          }
+        ],
+        "blocking": {
+          "title": "Kitchen + table blocking",
+          "zones": [
+            { "id": "Z1", "label": "nursery door", "x": 4, "y": 44, "width": 14, "height": 26 },
+            { "id": "Z2", "label": "kitchen counter", "x": 49, "y": 22, "width": 42, "height": 18 },
+            { "id": "Z3", "label": "table zone", "x": 28, "y": 58, "width": 34, "height": 26 },
+            { "id": "Z4", "label": "high chair zone", "x": 70, "y": 48, "width": 18, "height": 24 },
+            { "id": "Z5", "label": "window light", "x": 8, "y": 10, "width": 20, "height": 18 },
+            { "id": "Z6", "label": "fridge", "x": 86, "y": 18, "width": 10, "height": 26 }
+          ],
+          "positions": [
+            { "label": "mom entry", "x": 20, "y": 57, "kind": "SUBJECT" },
+            { "label": "mom counter", "x": 46, "y": 50, "kind": "SUBJECT" },
+            { "label": "mom table", "x": 37, "y": 58, "kind": "SUBJECT" },
+            { "label": "baby high chair", "x": 79, "y": 58, "kind": "SUBJECT" },
+            { "label": "camera wide", "x": 63, "y": 84, "kind": "CAMERA" },
+            { "label": "camera profile", "x": 10, "y": 68, "kind": "CAMERA" },
+            { "label": "camera high 3/4", "x": 50, "y": 14, "kind": "CAMERA" },
+            { "label": "window key", "x": 15, "y": 18, "kind": "LIGHT" },
+            { "label": "soft fill bounce", "x": 90, "y": 32, "kind": "LIGHT" }
+          ],
+          "paths": [
+            {
+              "label": "mom path",
+              "points": [
+                { "x": 18, "y": 57 },
+                { "x": 46, "y": 50 },
+                { "x": 38, "y": 59 },
+                { "x": 74, "y": 58 },
+                { "x": 39, "y": 60 }
+              ]
+            },
+            {
+              "label": "chair slide",
+              "points": [
+                { "x": 23, "y": 74 },
+                { "x": 32, "y": 72 },
+                { "x": 39, "y": 71 }
+              ]
+            },
+            {
+              "label": "teether drop",
+              "points": [
+                { "x": 74, "y": 39 },
+                { "x": 66, "y": 46 },
+                { "x": 58, "y": 60 }
+              ]
+            }
+          ]
+        },
+        "look": {
+          "title": "Lived-in dawn naturalism",
+          "swatches": [
+            { "name": "dawn cream", "color": "#EEE5D7", "use": "window light, wall bounce" },
+            { "name": "oatmeal knit", "color": "#C9B79F", "use": "mom wardrobe, softness" },
+            { "name": "faded sage", "color": "#A5B0A1", "use": "kitchen backdrop" },
+            { "name": "weathered wood", "color": "#8A6E5B", "use": "table, grounded realism" },
+            {
+              "name": "soft terracotta accent",
+              "color": "#B86A4F",
+              "use": "small set accents; approved pack art remains the strongest color"
+            }
+          ],
+          "texture": "matte laminate, worn cotton, soft wood grain, pencil lines with gentle smudge and light cross-hatching"
+        }
+      },
+      "visualPlan": {
+        "version": 1,
+        "renderer": "STROMAN_PREVIS_SVG_V2",
+        "stage": "IDEA",
+        "creativeSpine": {
+          "film": "Convenience converts here only if it feels like care made possible, not care cut short.",
+          "why": "It keeps the strongest truth from the brief and improves the original direction by giving the mother one active solve: she brings the baby closer instead of waiting for interruption to end. The meal matters because it fits that solve.",
+          "audienceEffect": "This brand belongs inside the stop-start texture of real caregiving and gives permission to meet your own need without leaving the baby behind.",
+          "keyBeats": [
+            "Counter Before Coffee",
+            "First Almost-Sit",
+            "Tray Sweep",
+            "Move Closer",
+            "First Bite",
+            "Earned Read"
+          ],
+          "nextDecision": "Which exact Jimmy's Famous Meals package and prepared presentation are approved for the table beats?"
+        },
+        "priorities": [
+          {
+            "priority": "MUST_SOLVE_NOW",
+            "label": "Decision 1",
+            "decision": "Which exact Jimmy's Famous Meals package and prepared presentation are approved for the table beats?"
+          },
+          {
+            "priority": "IMPORTANT",
+            "label": "Decision 2",
+            "decision": "May the mother's full side profile be shown in the first-bite beat?"
+          },
+          {
+            "priority": "WORTH_EXPLORING",
+            "label": "Decision 3",
+            "decision": "Must legal copy live inside the final frame, or can the lived-in end read stay visually clean before a separate card?"
+          }
+        ],
+        "shots": [
+          {
+            "id": "shot_1",
+            "sceneId": "S1",
+            "title": "Counter Before Coffee",
+            "purpose": "Place the brand inside real pressure immediately.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_1_h",
+              "aspectRatio": "16:9",
+              "shotScale": "24mm wide / doorway to counter",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "24mm counter-height wide, letting the pack land within a lived-in frame.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "24mm counter-height wide, letting the pack land within a lived-in frame.",
+              "hold": "Hold through: Her meal enters the morning as an afterthought to care.",
+              "executionStrip": [
+                "24mm wide / doorway to counter · 16:9",
+                "One-hip carry; pack lands before she can stop moving. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 26.74,
+                  "y": 26.68,
+                  "width": 20.520000000000003,
+                  "height": 62.64,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "BABY_FEET",
+                  "label": "BABY FEET",
+                  "x": 29,
+                  "y": 43.325,
+                  "width": 8,
+                  "height": 9.350000000000001,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "NURSERY DOOR",
+                  "x": 1.2599999999999998,
+                  "y": 34,
+                  "width": 17.48,
+                  "height": 46,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 43,
+                  "y": 31.8,
+                  "width": 46,
+                  "height": 22.4,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 80.64,
+                  "y": 11,
+                  "width": 16.72,
+                  "height": 44,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "WINDOW",
+                  "x": 68.4,
+                  "y": 1,
+                  "width": 15.200000000000001,
+                  "height": 40,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL PACK",
+                  "x": 53.9,
+                  "y": 35.5,
+                  "width": 10.2,
+                  "height": 9,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "mom crosses in", "fromX": 16, "fromY": 59, "toX": 46, "toY": 54 },
+                { "label": "set pack down", "fromX": 47, "fromY": 49, "toX": 58, "toY": 40 }
+              ],
+              "light": [
+                {
+                  "label": "Soft side window with dim practical…",
+                  "fromX": 76,
+                  "fromY": 21,
+                  "toX": 37,
+                  "toY": 58,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Baby is turned into mom's shoulder; only feet are visible; no hot food or sharp utensils near the baby.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_1_v",
+              "aspectRatio": "9:16",
+              "shotScale": "24mm wide / doorway to counter",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "24mm counter-height wide, letting the pack land within a lived-in frame.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "24mm counter-height wide, letting the pack land within a lived-in frame.",
+              "hold": "Hold through: Her meal enters the morning as an afterthought to care.",
+              "executionStrip": [
+                "24mm wide / doorway to counter · 9:16",
+                "One-hip carry; pack lands before she can stop moving. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 28.088999999999995,
+                  "y": 27.72,
+                  "width": 27.702000000000005,
+                  "height": 62.64,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "BABY_FEET",
+                  "label": "BABY FEET",
+                  "x": 34.06,
+                  "y": 45.565,
+                  "width": 10.8,
+                  "height": 9.350000000000001,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "NURSERY DOOR",
+                  "x": 14.537199999999999,
+                  "y": 35.160000000000004,
+                  "width": 21.3256,
+                  "height": 46,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 32.92,
+                  "y": 34.64,
+                  "width": 54,
+                  "height": 22.4,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 63.98080000000001,
+                  "y": 15.04,
+                  "width": 20.3984,
+                  "height": 44,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "WINDOW",
+                  "x": 56.848000000000006,
+                  "y": 3.84,
+                  "width": 18.544,
+                  "height": 40,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL PACK",
+                  "x": 49.358,
+                  "y": 38.7,
+                  "width": 12.443999999999999,
+                  "height": 9,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "mom crosses in",
+                  "fromX": 28.92,
+                  "fromY": 59.92,
+                  "toX": 47.52,
+                  "toY": 55.52
+                },
+                {
+                  "label": "set pack down",
+                  "fromX": 48.14,
+                  "fromY": 51.12,
+                  "toX": 54.96,
+                  "toY": 43.2
+                }
+              ],
+              "light": [
+                {
+                  "label": "Soft side window with dim practical…",
+                  "fromX": 66.12,
+                  "fromY": 23.84,
+                  "toX": 41.94,
+                  "toY": 59.04,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Baby is turned into mom's shoulder; only feet are visible; no hot food or sharp utensils near the baby.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_2",
+            "sceneId": "S2",
+            "title": "First Almost-Sit",
+            "purpose": "Make self-deferral feel specific, not generic.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_2_h",
+              "aspectRatio": "16:9",
+              "shotScale": "50mm side profile / table edge",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "50mm side profile; the aborted sit reads in one frame.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "50mm side profile; the aborted sit reads in one frame.",
+              "hold": "Hold through: The first pause for herself disappears before it begins.",
+              "executionStrip": [
+                "50mm side profile / table edge · 16:9",
+                "Chair drops; sleeve tug stops the sit. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 29.310000000000002,
+                  "y": 27.419999999999998,
+                  "width": 19.38,
+                  "height": 59.160000000000004,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "BABY_HANDS",
+                  "label": "BABY HAND",
+                  "x": 72,
+                  "y": 50.58,
+                  "width": 8,
+                  "height": 8.84,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "TABLE",
+                  "x": 33.239999999999995,
+                  "y": 64.76,
+                  "width": 43.52,
+                  "height": 20.48,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL",
+                  "x": 50.54,
+                  "y": 59.3,
+                  "width": 12.92,
+                  "height": 11.4,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CHAIR",
+                  "x": 41.325,
+                  "y": 72.875,
+                  "width": 9.350000000000001,
+                  "height": 8.25,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HIGH CHAIR",
+                  "x": 71.52,
+                  "y": 57.4,
+                  "width": 14.96,
+                  "height": 13.2,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "WINDOW",
+                  "x": 8.59,
+                  "y": 1,
+                  "width": 14.82,
+                  "height": 39,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "sleeve tug", "fromX": 75, "fromY": 56, "toX": 47, "toY": 56 },
+                { "label": "half-sit", "fromX": 40, "fromY": 61, "toX": 40, "toY": 70 },
+                { "label": "stand back up", "fromX": 40, "fromY": 70, "toX": 43, "toY": 58 }
+              ],
+              "light": [
+                {
+                  "label": "Window side-light shapes her profil…",
+                  "fromX": 16,
+                  "fromY": 20.5,
+                  "toX": 39,
+                  "toY": 57,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Baby remains off-camera except for one hand; crop line excludes head and face entirely; meal stays on mom's side of the table.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_2_v",
+              "aspectRatio": "9:16",
+              "shotScale": "50mm side profile / table edge",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "50mm side profile; the aborted sit reads in one frame.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "50mm side profile; the aborted sit reads in one frame.",
+              "hold": "Hold through: The first pause for herself disappears before it begins.",
+              "executionStrip": [
+                "50mm side profile / table edge · 9:16",
+                "Chair drops; sleeve tug stops the sit. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 30.0985,
+                  "y": 28.580000000000002,
+                  "width": 26.163,
+                  "height": 59.160000000000004,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "BABY_HANDS",
+                  "label": "BABY HAND",
+                  "x": 60.720000000000006,
+                  "y": 51.98,
+                  "width": 10.8,
+                  "height": 8.84,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "TABLE",
+                  "x": 26.5528,
+                  "y": 63.76,
+                  "width": 53.0944,
+                  "height": 20.48,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL",
+                  "x": 46.458800000000004,
+                  "y": 59.5,
+                  "width": 15.7624,
+                  "height": 11.4,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CHAIR",
+                  "x": 41.816500000000005,
+                  "y": 71.635,
+                  "width": 11.407000000000002,
+                  "height": 8.25,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HIGH CHAIR",
+                  "x": 58.854400000000005,
+                  "y": 57.71999999999999,
+                  "width": 18.2512,
+                  "height": 13.2,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "WINDOW",
+                  "x": 19.879800000000003,
+                  "y": 6.100000000000001,
+                  "width": 18.0804,
+                  "height": 39,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "sleeve tug",
+                  "fromX": 65.5,
+                  "fromY": 57.28,
+                  "toX": 48.14,
+                  "toY": 57.28
+                },
+                { "label": "half-sit", "fromX": 43.8, "fromY": 61.68, "toX": 43.8, "toY": 69.6 },
+                {
+                  "label": "stand back up",
+                  "fromX": 43.8,
+                  "fromY": 69.6,
+                  "toX": 45.66,
+                  "toY": 59.04
+                }
+              ],
+              "light": [
+                {
+                  "label": "Window side-light shapes her profil…",
+                  "fromX": 28.92,
+                  "fromY": 25.6,
+                  "toX": 43.18,
+                  "toY": 58.160000000000004,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Baby remains off-camera except for one hand; crop line excludes head and face entirely; meal stays on mom's side of the table.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_3",
+            "sceneId": "S3",
+            "title": "Tray Sweep",
+            "purpose": "Deepen recognition and vary the pattern without escalating into crisis.",
+            "priority": "SAFETY",
+            "horizontal": {
+              "id": "shot_3_h",
+              "aspectRatio": "16:9",
+              "shotScale": "35mm low / tray level",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "35mm low angle from tray height to make the sweep active.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "35mm low angle from tray height to make the sweep active.",
+              "hold": "Hold through: The interruption becomes a tactile chore, not a cry for help.",
+              "executionStrip": [
+                "35mm low / tray level · 16:9",
+                "Teether swept down; fork lowers with it. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "BABY_HANDS",
+                  "label": "BABY HAND",
+                  "x": 59,
+                  "y": 28.07,
+                  "width": 8,
+                  "height": 9.86,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 16.02,
+                  "y": 22.64,
+                  "width": 15.959999999999999,
+                  "height": 48.72,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "HIGH CHAIR TRAY",
+                  "x": 55.66,
+                  "y": 29.84,
+                  "width": 34.68,
+                  "height": 16.32,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "TEETHER",
+                  "x": 52,
+                  "y": 54.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "TABLE",
+                  "x": 15.64,
+                  "y": 67.36,
+                  "width": 36.72,
+                  "height": 17.28,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL",
+                  "x": 31.71,
+                  "y": 58.45,
+                  "width": 12.58,
+                  "height": 11.1,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "FORK",
+                  "x": 42,
+                  "y": 58.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "sweep off tray", "fromX": 64, "fromY": 35, "toX": 57, "toY": 57 },
+                { "label": "fork drops back", "fromX": 46, "fromY": 61, "toX": 40, "toY": 66 }
+              ],
+              "light": [
+                {
+                  "label": "Natural soft top-bounce from table…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 63,
+                  "toY": 33,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Only the baby hand and tray are visible; the fork stays on mom's side, out of baby reach.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_3_v",
+              "aspectRatio": "9:16",
+              "shotScale": "35mm low / tray level",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "35mm low angle from tray height to make the sweep active.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "35mm low angle from tray height to make the sweep active.",
+              "hold": "Hold through: The interruption becomes a tactile chore, not a cry for help.",
+              "executionStrip": [
+                "35mm low / tray level · 9:16",
+                "Teether swept down; fork lowers with it. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "BABY_HANDS",
+                  "label": "BABY HAND",
+                  "x": 52.660000000000004,
+                  "y": 32.11,
+                  "width": 10.8,
+                  "height": 9.86,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 23.106999999999996,
+                  "y": 25,
+                  "width": 21.546,
+                  "height": 48.72,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "HIGH CHAIR TRAY",
+                  "x": 43.10520000000001,
+                  "y": 33.28,
+                  "width": 42.309599999999996,
+                  "height": 16.32,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "TEETHER",
+                  "x": 48.839999999999996,
+                  "y": 55.54,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "TABLE",
+                  "x": 17.680799999999998,
+                  "y": 66.24,
+                  "width": 44.7984,
+                  "height": 17.28,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL",
+                  "x": 34.8862,
+                  "y": 58.769999999999996,
+                  "width": 15.3476,
+                  "height": 11.1,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "FORK",
+                  "x": 42.64,
+                  "y": 59.06,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "sweep off tray",
+                  "fromX": 58.68,
+                  "fromY": 38.8,
+                  "toX": 54.34,
+                  "toY": 58.160000000000004
+                },
+                {
+                  "label": "fork drops back",
+                  "fromX": 47.52,
+                  "fromY": 61.68,
+                  "toX": 43.8,
+                  "toY": 66.08
+                }
+              ],
+              "light": [
+                {
+                  "label": "Natural soft top-bounce from table…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 58.06,
+                  "toY": 37.04,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Only the baby hand and tray are visible; the fork stays on mom's side, out of baby reach.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_4",
+            "sceneId": "S4",
+            "title": "Move Closer",
+            "purpose": "Make the product feel enabling, not merely present.",
+            "priority": "OPTIONAL_EXPLORATION",
+            "horizontal": {
+              "id": "shot_4_h",
+              "aspectRatio": "16:9",
+              "shotScale": "40mm high 3/4 / table geometry",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "40mm high 3/4 shot to reveal the new relationship of bodies and objects.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "40mm high 3/4 shot to reveal the new relationship of bodies and objects.",
+              "hold": "Hold through: She stops waiting for quiet and redesigns the moment to fit both needs.",
+              "executionStrip": [
+                "40mm high 3/4 / table geometry · 16:9",
+                "She moves closer instead of waiting for quiet. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 19.5,
+                  "y": 27,
+                  "width": 19,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "BABY_FEET",
+                  "label": "BABY FEET",
+                  "x": 80,
+                  "y": 58.92,
+                  "width": 8,
+                  "height": 8.16,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "BABY_HANDS",
+                  "label": "BABY HAND",
+                  "x": 76,
+                  "y": 45,
+                  "width": 8,
+                  "height": 8,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "TABLE",
+                  "x": 24.9,
+                  "y": 60.6,
+                  "width": 44.2,
+                  "height": 20.8,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CHAIR",
+                  "x": 18.07,
+                  "y": 69.65,
+                  "width": 9.86,
+                  "height": 8.7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HIGH CHAIR",
+                  "x": 71.18,
+                  "y": 50.1,
+                  "width": 15.64,
+                  "height": 13.8,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL PACK",
+                  "x": 42.88,
+                  "y": 55.6,
+                  "width": 12.24,
+                  "height": 10.799999999999999,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "chair slides in", "fromX": 23, "fromY": 74, "toX": 38, "toY": 71 },
+                { "label": "high chair nudged c…", "fromX": 72, "fromY": 57, "toX": 63, "toY": 58 }
+              ],
+              "light": [
+                {
+                  "label": "Same morning window source, slightl…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 29,
+                  "toY": 56,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Baby is shown only as hands and feet above the tray line; meal remains out of baby reach; no face exposure from the higher angle.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_4_v",
+              "aspectRatio": "9:16",
+              "shotScale": "40mm high 3/4 / table geometry",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "40mm high 3/4 shot to reveal the new relationship of bodies and objects.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "40mm high 3/4 shot to reveal the new relationship of bodies and objects.",
+              "hold": "Hold through: She stops waiting for quiet and redesigns the moment to fit both needs.",
+              "executionStrip": [
+                "40mm high 3/4 / table geometry · 9:16",
+                "She moves closer instead of waiting for quiet. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "MOM",
+                  "x": 24.155,
+                  "y": 28.28,
+                  "width": 25.650000000000002,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "BABY_FEET",
+                  "label": "BABY FEET",
+                  "x": 65.67999999999999,
+                  "y": 59.36,
+                  "width": 10.8,
+                  "height": 8.16,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "BABY_HANDS",
+                  "label": "BABY HAND",
+                  "x": 63.199999999999996,
+                  "y": 47.12,
+                  "width": 10.8,
+                  "height": 8,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "TABLE",
+                  "x": 21.178,
+                  "y": 60.07999999999999,
+                  "width": 53.924,
+                  "height": 20.8,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CHAIR",
+                  "x": 27.245400000000004,
+                  "y": 68.77000000000001,
+                  "width": 12.0292,
+                  "height": 8.7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HIGH CHAIR",
+                  "x": 58.439600000000006,
+                  "y": 51.260000000000005,
+                  "width": 19.0808,
+                  "height": 13.8,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "MEAL",
+                  "label": "MEAL PACK",
+                  "x": 41.9136,
+                  "y": 56.28,
+                  "width": 14.9328,
+                  "height": 10.799999999999999,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "chair slides in",
+                  "fromX": 33.260000000000005,
+                  "fromY": 73.12,
+                  "toX": 42.56,
+                  "toY": 70.47999999999999
+                },
+                {
+                  "label": "high chair nudged c…",
+                  "fromX": 63.64,
+                  "fromY": 58.160000000000004,
+                  "toX": 58.06,
+                  "toY": 59.04
+                }
+              ],
+              "light": [
+                {
+                  "label": "Same morning window source, slightl…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 36.980000000000004,
+                  "toY": 57.28,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Baby is shown only as hands and feet above the tray line; meal remains out of baby reach; no face exposure from the higher angle.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          }
+        ],
+        "blocking": {
+          "title": "Kitchen + table blocking",
+          "question": "Where are the people and cameras, and how do they move?",
+          "zones": [
+            { "id": "Z1", "label": "nursery door", "x": 4, "y": 44, "width": 14, "height": 26 },
+            { "id": "Z2", "label": "kitchen counter", "x": 49, "y": 22, "width": 42, "height": 18 },
+            { "id": "Z3", "label": "table zone", "x": 28, "y": 58, "width": 34, "height": 26 },
+            { "id": "Z4", "label": "high chair zone", "x": 70, "y": 48, "width": 18, "height": 24 },
+            { "id": "Z5", "label": "window light", "x": 8, "y": 10, "width": 20, "height": 18 },
+            { "id": "Z6", "label": "fridge", "x": 86, "y": 18, "width": 10, "height": 26 }
+          ],
+          "subjects": [
+            {
+              "id": "hosted_subject_1",
+              "label": "MOM",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 18, "y": 57, "note": "mom path" },
+                { "label": "2", "x": 46, "y": 50, "note": "mom path" },
+                { "label": "3", "x": 38, "y": 59, "note": "mom path" },
+                { "label": "4", "x": 74, "y": 58, "note": "mom path" },
+                { "label": "END", "x": 39, "y": 60, "note": "mom path" }
+              ]
+            },
+            {
+              "id": "hosted_subject_2",
+              "label": "BABY",
+              "carries": null,
+              "states": [{ "label": "START", "x": 79, "y": 58, "note": "baby high chair" }]
+            }
+          ],
+          "cameras": [
+            {
+              "id": "hosted_camera_1",
+              "label": "camera wide",
+              "x": 63,
+              "y": 84,
+              "aimX": 18,
+              "aimY": 57,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_2",
+              "label": "camera profile",
+              "x": 10,
+              "y": 68,
+              "aimX": 46,
+              "aimY": 50,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_3",
+              "label": "camera high 3/4",
+              "x": 50,
+              "y": 14,
+              "aimX": 38,
+              "aimY": 59,
+              "use": "Reproduce the frame-specific storyboard axis."
+            }
+          ],
+          "restrictions": [
+            "Diagram labels come from the hosted scene plan; location geometry remains provisional until the scout confirms it."
+          ]
+        },
+        "lighting": {
+          "title": "Lived-in dawn naturalism",
+          "question": "Where are the meaningful sources, modifiers, and practicals?",
+          "zones": [
+            { "id": "Z1", "label": "nursery door", "x": 4, "y": 44, "width": 14, "height": 26 },
+            { "id": "Z2", "label": "kitchen counter", "x": 49, "y": 22, "width": 42, "height": 18 },
+            { "id": "Z3", "label": "table zone", "x": 28, "y": 58, "width": 34, "height": 26 },
+            { "id": "Z4", "label": "high chair zone", "x": 70, "y": 48, "width": 18, "height": 24 },
+            { "id": "Z5", "label": "window light", "x": 8, "y": 10, "width": 20, "height": 18 },
+            { "id": "Z6", "label": "fridge", "x": 86, "y": 18, "width": 10, "height": 26 }
+          ],
+          "sources": [
+            {
+              "id": "hosted_light_1",
+              "label": "window key",
+              "kind": "PRACTICAL",
+              "x": 15,
+              "y": 18,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Soft side window with dim practical fill; no glossy food light."
+            },
+            {
+              "id": "hosted_light_2",
+              "label": "soft fill bounce",
+              "kind": "PRACTICAL",
+              "x": 90,
+              "y": 32,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Window pool across table; soft falloff to edges."
+            }
+          ],
+          "instruction": "Scene-derived intent: Soft side window with dim practical fill; no glossy food light. Window side-light shapes her profile and the table plane. Natural soft top-bounce from table and window; no harsh edge. Same morning window source, slightly warmer as she re…"
+        },
+        "look": {
+          "title": "Lived-in dawn naturalism",
+          "question": "What palette, contrast, texture, and grade direction govern the sequence?",
+          "swatches": [
+            { "name": "dawn cream", "color": "#EEE5D7", "use": "window light, wall bounce" },
+            { "name": "oatmeal knit", "color": "#C9B79F", "use": "mom wardrobe, softness" },
+            { "name": "faded sage", "color": "#A5B0A1", "use": "kitchen backdrop" },
+            { "name": "weathered wood", "color": "#8A6E5B", "use": "table, grounded realism" },
+            {
+              "name": "soft terracotta accent",
+              "color": "#B86A4F",
+              "use": "small set accents; approved pack art remains the strongest color"
+            }
+          ],
+          "contrast": "Muted oatmeal, sage, weathered wood; pack art becomes the strongest accent.",
+          "texture": "matte laminate, worn cotton, soft wood grain, pencil lines with gentle smudge and light cross-hatching",
+          "restraint": "Treat the look as a hypothesis; reject decorative grading that does not serve the scene turn."
+        },
+        "sound": [
+          {
+            "sceneId": "S1",
+            "label": "Counter Before Coffee",
+            "mustRecord": [
+              "Room tone, soft baby fuss, her breath, pack thunk on laminate, keys lightly clink."
+            ],
+            "perspective": "Keep natural sound dry and close so the set-down feels physical.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S2",
+            "label": "First Almost-Sit",
+            "mustRecord": [
+              "Chair scrape, fabric pull, small baby vocal, her breath stopping mid-exhale."
+            ],
+            "perspective": "Let the chair scrape become the beat that gets cut off.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S3",
+            "label": "Tray Sweep",
+            "mustRecord": ["Fork tap on plate, teether clack on floor, tiny exhale, tray rattle."],
+            "perspective": "Use the toy-on-floor clack as the interruption trigger instead of louder fuss.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S4",
+            "label": "Move Closer",
+            "mustRecord": ["Chair feet drag, tray tap, baby feet thump, soft toy landing."],
+            "perspective": "Furniture movement is the solution beat; keep it readable.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S5",
+            "label": "First Bite",
+            "mustRecord": [
+              "Natural room tone continues; music enters quietly under fork, breath, and tiny foot taps."
+            ],
+            "perspective": "Music starts only here; everything before stays diegetic.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S6",
+            "label": "Earned Read",
+            "mustRecord": ["Foot tap rhythm, fork on plate, low music held, room tone."],
+            "perspective": "Let the foot tap carry motion into the end read.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          }
+        ],
+        "coverage": [
+          {
+            "id": "shot_1",
+            "priority": "MUST_GET",
+            "label": "Counter Before Coffee",
+            "serves": ["Place the brand inside real pressure immediately."],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_2",
+            "priority": "MUST_GET",
+            "label": "First Almost-Sit",
+            "serves": ["Make self-deferral feel specific, not generic."],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_3",
+            "priority": "SAFETY",
+            "label": "Tray Sweep",
+            "serves": ["Deepen recognition and vary the pattern without escalating into crisis."],
+            "why": "Take only after the must-get story turns work."
+          },
+          {
+            "id": "shot_4",
+            "priority": "OPTIONAL_EXPLORATION",
+            "label": "Move Closer",
+            "serves": ["Make the product feel enabling, not merely present."],
+            "why": "Take only after the must-get story turns work."
+          }
+        ],
+        "location": {
+          "mode": "INTENT_ONLY",
+          "photos": [],
+          "claims": [],
+          "confirmationQuestion": "Add a wide and reverse location photo before locking physical geometry."
+        },
+        "delta": {
+          "trigger": "Hosted creative direction developed",
+          "changed": [
+            "Provider storyboard intent became independently composed 16:9 and 9:16 frame hypotheses."
+          ],
+          "unchanged": ["All physical geometry remains unverified until the scout confirms it."]
+        },
+        "productionReality": {
+          "crew": "",
+          "cameraBody": "",
+          "lenses": "",
+          "support": "",
+          "lighting": "",
+          "sound": "",
+          "shootTime": "",
+          "access": "",
+          "talent": "",
+          "budget": "",
+          "timeOfDay": ""
+        }
+      },
+      "questions": [
+        {
+          "prompt": "Which exact Jimmy's Famous Meals package and prepared presentation are approved for the table beats?",
+          "decisionItChanges": "S2, S4, S6 product staging"
+        },
+        {
+          "prompt": "May the mother's full side profile be shown in the first-bite beat?",
+          "decisionItChanges": "S5 framing and lens distance"
+        },
+        {
+          "prompt": "Must legal copy live inside the final frame, or can the lived-in end read stay visually clean before a separate card?",
+          "decisionItChanges": "S6 composition density"
+        }
+      ],
+      "productionNextSteps": [
+        "Build a six-frame animatic using these boards and test single-view brand recall.",
+        "Confirm pack, food presentation, and any required legal load before shot listing.",
+        "Scout a kitchen with window light, short door-to-counter path, and table-high-chair adjacency.",
+        "Pre-block every setup with baby-face exclusion lines marked on monitor.",
+        "Dress the set with controlled real clutter: bib, wipe, keys, bottle brush, teether, phone.",
+        "Plan sound-first editorial: no score until S5, practical sounds driving all prior turns."
+      ]
+    },
+    "projectSummary": "“Morning routine of an everyday mom who eats Jimmy's Famous Meals” is for Jimmy's Famous Meals; current format: commercial. Creative goal: Conversion. Intended audience: Parents who need convenience. Intended feeling: understood, relatable, sentimental.",
+    "storyObjective": "Objective: Conversion. Use each creative choice to help the audience leave feeling understood, relatable, sentimental.",
+    "audienceAnalysis": "Primary audience: Parents who need convenience. Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.",
+    "emotionalArc": [
+      "Counter Before Coffee — Place the brand inside real pressure immediately.",
+      "First Almost-Sit — Make self-deferral feel specific, not generic.",
+      "Tray Sweep — Deepen recognition and vary the pattern without escalating into crisis.",
+      "Move Closer — Make the product feel enabling, not merely present.",
+      "First Bite — Deliver the emotional permission beat that earns conversion.",
+      "Earned Read — Leave a clean memory of product-in-reality, not product-away-from-reality."
+    ],
+    "recommendedStructure": "Recommended story engine — Three denied attempts to sit become one shared sit: pack lands on the counter, two interruptions stop her from eating, then she changes the setup so caregiving and eating can happen in the same beat. Near-real-time in six beats. Repeated almost-sit motif. No isolated hero meal until the first successful bite; earlier product views stay embedded in action and partial obstruction.",
+    "hookConcepts": [
+      {
+        "title": "Countertop Ballet",
+        "description": "Overhead-only choreography of hands, feet, table surfaces, and objects. Curiosity -> recognition through movement -> release when the rhythm settles."
+      },
+      {
+        "title": "One Less Decision",
+        "description": "The mother against an invisible checklist externalized through on-screen task words. Recognition -> stress spike -> practical relief."
+      },
+      {
+        "title": "Small Pieces",
+        "description": "Object-led fragments of the morning with spare thought-like sound or text. Seen in the clutter -> soothed by recognition -> warmed by a modest win."
+      }
+    ],
+    "editingBlueprint": [
+      "Near-real-time in six beats. Repeated almost-sit motif. No isolated hero meal until the first successful bite; earlier product views stay embedded in action and partial obstruction.",
+      "Counter Before Coffee: Mom enters the kitchen carrying the baby on one hip and sets a sealed Jimmy's Famous Meals pack onto the cluttered counter with her free hand. Her meal enters the morning as an afterthought to care.",
+      "First Almost-Sit: Mom sets the approved prepared meal on the table, pulls out a chair, and starts to sit; a baby hand from the nearby high chair catches her sleeve and she stands again before taking weight. The first pause for herself disappears before it begins.",
+      "Tray Sweep: As mom lifts a fork toward her mouth, the baby hand sweeps a teether off the high-chair tray; she lowers the fork and bends to pick the teether up. The interruption becomes a tactile chore, not a cry for help.",
+      "Move Closer: Mom slides her chair and the high chair nearer to the table, sets a soft toy on the tray, and repositions the meal within easy reach. She stops waiting for quiet and redesigns the moment to fit both needs.",
+      "First Bite: Seated beside the baby, mom takes her first bite while offering one finger for the baby to hold with her other hand. Caregiving and self-care finally happen in the same second.",
+      "Earned Read: Mom sets the Jimmy's Famous Meals pack upright beside the open meal and keeps eating as the baby's foot taps the tray edge nearby. The brand gets stillness only after she does."
+    ],
+    "interviewStrategy": null,
+    "brollPriorities": [
+      "Counter Before Coffee: Diagonal kitchen wide: doorway, counter, fridge, window glow, baby feet pressed against her sweater.",
+      "First Almost-Sit: Profile composition: chair, table edge, prepared meal, baby hand entering frame only at sleeve level.",
+      "Tray Sweep: Low tray-level angle: baby hand in foreground, teether dropping, meal and mom in midground.",
+      "Move Closer: High 3/4 view of the table geometry changing: two seats closing distance, meal centered, baby feet drumming.",
+      "First Bite: Intimate side profile: fork to mouth, prepared meal foreground, baby hand and feet at the frame edge.",
+      "Earned Read: Top-down lived-in end read: pack, meal, bib, wipe, fork, mom hand, baby foot, table grain."
+    ],
+    "risks": [
+      "We delay appetite-first imagery and limit claim density. If the client needs early beauty coverage or feature-heavy messaging, this is the wrong structure.",
+      "Change my mind if animatics show either failure: viewers cannot identify Jimmy's Famous Meals after one watch, or the required legal/product load forces a clean hero-food insert before the first successful sit.",
+      "Do not lock production around an unverified audience (Parents who need convenience) or emotional destination (understood, relatable, sentimental).",
+      "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve."
+    ]
+  },
+  "translationPath": "generateBlueprint(providerOutput)"
+}

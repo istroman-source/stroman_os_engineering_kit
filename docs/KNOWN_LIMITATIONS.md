@@ -56,9 +56,10 @@ evaluation, decision, AI), tested in memory. Genuine current limitations:
   project-owned resources; **content and rubric authoring authorization is not
   enforced** (no owner/role/author concept yet). `requestRecommendation` auth is
   also deferred.
-- **No AI provider adapters.** The `AiRecommender` port has an in-memory test
-  double only; real provider adapters are a later step. (Repository adapters now
-  exist — see the persistence section below.)
+- **No provider adapter for the legacy `AiRecommender` port.** That foundation port still has an
+  in-memory test double only. Develop & Plan is a separate, implemented boundary with a
+  provider-neutral creative-reasoning port, an OpenAI Responses adapter, and a deterministic
+  offline specialist; it does not silently backfill the legacy recommendation workflow.
 
 ## Persistence layer (Prompt 005) — what exists vs. not
 
