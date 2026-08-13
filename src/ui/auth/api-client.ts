@@ -196,8 +196,9 @@ export function friendlyError(err: unknown): string {
     case "ACCESS_CONTROL_UNAVAILABLE":
       return "Private access verification is temporarily unavailable.";
     case "INVALID_UPSTREAM_RESPONSE":
+      return "The service returned an unexpected response. Please try again.";
     case "CREATIVE_DEVELOPMENT_PENDING":
-      return "Creative development is taking longer than expected. Your work is safe; please try again shortly.";
+      return "Creative development is still finishing. Keep this page open or return shortly; do not submit it again.";
     case "VALIDATION_FAILED":
     case "MALFORMED_JSON":
       return "Please check your input and try again.";

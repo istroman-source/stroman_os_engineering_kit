@@ -80,4 +80,46 @@ describe("analyzeProject edge recovery", () => {
     await expect(pending).resolves.toEqual(revised);
     expect(fetch).toHaveBeenCalledTimes(4);
   });
+
+  it("stops at the full hosted-pipeline recovery bound with non-duplicating guidance", async () => {
+    vi.useFakeTimers();
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(response(404, { error: { code: "NOT_FOUND" } }))
+      .mockResolvedValueOnce(response(504, "upstream error", true))
+      .mockResolvedValue(response(404, { error: { code: "NOT_FOUND" } }));
+    vi.stubGlobal("fetch", fetch);
+
+    const pending = analyzeProject("proj_1", FIELDS);
+    const rejection = expect(pending).rejects.toMatchObject({
+      status: 504,
+      code: "CREATIVE_DEVELOPMENT_PENDING",
+    });
+    await vi.advanceTimersByTimeAsync(41 * 60_000);
+
+    await rejection;
+    expect(fetch.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
+  });
+
+  it("propagates a non-recoverable authorization failure encountered while polling", async () => {
+    vi.useFakeTimers();
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(response(404, { error: { code: "NOT_FOUND" } }))
+      .mockResolvedValueOnce(response(502, "upstream error", true))
+      .mockResolvedValueOnce(
+        response(401, { error: { code: "AUTHENTICATION_REQUIRED", message: "Sign in." } }),
+      );
+    vi.stubGlobal("fetch", fetch);
+
+    const pending = analyzeProject("proj_1", FIELDS);
+    const rejection = expect(pending).rejects.toMatchObject({
+      status: 401,
+      code: "AUTHENTICATION_REQUIRED",
+    });
+    await vi.advanceTimersByTimeAsync(5_000);
+
+    await rejection;
+    expect(fetch).toHaveBeenCalledTimes(3);
+  });
 });

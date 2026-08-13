@@ -21,6 +21,17 @@ function stubFetch(status: number, body: unknown) {
   );
 }
 
+function stubRawFetch(status: number, body: string) {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () => ({
+      ok: status >= 200 && status < 300,
+      status,
+      text: async () => body,
+    })),
+  );
+}
+
 afterEach(() => vi.unstubAllGlobals());
 
 describe("api-client", () => {
@@ -70,6 +81,16 @@ describe("api-client", () => {
     expect(items[0]?.name).toBe("A");
   });
 
+  it("turns a plain-text proxy response into a typed error without leaking parser details", async () => {
+    stubRawFetch(502, "upstream error");
+    const error = await listProjects().catch((caught) => caught);
+
+    expect(error).toBeInstanceOf(ApiRequestError);
+    expect(error).toMatchObject({ status: 502, code: "INVALID_UPSTREAM_RESPONSE" });
+    expect(error.message).not.toContain("upstream error");
+    expect(error.message).not.toContain("Unexpected token");
+  });
+
   it("signOut resolves on 200", async () => {
     stubFetch(200, { ok: true });
     await expect(signOut()).resolves.toEqual({ ok: true });
@@ -104,6 +125,15 @@ describe("friendlyError — status-specific messages", () => {
     );
     expect(friendlyError(new ApiRequestError(503, "AUTHENTICATION_UNAVAILABLE", "x"))).toBe(
       "A required service is unavailable.",
+    );
+  });
+
+  it("keeps generic proxy errors endpoint-neutral and creative pending guidance non-duplicating", () => {
+    expect(friendlyError(new ApiRequestError(502, "INVALID_UPSTREAM_RESPONSE", "x"))).toBe(
+      "The service returned an unexpected response. Please try again.",
+    );
+    expect(friendlyError(new ApiRequestError(504, "CREATIVE_DEVELOPMENT_PENDING", "x"))).toBe(
+      "Creative development is still finishing. Keep this page open or return shortly; do not submit it again.",
     );
   });
 

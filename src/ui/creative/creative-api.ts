@@ -55,7 +55,11 @@ export async function getAnalysis(projectId: string): Promise<Analysis> {
 }
 
 const RECOVERY_POLL_INTERVAL_MS = 5_000;
-const RECOVERY_TIMEOUT_MS = 7 * 60_000;
+// The hosted pipeline has four sequential stages, and each provider call has a
+// ten-minute hard bound. Poll through that full worst case plus teardown/commit
+// margin so the UI never encourages a duplicate generation while the original
+// atomic write can still legitimately complete.
+const RECOVERY_TIMEOUT_MS = 41 * 60_000;
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
