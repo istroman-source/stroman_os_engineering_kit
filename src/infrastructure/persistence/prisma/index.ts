@@ -8,6 +8,7 @@ export { PrismaReviewRunRepository } from "./repositories/prisma-review-run-repo
 export { PrismaRetrospectiveRepository } from "./repositories/prisma-retrospective-repository";
 export { PrismaDecisionRepository } from "./repositories/prisma-decision-repository";
 export { PrismaIdentityRepository } from "./repositories/prisma-identity-repository";
+export { PrismaPrivateBetaAccessRepository } from "./repositories/prisma-private-beta-access-repository";
 export { PrismaCreativeBriefRepository } from "./repositories/prisma-creative-brief-repository";
 export {
   PrismaEntityRepository,

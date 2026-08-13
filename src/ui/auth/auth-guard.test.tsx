@@ -20,7 +20,7 @@ beforeEach(() => {
 
 describe("AuthGuard", () => {
   it("redirects unauthenticated users to /login and hides children", async () => {
-    vi.mocked(getSession).mockResolvedValue(false);
+    vi.mocked(getSession).mockResolvedValue({ state: "SIGNED_OUT" });
     render(
       <AuthGuard>
         <p>secret content</p>
@@ -31,13 +31,38 @@ describe("AuthGuard", () => {
   });
 
   it("renders children for an authenticated user", async () => {
-    vi.mocked(getSession).mockResolvedValue(true);
+    vi.mocked(getSession).mockResolvedValue({ state: "AUTHORIZED" });
     render(
       <AuthGuard>
         <p>secret content</p>
       </AuthGuard>,
     );
     expect(await screen.findByText("secret content")).toBeInTheDocument();
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("renders a private-testing message without exposing the workspace", async () => {
+    vi.mocked(getSession).mockResolvedValue({ state: "PRIVATE_BETA_DENIED" });
+    render(
+      <AuthGuard>
+        <p>secret content</p>
+      </AuthGuard>,
+    );
+    expect(await screen.findByText(/currently in private testing/i)).toBeInTheDocument();
+    expect(screen.getByText(/does not have access yet/i)).toBeInTheDocument();
+    expect(screen.queryByText("secret content")).not.toBeInTheDocument();
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  it("renders an outage message without redirecting or exposing the workspace", async () => {
+    vi.mocked(getSession).mockResolvedValue({ state: "UNAVAILABLE" });
+    render(
+      <AuthGuard>
+        <p>secret content</p>
+      </AuthGuard>,
+    );
+    expect(await screen.findByText(/temporarily unavailable/i)).toBeInTheDocument();
+    expect(screen.queryByText("secret content")).not.toBeInTheDocument();
     expect(replaceMock).not.toHaveBeenCalled();
   });
 });

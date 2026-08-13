@@ -28,14 +28,14 @@ beforeEach(() => {
 
 describe("LoginView", () => {
   it("redirects an already-authenticated visitor to /projects", async () => {
-    vi.mocked(getSession).mockResolvedValue(true);
+    vi.mocked(getSession).mockResolvedValue({ state: "AUTHORIZED" });
     render(<LoginView />);
     await waitFor(() => expect(replaceMock).toHaveBeenCalledWith("/projects"));
   });
 
   it("requests a code then reveals the OTP field", async () => {
     const user = userEvent.setup();
-    vi.mocked(getSession).mockResolvedValue(false);
+    vi.mocked(getSession).mockResolvedValue({ state: "SIGNED_OUT" });
     vi.mocked(startOtp).mockResolvedValue({ message: "sent" });
     render(<LoginView />);
 
@@ -48,7 +48,7 @@ describe("LoginView", () => {
 
   it("verifies the code and redirects to /projects", async () => {
     const user = userEvent.setup();
-    vi.mocked(getSession).mockResolvedValue(false);
+    vi.mocked(getSession).mockResolvedValue({ state: "SIGNED_OUT" });
     vi.mocked(startOtp).mockResolvedValue({ message: "sent" });
     vi.mocked(verifyOtp).mockResolvedValue({ authenticated: true });
     render(<LoginView />);
@@ -64,7 +64,7 @@ describe("LoginView", () => {
 
   it("shows an error when verification fails", async () => {
     const user = userEvent.setup();
-    vi.mocked(getSession).mockResolvedValue(false);
+    vi.mocked(getSession).mockResolvedValue({ state: "SIGNED_OUT" });
     vi.mocked(startOtp).mockResolvedValue({ message: "sent" });
     vi.mocked(verifyOtp).mockRejectedValue({
       code: "INVALID_OTP",
@@ -83,7 +83,7 @@ describe("LoginView", () => {
 
   it("shows a sanitized message on a provider rate limit (429)", async () => {
     const user = userEvent.setup();
-    vi.mocked(getSession).mockResolvedValue(false);
+    vi.mocked(getSession).mockResolvedValue({ state: "SIGNED_OUT" });
     vi.mocked(startOtp).mockRejectedValue({ status: 429, code: "RATE_LIMITED", message: "raw" });
     render(<LoginView />);
 
@@ -99,7 +99,7 @@ describe("LoginView", () => {
 
   it("disables the send button on a cooldown after a successful request", async () => {
     const user = userEvent.setup();
-    vi.mocked(getSession).mockResolvedValue(false);
+    vi.mocked(getSession).mockResolvedValue({ state: "SIGNED_OUT" });
     vi.mocked(startOtp).mockResolvedValue({ message: "sent" });
     render(<LoginView />);
 

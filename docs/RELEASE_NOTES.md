@@ -1,5 +1,26 @@
 # Release Notes
 
+## Private web deployment candidate (2026-08-13)
+
+- Added a persistent, server-enforced private-beta grant keyed to Stroman's stable internal user
+  identity. A verified deployment-only email can atomically bootstrap exactly one owner; ongoing
+  authorization never depends on email.
+- Authenticated accounts without access see a coherent private-testing state, while direct and
+  forged protected API requests fail with `403`. Authentication, identity-store, and access-store
+  outages remain distinct fail-closed `503` responses.
+- Added owner-verified CLI operations to inspect, grant, and revoke tester access with append-only
+  audit events and no unauthenticated administration endpoint.
+- Added a Railway Docker deployment contract with intentional migrations, database-backed
+  readiness, exact release SHA reporting, managed PostgreSQL, and persistent source-import storage.
+  Production config requires HTTPS, same-origin auth callback, and hosted OpenAI reasoning.
+- Documented initial owner claim, trusted tester operations, Supabase URL configuration, backup,
+  additive-schema rollback, single-replica storage limitation, and deployed desktop/mobile smoke
+  requirements in `docs/PRIVATE_WEB_DEPLOYMENT.md`.
+
+This is a release candidate only. It is not ready for private web human testing until exact-head CI
+and independent review pass, reviewed `main` deploys, and the actual HTTPS production smoke sequence
+passes.
+
 ## Hosted creative reasoning and frame-accurate visual planning (2026-08-11)
 
 - The configured server-side OpenAI Responses provider completed a real request and then generated
