@@ -1,0 +1,2608 @@
+{
+  "calibration": "HOSTED_CREATIVE_REASONING",
+  "generatedAt": "2026-08-11T20:41:51.757Z",
+  "case": {
+    "id": "open-empty-chair",
+    "expectedMode": "OPEN",
+    "brief": {
+      "title": "The Weight of an Empty Chair",
+      "client": "Mara Ellison",
+      "projectType": "open-format moving-image study",
+      "creativeGoal": "Explore whether an inherited kitchen chair can carry family authority after nobody agrees where it belongs.",
+      "targetAudience": "viewers willing to assemble meaning from behavior rather than explanation",
+      "desiredEmotion": "uneasy recognition with room for humor",
+      "context": "The real chair, three adult cousins, one storage unit, and one suburban kitchen are available for a single day. Nobody will discuss the deceased owner on camera. The format may become a short, installation loop, or hybrid; do not force a conventional resolution or invent memories."
+    }
+  },
+  "provider": { "id": "openai-responses:gpt-5.4", "mode": "HOSTED" },
+  "applicationPath": "developCreativeBlueprint",
+  "semanticGate": "PASSED_BY_APPLICATION",
+  "creativeQuality": {
+    "passed": true,
+    "total": 93,
+    "scores": [
+      {
+        "dimension": "TRANSFORMATION",
+        "score": 9,
+        "evidence": "The thesis must discover a human or dramatic value beyond restating the stated goal."
+      },
+      {
+        "dimension": "PROJECT_SPECIFICITY",
+        "score": 8,
+        "evidence": "25/32 distinctive title, client, or context terms survive in the reasoning."
+      },
+      {
+        "dimension": "ACTIONABILITY",
+        "score": 10,
+        "evidence": "6 scenes contain physical action and a distinct dramatic turn; 6 make that action depend on project-specific material."
+      },
+      {
+        "dimension": "DISTINCTIVENESS",
+        "score": 9,
+        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
+      },
+      {
+        "dimension": "JUDGMENT",
+        "score": 10,
+        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
+      },
+      {
+        "dimension": "INNOVATION",
+        "score": 9,
+        "evidence": "At least one departure must name the convention, its value, the violation, project fit, and execution risk."
+      },
+      {
+        "dimension": "HUMANNESS",
+        "score": 9,
+        "evidence": "The insight names a human truth and lived dramatic pressure rather than a demographic label."
+      },
+      {
+        "dimension": "CRAFT_COHERENCE",
+        "score": 10,
+        "evidence": "6/6 scenes derive complete physical craft choices."
+      },
+      {
+        "dimension": "HONESTY",
+        "score": 9,
+        "evidence": "Assumptions and constraint handling remain explicit; hypothetical scenes are not presented as captured evidence."
+      },
+      {
+        "dimension": "VISUAL_COMPLETION",
+        "score": 10,
+        "evidence": "6 drawn frames, a blocking map, and a look palette are renderable."
+      }
+    ],
+    "blockingFindings": [],
+    "substitutionSignal": {
+      "projectTermsFound": [
+        "weight",
+        "empty",
+        "chair",
+        "real",
+        "three",
+        "adult",
+        "cousins",
+        "storage",
+        "unit",
+        "kitchen",
+        "available",
+        "single",
+        "nobody",
+        "will",
+        "discuss",
+        "deceased",
+        "camera",
+        "become",
+        "short",
+        "installation",
+        "loop",
+        "hybrid",
+        "force",
+        "resolution",
+        "invent"
+      ],
+      "weak": false
+    }
+  },
+  "visualQuality": { "passed": true, "findings": [] },
+  "providerOutput": {
+    "version": 2,
+    "reasoningSource": "HOSTED_REASONING",
+    "insight": {
+      "thesis": "Inherited authority only exists here if a chair placement can survive correction. The object is not the memory; the object is the test.",
+      "humanTruth": "Families often stage rank as a practical decision so nobody has to admit they are fighting over permission.",
+      "dramaticTension": "Three cousins can move one chair easily, but none can make its position hold without exposing a claim on the family order.",
+      "audiencePromise": "Viewers read grip, rotation, delay, foot nudges, blocked paths, and aftermath holds as the real dialogue, with humor arriving through the ridiculous seriousness of ordinary logistics."
+    },
+    "directionDecision": {
+      "title": "Proxy Vote: If It Stays",
+      "pointOfView": "The key question is not who wants the chair. It is whose placement can last once the room and the other cousins answer back.",
+      "storyEngine": "Open on contested custody at the storage-unit threshold. Cut to the kitchen for a chain of trial placements that escalate from mid-air redirection to micro-veto to blocked removal. End on an interim diagonal position that survives only because nobody can ratify or defeat it cleanly.",
+      "formalStrategy": "8 to 12 minute observational short designed to loop. Three shot classes only: custody wide, correction detail, aftermath hold. One frontal storage axis, two fixed kitchen axes, no travel sequence, no interviews, no score, no archive, no memory prompts. A placement is not treated as real until it survives a hold.",
+      "audienceJourney": "First: furniture-moving. Then: procedural power. Then: comic pettiness. Finally: uneasy recognition that nobody can solve a practical question without claiming authority they cannot openly justify.",
+      "whyThisProject": "This keeps the strongest part of the original direction - behavior as politics - but improves it with a measurable rule: placement equals survival time. It also gives the film a loopable rhyme, opening and closing on a similarly angled chair in different rooms, so irresolution becomes form rather than absence.",
+      "sacrifice": "It refuses biography, explicit grief language, transport continuity, and a winner. Some viewers will feel the missing explanation as a wound rather than a tease.",
+      "assumptions": [
+        "At least two cousins will act as if they have corrective rights over the chair's position.",
+        "The kitchen offers both a plausible place of use and a plausible place of exile within the same frame.",
+        "Silence after each move will reveal as much as the move itself."
+      ],
+      "changeMyMindIf": "If the first two kitchen placements survive their full aftermath holds without re-angle, foot-veto, blocked route, or renewed handling, abandon this structure; the behavioral engine is not strong enough.",
+      "projectDependencies": [
+        "Permission to keep rolling in silence after each move.",
+        "Clean production sound for scrapes, weight shifts, breath, and overlap.",
+        "A kitchen axis that can see table, counter, and doorway in relation.",
+        "A 90-minute checkpoint to verify that corrections, not just placements, are happening."
+      ],
+      "innovation": {
+        "convention": "Observational family conflict films usually rely on face coverage, reaction inserts, and explanatory intercutting to make sides legible.",
+        "whyConventionWorks": "It quickly clarifies motive, secures sympathy, and protects viewers from ambiguity when the backstory cannot be fully stated.",
+        "departure": "Treat each chair move as a vote and each hold as the count. No reaction insert is used unless a face is physically attached to handling the chair. The edit only advances on custody change, correction, or a room refusing the placement during the hold.",
+        "projectBenefit": "Because direct discussion of the deceased is off-limits, authority has to be inferred from what survives. This departure turns survival time into visible evidence of power and makes the thesis readable without testimony.",
+        "executionRisk": "If the cousins become static or over-self-conscious, the structure can feel schematic and undernourished rather than rigorous."
+      }
+    },
+    "alternativeDecisions": [
+      {
+        "title": "Chair's Radius",
+        "pointOfView": "If rank appears mainly through touch, the chair itself should anchor every frame.",
+        "storyEngine": "Reveal custody through grip changes in storage, then stay near the chair in the kitchen as bodies orbit, adjust, avoid, and re-approach it.",
+        "formalStrategy": "Chair-near camera only, partial bodies, close sound, no geography that is not earned through contact.",
+        "audienceJourney": "Viewers first orient with difficulty, then learn to read touch patterns as kinship and hierarchy.",
+        "whyThisProject": "Best fallback if the richest evidence lives in hands, hesitation, and avoidance rather than across-room blocking.",
+        "sacrifice": "You lose easy cousin tracking, full facial readability, and much of the room-scale humor.",
+        "assumptions": [
+          "Each cousin handles the chair differently enough to be legible.",
+          "Micro-adjustments beat broader spatial conflict.",
+          "The chair's material presence can hold visual attention."
+        ],
+        "changeMyMindIf": "If the meaningful reversals happen at the table, doorway, or counter from a distance rather than in contact, do not use this method.",
+        "projectDependencies": [
+          "Close sound that can hear tiny scrape and grip changes.",
+          "Permission to preserve partial identity.",
+          "Steady camera placement near the chair without interrupting behavior."
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Three Claims, One Reset",
+        "pointOfView": "Each cousin briefly authors where the chair belongs until the next cousin overwrites that claim.",
+        "storyEngine": "Solo placements from the same start point reveal three separate logics; a final collective round shows those logics collapse under shared space.",
+        "formalStrategy": "Procedural score with repeated framing and resets, followed by one looser collective pass.",
+        "audienceJourney": "A fair-seeming task becomes proof that fairness cannot neutralize inheritance politics.",
+        "whyThisProject": "Useful fallback if pure observation stays diffuse but the cousins are willing to repeat a concrete task.",
+        "sacrifice": "The camera's structure may contaminate the evidence by turning lived conflict into performance.",
+        "assumptions": [
+          "The cousins will tolerate repeats without mugging for camera.",
+          "Resetting the chair is feasible within the day.",
+          "Distinct placements will emerge quickly."
+        ],
+        "changeMyMindIf": "If the first solo pass produces explanation, irony for camera, or exaggerated symbolism, abandon the score.",
+        "projectDependencies": [
+          "A repeatable starting position.",
+          "Scheduling control for resets.",
+          "Clear communication that no one has to justify the choice aloud."
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Kitchen / Storage Diptych",
+        "pointOfView": "The two rooms make rival moral demands: use it now or preserve it by waiting.",
+        "storyEngine": "Kitchen attempts and storage returns accumulate into competing verdicts, with threshold crossings undoing each previous claim.",
+        "formalStrategy": "Installation-first loop or split-screen hybrid, using room contrast as the organizing principle.",
+        "audienceJourney": "Viewers compare rooms, then compare the kinds of adulthood each room demands.",
+        "whyThisProject": "Best fallback if the day yields multiple genuine transfers and the argument feels architectural more than personal.",
+        "sacrifice": "You give up cousin-specific intimacy for a harder spatial concept.",
+        "assumptions": [
+          "Both locations carry distinct visual and sonic pressure.",
+          "The chair will cross room logics more than once.",
+          "The unresolved state is stronger than any single confrontation."
+        ],
+        "changeMyMindIf": "If one room immediately reads as obviously correct or inert, the diptych becomes false balance.",
+        "projectDependencies": [
+          "Time for repeated crossings.",
+          "Sonic contrast between the two spaces.",
+          "A presentation path that can support looping or split screens."
+        ],
+        "innovation": null
+      }
+    ],
+    "sceneHypotheses": [
+      {
+        "id": "S1",
+        "title": "Custody at the Roll-Up",
+        "action": "The storage-unit door rises. Cousin 1 grabs the chair back, Cousin 2 catches the front rung and rotates it clear of the threshold, and Cousin 3 moves from holding the door to taking one leg.",
+        "visual": "Frontal wide from outside the unit; the chair comes from shadow into flat daylight; the three cousins form a tightening triangle around it.",
+        "sound": "Metal door rattle, wood tick on concrete, shoe pivots, breath, clipped overlap.",
+        "turn": "What reads as help becomes a transfer of control over weight and direction.",
+        "purpose": "Teach that handling, interruption, and route choice are the film's real dialogue.",
+        "constraintHandling": "Stays within the storage-unit threshold. No invented transit, no added props, no remembrance talk.",
+        "craft": {
+          "blocking": "Start with Cousin 1 nearest the chair, Cousin 2 entering from the opposite side, Cousin 3 at the door; let the triangle close around the chair before it clears the threshold.",
+          "camera": "Locked frontal wide outside the unit; add one fixed threshold-height detail only if the grip transfer is not legible in the wide.",
+          "light": "Use existing contrast between unit shadow and daylight; do not beautify.",
+          "design": "Keep the frame dominated by the door opening and empty concrete around the chair.",
+          "color": "Cool metal gray against worn wood brown.",
+          "sound": "Prioritize the door and chair contact as the beat's punctuation."
+        }
+      },
+      {
+        "id": "S2",
+        "title": "First Landing",
+        "action": "At the kitchen doorway, Cousin 1 carries the chair toward the end of the table; before all four legs land, Cousin 2 twists it ninety degrees toward the counter while Cousin 3 stays at the doorway.",
+        "visual": "Diagonal kitchen view that holds table, counter, fridge, and doorway in one composition; the chair changes orientation mid-air.",
+        "sound": "Door hinge, short chair scrape, room tone flattening after the turn.",
+        "turn": "A place-setting gesture becomes an out-of-the-way gesture before it can settle.",
+        "purpose": "Make placement equal jurisdiction by showing two incompatible logics in one move.",
+        "constraintHandling": "Hard cut from storage to kitchen. No invented travel sequence or explanatory bridge.",
+        "craft": {
+          "blocking": "Cousin 1 enters from the doorway lane, Cousin 2 intercepts at the landing point, Cousin 3 remains just inside the frame edge as a witness rather than helper.",
+          "camera": "Locked diagonal from the kitchen corner so table end and counter lane remain equally available.",
+          "light": "Use practical kitchen flatness and window spill without reshaping it.",
+          "design": "Let the table and counter compete for the chair's allegiance in-frame.",
+          "color": "Appliance cream and beige floor against the darker chair wood.",
+          "sound": "Hold after the scrape so the silence can judge the first landing."
+        }
+      },
+      {
+        "id": "S3",
+        "title": "Micro-Veto",
+        "action": "Cousin 3 quietly squares the chair with the table. Cousin 2 passes and nudges one front leg out of square with a toe without stopping.",
+        "visual": "Low leg-height frame; chair legs and table edge dominate; faces are partial or absent.",
+        "sound": "One dry scrape and a soft fabric pass.",
+        "turn": "A nearly invisible correction voids the neatest placement.",
+        "purpose": "Shift the audience from reading large gestures to reading sanctioned sabotage.",
+        "constraintHandling": "Readable with no dialogue and no facial explanation.",
+        "craft": {
+          "blocking": "Keep Cousin 3 close and deliberate, Cousin 2 moving through the edge of frame on a casual route.",
+          "camera": "Fixed low angle near table-leg height.",
+          "light": "Let the floor carry the contrast; avoid dramatic shaping.",
+          "design": "Emphasize floor lines and chair-leg geometry so squaring and unsquaring register instantly.",
+          "color": "Muted floor tan with dark graphite leg lines.",
+          "sound": "The tiny scrape should feel disproportionately loud."
+        }
+      },
+      {
+        "id": "S4",
+        "title": "Clear the Lane",
+        "action": "Cousin 2 drags the chair tight against the counter to open a walking lane. Cousin 1 immediately pulls it back just enough to face the table again while Cousin 3 watches from the fridge side.",
+        "visual": "Side profile across the kitchen, with the counter on one side and the table on the other; the chair is pulled between two rival zones.",
+        "sound": "Longer drag, shoe stop, suppressed air release.",
+        "turn": "Tidying stops reading as neutral and becomes a claim over what the room is for.",
+        "purpose": "Let humor arrive through the absurd seriousness of traffic management.",
+        "constraintHandling": "Uses only existing kitchen geometry and the chair; no added task or prop.",
+        "craft": {
+          "blocking": "Stage Cousin 2 close to the counter, Cousin 1 nearer the table line, Cousin 3 slightly recessed so the witness position is clear.",
+          "camera": "Static side profile with enough width to read the lane.",
+          "light": "Accept overhead practicals; the flatness helps the comedy.",
+          "design": "Counter lane and table edge should feel like rival magnetic poles.",
+          "color": "Pale surfaces with the chair as the warm, stubborn center.",
+          "sound": "Keep the continuous drag intact so the action feels procedural, not theatrical."
+        }
+      },
+      {
+        "id": "S5",
+        "title": "Blocked Exit",
+        "action": "Cousin 1 lifts the chair by the top rail and starts for the doorway. Cousin 3 catches the lower rung and stops the movement; Cousin 2 remains still.",
+        "visual": "Doorway-centered wide; one body pulls toward the exit, one anchors low, one stays outside the tug.",
+        "sound": "Lift creak, abrupt stop, breath reset.",
+        "turn": "The first clear attempt to end the dispute produces the first clear refusal.",
+        "purpose": "Escalate from corrections to undeniable contest without needing verbal declaration.",
+        "constraintHandling": "Purely physical and safe: no yanking, no forced collision, no backstory on mic.",
+        "craft": {
+          "blocking": "Make Cousin 1 the moving vector, Cousin 3 the low stop, Cousin 2 the charged non-mover.",
+          "camera": "Locked on the doorway axis so the exit line is unmistakable.",
+          "light": "Use doorway brightness as the pull direction.",
+          "design": "Keep the path to the door readable and empty enough that stopping the exit is unmistakable.",
+          "color": "Bright doorway against darker chair silhouette.",
+          "sound": "Let the stop and breath reset replace argument."
+        }
+      },
+      {
+        "id": "S6",
+        "title": "Interim Angle",
+        "action": "After the blocked exit, Cousin 2 sets the chair diagonally between the table and doorway, steps back, and the other two leave without straightening it.",
+        "visual": "Wide static aftermath with negative space opening around the chair; the final angle rhymes with the opening storage angle.",
+        "sound": "Refrigerator hum, settling wood, receding footsteps.",
+        "turn": "The only position that survives is one nobody can honestly call settled.",
+        "purpose": "Land on unresolved authority and create a loopable end image.",
+        "constraintHandling": "No forced verdict. The scene ends on an interim state rather than a conclusion.",
+        "craft": {
+          "blocking": "Place the chair in neither the table zone nor the exit lane; let the cousins peel off in different directions.",
+          "camera": "Static wide from the diagonal kitchen axis; do not follow exits.",
+          "light": "Hold ordinary room light and window falloff; make emptiness matter.",
+          "design": "Chair centered enough to dominate, off-axis enough to feel wrong.",
+          "color": "Muted kitchen neutrals with the chair's worn wood carrying the image.",
+          "sound": "Stay long enough for footsteps to leave and room tone to take over."
+        }
+      }
+    ],
+    "directorNotebook": [
+      {
+        "id": "D1",
+        "sceneId": "S1",
+        "shot": "A1 Storage frontal master",
+        "visual": "Door rises; chair half-shadowed; three bodies negotiate first custody.",
+        "camera": "Locked wide outside threshold, waist height.",
+        "light": "Unit shadow against daylight.",
+        "sound": "Door rattle and first wood contact lead.",
+        "purpose": "Establish that possession is procedural.",
+        "creativeThread": "First grip does not equal lasting control."
+      },
+      {
+        "id": "D2",
+        "sceneId": "S1",
+        "shot": "A2 Threshold detail",
+        "visual": "Backrest hand loses weight to front rung hand.",
+        "camera": "Fixed low detail at threshold only if wide misses the transfer.",
+        "light": "Natural spill from open door.",
+        "sound": "Grip shift and leg tick.",
+        "purpose": "Make the takeover undeniable without commentary.",
+        "creativeThread": "Authority changes in the hands."
+      },
+      {
+        "id": "D3",
+        "sceneId": "S2",
+        "shot": "B1 Kitchen diagonal landing",
+        "visual": "Chair enters aimed at table, rotates toward counter before landing.",
+        "camera": "Locked diagonal from kitchen corner.",
+        "light": "Practical flatness plus window spill.",
+        "sound": "Short scrape followed by hold.",
+        "purpose": "Introduce rival room logics in one action.",
+        "creativeThread": "Placement is a claim, not a neutral act."
+      },
+      {
+        "id": "D4",
+        "sceneId": "S2",
+        "shot": "B2 Aftermath hold on first landing",
+        "visual": "Chair sits sideways; doorway cousin stays apart.",
+        "camera": "Same frame, no adjustment.",
+        "light": "Unchanged.",
+        "sound": "Room tone judges the move.",
+        "purpose": "See whether the first landing holds or invites correction.",
+        "creativeThread": "Survival time is evidence."
+      },
+      {
+        "id": "D5",
+        "sceneId": "S3",
+        "shot": "C1 Leg-level veto",
+        "visual": "Chair is squared neatly, then one leg is nudged off-line in passing.",
+        "camera": "Fixed low angle at chair-leg height.",
+        "light": "Floor contrast only.",
+        "sound": "Single dry scrape dominates.",
+        "purpose": "Teach the audience to read micro-vetoes.",
+        "creativeThread": "Tiny gestures can outrank tidy intentions."
+      },
+      {
+        "id": "D6",
+        "sceneId": "S4",
+        "shot": "B3 Counter-lane push-pull",
+        "visual": "Chair dragged tight to counter, then pulled back toward table.",
+        "camera": "Static side profile across kitchen.",
+        "light": "Ceiling practicals kept plain.",
+        "sound": "Continuous drag, stop, reverse.",
+        "purpose": "Let humor and discomfort coexist in one procedural beat.",
+        "creativeThread": "Usefulness and respect are rival masks for authority."
+      },
+      {
+        "id": "D7",
+        "sceneId": "S5",
+        "shot": "B4 Doorway tug wide",
+        "visual": "Chair lifted toward exit, stopped low at the rung, third cousin motionless apart.",
+        "camera": "Locked on doorway axis.",
+        "light": "Door brightness as exit vector.",
+        "sound": "Lift creak, halt, breath reset.",
+        "purpose": "Escalate from adjustment to blockade.",
+        "creativeThread": "Ending the problem is itself a power grab."
+      },
+      {
+        "id": "D8",
+        "sceneId": "S5",
+        "shot": "B5 Set-down after stop",
+        "visual": "Suspended chair settles back from the blocked exit.",
+        "camera": "Same axis, no cutaway.",
+        "light": "Unchanged.",
+        "sound": "Set-down thud and small floor scrape.",
+        "purpose": "Show that stoppage creates a new unresolved state, not closure.",
+        "creativeThread": "Refusal can be more decisive than action."
+      }
+    ],
+    "storyboard": {
+      "status": "RENDERED",
+      "renderer": "STROMAN_PENCIL_SVG_V1",
+      "title": "Proxy Vote: If It Stays",
+      "frames": [
+        {
+          "id": "F1",
+          "beatId": "S1",
+          "title": "Custody at the Roll-Up",
+          "cameraLabel": "A1 frontal storage master",
+          "annotation": "Cousin 2 takes weight while helping; first grip loses sole control.",
+          "glyphs": [
+            { "kind": "DOOR", "x": 50, "y": 12, "scale": 1.25, "label": "Storage roll-up door" },
+            { "kind": "OBJECT", "x": 50, "y": 78, "scale": 1.1, "label": "Storage threshold" },
+            { "kind": "OBJECT", "x": 50, "y": 58, "scale": 1.05, "label": "Inherited chair" },
+            { "kind": "ADULT", "x": 34, "y": 60, "scale": 1, "label": "Cousin 1" },
+            { "kind": "ADULT", "x": 64, "y": 62, "scale": 1, "label": "Cousin 2" },
+            { "kind": "ADULT", "x": 18, "y": 46, "scale": 0.85, "label": "Cousin 3" }
+          ],
+          "arrows": [
+            { "fromX": 34, "fromY": 60, "toX": 46, "toY": 56, "label": "first grip" },
+            { "fromX": 64, "fromY": 62, "toX": 56, "toY": 60, "label": "rotate / take weight" },
+            { "fromX": 18, "fromY": 46, "toX": 24, "toY": 44, "label": "holds door" }
+          ]
+        },
+        {
+          "id": "F2",
+          "beatId": "S2",
+          "title": "First Landing",
+          "cameraLabel": "B1 kitchen diagonal",
+          "annotation": "Table claim is turned sideways before all four legs land.",
+          "glyphs": [
+            { "kind": "COUNTER", "x": 24, "y": 28, "scale": 1.1, "label": "Kitchen counter" },
+            { "kind": "FRIDGE", "x": 12, "y": 60, "scale": 0.85, "label": "Fridge" },
+            { "kind": "TABLE", "x": 66, "y": 60, "scale": 1.2, "label": "Kitchen table" },
+            { "kind": "DOOR", "x": 90, "y": 36, "scale": 0.8, "label": "Kitchen doorway" },
+            { "kind": "OBJECT", "x": 64, "y": 46, "scale": 1, "label": "Inherited chair" },
+            { "kind": "ADULT", "x": 84, "y": 52, "scale": 0.95, "label": "Cousin 1" },
+            { "kind": "ADULT", "x": 58, "y": 46, "scale": 0.95, "label": "Cousin 2" }
+          ],
+          "arrows": [
+            { "fromX": 84, "fromY": 52, "toX": 70, "toY": 50, "label": "carry to table end" },
+            { "fromX": 58, "fromY": 46, "toX": 60, "toY": 54, "label": "twist toward counter" }
+          ]
+        },
+        {
+          "id": "F3",
+          "beatId": "S3",
+          "title": "Micro-Veto",
+          "cameraLabel": "C1 low leg frame",
+          "annotation": "A neat square-up is voided by a passing toe nudge.",
+          "glyphs": [
+            { "kind": "TABLE", "x": 60, "y": 36, "scale": 1.25, "label": "Kitchen table" },
+            { "kind": "OBJECT", "x": 46, "y": 64, "scale": 1, "label": "Inherited chair" },
+            { "kind": "ADULT", "x": 30, "y": 60, "scale": 0.9, "label": "Cousin 3" },
+            { "kind": "ADULT", "x": 74, "y": 56, "scale": 0.85, "label": "Cousin 2" },
+            { "kind": "COUNTER", "x": 14, "y": 24, "scale": 0.85, "label": "Kitchen counter" }
+          ],
+          "arrows": [
+            { "fromX": 30, "fromY": 60, "toX": 42, "toY": 60, "label": "square to table" },
+            { "fromX": 74, "fromY": 58, "toX": 54, "toY": 66, "label": "toe leg off-line" }
+          ]
+        },
+        {
+          "id": "F4",
+          "beatId": "S4",
+          "title": "Clear the Lane",
+          "cameraLabel": "B3 side profile",
+          "annotation": "Tidying and honoring pull the same chair in opposite directions.",
+          "glyphs": [
+            { "kind": "COUNTER", "x": 18, "y": 30, "scale": 1.2, "label": "Kitchen counter" },
+            { "kind": "FRIDGE", "x": 8, "y": 62, "scale": 0.85, "label": "Fridge" },
+            { "kind": "TABLE", "x": 78, "y": 62, "scale": 1.1, "label": "Kitchen table" },
+            { "kind": "OBJECT", "x": 48, "y": 58, "scale": 1, "label": "Inherited chair" },
+            { "kind": "ADULT", "x": 30, "y": 56, "scale": 0.95, "label": "Cousin 2" },
+            { "kind": "ADULT", "x": 62, "y": 58, "scale": 0.95, "label": "Cousin 1" },
+            { "kind": "ADULT", "x": 12, "y": 78, "scale": 0.7, "label": "Cousin 3" }
+          ],
+          "arrows": [
+            { "fromX": 30, "fromY": 56, "toX": 40, "toY": 58, "label": "drag to counter" },
+            { "fromX": 62, "fromY": 58, "toX": 54, "toY": 56, "label": "pull back to table" }
+          ]
+        },
+        {
+          "id": "F5",
+          "beatId": "S5",
+          "title": "Blocked Exit",
+          "cameraLabel": "B4 doorway axis",
+          "annotation": "Removal becomes the clearest claim; Cousin 3 stops it at the rung.",
+          "glyphs": [
+            { "kind": "DOOR", "x": 90, "y": 38, "scale": 0.85, "label": "Kitchen doorway" },
+            { "kind": "TABLE", "x": 42, "y": 66, "scale": 1, "label": "Kitchen table" },
+            { "kind": "COUNTER", "x": 14, "y": 28, "scale": 0.9, "label": "Kitchen counter" },
+            { "kind": "OBJECT", "x": 70, "y": 56, "scale": 1, "label": "Inherited chair" },
+            { "kind": "ADULT", "x": 60, "y": 54, "scale": 0.95, "label": "Cousin 1" },
+            { "kind": "ADULT", "x": 80, "y": 62, "scale": 0.95, "label": "Cousin 3" },
+            { "kind": "ADULT", "x": 28, "y": 58, "scale": 0.85, "label": "Cousin 2" }
+          ],
+          "arrows": [
+            { "fromX": 60, "fromY": 54, "toX": 82, "toY": 48, "label": "lift toward exit" },
+            { "fromX": 80, "fromY": 62, "toX": 72, "toY": 58, "label": "catch lower rung" }
+          ]
+        },
+        {
+          "id": "F6",
+          "beatId": "S6",
+          "title": "Interim Angle",
+          "cameraLabel": "B6 final aftermath wide",
+          "annotation": "The chair survives only in a diagonal nobody can call final.",
+          "glyphs": [
+            { "kind": "COUNTER", "x": 18, "y": 28, "scale": 1.05, "label": "Kitchen counter" },
+            { "kind": "WINDOW", "x": 70, "y": 16, "scale": 0.75, "label": "Kitchen window" },
+            { "kind": "TABLE", "x": 68, "y": 62, "scale": 1.15, "label": "Kitchen table" },
+            { "kind": "DOOR", "x": 92, "y": 38, "scale": 0.8, "label": "Kitchen doorway" },
+            { "kind": "OBJECT", "x": 54, "y": 52, "scale": 1, "label": "Inherited chair" },
+            { "kind": "ADULT", "x": 34, "y": 48, "scale": 0.8, "label": "Cousin 2" },
+            { "kind": "ADULT", "x": 92, "y": 78, "scale": 0.55, "label": "Cousin 1" }
+          ],
+          "arrows": [
+            { "fromX": 34, "fromY": 48, "toX": 28, "toY": 44, "label": "steps back" },
+            { "fromX": 92, "fromY": 78, "toX": 100, "toY": 84, "label": "leave it" }
+          ]
+        }
+      ],
+      "blocking": {
+        "title": "Composite blocking map",
+        "zones": [
+          { "id": "Z1", "label": "Storage interior", "x": 2, "y": 8, "width": 40, "height": 28 },
+          { "id": "Z2", "label": "Storage threshold", "x": 32, "y": 28, "width": 12, "height": 10 },
+          {
+            "id": "Z3",
+            "label": "Kitchen doorway lane",
+            "x": 78,
+            "y": 30,
+            "width": 18,
+            "height": 20
+          },
+          {
+            "id": "Z4",
+            "label": "Table authority zone",
+            "x": 52,
+            "y": 46,
+            "width": 32,
+            "height": 26
+          },
+          {
+            "id": "Z5",
+            "label": "Counter utility zone",
+            "x": 8,
+            "y": 22,
+            "width": 30,
+            "height": 28
+          },
+          { "id": "Z6", "label": "Interim park", "x": 46, "y": 38, "width": 18, "height": 18 }
+        ],
+        "positions": [
+          { "label": "Camera A storage frontal", "x": 50, "y": 92, "kind": "CAMERA" },
+          { "label": "Camera B kitchen diagonal", "x": 6, "y": 86, "kind": "CAMERA" },
+          { "label": "Camera C table-leg low", "x": 70, "y": 92, "kind": "CAMERA" },
+          { "label": "Window daylight", "x": 72, "y": 8, "kind": "LIGHT" },
+          { "label": "Ceiling practicals", "x": 30, "y": 10, "kind": "LIGHT" },
+          { "label": "Inherited chair start", "x": 20, "y": 24, "kind": "SUBJECT" },
+          { "label": "Cousin 1 carry line", "x": 82, "y": 52, "kind": "SUBJECT" },
+          { "label": "Cousin 2 correction line", "x": 58, "y": 52, "kind": "SUBJECT" },
+          { "label": "Cousin 3 witness line", "x": 90, "y": 66, "kind": "SUBJECT" }
+        ],
+        "paths": [
+          {
+            "label": "Storage retrieval path",
+            "points": [
+              { "x": 50, "y": 58 },
+              { "x": 54, "y": 60 },
+              { "x": 60, "y": 64 }
+            ]
+          },
+          {
+            "label": "Kitchen table claim",
+            "points": [
+              { "x": 88, "y": 52 },
+              { "x": 74, "y": 50 },
+              { "x": 64, "y": 48 }
+            ]
+          },
+          {
+            "label": "Kitchen counter claim",
+            "points": [
+              { "x": 64, "y": 48 },
+              { "x": 48, "y": 56 },
+              { "x": 34, "y": 56 }
+            ]
+          },
+          {
+            "label": "Blocked exit route",
+            "points": [
+              { "x": 54, "y": 52 },
+              { "x": 72, "y": 54 },
+              { "x": 86, "y": 44 }
+            ]
+          }
+        ]
+      },
+      "look": {
+        "title": "Pencil look references",
+        "swatches": [
+          {
+            "name": "Chair varnish",
+            "color": "#7B593C",
+            "use": "Inherited chair body and warmth anchor"
+          },
+          {
+            "name": "Storage aluminum",
+            "color": "#8C8F93",
+            "use": "Roll-up door, threshold, cold utility"
+          },
+          {
+            "name": "Appliance cream",
+            "color": "#E5E1D8",
+            "use": "Fridge, table planes, kitchen flatness"
+          },
+          {
+            "name": "Linoleum tan",
+            "color": "#CBB8A0",
+            "use": "Floor planes and chair-leg geometry"
+          },
+          {
+            "name": "Window pale blue",
+            "color": "#C9D8E8",
+            "use": "Soft daylight spill in kitchen"
+          },
+          {
+            "name": "Graphite black",
+            "color": "#2F2F2F",
+            "use": "Contour lines, shadows, scrapes, weight"
+          }
+        ],
+        "texture": "Dry pencil outlines, rubbed graphite shadows, erased highlights on worn wood edges, visible floor-scuff strokes."
+      }
+    },
+    "questions": [
+      {
+        "prompt": "Which cousin, if any, already acts like the kitchen host before the chair enters?",
+        "decisionItChanges": "Whether the kitchen diagonal privileges doorway arrival or table-end dominance."
+      },
+      {
+        "prompt": "Can the chair physically sit at the table without obviously blocking circulation?",
+        "decisionItChanges": "How credible the counter-lane objection will read and whether Scene S4 stays."
+      },
+      {
+        "prompt": "Do the strongest corrections happen through hands, feet, or route-blocking?",
+        "decisionItChanges": "How much low-angle detail coverage is necessary versus wide procedural coverage."
+      }
+    ],
+    "productionNextSteps": [
+      "Walk both spaces for 15 minutes before filming and mark the table zone, counter lane, doorway line, and storage threshold as rival destinations.",
+      "Confirm with all three cousins that the no-remembrance-on-camera rule stands and that silence after actions will be preserved rather than filled.",
+      "Preset Camera A at the storage threshold, Camera B on the kitchen diagonal, and Camera C low enough to read chair-leg geometry without chasing action.",
+      "Run a sound test on chair scrapes in both locations and prioritize floor-near mic placement for wood-on-surface detail.",
+      "At the 90-minute checkpoint, review whether at least two placements have been corrected; if not, pivot away from the survival-time structure.",
+      "Record full aftermath holds after every placement, even when a move looks final in the moment."
+    ]
+  },
+  "blueprint": {
+    "development": {
+      "basis": "PROJECT_INTENT_ONLY",
+      "mode": "OPEN",
+      "version": 2,
+      "reasoningSource": "HOSTED_REASONING",
+      "insight": {
+        "thesis": "Inherited authority only exists here if a chair placement can survive correction. The object is not the memory; the object is the test.",
+        "humanTruth": "Families often stage rank as a practical decision so nobody has to admit they are fighting over permission.",
+        "dramaticTension": "Three cousins can move one chair easily, but none can make its position hold without exposing a claim on the family order.",
+        "audiencePromise": "Viewers read grip, rotation, delay, foot nudges, blocked paths, and aftermath holds as the real dialogue, with humor arriving through the ridiculous seriousness of ordinary logistics."
+      },
+      "directionDecision": {
+        "title": "Proxy Vote: If It Stays",
+        "pointOfView": "The key question is not who wants the chair. It is whose placement can last once the room and the other cousins answer back.",
+        "storyEngine": "Open on contested custody at the storage-unit threshold. Cut to the kitchen for a chain of trial placements that escalate from mid-air redirection to micro-veto to blocked removal. End on an interim diagonal position that survives only because nobody can ratify or defeat it cleanly.",
+        "formalStrategy": "8 to 12 minute observational short designed to loop. Three shot classes only: custody wide, correction detail, aftermath hold. One frontal storage axis, two fixed kitchen axes, no travel sequence, no interviews, no score, no archive, no memory prompts. A placement is not treated as real until it survives a hold.",
+        "audienceJourney": "First: furniture-moving. Then: procedural power. Then: comic pettiness. Finally: uneasy recognition that nobody can solve a practical question without claiming authority they cannot openly justify.",
+        "whyThisProject": "This keeps the strongest part of the original direction - behavior as politics - but improves it with a measurable rule: placement equals survival time. It also gives the film a loopable rhyme, opening and closing on a similarly angled chair in different rooms, so irresolution becomes form rather than absence.",
+        "sacrifice": "It refuses biography, explicit grief language, transport continuity, and a winner. Some viewers will feel the missing explanation as a wound rather than a tease.",
+        "assumptions": [
+          "At least two cousins will act as if they have corrective rights over the chair's position.",
+          "The kitchen offers both a plausible place of use and a plausible place of exile within the same frame.",
+          "Silence after each move will reveal as much as the move itself."
+        ],
+        "changeMyMindIf": "If the first two kitchen placements survive their full aftermath holds without re-angle, foot-veto, blocked route, or renewed handling, abandon this structure; the behavioral engine is not strong enough.",
+        "projectDependencies": [
+          "Permission to keep rolling in silence after each move.",
+          "Clean production sound for scrapes, weight shifts, breath, and overlap.",
+          "A kitchen axis that can see table, counter, and doorway in relation.",
+          "A 90-minute checkpoint to verify that corrections, not just placements, are happening."
+        ],
+        "innovation": {
+          "convention": "Observational family conflict films usually rely on face coverage, reaction inserts, and explanatory intercutting to make sides legible.",
+          "whyConventionWorks": "It quickly clarifies motive, secures sympathy, and protects viewers from ambiguity when the backstory cannot be fully stated.",
+          "departure": "Treat each chair move as a vote and each hold as the count. No reaction insert is used unless a face is physically attached to handling the chair. The edit only advances on custody change, correction, or a room refusing the placement during the hold.",
+          "projectBenefit": "Because direct discussion of the deceased is off-limits, authority has to be inferred from what survives. This departure turns survival time into visible evidence of power and makes the thesis readable without testimony.",
+          "executionRisk": "If the cousins become static or over-self-conscious, the structure can feel schematic and undernourished rather than rigorous."
+        }
+      },
+      "alternativeDecisions": [
+        {
+          "title": "Chair's Radius",
+          "pointOfView": "If rank appears mainly through touch, the chair itself should anchor every frame.",
+          "storyEngine": "Reveal custody through grip changes in storage, then stay near the chair in the kitchen as bodies orbit, adjust, avoid, and re-approach it.",
+          "formalStrategy": "Chair-near camera only, partial bodies, close sound, no geography that is not earned through contact.",
+          "audienceJourney": "Viewers first orient with difficulty, then learn to read touch patterns as kinship and hierarchy.",
+          "whyThisProject": "Best fallback if the richest evidence lives in hands, hesitation, and avoidance rather than across-room blocking.",
+          "sacrifice": "You lose easy cousin tracking, full facial readability, and much of the room-scale humor.",
+          "assumptions": [
+            "Each cousin handles the chair differently enough to be legible.",
+            "Micro-adjustments beat broader spatial conflict.",
+            "The chair's material presence can hold visual attention."
+          ],
+          "changeMyMindIf": "If the meaningful reversals happen at the table, doorway, or counter from a distance rather than in contact, do not use this method.",
+          "projectDependencies": [
+            "Close sound that can hear tiny scrape and grip changes.",
+            "Permission to preserve partial identity.",
+            "Steady camera placement near the chair without interrupting behavior."
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Three Claims, One Reset",
+          "pointOfView": "Each cousin briefly authors where the chair belongs until the next cousin overwrites that claim.",
+          "storyEngine": "Solo placements from the same start point reveal three separate logics; a final collective round shows those logics collapse under shared space.",
+          "formalStrategy": "Procedural score with repeated framing and resets, followed by one looser collective pass.",
+          "audienceJourney": "A fair-seeming task becomes proof that fairness cannot neutralize inheritance politics.",
+          "whyThisProject": "Useful fallback if pure observation stays diffuse but the cousins are willing to repeat a concrete task.",
+          "sacrifice": "The camera's structure may contaminate the evidence by turning lived conflict into performance.",
+          "assumptions": [
+            "The cousins will tolerate repeats without mugging for camera.",
+            "Resetting the chair is feasible within the day.",
+            "Distinct placements will emerge quickly."
+          ],
+          "changeMyMindIf": "If the first solo pass produces explanation, irony for camera, or exaggerated symbolism, abandon the score.",
+          "projectDependencies": [
+            "A repeatable starting position.",
+            "Scheduling control for resets.",
+            "Clear communication that no one has to justify the choice aloud."
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Kitchen / Storage Diptych",
+          "pointOfView": "The two rooms make rival moral demands: use it now or preserve it by waiting.",
+          "storyEngine": "Kitchen attempts and storage returns accumulate into competing verdicts, with threshold crossings undoing each previous claim.",
+          "formalStrategy": "Installation-first loop or split-screen hybrid, using room contrast as the organizing principle.",
+          "audienceJourney": "Viewers compare rooms, then compare the kinds of adulthood each room demands.",
+          "whyThisProject": "Best fallback if the day yields multiple genuine transfers and the argument feels architectural more than personal.",
+          "sacrifice": "You give up cousin-specific intimacy for a harder spatial concept.",
+          "assumptions": [
+            "Both locations carry distinct visual and sonic pressure.",
+            "The chair will cross room logics more than once.",
+            "The unresolved state is stronger than any single confrontation."
+          ],
+          "changeMyMindIf": "If one room immediately reads as obviously correct or inert, the diptych becomes false balance.",
+          "projectDependencies": [
+            "Time for repeated crossings.",
+            "Sonic contrast between the two spaces.",
+            "A presentation path that can support looping or split screens."
+          ],
+          "innovation": null
+        }
+      ],
+      "sceneHypotheses": [
+        {
+          "id": "S1",
+          "title": "Custody at the Roll-Up",
+          "action": "The storage-unit door rises. Cousin 1 grabs the chair back, Cousin 2 catches the front rung and rotates it clear of the threshold, and Cousin 3 moves from holding the door to taking one leg.",
+          "visual": "Frontal wide from outside the unit; the chair comes from shadow into flat daylight; the three cousins form a tightening triangle around it.",
+          "sound": "Metal door rattle, wood tick on concrete, shoe pivots, breath, clipped overlap.",
+          "turn": "What reads as help becomes a transfer of control over weight and direction.",
+          "purpose": "Teach that handling, interruption, and route choice are the film's real dialogue.",
+          "constraintHandling": "Stays within the storage-unit threshold. No invented transit, no added props, no remembrance talk.",
+          "craft": {
+            "blocking": "Start with Cousin 1 nearest the chair, Cousin 2 entering from the opposite side, Cousin 3 at the door; let the triangle close around the chair before it clears the threshold.",
+            "camera": "Locked frontal wide outside the unit; add one fixed threshold-height detail only if the grip transfer is not legible in the wide.",
+            "light": "Use existing contrast between unit shadow and daylight; do not beautify.",
+            "design": "Keep the frame dominated by the door opening and empty concrete around the chair.",
+            "color": "Cool metal gray against worn wood brown.",
+            "sound": "Prioritize the door and chair contact as the beat's punctuation."
+          }
+        },
+        {
+          "id": "S2",
+          "title": "First Landing",
+          "action": "At the kitchen doorway, Cousin 1 carries the chair toward the end of the table; before all four legs land, Cousin 2 twists it ninety degrees toward the counter while Cousin 3 stays at the doorway.",
+          "visual": "Diagonal kitchen view that holds table, counter, fridge, and doorway in one composition; the chair changes orientation mid-air.",
+          "sound": "Door hinge, short chair scrape, room tone flattening after the turn.",
+          "turn": "A place-setting gesture becomes an out-of-the-way gesture before it can settle.",
+          "purpose": "Make placement equal jurisdiction by showing two incompatible logics in one move.",
+          "constraintHandling": "Hard cut from storage to kitchen. No invented travel sequence or explanatory bridge.",
+          "craft": {
+            "blocking": "Cousin 1 enters from the doorway lane, Cousin 2 intercepts at the landing point, Cousin 3 remains just inside the frame edge as a witness rather than helper.",
+            "camera": "Locked diagonal from the kitchen corner so table end and counter lane remain equally available.",
+            "light": "Use practical kitchen flatness and window spill without reshaping it.",
+            "design": "Let the table and counter compete for the chair's allegiance in-frame.",
+            "color": "Appliance cream and beige floor against the darker chair wood.",
+            "sound": "Hold after the scrape so the silence can judge the first landing."
+          }
+        },
+        {
+          "id": "S3",
+          "title": "Micro-Veto",
+          "action": "Cousin 3 quietly squares the chair with the table. Cousin 2 passes and nudges one front leg out of square with a toe without stopping.",
+          "visual": "Low leg-height frame; chair legs and table edge dominate; faces are partial or absent.",
+          "sound": "One dry scrape and a soft fabric pass.",
+          "turn": "A nearly invisible correction voids the neatest placement.",
+          "purpose": "Shift the audience from reading large gestures to reading sanctioned sabotage.",
+          "constraintHandling": "Readable with no dialogue and no facial explanation.",
+          "craft": {
+            "blocking": "Keep Cousin 3 close and deliberate, Cousin 2 moving through the edge of frame on a casual route.",
+            "camera": "Fixed low angle near table-leg height.",
+            "light": "Let the floor carry the contrast; avoid dramatic shaping.",
+            "design": "Emphasize floor lines and chair-leg geometry so squaring and unsquaring register instantly.",
+            "color": "Muted floor tan with dark graphite leg lines.",
+            "sound": "The tiny scrape should feel disproportionately loud."
+          }
+        },
+        {
+          "id": "S4",
+          "title": "Clear the Lane",
+          "action": "Cousin 2 drags the chair tight against the counter to open a walking lane. Cousin 1 immediately pulls it back just enough to face the table again while Cousin 3 watches from the fridge side.",
+          "visual": "Side profile across the kitchen, with the counter on one side and the table on the other; the chair is pulled between two rival zones.",
+          "sound": "Longer drag, shoe stop, suppressed air release.",
+          "turn": "Tidying stops reading as neutral and becomes a claim over what the room is for.",
+          "purpose": "Let humor arrive through the absurd seriousness of traffic management.",
+          "constraintHandling": "Uses only existing kitchen geometry and the chair; no added task or prop.",
+          "craft": {
+            "blocking": "Stage Cousin 2 close to the counter, Cousin 1 nearer the table line, Cousin 3 slightly recessed so the witness position is clear.",
+            "camera": "Static side profile with enough width to read the lane.",
+            "light": "Accept overhead practicals; the flatness helps the comedy.",
+            "design": "Counter lane and table edge should feel like rival magnetic poles.",
+            "color": "Pale surfaces with the chair as the warm, stubborn center.",
+            "sound": "Keep the continuous drag intact so the action feels procedural, not theatrical."
+          }
+        },
+        {
+          "id": "S5",
+          "title": "Blocked Exit",
+          "action": "Cousin 1 lifts the chair by the top rail and starts for the doorway. Cousin 3 catches the lower rung and stops the movement; Cousin 2 remains still.",
+          "visual": "Doorway-centered wide; one body pulls toward the exit, one anchors low, one stays outside the tug.",
+          "sound": "Lift creak, abrupt stop, breath reset.",
+          "turn": "The first clear attempt to end the dispute produces the first clear refusal.",
+          "purpose": "Escalate from corrections to undeniable contest without needing verbal declaration.",
+          "constraintHandling": "Purely physical and safe: no yanking, no forced collision, no backstory on mic.",
+          "craft": {
+            "blocking": "Make Cousin 1 the moving vector, Cousin 3 the low stop, Cousin 2 the charged non-mover.",
+            "camera": "Locked on the doorway axis so the exit line is unmistakable.",
+            "light": "Use doorway brightness as the pull direction.",
+            "design": "Keep the path to the door readable and empty enough that stopping the exit is unmistakable.",
+            "color": "Bright doorway against darker chair silhouette.",
+            "sound": "Let the stop and breath reset replace argument."
+          }
+        },
+        {
+          "id": "S6",
+          "title": "Interim Angle",
+          "action": "After the blocked exit, Cousin 2 sets the chair diagonally between the table and doorway, steps back, and the other two leave without straightening it.",
+          "visual": "Wide static aftermath with negative space opening around the chair; the final angle rhymes with the opening storage angle.",
+          "sound": "Refrigerator hum, settling wood, receding footsteps.",
+          "turn": "The only position that survives is one nobody can honestly call settled.",
+          "purpose": "Land on unresolved authority and create a loopable end image.",
+          "constraintHandling": "No forced verdict. The scene ends on an interim state rather than a conclusion.",
+          "craft": {
+            "blocking": "Place the chair in neither the table zone nor the exit lane; let the cousins peel off in different directions.",
+            "camera": "Static wide from the diagonal kitchen axis; do not follow exits.",
+            "light": "Hold ordinary room light and window falloff; make emptiness matter.",
+            "design": "Chair centered enough to dominate, off-axis enough to feel wrong.",
+            "color": "Muted kitchen neutrals with the chair's worn wood carrying the image.",
+            "sound": "Stay long enough for footsteps to leave and room tone to take over."
+          }
+        }
+      ],
+      "directorNotebook": [
+        {
+          "id": "D1",
+          "sceneId": "S1",
+          "shot": "A1 Storage frontal master",
+          "visual": "Door rises; chair half-shadowed; three bodies negotiate first custody.",
+          "camera": "Locked wide outside threshold, waist height.",
+          "light": "Unit shadow against daylight.",
+          "sound": "Door rattle and first wood contact lead.",
+          "purpose": "Establish that possession is procedural.",
+          "creativeThread": "First grip does not equal lasting control."
+        },
+        {
+          "id": "D2",
+          "sceneId": "S1",
+          "shot": "A2 Threshold detail",
+          "visual": "Backrest hand loses weight to front rung hand.",
+          "camera": "Fixed low detail at threshold only if wide misses the transfer.",
+          "light": "Natural spill from open door.",
+          "sound": "Grip shift and leg tick.",
+          "purpose": "Make the takeover undeniable without commentary.",
+          "creativeThread": "Authority changes in the hands."
+        },
+        {
+          "id": "D3",
+          "sceneId": "S2",
+          "shot": "B1 Kitchen diagonal landing",
+          "visual": "Chair enters aimed at table, rotates toward counter before landing.",
+          "camera": "Locked diagonal from kitchen corner.",
+          "light": "Practical flatness plus window spill.",
+          "sound": "Short scrape followed by hold.",
+          "purpose": "Introduce rival room logics in one action.",
+          "creativeThread": "Placement is a claim, not a neutral act."
+        },
+        {
+          "id": "D4",
+          "sceneId": "S2",
+          "shot": "B2 Aftermath hold on first landing",
+          "visual": "Chair sits sideways; doorway cousin stays apart.",
+          "camera": "Same frame, no adjustment.",
+          "light": "Unchanged.",
+          "sound": "Room tone judges the move.",
+          "purpose": "See whether the first landing holds or invites correction.",
+          "creativeThread": "Survival time is evidence."
+        },
+        {
+          "id": "D5",
+          "sceneId": "S3",
+          "shot": "C1 Leg-level veto",
+          "visual": "Chair is squared neatly, then one leg is nudged off-line in passing.",
+          "camera": "Fixed low angle at chair-leg height.",
+          "light": "Floor contrast only.",
+          "sound": "Single dry scrape dominates.",
+          "purpose": "Teach the audience to read micro-vetoes.",
+          "creativeThread": "Tiny gestures can outrank tidy intentions."
+        },
+        {
+          "id": "D6",
+          "sceneId": "S4",
+          "shot": "B3 Counter-lane push-pull",
+          "visual": "Chair dragged tight to counter, then pulled back toward table.",
+          "camera": "Static side profile across kitchen.",
+          "light": "Ceiling practicals kept plain.",
+          "sound": "Continuous drag, stop, reverse.",
+          "purpose": "Let humor and discomfort coexist in one procedural beat.",
+          "creativeThread": "Usefulness and respect are rival masks for authority."
+        },
+        {
+          "id": "D7",
+          "sceneId": "S5",
+          "shot": "B4 Doorway tug wide",
+          "visual": "Chair lifted toward exit, stopped low at the rung, third cousin motionless apart.",
+          "camera": "Locked on doorway axis.",
+          "light": "Door brightness as exit vector.",
+          "sound": "Lift creak, halt, breath reset.",
+          "purpose": "Escalate from adjustment to blockade.",
+          "creativeThread": "Ending the problem is itself a power grab."
+        },
+        {
+          "id": "D8",
+          "sceneId": "S5",
+          "shot": "B5 Set-down after stop",
+          "visual": "Suspended chair settles back from the blocked exit.",
+          "camera": "Same axis, no cutaway.",
+          "light": "Unchanged.",
+          "sound": "Set-down thud and small floor scrape.",
+          "purpose": "Show that stoppage creates a new unresolved state, not closure.",
+          "creativeThread": "Refusal can be more decisive than action."
+        }
+      ],
+      "storyboardSource": {
+        "status": "RENDERED",
+        "renderer": "STROMAN_PENCIL_SVG_V1",
+        "title": "Proxy Vote: If It Stays",
+        "frames": [
+          {
+            "id": "F1",
+            "beatId": "S1",
+            "title": "Custody at the Roll-Up",
+            "cameraLabel": "A1 frontal storage master",
+            "annotation": "Cousin 2 takes weight while helping; first grip loses sole control.",
+            "glyphs": [
+              { "kind": "DOOR", "x": 50, "y": 12, "scale": 1.25, "label": "Storage roll-up door" },
+              { "kind": "OBJECT", "x": 50, "y": 78, "scale": 1.1, "label": "Storage threshold" },
+              { "kind": "OBJECT", "x": 50, "y": 58, "scale": 1.05, "label": "Inherited chair" },
+              { "kind": "ADULT", "x": 34, "y": 60, "scale": 1, "label": "Cousin 1" },
+              { "kind": "ADULT", "x": 64, "y": 62, "scale": 1, "label": "Cousin 2" },
+              { "kind": "ADULT", "x": 18, "y": 46, "scale": 0.85, "label": "Cousin 3" }
+            ],
+            "arrows": [
+              { "fromX": 34, "fromY": 60, "toX": 46, "toY": 56, "label": "first grip" },
+              { "fromX": 64, "fromY": 62, "toX": 56, "toY": 60, "label": "rotate / take weight" },
+              { "fromX": 18, "fromY": 46, "toX": 24, "toY": 44, "label": "holds door" }
+            ]
+          },
+          {
+            "id": "F2",
+            "beatId": "S2",
+            "title": "First Landing",
+            "cameraLabel": "B1 kitchen diagonal",
+            "annotation": "Table claim is turned sideways before all four legs land.",
+            "glyphs": [
+              { "kind": "COUNTER", "x": 24, "y": 28, "scale": 1.1, "label": "Kitchen counter" },
+              { "kind": "FRIDGE", "x": 12, "y": 60, "scale": 0.85, "label": "Fridge" },
+              { "kind": "TABLE", "x": 66, "y": 60, "scale": 1.2, "label": "Kitchen table" },
+              { "kind": "DOOR", "x": 90, "y": 36, "scale": 0.8, "label": "Kitchen doorway" },
+              { "kind": "OBJECT", "x": 64, "y": 46, "scale": 1, "label": "Inherited chair" },
+              { "kind": "ADULT", "x": 84, "y": 52, "scale": 0.95, "label": "Cousin 1" },
+              { "kind": "ADULT", "x": 58, "y": 46, "scale": 0.95, "label": "Cousin 2" }
+            ],
+            "arrows": [
+              { "fromX": 84, "fromY": 52, "toX": 70, "toY": 50, "label": "carry to table end" },
+              { "fromX": 58, "fromY": 46, "toX": 60, "toY": 54, "label": "twist toward counter" }
+            ]
+          },
+          {
+            "id": "F3",
+            "beatId": "S3",
+            "title": "Micro-Veto",
+            "cameraLabel": "C1 low leg frame",
+            "annotation": "A neat square-up is voided by a passing toe nudge.",
+            "glyphs": [
+              { "kind": "TABLE", "x": 60, "y": 36, "scale": 1.25, "label": "Kitchen table" },
+              { "kind": "OBJECT", "x": 46, "y": 64, "scale": 1, "label": "Inherited chair" },
+              { "kind": "ADULT", "x": 30, "y": 60, "scale": 0.9, "label": "Cousin 3" },
+              { "kind": "ADULT", "x": 74, "y": 56, "scale": 0.85, "label": "Cousin 2" },
+              { "kind": "COUNTER", "x": 14, "y": 24, "scale": 0.85, "label": "Kitchen counter" }
+            ],
+            "arrows": [
+              { "fromX": 30, "fromY": 60, "toX": 42, "toY": 60, "label": "square to table" },
+              { "fromX": 74, "fromY": 58, "toX": 54, "toY": 66, "label": "toe leg off-line" }
+            ]
+          },
+          {
+            "id": "F4",
+            "beatId": "S4",
+            "title": "Clear the Lane",
+            "cameraLabel": "B3 side profile",
+            "annotation": "Tidying and honoring pull the same chair in opposite directions.",
+            "glyphs": [
+              { "kind": "COUNTER", "x": 18, "y": 30, "scale": 1.2, "label": "Kitchen counter" },
+              { "kind": "FRIDGE", "x": 8, "y": 62, "scale": 0.85, "label": "Fridge" },
+              { "kind": "TABLE", "x": 78, "y": 62, "scale": 1.1, "label": "Kitchen table" },
+              { "kind": "OBJECT", "x": 48, "y": 58, "scale": 1, "label": "Inherited chair" },
+              { "kind": "ADULT", "x": 30, "y": 56, "scale": 0.95, "label": "Cousin 2" },
+              { "kind": "ADULT", "x": 62, "y": 58, "scale": 0.95, "label": "Cousin 1" },
+              { "kind": "ADULT", "x": 12, "y": 78, "scale": 0.7, "label": "Cousin 3" }
+            ],
+            "arrows": [
+              { "fromX": 30, "fromY": 56, "toX": 40, "toY": 58, "label": "drag to counter" },
+              { "fromX": 62, "fromY": 58, "toX": 54, "toY": 56, "label": "pull back to table" }
+            ]
+          },
+          {
+            "id": "F5",
+            "beatId": "S5",
+            "title": "Blocked Exit",
+            "cameraLabel": "B4 doorway axis",
+            "annotation": "Removal becomes the clearest claim; Cousin 3 stops it at the rung.",
+            "glyphs": [
+              { "kind": "DOOR", "x": 90, "y": 38, "scale": 0.85, "label": "Kitchen doorway" },
+              { "kind": "TABLE", "x": 42, "y": 66, "scale": 1, "label": "Kitchen table" },
+              { "kind": "COUNTER", "x": 14, "y": 28, "scale": 0.9, "label": "Kitchen counter" },
+              { "kind": "OBJECT", "x": 70, "y": 56, "scale": 1, "label": "Inherited chair" },
+              { "kind": "ADULT", "x": 60, "y": 54, "scale": 0.95, "label": "Cousin 1" },
+              { "kind": "ADULT", "x": 80, "y": 62, "scale": 0.95, "label": "Cousin 3" },
+              { "kind": "ADULT", "x": 28, "y": 58, "scale": 0.85, "label": "Cousin 2" }
+            ],
+            "arrows": [
+              { "fromX": 60, "fromY": 54, "toX": 82, "toY": 48, "label": "lift toward exit" },
+              { "fromX": 80, "fromY": 62, "toX": 72, "toY": 58, "label": "catch lower rung" }
+            ]
+          },
+          {
+            "id": "F6",
+            "beatId": "S6",
+            "title": "Interim Angle",
+            "cameraLabel": "B6 final aftermath wide",
+            "annotation": "The chair survives only in a diagonal nobody can call final.",
+            "glyphs": [
+              { "kind": "COUNTER", "x": 18, "y": 28, "scale": 1.05, "label": "Kitchen counter" },
+              { "kind": "WINDOW", "x": 70, "y": 16, "scale": 0.75, "label": "Kitchen window" },
+              { "kind": "TABLE", "x": 68, "y": 62, "scale": 1.15, "label": "Kitchen table" },
+              { "kind": "DOOR", "x": 92, "y": 38, "scale": 0.8, "label": "Kitchen doorway" },
+              { "kind": "OBJECT", "x": 54, "y": 52, "scale": 1, "label": "Inherited chair" },
+              { "kind": "ADULT", "x": 34, "y": 48, "scale": 0.8, "label": "Cousin 2" },
+              { "kind": "ADULT", "x": 92, "y": 78, "scale": 0.55, "label": "Cousin 1" }
+            ],
+            "arrows": [
+              { "fromX": 34, "fromY": 48, "toX": 28, "toY": 44, "label": "steps back" },
+              { "fromX": 92, "fromY": 78, "toX": 100, "toY": 84, "label": "leave it" }
+            ]
+          }
+        ],
+        "blocking": {
+          "title": "Composite blocking map",
+          "zones": [
+            { "id": "Z1", "label": "Storage interior", "x": 2, "y": 8, "width": 40, "height": 28 },
+            {
+              "id": "Z2",
+              "label": "Storage threshold",
+              "x": 32,
+              "y": 28,
+              "width": 12,
+              "height": 10
+            },
+            {
+              "id": "Z3",
+              "label": "Kitchen doorway lane",
+              "x": 78,
+              "y": 30,
+              "width": 18,
+              "height": 20
+            },
+            {
+              "id": "Z4",
+              "label": "Table authority zone",
+              "x": 52,
+              "y": 46,
+              "width": 32,
+              "height": 26
+            },
+            {
+              "id": "Z5",
+              "label": "Counter utility zone",
+              "x": 8,
+              "y": 22,
+              "width": 30,
+              "height": 28
+            },
+            { "id": "Z6", "label": "Interim park", "x": 46, "y": 38, "width": 18, "height": 18 }
+          ],
+          "positions": [
+            { "label": "Camera A storage frontal", "x": 50, "y": 92, "kind": "CAMERA" },
+            { "label": "Camera B kitchen diagonal", "x": 6, "y": 86, "kind": "CAMERA" },
+            { "label": "Camera C table-leg low", "x": 70, "y": 92, "kind": "CAMERA" },
+            { "label": "Window daylight", "x": 72, "y": 8, "kind": "LIGHT" },
+            { "label": "Ceiling practicals", "x": 30, "y": 10, "kind": "LIGHT" },
+            { "label": "Inherited chair start", "x": 20, "y": 24, "kind": "SUBJECT" },
+            { "label": "Cousin 1 carry line", "x": 82, "y": 52, "kind": "SUBJECT" },
+            { "label": "Cousin 2 correction line", "x": 58, "y": 52, "kind": "SUBJECT" },
+            { "label": "Cousin 3 witness line", "x": 90, "y": 66, "kind": "SUBJECT" }
+          ],
+          "paths": [
+            {
+              "label": "Storage retrieval path",
+              "points": [
+                { "x": 50, "y": 58 },
+                { "x": 54, "y": 60 },
+                { "x": 60, "y": 64 }
+              ]
+            },
+            {
+              "label": "Kitchen table claim",
+              "points": [
+                { "x": 88, "y": 52 },
+                { "x": 74, "y": 50 },
+                { "x": 64, "y": 48 }
+              ]
+            },
+            {
+              "label": "Kitchen counter claim",
+              "points": [
+                { "x": 64, "y": 48 },
+                { "x": 48, "y": 56 },
+                { "x": 34, "y": 56 }
+              ]
+            },
+            {
+              "label": "Blocked exit route",
+              "points": [
+                { "x": 54, "y": 52 },
+                { "x": 72, "y": 54 },
+                { "x": 86, "y": 44 }
+              ]
+            }
+          ]
+        },
+        "look": {
+          "title": "Pencil look references",
+          "swatches": [
+            {
+              "name": "Chair varnish",
+              "color": "#7B593C",
+              "use": "Inherited chair body and warmth anchor"
+            },
+            {
+              "name": "Storage aluminum",
+              "color": "#8C8F93",
+              "use": "Roll-up door, threshold, cold utility"
+            },
+            {
+              "name": "Appliance cream",
+              "color": "#E5E1D8",
+              "use": "Fridge, table planes, kitchen flatness"
+            },
+            {
+              "name": "Linoleum tan",
+              "color": "#CBB8A0",
+              "use": "Floor planes and chair-leg geometry"
+            },
+            {
+              "name": "Window pale blue",
+              "color": "#C9D8E8",
+              "use": "Soft daylight spill in kitchen"
+            },
+            {
+              "name": "Graphite black",
+              "color": "#2F2F2F",
+              "use": "Contour lines, shadows, scrapes, weight"
+            }
+          ],
+          "texture": "Dry pencil outlines, rubbed graphite shadows, erased highlights on worn wood edges, visible floor-scuff strokes."
+        }
+      },
+      "visualPlan": {
+        "version": 1,
+        "renderer": "STROMAN_PREVIS_SVG_V2",
+        "stage": "IDEA",
+        "creativeSpine": {
+          "film": "Inherited authority only exists here if a chair placement can survive correction. The object is not the memory; the object is the test.",
+          "why": "This keeps the strongest part of the original direction - behavior as politics - but improves it with a measurable rule: placement equals survival time. It also gives the film a loopable rhyme, opening and closing on a similarly angled chair in different rooms, so irresolution becomes form rather than absence.",
+          "audienceEffect": "Viewers read grip, rotation, delay, foot nudges, blocked paths, and aftermath holds as the real dialogue, with humor arriving through the ridiculous seriousness of ordinary logistics.",
+          "keyBeats": [
+            "Custody at the Roll-Up",
+            "First Landing",
+            "Micro-Veto",
+            "Clear the Lane",
+            "Blocked Exit",
+            "Interim Angle"
+          ],
+          "nextDecision": "Which cousin, if any, already acts like the kitchen host before the chair enters?"
+        },
+        "priorities": [
+          {
+            "priority": "MUST_SOLVE_NOW",
+            "label": "Decision 1",
+            "decision": "Which cousin, if any, already acts like the kitchen host before the chair enters?"
+          },
+          {
+            "priority": "IMPORTANT",
+            "label": "Decision 2",
+            "decision": "Can the chair physically sit at the table without obviously blocking circulation?"
+          },
+          {
+            "priority": "WORTH_EXPLORING",
+            "label": "Decision 3",
+            "decision": "Do the strongest corrections happen through hands, feet, or route-blocking?"
+          }
+        ],
+        "shots": [
+          {
+            "id": "shot_1",
+            "sceneId": "S1",
+            "title": "Custody at the Roll-Up",
+            "purpose": "Teach that handling, interruption, and route choice are the film's real dialogue.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_1_h",
+              "aspectRatio": "16:9",
+              "shotScale": "A1 frontal storage master",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Locked frontal wide outside the unit; add one fixed threshold-height detail only if the…",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Locked frontal wide outside the unit; add one fixed threshold-height detail only if the grip transfer is not legible in…",
+              "hold": "Hold through: What reads as help becomes a transfer of control over weight and direction.",
+              "executionStrip": [
+                "A1 frontal storage master · 16:9",
+                "Cousin 2 takes weight while helping; first grip loses sole control. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 24.5,
+                  "y": 31,
+                  "width": 19,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 54.5,
+                  "y": 33,
+                  "width": 19,
+                  "height": 58,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 9.925,
+                  "y": 21.35,
+                  "width": 16.15,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "STORAGE ROLL-UP DOOR",
+                  "x": 38.125,
+                  "y": 1,
+                  "width": 23.75,
+                  "height": 62.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "STORAGE THRESHOLD",
+                  "x": 40.65,
+                  "y": 69.75,
+                  "width": 18.700000000000003,
+                  "height": 16.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 41.075,
+                  "y": 50.125,
+                  "width": 17.85,
+                  "height": 15.75,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "first grip", "fromX": 34, "fromY": 60, "toX": 46, "toY": 56 },
+                { "label": "rotate / take weight", "fromX": 64, "fromY": 62, "toX": 56, "toY": 60 },
+                { "label": "holds door", "fromX": 18, "fromY": 46, "toX": 24, "toY": 44 }
+              ],
+              "light": [
+                {
+                  "label": "Use existing contrast between unit…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 34,
+                  "toY": 60,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Stays within the storage-unit threshold. No invented transit, no added props, no remembrance talk.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_1_v",
+              "aspectRatio": "9:16",
+              "shotScale": "A1 frontal storage master",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Locked frontal wide outside the unit; add one fixed threshold-height detail only if the…",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Locked frontal wide outside the unit; add one fixed threshold-height detail only if the grip transfer is not legible in…",
+              "hold": "Hold through: What reads as help becomes a transfer of control over weight and direction.",
+              "executionStrip": [
+                "A1 frontal storage master · 9:16",
+                "Cousin 2 takes weight while helping; first grip loses sole control. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 27.254999999999995,
+                  "y": 31.799999999999997,
+                  "width": 25.650000000000002,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 45.855,
+                  "y": 33.56,
+                  "width": 25.650000000000002,
+                  "height": 58,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 19.25875,
+                  "y": 23.83,
+                  "width": 21.8025,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "STORAGE ROLL-UP DOOR",
+                  "x": 35.5125,
+                  "y": 1,
+                  "width": 28.974999999999998,
+                  "height": 62.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "STORAGE THRESHOLD",
+                  "x": 38.592999999999996,
+                  "y": 68.39,
+                  "width": 22.814000000000004,
+                  "height": 16.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 39.1115,
+                  "y": 51.165,
+                  "width": 21.777,
+                  "height": 15.75,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "first grip",
+                  "fromX": 40.08,
+                  "fromY": 60.8,
+                  "toX": 47.52,
+                  "toY": 57.28
+                },
+                {
+                  "label": "rotate / take weight",
+                  "fromX": 58.68,
+                  "fromY": 62.56,
+                  "toX": 53.72,
+                  "toY": 60.8
+                },
+                {
+                  "label": "holds door",
+                  "fromX": 30.16,
+                  "fromY": 48.48,
+                  "toX": 33.879999999999995,
+                  "toY": 46.72
+                }
+              ],
+              "light": [
+                {
+                  "label": "Use existing contrast between unit…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 40.08,
+                  "toY": 60.8,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Stays within the storage-unit threshold. No invented transit, no added props, no remembrance talk.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_2",
+            "sceneId": "S2",
+            "title": "First Landing",
+            "purpose": "Make placement equal jurisdiction by showing two incompatible logics in one move.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_2_h",
+              "aspectRatio": "16:9",
+              "shotScale": "B1 kitchen diagonal",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Locked diagonal from the kitchen corner so table end and counter lane remain equally av…",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Locked diagonal from the kitchen corner so table end and counter lane remain equally available.",
+              "hold": "Hold through: A place-setting gesture becomes an out-of-the-way gesture before it can settle.",
+              "executionStrip": [
+                "B1 kitchen diagonal · 16:9",
+                "Table claim is turned sideways before all four legs land. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 74.975,
+                  "y": 24.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 48.975,
+                  "y": 18.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 22,
+                  "y": 31,
+                  "width": 17,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 5.299999999999997,
+                  "y": 19.2,
+                  "width": 37.400000000000006,
+                  "height": 17.6,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 3.9250000000000007,
+                  "y": 38.75,
+                  "width": 16.15,
+                  "height": 42.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "KITCHEN TABLE",
+                  "x": 45.6,
+                  "y": 50.4,
+                  "width": 40.8,
+                  "height": 19.2,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "KITCHEN DOORWAY",
+                  "x": 82.4,
+                  "y": 16,
+                  "width": 15.200000000000001,
+                  "height": 40,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 55.5,
+                  "y": 38.5,
+                  "width": 17,
+                  "height": 15,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "carry to table end", "fromX": 84, "fromY": 52, "toX": 70, "toY": 50 },
+                { "label": "twist toward counter", "fromX": 58, "fromY": 46, "toX": 60, "toY": 54 }
+              ],
+              "light": [
+                {
+                  "label": "Use practical kitchen flatness and…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 84,
+                  "toY": 52,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Hard cut from storage to kitchen. No invented travel sequence or explanatory bridge.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_2_v",
+              "aspectRatio": "9:16",
+              "shotScale": "B1 kitchen diagonal",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Locked diagonal from the kitchen corner so table end and counter lane remain equally av…",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Locked diagonal from the kitchen corner so table end and counter lane remain equally available.",
+              "hold": "Hold through: A place-setting gesture becomes an out-of-the-way gesture before it can settle.",
+              "executionStrip": [
+                "B1 kitchen diagonal · 9:16",
+                "Table claim is turned sideways before all four legs land. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 58.896249999999995,
+                  "y": 26.21,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 42.77625,
+                  "y": 20.93,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 16,
+                  "y": 42,
+                  "width": 30,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 11.065999999999992,
+                  "y": 23.84,
+                  "width": 45.62800000000001,
+                  "height": 17.6,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 16.588500000000003,
+                  "y": 39.55,
+                  "width": 19.703,
+                  "height": 42.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "KITCHEN TABLE",
+                  "x": 35.032000000000004,
+                  "y": 51.199999999999996,
+                  "width": 49.775999999999996,
+                  "height": 19.2,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "KITCHEN DOORWAY",
+                  "x": 65.52799999999999,
+                  "y": 19.68,
+                  "width": 18.544,
+                  "height": 40,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 48.31,
+                  "y": 40.98,
+                  "width": 20.74,
+                  "height": 15,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "carry to table end",
+                  "fromX": 71.08,
+                  "fromY": 53.76,
+                  "toX": 62.4,
+                  "toY": 52
+                },
+                {
+                  "label": "twist toward counter",
+                  "fromX": 54.96,
+                  "fromY": 48.48,
+                  "toX": 56.2,
+                  "toY": 55.52
+                }
+              ],
+              "light": [
+                {
+                  "label": "Use practical kitchen flatness and…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 71.08,
+                  "toY": 53.76,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Hard cut from storage to kitchen. No invented travel sequence or explanatory bridge.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_3",
+            "sceneId": "S3",
+            "title": "Micro-Veto",
+            "purpose": "Shift the audience from reading large gestures to reading sanctioned sabotage.",
+            "priority": "SAFETY",
+            "horizontal": {
+              "id": "shot_3_h",
+              "aspectRatio": "16:9",
+              "shotScale": "C1 low leg frame",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Fixed low angle near table-leg height.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Fixed low angle near table-leg height.",
+              "hold": "Hold through: A nearly invisible correction voids the neatest placement.",
+              "executionStrip": [
+                "C1 low leg frame · 16:9",
+                "A neat square-up is voided by a passing toe nudge. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 21.45,
+                  "y": 33.9,
+                  "width": 17.1,
+                  "height": 52.2,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 65.925,
+                  "y": 31.35,
+                  "width": 16.15,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 22,
+                  "y": 31,
+                  "width": 17,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "KITCHEN TABLE",
+                  "x": 38.75,
+                  "y": 26,
+                  "width": 42.5,
+                  "height": 20,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 37.5,
+                  "y": 56.5,
+                  "width": 17,
+                  "height": 15,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 1,
+                  "y": 17.2,
+                  "width": 28.9,
+                  "height": 13.6,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "square to table", "fromX": 30, "fromY": 60, "toX": 42, "toY": 60 },
+                { "label": "toe leg off-line", "fromX": 74, "fromY": 58, "toX": 54, "toY": 66 }
+              ],
+              "light": [
+                {
+                  "label": "Let the floor carry the contrast; a…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 30,
+                  "toY": 60,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Readable with no dialogue and no facial explanation.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_3_v",
+              "aspectRatio": "9:16",
+              "shotScale": "C1 low leg frame",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Fixed low angle near table-leg height.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Fixed low angle near table-leg height.",
+              "hold": "Hold through: A nearly invisible correction voids the neatest placement.",
+              "executionStrip": [
+                "C1 low leg frame · 9:16",
+                "A neat square-up is voided by a passing toe nudge. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 26.057499999999997,
+                  "y": 34.699999999999996,
+                  "width": 23.085000000000004,
+                  "height": 52.2,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 53.97875,
+                  "y": 32.63,
+                  "width": 21.8025,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 16,
+                  "y": 42,
+                  "width": 30,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "KITCHEN TABLE",
+                  "x": 30.275000000000002,
+                  "y": 29.68,
+                  "width": 51.85,
+                  "height": 20,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 37.150000000000006,
+                  "y": 56.81999999999999,
+                  "width": 20.74,
+                  "height": 15,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 10.051000000000002,
+                  "y": 22.32,
+                  "width": 35.257999999999996,
+                  "height": 13.6,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "square to table",
+                  "fromX": 37.6,
+                  "fromY": 60.8,
+                  "toX": 45.04,
+                  "toY": 60.8
+                },
+                {
+                  "label": "toe leg off-line",
+                  "fromX": 64.88,
+                  "fromY": 59.04,
+                  "toX": 52.48,
+                  "toY": 66.08
+                }
+              ],
+              "light": [
+                {
+                  "label": "Let the floor carry the contrast; a…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 37.6,
+                  "toY": 60.8,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Readable with no dialogue and no facial explanation.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_4",
+            "sceneId": "S4",
+            "title": "Clear the Lane",
+            "purpose": "Let humor arrive through the absurd seriousness of traffic management.",
+            "priority": "OPTIONAL_EXPLORATION",
+            "horizontal": {
+              "id": "shot_4_h",
+              "aspectRatio": "16:9",
+              "shotScale": "B3 side profile",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Static side profile with enough width to read the lane.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Static side profile with enough width to read the lane.",
+              "hold": "Hold through: Tidying stops reading as neutral and becomes a claim over what the room is for.",
+              "executionStrip": [
+                "B3 side profile · 16:9",
+                "Tidying and honoring pull the same chair in opposite directions. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 20.975,
+                  "y": 28.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 52.975,
+                  "y": 30.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 5.3500000000000005,
+                  "y": 57.7,
+                  "width": 13.299999999999999,
+                  "height": 40.599999999999994,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 1,
+                  "y": 20.4,
+                  "width": 40.8,
+                  "height": 19.2,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 1,
+                  "y": 40.75,
+                  "width": 16.15,
+                  "height": 42.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "KITCHEN TABLE",
+                  "x": 59.3,
+                  "y": 53.2,
+                  "width": 37.400000000000006,
+                  "height": 17.6,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 39.5,
+                  "y": 50.5,
+                  "width": 17,
+                  "height": 15,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "drag to counter", "fromX": 30, "fromY": 56, "toX": 40, "toY": 58 },
+                { "label": "pull back to table", "fromX": 62, "fromY": 58, "toX": 54, "toY": 56 }
+              ],
+              "light": [
+                {
+                  "label": "Accept overhead practicals; the fla…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 30,
+                  "toY": 56,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Uses only existing kitchen geometry and the chair; no added task or prop.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_4_v",
+              "aspectRatio": "9:16",
+              "shotScale": "B3 side profile",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Static side profile with enough width to read the lane.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Static side profile with enough width to read the lane.",
+              "hold": "Hold through: Tidying stops reading as neutral and becomes a claim over what the room is for.",
+              "executionStrip": [
+                "B3 side profile · 9:16",
+                "Tidying and honoring pull the same chair in opposite directions. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 2",
+                  "x": 25.416249999999998,
+                  "y": 29.730000000000004,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 1",
+                  "x": 45.256249999999994,
+                  "y": 31.490000000000002,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "COUSIN 3",
+                  "x": 17.462500000000002,
+                  "y": 56.34,
+                  "width": 17.955,
+                  "height": 40.599999999999994,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 5.272000000000002,
+                  "y": 24.799999999999997,
+                  "width": 49.775999999999996,
+                  "height": 19.2,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 14.108500000000001,
+                  "y": 41.31,
+                  "width": 19.703,
+                  "height": 42.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "KITCHEN TABLE",
+                  "x": 44.54599999999999,
+                  "y": 53.760000000000005,
+                  "width": 45.62800000000001,
+                  "height": 17.6,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "INHERITED CHAIR",
+                  "x": 38.39,
+                  "y": 51.54,
+                  "width": 20.74,
+                  "height": 15,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "drag to counter",
+                  "fromX": 37.6,
+                  "fromY": 57.28,
+                  "toX": 43.8,
+                  "toY": 59.04
+                },
+                {
+                  "label": "pull back to table",
+                  "fromX": 57.44,
+                  "fromY": 59.04,
+                  "toX": 52.48,
+                  "toY": 57.28
+                }
+              ],
+              "light": [
+                {
+                  "label": "Accept overhead practicals; the fla…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 37.6,
+                  "toY": 57.28,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Uses only existing kitchen geometry and the chair; no added task or prop.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          }
+        ],
+        "blocking": {
+          "title": "Composite blocking map",
+          "question": "Where are the people and cameras, and how do they move?",
+          "zones": [
+            { "id": "Z1", "label": "Storage interior", "x": 2, "y": 8, "width": 40, "height": 28 },
+            {
+              "id": "Z2",
+              "label": "Storage threshold",
+              "x": 32,
+              "y": 28,
+              "width": 12,
+              "height": 10
+            },
+            {
+              "id": "Z3",
+              "label": "Kitchen doorway lane",
+              "x": 78,
+              "y": 30,
+              "width": 18,
+              "height": 20
+            },
+            {
+              "id": "Z4",
+              "label": "Table authority zone",
+              "x": 52,
+              "y": 46,
+              "width": 32,
+              "height": 26
+            },
+            {
+              "id": "Z5",
+              "label": "Counter utility zone",
+              "x": 8,
+              "y": 22,
+              "width": 30,
+              "height": 28
+            },
+            { "id": "Z6", "label": "Interim park", "x": 46, "y": 38, "width": 18, "height": 18 }
+          ],
+          "subjects": [
+            {
+              "id": "hosted_subject_1",
+              "label": "INHERITED CHAIR",
+              "carries": null,
+              "marker": "OBJECT",
+              "states": [
+                { "label": "START", "x": 50, "y": 58, "note": "Storage retrieval path" },
+                { "label": "2", "x": 54, "y": 60, "note": "Storage retrieval path" },
+                { "label": "END", "x": 60, "y": 64, "note": "Storage retrieval path" }
+              ]
+            },
+            {
+              "id": "hosted_subject_2",
+              "label": "COUSIN 1",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 88, "y": 52, "note": "Kitchen table claim" },
+                { "label": "2", "x": 74, "y": 50, "note": "Kitchen table claim" },
+                { "label": "END", "x": 64, "y": 48, "note": "Kitchen table claim" }
+              ]
+            },
+            {
+              "id": "hosted_subject_3",
+              "label": "COUSIN 2",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 64, "y": 48, "note": "Kitchen counter claim" },
+                { "label": "2", "x": 48, "y": 56, "note": "Kitchen counter claim" },
+                { "label": "END", "x": 34, "y": 56, "note": "Kitchen counter claim" }
+              ]
+            },
+            {
+              "id": "hosted_subject_4",
+              "label": "COUSIN 3",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 54, "y": 52, "note": "Blocked exit route" },
+                { "label": "2", "x": 72, "y": 54, "note": "Blocked exit route" },
+                { "label": "END", "x": 86, "y": 44, "note": "Blocked exit route" }
+              ]
+            }
+          ],
+          "cameras": [
+            {
+              "id": "hosted_camera_1",
+              "label": "Camera A storage frontal",
+              "x": 50,
+              "y": 92,
+              "aimX": 50,
+              "aimY": 58,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_2",
+              "label": "Camera B kitchen diagonal",
+              "x": 6,
+              "y": 86,
+              "aimX": 54,
+              "aimY": 60,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_3",
+              "label": "Camera C table-leg low",
+              "x": 70,
+              "y": 92,
+              "aimX": 60,
+              "aimY": 64,
+              "use": "Reproduce the frame-specific storyboard axis."
+            }
+          ],
+          "restrictions": [
+            "Diagram labels come from the hosted scene plan; location geometry remains provisional until the scout confirms it.",
+            "Where labels did not match, subject paths retain the provider's original ordering."
+          ]
+        },
+        "lighting": {
+          "title": "Pencil look references",
+          "question": "Where are the meaningful sources, modifiers, and practicals?",
+          "zones": [
+            { "id": "Z1", "label": "Storage interior", "x": 2, "y": 8, "width": 40, "height": 28 },
+            {
+              "id": "Z2",
+              "label": "Storage threshold",
+              "x": 32,
+              "y": 28,
+              "width": 12,
+              "height": 10
+            },
+            {
+              "id": "Z3",
+              "label": "Kitchen doorway lane",
+              "x": 78,
+              "y": 30,
+              "width": 18,
+              "height": 20
+            },
+            {
+              "id": "Z4",
+              "label": "Table authority zone",
+              "x": 52,
+              "y": 46,
+              "width": 32,
+              "height": 26
+            },
+            {
+              "id": "Z5",
+              "label": "Counter utility zone",
+              "x": 8,
+              "y": 22,
+              "width": 30,
+              "height": 28
+            },
+            { "id": "Z6", "label": "Interim park", "x": 46, "y": 38, "width": 18, "height": 18 }
+          ],
+          "sources": [
+            {
+              "id": "hosted_light_1",
+              "label": "Window daylight",
+              "kind": "PRACTICAL",
+              "x": 72,
+              "y": 8,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Use existing contrast between unit shadow and daylight; do not beautify."
+            },
+            {
+              "id": "hosted_light_2",
+              "label": "Ceiling practicals",
+              "kind": "PRACTICAL",
+              "x": 30,
+              "y": 10,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Hold ordinary room light and window falloff; make emptiness matter."
+            }
+          ],
+          "instruction": "Scene-derived intent: Use existing contrast between unit shadow and daylight; do not beautify. Use practical kitchen flatness and window spill without reshaping it. Let the floor carry the contrast; avoid dramatic shaping. Accept overhead practicals; the flat…"
+        },
+        "look": {
+          "title": "Pencil look references",
+          "question": "What palette, contrast, texture, and grade direction govern the sequence?",
+          "swatches": [
+            {
+              "name": "Chair varnish",
+              "color": "#7B593C",
+              "use": "Inherited chair body and warmth anchor"
+            },
+            {
+              "name": "Storage aluminum",
+              "color": "#8C8F93",
+              "use": "Roll-up door, threshold, cold utility"
+            },
+            {
+              "name": "Appliance cream",
+              "color": "#E5E1D8",
+              "use": "Fridge, table planes, kitchen flatness"
+            },
+            {
+              "name": "Linoleum tan",
+              "color": "#CBB8A0",
+              "use": "Floor planes and chair-leg geometry"
+            },
+            {
+              "name": "Window pale blue",
+              "color": "#C9D8E8",
+              "use": "Soft daylight spill in kitchen"
+            },
+            {
+              "name": "Graphite black",
+              "color": "#2F2F2F",
+              "use": "Contour lines, shadows, scrapes, weight"
+            }
+          ],
+          "contrast": "Cool metal gray against worn wood brown.",
+          "texture": "Dry pencil outlines, rubbed graphite shadows, erased highlights on worn wood edges, visible floor-scuff strokes.",
+          "restraint": "Treat the look as a hypothesis; reject decorative grading that does not serve the scene turn."
+        },
+        "sound": [
+          {
+            "sceneId": "S1",
+            "label": "Custody at the Roll-Up",
+            "mustRecord": [
+              "Metal door rattle, wood tick on concrete, shoe pivots, breath, clipped overlap."
+            ],
+            "perspective": "Prioritize the door and chair contact as the beat's punctuation.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S2",
+            "label": "First Landing",
+            "mustRecord": ["Door hinge, short chair scrape, room tone flattening after the turn."],
+            "perspective": "Hold after the scrape so the silence can judge the first landing.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S3",
+            "label": "Micro-Veto",
+            "mustRecord": ["One dry scrape and a soft fabric pass."],
+            "perspective": "The tiny scrape should feel disproportionately loud.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S4",
+            "label": "Clear the Lane",
+            "mustRecord": ["Longer drag, shoe stop, suppressed air release."],
+            "perspective": "Keep the continuous drag intact so the action feels procedural, not theatrical.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S5",
+            "label": "Blocked Exit",
+            "mustRecord": ["Lift creak, abrupt stop, breath reset."],
+            "perspective": "Let the stop and breath reset replace argument.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S6",
+            "label": "Interim Angle",
+            "mustRecord": ["Refrigerator hum, settling wood, receding footsteps."],
+            "perspective": "Stay long enough for footsteps to leave and room tone to take over.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          }
+        ],
+        "coverage": [
+          {
+            "id": "shot_1",
+            "priority": "MUST_GET",
+            "label": "Custody at the Roll-Up",
+            "serves": [
+              "Teach that handling, interruption, and route choice are the film's real dialogue."
+            ],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_2",
+            "priority": "MUST_GET",
+            "label": "First Landing",
+            "serves": [
+              "Make placement equal jurisdiction by showing two incompatible logics in one move."
+            ],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_3",
+            "priority": "SAFETY",
+            "label": "Micro-Veto",
+            "serves": [
+              "Shift the audience from reading large gestures to reading sanctioned sabotage."
+            ],
+            "why": "Take only after the must-get story turns work."
+          },
+          {
+            "id": "shot_4",
+            "priority": "OPTIONAL_EXPLORATION",
+            "label": "Clear the Lane",
+            "serves": ["Let humor arrive through the absurd seriousness of traffic management."],
+            "why": "Take only after the must-get story turns work."
+          }
+        ],
+        "location": {
+          "mode": "INTENT_ONLY",
+          "photos": [],
+          "claims": [],
+          "confirmationQuestion": "Add a wide and reverse location photo before locking physical geometry."
+        },
+        "delta": {
+          "trigger": "Hosted creative direction developed",
+          "changed": [
+            "Provider storyboard intent became independently composed 16:9 and 9:16 frame hypotheses."
+          ],
+          "unchanged": ["All physical geometry remains unverified until the scout confirms it."]
+        },
+        "productionReality": {
+          "crew": "",
+          "cameraBody": "",
+          "lenses": "",
+          "support": "",
+          "lighting": "",
+          "sound": "",
+          "shootTime": "",
+          "access": "",
+          "talent": "",
+          "budget": "",
+          "timeOfDay": ""
+        }
+      },
+      "questions": [
+        {
+          "prompt": "Which cousin, if any, already acts like the kitchen host before the chair enters?",
+          "decisionItChanges": "Whether the kitchen diagonal privileges doorway arrival or table-end dominance."
+        },
+        {
+          "prompt": "Can the chair physically sit at the table without obviously blocking circulation?",
+          "decisionItChanges": "How credible the counter-lane objection will read and whether Scene S4 stays."
+        },
+        {
+          "prompt": "Do the strongest corrections happen through hands, feet, or route-blocking?",
+          "decisionItChanges": "How much low-angle detail coverage is necessary versus wide procedural coverage."
+        }
+      ],
+      "productionNextSteps": [
+        "Walk both spaces for 15 minutes before filming and mark the table zone, counter lane, doorway line, and storage threshold as rival destinations.",
+        "Confirm with all three cousins that the no-remembrance-on-camera rule stands and that silence after actions will be preserved rather than filled.",
+        "Preset Camera A at the storage threshold, Camera B on the kitchen diagonal, and Camera C low enough to read chair-leg geometry without chasing action.",
+        "Run a sound test on chair scrapes in both locations and prioritize floor-near mic placement for wood-on-surface detail.",
+        "At the 90-minute checkpoint, review whether at least two placements have been corrected; if not, pivot away from the survival-time structure.",
+        "Record full aftermath holds after every placement, even when a move looks final in the moment."
+      ]
+    },
+    "projectSummary": "“The Weight of an Empty Chair” is for Mara Ellison; current format: open-format moving-image study. Creative goal: Explore whether an inherited kitchen chair can carry family authority after nobody agrees where it belongs. Intended audience: viewers willing to assemble meaning from behavior rather than explanation. Intended feeling: uneasy recognition with room for humor.",
+    "storyObjective": "Objective: Explore whether an inherited kitchen chair can carry family authority after nobody agrees where it belongs. Use each creative choice to help the audience leave feeling uneasy recognition with room for humor.",
+    "audienceAnalysis": "Primary audience: viewers willing to assemble meaning from behavior rather than explanation. Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.",
+    "emotionalArc": [
+      "Custody at the Roll-Up — Teach that handling, interruption, and route choice are the film's real dialogue.",
+      "First Landing — Make placement equal jurisdiction by showing two incompatible logics in one move.",
+      "Micro-Veto — Shift the audience from reading large gestures to reading sanctioned sabotage.",
+      "Clear the Lane — Let humor arrive through the absurd seriousness of traffic management.",
+      "Blocked Exit — Escalate from corrections to undeniable contest without needing verbal declaration.",
+      "Interim Angle — Land on unresolved authority and create a loopable end image."
+    ],
+    "recommendedStructure": "Recommended story engine — Open on contested custody at the storage-unit threshold. Cut to the kitchen for a chain of trial placements that escalate from mid-air redirection to micro-veto to blocked removal. End on an interim diagonal position that survives only because nobody can ratify or defeat it cleanly. 8 to 12 minute observational short designed to loop. Three shot classes only: custody wide, correction detail, aftermath hold. One frontal storage axis, two fixed kitchen axes, no travel sequence, no interviews, no score, no archive, no memory prompts. A placement is not treated as real until it survives a hold.",
+    "hookConcepts": [
+      {
+        "title": "Chair's Radius",
+        "description": "If rank appears mainly through touch, the chair itself should anchor every frame. Viewers first orient with difficulty, then learn to read touch patterns as kinship and hierarchy."
+      },
+      {
+        "title": "Three Claims, One Reset",
+        "description": "Each cousin briefly authors where the chair belongs until the next cousin overwrites that claim. A fair-seeming task becomes proof that fairness cannot neutralize inheritance politics."
+      },
+      {
+        "title": "Kitchen / Storage Diptych",
+        "description": "The two rooms make rival moral demands: use it now or preserve it by waiting. Viewers compare rooms, then compare the kinds of adulthood each room demands."
+      }
+    ],
+    "editingBlueprint": [
+      "8 to 12 minute observational short designed to loop. Three shot classes only: custody wide, correction detail, aftermath hold. One frontal storage axis, two fixed kitchen axes, no travel sequence, no interviews, no score, no archive, no memory prompts. A placement is not treated as real until it survives a hold.",
+      "Custody at the Roll-Up: The storage-unit door rises. Cousin 1 grabs the chair back, Cousin 2 catches the front rung and rotates it clear of the threshold, and Cousin 3 moves from holding the door to taking one leg. What reads as help becomes a transfer of control over weight and direction.",
+      "First Landing: At the kitchen doorway, Cousin 1 carries the chair toward the end of the table; before all four legs land, Cousin 2 twists it ninety degrees toward the counter while Cousin 3 stays at the doorway. A place-setting gesture becomes an out-of-the-way gesture before it can settle.",
+      "Micro-Veto: Cousin 3 quietly squares the chair with the table. Cousin 2 passes and nudges one front leg out of square with a toe without stopping. A nearly invisible correction voids the neatest placement.",
+      "Clear the Lane: Cousin 2 drags the chair tight against the counter to open a walking lane. Cousin 1 immediately pulls it back just enough to face the table again while Cousin 3 watches from the fridge side. Tidying stops reading as neutral and becomes a claim over what the room is for.",
+      "Blocked Exit: Cousin 1 lifts the chair by the top rail and starts for the doorway. Cousin 3 catches the lower rung and stops the movement; Cousin 2 remains still. The first clear attempt to end the dispute produces the first clear refusal.",
+      "Interim Angle: After the blocked exit, Cousin 2 sets the chair diagonally between the table and doorway, steps back, and the other two leave without straightening it. The only position that survives is one nobody can honestly call settled."
+    ],
+    "interviewStrategy": null,
+    "brollPriorities": [
+      "Custody at the Roll-Up: Frontal wide from outside the unit; the chair comes from shadow into flat daylight; the three cousins form a tightening triangle around it.",
+      "First Landing: Diagonal kitchen view that holds table, counter, fridge, and doorway in one composition; the chair changes orientation mid-air.",
+      "Micro-Veto: Low leg-height frame; chair legs and table edge dominate; faces are partial or absent.",
+      "Clear the Lane: Side profile across the kitchen, with the counter on one side and the table on the other; the chair is pulled between two rival zones.",
+      "Blocked Exit: Doorway-centered wide; one body pulls toward the exit, one anchors low, one stays outside the tug.",
+      "Interim Angle: Wide static aftermath with negative space opening around the chair; the final angle rhymes with the opening storage angle."
+    ],
+    "risks": [
+      "It refuses biography, explicit grief language, transport continuity, and a winner. Some viewers will feel the missing explanation as a wound rather than a tease.",
+      "If the first two kitchen placements survive their full aftermath holds without re-angle, foot-veto, blocked route, or renewed handling, abandon this structure; the behavioral engine is not strong enough.",
+      "Do not lock production around an unverified audience (viewers willing to assemble meaning from behavior rather than explanation) or emotional destination (uneasy recognition with room for humor).",
+      "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve."
+    ]
+  },
+  "translationPath": "generateBlueprint(providerOutput)"
+}

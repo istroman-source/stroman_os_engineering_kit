@@ -1,0 +1,2586 @@
+{
+  "calibration": "HOSTED_CREATIVE_REASONING",
+  "generatedAt": "2026-08-11T20:32:38.668Z",
+  "case": {
+    "id": "narrative-apartment-4c",
+    "expectedMode": "NARRATIVE",
+    "brief": {
+      "title": "Apartment 4C Holds Its Breath",
+      "client": "Independent short",
+      "projectType": "narrative short film",
+      "creativeGoal": "Turn two estranged siblings clearing their late father's apartment into a choice about which version of him they are willing to keep.",
+      "targetAudience": "adult siblings who recognize how grief hides inside practical tasks",
+      "desiredEmotion": "contained dread opening into earned tenderness",
+      "context": "One empty railroad apartment during a summer blackout. The siblings speak no dialogue until the final line. Each has secretly come for the same cassette tape, but only one knows what is on it. No flashbacks, voice-over, or exterior coverage."
+    }
+  },
+  "provider": { "id": "openai-responses:gpt-5.4", "mode": "HOSTED" },
+  "applicationPath": "developCreativeBlueprint",
+  "semanticGate": "PASSED_BY_APPLICATION",
+  "creativeQuality": {
+    "passed": true,
+    "total": 94,
+    "scores": [
+      {
+        "dimension": "TRANSFORMATION",
+        "score": 9,
+        "evidence": "The thesis must discover a human or dramatic value beyond restating the stated goal."
+      },
+      {
+        "dimension": "PROJECT_SPECIFICITY",
+        "score": 9,
+        "evidence": "25/29 distinctive title, client, or context terms survive in the reasoning."
+      },
+      {
+        "dimension": "ACTIONABILITY",
+        "score": 10,
+        "evidence": "5 scenes contain physical action and a distinct dramatic turn; 4 make that action depend on project-specific material."
+      },
+      {
+        "dimension": "DISTINCTIVENESS",
+        "score": 9,
+        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
+      },
+      {
+        "dimension": "JUDGMENT",
+        "score": 10,
+        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
+      },
+      {
+        "dimension": "INNOVATION",
+        "score": 9,
+        "evidence": "At least one departure must name the convention, its value, the violation, project fit, and execution risk."
+      },
+      {
+        "dimension": "HUMANNESS",
+        "score": 9,
+        "evidence": "The insight names a human truth and lived dramatic pressure rather than a demographic label."
+      },
+      {
+        "dimension": "CRAFT_COHERENCE",
+        "score": 10,
+        "evidence": "5/5 scenes derive complete physical craft choices."
+      },
+      {
+        "dimension": "HONESTY",
+        "score": 9,
+        "evidence": "Assumptions and constraint handling remain explicit; hypothetical scenes are not presented as captured evidence."
+      },
+      {
+        "dimension": "VISUAL_COMPLETION",
+        "score": 10,
+        "evidence": "5 drawn frames, a blocking map, and a look palette are renderable."
+      }
+    ],
+    "blockingFindings": [],
+    "substitutionSignal": {
+      "projectTermsFound": [
+        "apartment",
+        "holds",
+        "breath",
+        "short",
+        "empty",
+        "railroad",
+        "summer",
+        "blackout",
+        "siblings",
+        "speak",
+        "dialogue",
+        "until",
+        "final",
+        "line",
+        "each",
+        "come",
+        "same",
+        "cassette",
+        "tape",
+        "only",
+        "knows",
+        "what",
+        "voice-over",
+        "exterior",
+        "coverage"
+      ],
+      "weak": false
+    }
+  },
+  "visualQuality": { "passed": true, "findings": [] },
+  "providerOutput": {
+    "version": 2,
+    "reasoningSource": "HOSTED_REASONING",
+    "insight": {
+      "thesis": "The decisive act is not finding the tape but choosing who must live with it once listening becomes possible.",
+      "humanTruth": "In family cleanouts, useful labor can hide a private war over which story of a parent remains survivable.",
+      "dramaticTension": "One sibling wants proof, one wants containment, and blackout silence forces that conflict into visible custody of air, batteries, player, tape, and finally permission.",
+      "audiencePromise": "A silent estate-cleanout thriller that earns tenderness through one irreversible act of restraint."
+    },
+    "directionDecision": {
+      "title": "Recommendation — Battery Door",
+      "pointOfView": "Present-tense observational. The camera tracks custody, not psychology: who controls access, playback, and the next move.",
+      "storyEngine": "Separate the means of listening across the apartment: batteries in the kitchen, player behind the dresser, tape in the archive box. Each discovery exposes intent more plainly. When all three parts finally meet at the bare table, the last suspense is whether the sibling who came for proof still chooses playback once the other stops hiding.",
+      "formalStrategy": "Procedural wides first, possession inserts second. Cut only on transfers of control or blocked movement. Reserve the first balanced profile two-shot for the empty battery door closing.",
+      "audienceJourney": "Decode chores as camouflage; recognize the shared hunt; feel dread as playback assembles; receive tenderness when the offered truth is still refused.",
+      "whyThisProject": "It turns the brief's hardest limits into mechanics: blackout removes easy exposition, silence makes hands readable, and the absent father never gets the last word.",
+      "sacrifice": "No tape playback, no parental explanation, no neat factual reframe. The ending lives or dies on silent behavior.",
+      "assumptions": [
+        "The Protective Sibling already knows the tape's contents and fears what hearing it would do to the Proof-Seeking Sibling's usable memory of their father.",
+        "The Proof-Seeking Sibling wants the tape as confirmation, not nostalgia.",
+        "A portable cassette player can plausibly remain in the apartment residue.",
+        "The apartment is nearly cleared but still holds one dresser, one bare table, one dead fridge, and one archive box."
+      ],
+      "changeMyMindIf": "Abandon this direction if table-read and rehearsal viewers cannot identify the difference between concealment, permission, and refusal without added dialogue, or if the story requires the tape's contents to alter plot comprehension on screen.",
+      "projectDependencies": [
+        "Two performers fluent in silent intention shifts",
+        "A prop chain that reads instantly: AA batteries, portable cassette player, empty cassette case, tape, archive box, trash bag, dish towel",
+        "A location with readable railroad depth and two useful windows",
+        "Sound design built from scrape, drip, click, breath, and blackout hush",
+        "Edit discipline to cut on custody changes, not on coverage safety"
+      ],
+      "innovation": {
+        "convention": "Hidden recordings in grief stories are usually played as the climax.",
+        "whyConventionWorks": "It satisfies curiosity, externalizes backstory, and lets the dead parent speak directly into the living conflict.",
+        "departure": "Break the reveal into machine parts across the apartment, then stop one action short of the expected payoff: the tape never enters the player.",
+        "projectBenefit": "This keeps the climax with the siblings' present-tense choice. The father's voice stays powerless; the emotional event is that listening becomes possible and is still refused.",
+        "executionRisk": "If performance or staging is muddy, the ending can feel evasive instead of decisive."
+      }
+    },
+    "alternativeDecisions": [
+      {
+        "title": "Railroad Crossfire",
+        "pointOfView": "The railroad apartment's axis is the viewpoint; passage and blockage replace spoken argument.",
+        "storyEngine": "Each beat depends on who occupies the narrow line between rooms until one sibling finally gives the other a clear path to the tape.",
+        "formalStrategy": "Deep axial masters, sparse cutting, faces withheld until late.",
+        "audienceJourney": "Spatial tension first, emotional meaning second, mercy as literal room-making.",
+        "whyThisProject": "Strongest if the location's depth is exceptional.",
+        "sacrifice": "Less editorial rescue, less facial intimacy.",
+        "assumptions": [
+          "The location reads clearly in one frame.",
+          "Rehearsal time can support precise passing and obstruction."
+        ],
+        "changeMyMindIf": "Choose this instead if scouts reveal a truly expressive railroad corridor and the team can commit to long-take blocking.",
+        "projectDependencies": [
+          "Railroad apartment with full-depth sightline",
+          "Actors precise in long-take choreography",
+          "Lens plan that preserves depth"
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Keep / Trash / Unknown",
+        "pointOfView": "The ethics of sorting define character: each sibling reveals themself by what they label, mislabel, or leave unmarked.",
+        "storyEngine": "Repeated classification rituals build rhythm until the tape appears as the one item neither sibling can honestly sort.",
+        "formalStrategy": "Static floor geography, overheads, marker-and-tape sound rhythm.",
+        "audienceJourney": "Recognition of real cleanout behavior, then category failure, then tenderness through abandoning the system.",
+        "whyThisProject": "Most audience-specific for adult siblings who know grief paperwork and box logic.",
+        "sacrifice": "Less thriller propulsion, more ritual repetition.",
+        "assumptions": [
+          "Enough residue remains for a meaningful last-pass sort.",
+          "The siblings have opposing sorting instincts."
+        ],
+        "changeMyMindIf": "Choose this instead if the film should foreground recognizable estate-cleanout ritual over hunt suspense.",
+        "projectDependencies": [
+          "Curated prop list",
+          "Graphic label design",
+          "Editorial control of repetition"
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Heat Work",
+        "pointOfView": "Bodies under blackout: sweat, thirst, fatigue, and reluctant care.",
+        "storyEngine": "Heat and meltwater push the search toward physical collapse until care interrupts strategy.",
+        "formalStrategy": "Tactile close textures, breath-led sound, environmental pressure as plot.",
+        "audienceJourney": "Discomfort, urgency, reflexive caretaking, then mercy.",
+        "whyThisProject": "Best if blackout should act as physical force, not just mood.",
+        "sacrifice": "More sensory, less exacting puzzle geometry.",
+        "assumptions": [
+          "Heat can credibly threaten both bodies and tape.",
+          "Performers can sustain physically taxing silent work."
+        ],
+        "changeMyMindIf": "Choose this instead if sound, texture, and body performance are the production's strongest tools.",
+        "projectDependencies": [
+          "Practical heat-and-water sound design",
+          "Performance stamina",
+          "Controlled minimal set dressing"
+        ],
+        "innovation": null
+      }
+    ],
+    "sceneHypotheses": [
+      {
+        "id": "S1",
+        "title": "Forced Air",
+        "action": "Protective Sibling heaves the stuck front window upward while Proof-Seeking Sibling opens the dead fridge, bags spoiled food, then briefly detours a hand across the bare stereo table before returning to the trash bag.",
+        "visual": "Front room and kitchen in one strained diagonal; blown-out window light, open fridge, stripped walls, dust rectangle on the table.",
+        "sound": "Window groan, fridge suction, wet packaging, bag crackle, blackout hush.",
+        "turn": "Protective Sibling catches the stereo-table detour and realizes the cleanup is cover.",
+        "purpose": "Teach the audience that practical work and covert search are the same action now.",
+        "constraintHandling": "Interior only; no dialogue; blackout legible through dead fridge and still air; no exterior detail shown.",
+        "craft": {
+          "blocking": "Keep bodies far apart but on the same sightline: one fighting for air, one pretending to fight rot.",
+          "camera": "Locked wide diagonal from kitchen threshold so the detour reads without coverage explanation.",
+          "light": "Harsh window backlight and ambient spill only; no powered practicals.",
+          "design": "Minimal residue: bare stereo table, trash bag, dead fridge, stripped room.",
+          "color": "Heat-bleached neutrals with one cold fridge-white void.",
+          "sound": "No score; every noise is effort or concealment."
+        }
+      },
+      {
+        "id": "S2",
+        "title": "Batteries in Meltwater",
+        "action": "Proof-Seeking Sibling kneels in freezer runoff with a dish towel, reaches into the kitchen junk drawer, palms two AA batteries, keeps wiping, then pockets them. Protective Sibling stacks washed plates at the counter and sees the pocketing.",
+        "visual": "Low tile level; damp hand, open drawer, water line, pocket swallow.",
+        "sound": "Drip, towel drag, drawer rattle, battery click against battery.",
+        "turn": "The search narrows from grief-object hunting to listening prep.",
+        "purpose": "Make playback possible without yet producing the player or tape.",
+        "constraintHandling": "Silent, interior, no new rooms, blackout reinforced by dead appliances and hand work.",
+        "craft": {
+          "blocking": "Put Proof-Seeking Sibling low and exposed; Protective Sibling upright in the background, seeing more than they reveal.",
+          "camera": "Floor-level diagonal so pocketing reads as furtive and tactile.",
+          "light": "Soft bounce from kitchen window; tile holds dim reflections from water.",
+          "design": "Only necessary kitchen residue: drawer clutter, plates, towel, runoff.",
+          "color": "Muted browns with metallic battery glint.",
+          "sound": "Amplify the tiny battery click so it lands like a plot beat."
+        }
+      },
+      {
+        "id": "S3",
+        "title": "The Listener Falls Out",
+        "action": "Both siblings brace and drag the last dresser off the bedroom wall. A portable cassette player and an empty cassette case skitter from the dust behind it. Proof-Seeking Sibling's hand jumps to the pocketed batteries; Protective Sibling sees it.",
+        "visual": "Dust plume, dresser scrape, black player sliding, empty case flipped open near the floorboards.",
+        "sound": "Wood drag, wall thud, plastic clatter, breath spike, sudden stillness.",
+        "turn": "Playback becomes immediate tonight, not theoretical later.",
+        "purpose": "Convert suspicion into contained dread by completing the machine in pieces.",
+        "constraintHandling": "No dialogue, no flashback, no voice-over; only discovered objects carry history.",
+        "craft": {
+          "blocking": "Force both siblings into shared labor for the first time, shoulder-to-shoulder but not reconciled.",
+          "camera": "Handheld three-quarter view only for the heave, then hold still once the player lands.",
+          "light": "Back-room daylight with dust made visible; keep corners heavy.",
+          "design": "One movable dresser, dust strip, player, empty case.",
+          "color": "Warmer dust against dark plastic hardware.",
+          "sound": "Let the player clatter ring longer than natural, then drop the room almost mute."
+        }
+      },
+      {
+        "id": "S4",
+        "title": "Plain Hiding Place",
+        "action": "They reach the same archive box on the floor at once, wrench it open, and spill bills, socks, and one loose cassette. Protective Sibling gets to the tape first, then crosses to the bare table and places it in the center instead of pocketing it.",
+        "visual": "Top-down geometry of two bodies and one plain cardboard box; the cassette isolated in open space.",
+        "sound": "Tape rip, cardboard buckle, sock thud, a single plastic tap on wood.",
+        "turn": "A winning move becomes an offering.",
+        "purpose": "Let tenderness arrive as visible restraint rather than explanation.",
+        "constraintHandling": "Still interior, still unheard, still silent.",
+        "craft": {
+          "blocking": "Switch from tug-of-war to deliberate placement; the key move is crossing into shared space instead of retreating.",
+          "camera": "Overhead so the offer reads as absolute, not emotionalized by faces.",
+          "light": "Even table-top daylight; no glamor, only exposure.",
+          "design": "Archive box contents must feel ordinary enough to hide the tape in plain sight.",
+          "color": "Cardboard tan, paper off-white, oxide black tape.",
+          "sound": "Isolate the cassette touching wood as the scene's emotional event."
+        }
+      },
+      {
+        "id": "S5",
+        "title": "Battery Door",
+        "action": "Proof-Seeking Sibling sits at the bare table, opens the player battery compartment, lines the two batteries beside it, and reaches toward the cassette. Protective Sibling slides the tape within reach instead of stopping them. Proof-Seeking Sibling closes the empty battery door, speaks the film's only line, and leaves the tape outside the player.",
+        "visual": "Balanced profile two-shot; open player, batteries untouched, cassette beside it in plain reach, window light holding both faces equally.",
+        "sound": "Battery door click, chair scrape, first human voice, cut before any playback mechanism starts.",
+        "turn": "Because the tape is offered rather than withheld, Proof-Seeking Sibling becomes the one who refuses listening.",
+        "purpose": "End on shared mercy, not censorship.",
+        "constraintHandling": "First and only spoken line; tape remains unheard; no exterior coverage.",
+        "craft": {
+          "blocking": "Seat one sibling, keep the other standing until the offer, then still both bodies for the first time.",
+          "camera": "Balanced profile two-shot held through the choice; no insert relief.",
+          "light": "Late window side-light flattening neither face; both equally readable.",
+          "design": "Bare table, player, batteries, tape, one folded dish towel as residual domestic trace.",
+          "color": "Warm dusk skin tones against gray room and dark cassette.",
+          "sound": "Voice arrives in a room already taught by objects; cut before curiosity can be rewarded."
+        }
+      }
+    ],
+    "directorNotebook": [
+      {
+        "id": "D1",
+        "sceneId": "S1",
+        "shot": "Wide master",
+        "visual": "Front room to kitchen diagonal: window strain and fridge labor in one frame.",
+        "camera": "Locked off, waist-high, 35mm-ish field of view.",
+        "light": "Front and kitchen window spill only.",
+        "sound": "Window groan against bag crackle.",
+        "purpose": "Establish labor as camouflage.",
+        "creativeThread": "Air vs rot; both are really searching."
+      },
+      {
+        "id": "D2",
+        "sceneId": "S1",
+        "shot": "Detour detail",
+        "visual": "Proof-Seeking hand leaves trash bag, skims the dust rectangle, returns.",
+        "camera": "Short insert, no face.",
+        "light": "Hard sidelight catching dust smear.",
+        "sound": "Plastic bag stops; fingertip on dusty wood.",
+        "purpose": "Expose second agenda without dialogue.",
+        "creativeThread": "Memory leaves a clean rectangle before it leaves an answer."
+      },
+      {
+        "id": "D3",
+        "sceneId": "S2",
+        "shot": "Floor-level kitchen beat",
+        "visual": "Kneeling wipe, open junk drawer above, Protective watching from counter depth.",
+        "camera": "Low diagonal from tile.",
+        "light": "Soft kitchen window bounce.",
+        "sound": "Towel drag, drip, drawer rattle.",
+        "purpose": "Turn cleanup into a live search pattern.",
+        "creativeThread": "Proof enters through the smallest object."
+      },
+      {
+        "id": "D4",
+        "sceneId": "S2",
+        "shot": "Battery insert",
+        "visual": "Two AA batteries disappear into a damp palm, then a pocket.",
+        "camera": "Tight hand insert.",
+        "light": "Specular glint on metal ends.",
+        "sound": "Tiny battery click made sharp.",
+        "purpose": "Announce playback possibility.",
+        "creativeThread": "The room now contains intent, not just grief."
+      },
+      {
+        "id": "D5",
+        "sceneId": "S3",
+        "shot": "Dresser heave",
+        "visual": "Both siblings pull the dresser together; distance collapses under necessity.",
+        "camera": "Brief handheld push with the strain.",
+        "light": "Back window slices dust.",
+        "sound": "Wood scrape, breath strain.",
+        "purpose": "Force cooperation before the room betrays them.",
+        "creativeThread": "Shared labor precedes shared threat."
+      },
+      {
+        "id": "D6",
+        "sceneId": "S3",
+        "shot": "Floor reveal",
+        "visual": "Portable cassette player and empty case skid apart on dusty boards.",
+        "camera": "Drop to floor, hold still after the fall.",
+        "light": "Side raking light to carve edges in dust.",
+        "sound": "Plastic clatter decays into silence.",
+        "purpose": "Complete the playback machine in fragments.",
+        "creativeThread": "The absent father is now physically listenable."
+      },
+      {
+        "id": "D7",
+        "sceneId": "S4",
+        "shot": "Overhead offer",
+        "visual": "Archive box burst open; tape taken, then placed dead center on the table.",
+        "camera": "Top-down locked frame.",
+        "light": "Flat overhead daylight feel.",
+        "sound": "Cardboard pop, cassette tap.",
+        "purpose": "Make mercy legible as action, not expression.",
+        "creativeThread": "Open placement replaces secrecy."
+      },
+      {
+        "id": "D8",
+        "sceneId": "S5",
+        "shot": "Final held two-shot",
+        "visual": "Open battery door, batteries beside player, tape within reach, one sibling closes the player empty.",
+        "camera": "Balanced profile two-shot, no cutaways.",
+        "light": "Side window light equal on both faces.",
+        "sound": "Door click, first line, hard cut.",
+        "purpose": "Land the decision on refusal after permission.",
+        "creativeThread": "The offer matters because it can be accepted and still declined."
+      }
+    ],
+    "storyboard": {
+      "status": "RENDERED",
+      "renderer": "STROMAN_PENCIL_SVG_V1",
+      "title": "Apartment 4C Holds Its Breath — Battery Door",
+      "frames": [
+        {
+          "id": "F1",
+          "beatId": "S1",
+          "title": "Forced Air",
+          "cameraLabel": "WIDE DIAGONAL / KITCHEN THRESHOLD",
+          "annotation": "Trash bag pauses at the stereo nook.",
+          "glyphs": [
+            { "kind": "DOOR", "x": 8, "y": 56, "scale": 0.8, "label": "Front door" },
+            { "kind": "WINDOW", "x": 23, "y": 18, "scale": 1, "label": "Front window" },
+            { "kind": "FRIDGE", "x": 74, "y": 44, "scale": 1.1, "label": "Dead fridge" },
+            { "kind": "TABLE", "x": 37, "y": 55, "scale": 0.9, "label": "Bare stereo table" },
+            { "kind": "ADULT", "x": 25, "y": 30, "scale": 1, "label": "Protective Sibling" },
+            { "kind": "ADULT", "x": 61, "y": 58, "scale": 0.95, "label": "Proof-Seeking Sibling" },
+            {
+              "kind": "OBJECT",
+              "x": 68,
+              "y": 67,
+              "scale": 0.7,
+              "label": "Trash bag of spoiled food"
+            }
+          ],
+          "arrows": [
+            { "fromX": 26, "fromY": 31, "toX": 24, "toY": 20, "label": "forces window" },
+            { "fromX": 63, "fromY": 57, "toX": 40, "toY": 49, "label": "detour to table" }
+          ]
+        },
+        {
+          "id": "F2",
+          "beatId": "S2",
+          "title": "Batteries in Meltwater",
+          "cameraLabel": "LOW FLOOR DIAGONAL / KITCHEN TILE",
+          "annotation": "A cleanup pocket becomes a listening pocket.",
+          "glyphs": [
+            { "kind": "FRIDGE", "x": 82, "y": 30, "scale": 0.95, "label": "Open freezer" },
+            { "kind": "COUNTER", "x": 67, "y": 25, "scale": 1.1, "label": "Kitchen counter" },
+            { "kind": "ADULT", "x": 46, "y": 68, "scale": 1, "label": "Proof-Seeking Sibling" },
+            { "kind": "ADULT", "x": 78, "y": 44, "scale": 0.9, "label": "Protective Sibling" },
+            { "kind": "OBJECT", "x": 47, "y": 77, "scale": 0.55, "label": "Dish towel" },
+            { "kind": "OBJECT", "x": 63, "y": 55, "scale": 0.4, "label": "AA batteries" },
+            { "kind": "OBJECT", "x": 70, "y": 40, "scale": 0.5, "label": "Junk drawer" }
+          ],
+          "arrows": [
+            { "fromX": 63, "fromY": 55, "toX": 51, "toY": 61, "label": "palms" },
+            { "fromX": 51, "fromY": 61, "toX": 49, "toY": 64, "label": "pockets" }
+          ]
+        },
+        {
+          "id": "F3",
+          "beatId": "S3",
+          "title": "The Listener Falls Out",
+          "cameraLabel": "HANDHELD THREE-QUARTER / BEDROOM WALL",
+          "annotation": "The player falls out before the tape does.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 88, "y": 16, "scale": 0.85, "label": "Back window" },
+            { "kind": "OBJECT", "x": 56, "y": 42, "scale": 1.35, "label": "Last dresser" },
+            { "kind": "ADULT", "x": 39, "y": 50, "scale": 1.05, "label": "Protective Sibling" },
+            { "kind": "ADULT", "x": 70, "y": 50, "scale": 1, "label": "Proof-Seeking Sibling" },
+            {
+              "kind": "OBJECT",
+              "x": 53,
+              "y": 73,
+              "scale": 0.55,
+              "label": "Portable cassette player"
+            },
+            { "kind": "OBJECT", "x": 61, "y": 76, "scale": 0.45, "label": "Empty cassette case" },
+            { "kind": "OBJECT", "x": 56, "y": 31, "scale": 0.65, "label": "Dust strip on wall" }
+          ],
+          "arrows": [
+            { "fromX": 57, "fromY": 44, "toX": 49, "toY": 55, "label": "heave forward" },
+            { "fromX": 56, "fromY": 58, "toX": 54, "toY": 72, "label": "player skitters" },
+            { "fromX": 62, "fromY": 60, "toX": 61, "toY": 75, "label": "case flips" }
+          ]
+        },
+        {
+          "id": "F4",
+          "beatId": "S4",
+          "title": "Plain Hiding Place",
+          "cameraLabel": "TOP-DOWN / BARE TABLE",
+          "annotation": "Winning turns into offering.",
+          "glyphs": [
+            { "kind": "TABLE", "x": 50, "y": 50, "scale": 1.25, "label": "Bare table" },
+            { "kind": "OBJECT", "x": 50, "y": 50, "scale": 0.95, "label": "Archive box" },
+            { "kind": "ADULT", "x": 30, "y": 50, "scale": 0.85, "label": "Protective Sibling" },
+            { "kind": "ADULT", "x": 70, "y": 50, "scale": 0.85, "label": "Proof-Seeking Sibling" },
+            { "kind": "OBJECT", "x": 43, "y": 47, "scale": 0.45, "label": "Bills" },
+            { "kind": "OBJECT", "x": 58, "y": 54, "scale": 0.5, "label": "Socks" },
+            { "kind": "OBJECT", "x": 50, "y": 44, "scale": 0.45, "label": "Cassette tape" }
+          ],
+          "arrows": [
+            { "fromX": 32, "fromY": 49, "toX": 50, "toY": 44, "label": "gets there first" },
+            { "fromX": 50, "fromY": 44, "toX": 50, "toY": 50, "label": "sets in open" }
+          ]
+        },
+        {
+          "id": "F5",
+          "beatId": "S5",
+          "title": "Battery Door",
+          "cameraLabel": "PROFILE TWO-SHOT / WINDOW TABLE",
+          "annotation": "Tape offered; player closed empty.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 86, "y": 18, "scale": 0.95, "label": "Window light" },
+            { "kind": "TABLE", "x": 52, "y": 64, "scale": 1.15, "label": "Bare table" },
+            { "kind": "ADULT", "x": 35, "y": 56, "scale": 1, "label": "Proof-Seeking Sibling" },
+            { "kind": "ADULT", "x": 72, "y": 48, "scale": 1.05, "label": "Protective Sibling" },
+            {
+              "kind": "OBJECT",
+              "x": 48,
+              "y": 58,
+              "scale": 0.6,
+              "label": "Portable cassette player"
+            },
+            { "kind": "OBJECT", "x": 42, "y": 58, "scale": 0.38, "label": "AA batteries" },
+            { "kind": "OBJECT", "x": 58, "y": 56, "scale": 0.4, "label": "Cassette tape" }
+          ],
+          "arrows": [
+            { "fromX": 72, "fromY": 48, "toX": 58, "toY": 56, "label": "slides tape closer" },
+            { "fromX": 40, "fromY": 58, "toX": 48, "toY": 62, "label": "closes empty battery door" }
+          ]
+        }
+      ],
+      "blocking": {
+        "title": "Apartment 4C blocking map",
+        "zones": [
+          { "id": "Z1", "label": "Front door", "x": 2, "y": 38, "width": 10, "height": 20 },
+          { "id": "Z2", "label": "Front window", "x": 14, "y": 10, "width": 20, "height": 20 },
+          { "id": "Z3", "label": "Bare stereo table", "x": 18, "y": 44, "width": 18, "height": 14 },
+          { "id": "Z4", "label": "Bare table", "x": 22, "y": 62, "width": 18, "height": 14 },
+          {
+            "id": "Z5",
+            "label": "Kitchen counter and fridge",
+            "x": 50,
+            "y": 22,
+            "width": 24,
+            "height": 32
+          },
+          { "id": "Z6", "label": "Hall pinch", "x": 42, "y": 36, "width": 8, "height": 24 },
+          {
+            "id": "Z7",
+            "label": "Bedroom dresser wall",
+            "x": 76,
+            "y": 20,
+            "width": 18,
+            "height": 24
+          },
+          { "id": "Z8", "label": "Back window", "x": 82, "y": 58, "width": 14, "height": 18 }
+        ],
+        "positions": [
+          { "label": "Protective Sibling S1", "x": 25, "y": 30, "kind": "SUBJECT" },
+          { "label": "Proof-Seeking Sibling S1", "x": 61, "y": 58, "kind": "SUBJECT" },
+          { "label": "Camera S1", "x": 84, "y": 34, "kind": "CAMERA" },
+          { "label": "Front window key S1", "x": 18, "y": 8, "kind": "LIGHT" },
+          { "label": "Proof-Seeking Sibling S2", "x": 46, "y": 68, "kind": "SUBJECT" },
+          { "label": "Protective Sibling S2", "x": 78, "y": 44, "kind": "SUBJECT" },
+          { "label": "Camera S2", "x": 18, "y": 84, "kind": "CAMERA" },
+          { "label": "Kitchen bounce S2", "x": 63, "y": 12, "kind": "LIGHT" },
+          { "label": "Protective Sibling S3", "x": 39, "y": 50, "kind": "SUBJECT" },
+          { "label": "Proof-Seeking Sibling S3", "x": 70, "y": 50, "kind": "SUBJECT" }
+        ],
+        "paths": [
+          {
+            "label": "Proof-Seeking route",
+            "points": [
+              { "x": 10, "y": 56 },
+              { "x": 61, "y": 58 },
+              { "x": 46, "y": 68 },
+              { "x": 70, "y": 50 },
+              { "x": 35, "y": 56 }
+            ]
+          },
+          {
+            "label": "Protective route",
+            "points": [
+              { "x": 25, "y": 30 },
+              { "x": 78, "y": 44 },
+              { "x": 39, "y": 50 },
+              { "x": 30, "y": 50 },
+              { "x": 72, "y": 48 }
+            ]
+          },
+          {
+            "label": "Dresser pull",
+            "points": [
+              { "x": 56, "y": 42 },
+              { "x": 49, "y": 55 }
+            ]
+          },
+          {
+            "label": "Tape offer",
+            "points": [
+              { "x": 32, "y": 49 },
+              { "x": 50, "y": 44 },
+              { "x": 50, "y": 50 },
+              { "x": 58, "y": 56 }
+            ]
+          },
+          {
+            "label": "Final refusal",
+            "points": [
+              { "x": 42, "y": 58 },
+              { "x": 48, "y": 58 },
+              { "x": 48, "y": 62 }
+            ]
+          }
+        ]
+      },
+      "look": {
+        "title": "Held Heat / Dust Light",
+        "swatches": [
+          {
+            "name": "Window White",
+            "color": "#F4EAD6",
+            "use": "blown daylight edges and overexposed relief"
+          },
+          {
+            "name": "Fridge Gray",
+            "color": "#B7B9BC",
+            "use": "dead appliance, metal, tile coolness"
+          },
+          {
+            "name": "Dust Brown",
+            "color": "#8A705A",
+            "use": "walls, dresser, cardboard, floor dirt"
+          },
+          {
+            "name": "Sweat Beige",
+            "color": "#D8C7A1",
+            "use": "skin, linen, heat-softened room tone"
+          },
+          { "name": "Oxide Black", "color": "#2B2624", "use": "cassette, player, deep accents" }
+        ],
+        "texture": "Graphite grain, damp paper warp, sticky summer air, dust made visible in side light."
+      }
+    },
+    "questions": [
+      {
+        "prompt": "What kind of damage would hearing the tape do: shame, betrayal, or collapse of one sibling's self-story?",
+        "decisionItChanges": "Performance temperature and final-line weight."
+      },
+      {
+        "prompt": "Does the portable cassette player belong to the apartment residue or arrive hidden in a sibling's bag?",
+        "decisionItChanges": "Scene 3 prop reveal and search logic."
+      },
+      {
+        "prompt": "Which sibling speaks the final line?",
+        "decisionItChanges": "Point-of-view closure and last emotional reversal."
+      }
+    ],
+    "productionNextSteps": [
+      "Rehearse the five possession changes with no dialogue and record phone-video tests for clarity.",
+      "Source props that read instantly on camera: portable cassette player, matching empty case, working battery door, AA batteries, archive box, trash bag, dish towel.",
+      "Scout one railroad apartment with readable depth, two controllable windows, and a movable dresser wall.",
+      "Build a sound pre-list from practical actions only: window groan, fridge suction, bag crackle, towel drag, battery click, dresser scrape, cassette tap, battery door snap.",
+      "Block and mark the final table scene so the offer and refusal read in one held profile two-shot.",
+      "Decide the exact final line only after silent rehearsals prove what still needs saying."
+    ]
+  },
+  "blueprint": {
+    "development": {
+      "basis": "PROJECT_INTENT_ONLY",
+      "mode": "NARRATIVE",
+      "version": 2,
+      "reasoningSource": "HOSTED_REASONING",
+      "insight": {
+        "thesis": "The decisive act is not finding the tape but choosing who must live with it once listening becomes possible.",
+        "humanTruth": "In family cleanouts, useful labor can hide a private war over which story of a parent remains survivable.",
+        "dramaticTension": "One sibling wants proof, one wants containment, and blackout silence forces that conflict into visible custody of air, batteries, player, tape, and finally permission.",
+        "audiencePromise": "A silent estate-cleanout thriller that earns tenderness through one irreversible act of restraint."
+      },
+      "directionDecision": {
+        "title": "Recommendation — Battery Door",
+        "pointOfView": "Present-tense observational. The camera tracks custody, not psychology: who controls access, playback, and the next move.",
+        "storyEngine": "Separate the means of listening across the apartment: batteries in the kitchen, player behind the dresser, tape in the archive box. Each discovery exposes intent more plainly. When all three parts finally meet at the bare table, the last suspense is whether the sibling who came for proof still chooses playback once the other stops hiding.",
+        "formalStrategy": "Procedural wides first, possession inserts second. Cut only on transfers of control or blocked movement. Reserve the first balanced profile two-shot for the empty battery door closing.",
+        "audienceJourney": "Decode chores as camouflage; recognize the shared hunt; feel dread as playback assembles; receive tenderness when the offered truth is still refused.",
+        "whyThisProject": "It turns the brief's hardest limits into mechanics: blackout removes easy exposition, silence makes hands readable, and the absent father never gets the last word.",
+        "sacrifice": "No tape playback, no parental explanation, no neat factual reframe. The ending lives or dies on silent behavior.",
+        "assumptions": [
+          "The Protective Sibling already knows the tape's contents and fears what hearing it would do to the Proof-Seeking Sibling's usable memory of their father.",
+          "The Proof-Seeking Sibling wants the tape as confirmation, not nostalgia.",
+          "A portable cassette player can plausibly remain in the apartment residue.",
+          "The apartment is nearly cleared but still holds one dresser, one bare table, one dead fridge, and one archive box."
+        ],
+        "changeMyMindIf": "Abandon this direction if table-read and rehearsal viewers cannot identify the difference between concealment, permission, and refusal without added dialogue, or if the story requires the tape's contents to alter plot comprehension on screen.",
+        "projectDependencies": [
+          "Two performers fluent in silent intention shifts",
+          "A prop chain that reads instantly: AA batteries, portable cassette player, empty cassette case, tape, archive box, trash bag, dish towel",
+          "A location with readable railroad depth and two useful windows",
+          "Sound design built from scrape, drip, click, breath, and blackout hush",
+          "Edit discipline to cut on custody changes, not on coverage safety"
+        ],
+        "innovation": {
+          "convention": "Hidden recordings in grief stories are usually played as the climax.",
+          "whyConventionWorks": "It satisfies curiosity, externalizes backstory, and lets the dead parent speak directly into the living conflict.",
+          "departure": "Break the reveal into machine parts across the apartment, then stop one action short of the expected payoff: the tape never enters the player.",
+          "projectBenefit": "This keeps the climax with the siblings' present-tense choice. The father's voice stays powerless; the emotional event is that listening becomes possible and is still refused.",
+          "executionRisk": "If performance or staging is muddy, the ending can feel evasive instead of decisive."
+        }
+      },
+      "alternativeDecisions": [
+        {
+          "title": "Railroad Crossfire",
+          "pointOfView": "The railroad apartment's axis is the viewpoint; passage and blockage replace spoken argument.",
+          "storyEngine": "Each beat depends on who occupies the narrow line between rooms until one sibling finally gives the other a clear path to the tape.",
+          "formalStrategy": "Deep axial masters, sparse cutting, faces withheld until late.",
+          "audienceJourney": "Spatial tension first, emotional meaning second, mercy as literal room-making.",
+          "whyThisProject": "Strongest if the location's depth is exceptional.",
+          "sacrifice": "Less editorial rescue, less facial intimacy.",
+          "assumptions": [
+            "The location reads clearly in one frame.",
+            "Rehearsal time can support precise passing and obstruction."
+          ],
+          "changeMyMindIf": "Choose this instead if scouts reveal a truly expressive railroad corridor and the team can commit to long-take blocking.",
+          "projectDependencies": [
+            "Railroad apartment with full-depth sightline",
+            "Actors precise in long-take choreography",
+            "Lens plan that preserves depth"
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Keep / Trash / Unknown",
+          "pointOfView": "The ethics of sorting define character: each sibling reveals themself by what they label, mislabel, or leave unmarked.",
+          "storyEngine": "Repeated classification rituals build rhythm until the tape appears as the one item neither sibling can honestly sort.",
+          "formalStrategy": "Static floor geography, overheads, marker-and-tape sound rhythm.",
+          "audienceJourney": "Recognition of real cleanout behavior, then category failure, then tenderness through abandoning the system.",
+          "whyThisProject": "Most audience-specific for adult siblings who know grief paperwork and box logic.",
+          "sacrifice": "Less thriller propulsion, more ritual repetition.",
+          "assumptions": [
+            "Enough residue remains for a meaningful last-pass sort.",
+            "The siblings have opposing sorting instincts."
+          ],
+          "changeMyMindIf": "Choose this instead if the film should foreground recognizable estate-cleanout ritual over hunt suspense.",
+          "projectDependencies": [
+            "Curated prop list",
+            "Graphic label design",
+            "Editorial control of repetition"
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Heat Work",
+          "pointOfView": "Bodies under blackout: sweat, thirst, fatigue, and reluctant care.",
+          "storyEngine": "Heat and meltwater push the search toward physical collapse until care interrupts strategy.",
+          "formalStrategy": "Tactile close textures, breath-led sound, environmental pressure as plot.",
+          "audienceJourney": "Discomfort, urgency, reflexive caretaking, then mercy.",
+          "whyThisProject": "Best if blackout should act as physical force, not just mood.",
+          "sacrifice": "More sensory, less exacting puzzle geometry.",
+          "assumptions": [
+            "Heat can credibly threaten both bodies and tape.",
+            "Performers can sustain physically taxing silent work."
+          ],
+          "changeMyMindIf": "Choose this instead if sound, texture, and body performance are the production's strongest tools.",
+          "projectDependencies": [
+            "Practical heat-and-water sound design",
+            "Performance stamina",
+            "Controlled minimal set dressing"
+          ],
+          "innovation": null
+        }
+      ],
+      "sceneHypotheses": [
+        {
+          "id": "S1",
+          "title": "Forced Air",
+          "action": "Protective Sibling heaves the stuck front window upward while Proof-Seeking Sibling opens the dead fridge, bags spoiled food, then briefly detours a hand across the bare stereo table before returning to the trash bag.",
+          "visual": "Front room and kitchen in one strained diagonal; blown-out window light, open fridge, stripped walls, dust rectangle on the table.",
+          "sound": "Window groan, fridge suction, wet packaging, bag crackle, blackout hush.",
+          "turn": "Protective Sibling catches the stereo-table detour and realizes the cleanup is cover.",
+          "purpose": "Teach the audience that practical work and covert search are the same action now.",
+          "constraintHandling": "Interior only; no dialogue; blackout legible through dead fridge and still air; no exterior detail shown.",
+          "craft": {
+            "blocking": "Keep bodies far apart but on the same sightline: one fighting for air, one pretending to fight rot.",
+            "camera": "Locked wide diagonal from kitchen threshold so the detour reads without coverage explanation.",
+            "light": "Harsh window backlight and ambient spill only; no powered practicals.",
+            "design": "Minimal residue: bare stereo table, trash bag, dead fridge, stripped room.",
+            "color": "Heat-bleached neutrals with one cold fridge-white void.",
+            "sound": "No score; every noise is effort or concealment."
+          }
+        },
+        {
+          "id": "S2",
+          "title": "Batteries in Meltwater",
+          "action": "Proof-Seeking Sibling kneels in freezer runoff with a dish towel, reaches into the kitchen junk drawer, palms two AA batteries, keeps wiping, then pockets them. Protective Sibling stacks washed plates at the counter and sees the pocketing.",
+          "visual": "Low tile level; damp hand, open drawer, water line, pocket swallow.",
+          "sound": "Drip, towel drag, drawer rattle, battery click against battery.",
+          "turn": "The search narrows from grief-object hunting to listening prep.",
+          "purpose": "Make playback possible without yet producing the player or tape.",
+          "constraintHandling": "Silent, interior, no new rooms, blackout reinforced by dead appliances and hand work.",
+          "craft": {
+            "blocking": "Put Proof-Seeking Sibling low and exposed; Protective Sibling upright in the background, seeing more than they reveal.",
+            "camera": "Floor-level diagonal so pocketing reads as furtive and tactile.",
+            "light": "Soft bounce from kitchen window; tile holds dim reflections from water.",
+            "design": "Only necessary kitchen residue: drawer clutter, plates, towel, runoff.",
+            "color": "Muted browns with metallic battery glint.",
+            "sound": "Amplify the tiny battery click so it lands like a plot beat."
+          }
+        },
+        {
+          "id": "S3",
+          "title": "The Listener Falls Out",
+          "action": "Both siblings brace and drag the last dresser off the bedroom wall. A portable cassette player and an empty cassette case skitter from the dust behind it. Proof-Seeking Sibling's hand jumps to the pocketed batteries; Protective Sibling sees it.",
+          "visual": "Dust plume, dresser scrape, black player sliding, empty case flipped open near the floorboards.",
+          "sound": "Wood drag, wall thud, plastic clatter, breath spike, sudden stillness.",
+          "turn": "Playback becomes immediate tonight, not theoretical later.",
+          "purpose": "Convert suspicion into contained dread by completing the machine in pieces.",
+          "constraintHandling": "No dialogue, no flashback, no voice-over; only discovered objects carry history.",
+          "craft": {
+            "blocking": "Force both siblings into shared labor for the first time, shoulder-to-shoulder but not reconciled.",
+            "camera": "Handheld three-quarter view only for the heave, then hold still once the player lands.",
+            "light": "Back-room daylight with dust made visible; keep corners heavy.",
+            "design": "One movable dresser, dust strip, player, empty case.",
+            "color": "Warmer dust against dark plastic hardware.",
+            "sound": "Let the player clatter ring longer than natural, then drop the room almost mute."
+          }
+        },
+        {
+          "id": "S4",
+          "title": "Plain Hiding Place",
+          "action": "They reach the same archive box on the floor at once, wrench it open, and spill bills, socks, and one loose cassette. Protective Sibling gets to the tape first, then crosses to the bare table and places it in the center instead of pocketing it.",
+          "visual": "Top-down geometry of two bodies and one plain cardboard box; the cassette isolated in open space.",
+          "sound": "Tape rip, cardboard buckle, sock thud, a single plastic tap on wood.",
+          "turn": "A winning move becomes an offering.",
+          "purpose": "Let tenderness arrive as visible restraint rather than explanation.",
+          "constraintHandling": "Still interior, still unheard, still silent.",
+          "craft": {
+            "blocking": "Switch from tug-of-war to deliberate placement; the key move is crossing into shared space instead of retreating.",
+            "camera": "Overhead so the offer reads as absolute, not emotionalized by faces.",
+            "light": "Even table-top daylight; no glamor, only exposure.",
+            "design": "Archive box contents must feel ordinary enough to hide the tape in plain sight.",
+            "color": "Cardboard tan, paper off-white, oxide black tape.",
+            "sound": "Isolate the cassette touching wood as the scene's emotional event."
+          }
+        },
+        {
+          "id": "S5",
+          "title": "Battery Door",
+          "action": "Proof-Seeking Sibling sits at the bare table, opens the player battery compartment, lines the two batteries beside it, and reaches toward the cassette. Protective Sibling slides the tape within reach instead of stopping them. Proof-Seeking Sibling closes the empty battery door, speaks the film's only line, and leaves the tape outside the player.",
+          "visual": "Balanced profile two-shot; open player, batteries untouched, cassette beside it in plain reach, window light holding both faces equally.",
+          "sound": "Battery door click, chair scrape, first human voice, cut before any playback mechanism starts.",
+          "turn": "Because the tape is offered rather than withheld, Proof-Seeking Sibling becomes the one who refuses listening.",
+          "purpose": "End on shared mercy, not censorship.",
+          "constraintHandling": "First and only spoken line; tape remains unheard; no exterior coverage.",
+          "craft": {
+            "blocking": "Seat one sibling, keep the other standing until the offer, then still both bodies for the first time.",
+            "camera": "Balanced profile two-shot held through the choice; no insert relief.",
+            "light": "Late window side-light flattening neither face; both equally readable.",
+            "design": "Bare table, player, batteries, tape, one folded dish towel as residual domestic trace.",
+            "color": "Warm dusk skin tones against gray room and dark cassette.",
+            "sound": "Voice arrives in a room already taught by objects; cut before curiosity can be rewarded."
+          }
+        }
+      ],
+      "directorNotebook": [
+        {
+          "id": "D1",
+          "sceneId": "S1",
+          "shot": "Wide master",
+          "visual": "Front room to kitchen diagonal: window strain and fridge labor in one frame.",
+          "camera": "Locked off, waist-high, 35mm-ish field of view.",
+          "light": "Front and kitchen window spill only.",
+          "sound": "Window groan against bag crackle.",
+          "purpose": "Establish labor as camouflage.",
+          "creativeThread": "Air vs rot; both are really searching."
+        },
+        {
+          "id": "D2",
+          "sceneId": "S1",
+          "shot": "Detour detail",
+          "visual": "Proof-Seeking hand leaves trash bag, skims the dust rectangle, returns.",
+          "camera": "Short insert, no face.",
+          "light": "Hard sidelight catching dust smear.",
+          "sound": "Plastic bag stops; fingertip on dusty wood.",
+          "purpose": "Expose second agenda without dialogue.",
+          "creativeThread": "Memory leaves a clean rectangle before it leaves an answer."
+        },
+        {
+          "id": "D3",
+          "sceneId": "S2",
+          "shot": "Floor-level kitchen beat",
+          "visual": "Kneeling wipe, open junk drawer above, Protective watching from counter depth.",
+          "camera": "Low diagonal from tile.",
+          "light": "Soft kitchen window bounce.",
+          "sound": "Towel drag, drip, drawer rattle.",
+          "purpose": "Turn cleanup into a live search pattern.",
+          "creativeThread": "Proof enters through the smallest object."
+        },
+        {
+          "id": "D4",
+          "sceneId": "S2",
+          "shot": "Battery insert",
+          "visual": "Two AA batteries disappear into a damp palm, then a pocket.",
+          "camera": "Tight hand insert.",
+          "light": "Specular glint on metal ends.",
+          "sound": "Tiny battery click made sharp.",
+          "purpose": "Announce playback possibility.",
+          "creativeThread": "The room now contains intent, not just grief."
+        },
+        {
+          "id": "D5",
+          "sceneId": "S3",
+          "shot": "Dresser heave",
+          "visual": "Both siblings pull the dresser together; distance collapses under necessity.",
+          "camera": "Brief handheld push with the strain.",
+          "light": "Back window slices dust.",
+          "sound": "Wood scrape, breath strain.",
+          "purpose": "Force cooperation before the room betrays them.",
+          "creativeThread": "Shared labor precedes shared threat."
+        },
+        {
+          "id": "D6",
+          "sceneId": "S3",
+          "shot": "Floor reveal",
+          "visual": "Portable cassette player and empty case skid apart on dusty boards.",
+          "camera": "Drop to floor, hold still after the fall.",
+          "light": "Side raking light to carve edges in dust.",
+          "sound": "Plastic clatter decays into silence.",
+          "purpose": "Complete the playback machine in fragments.",
+          "creativeThread": "The absent father is now physically listenable."
+        },
+        {
+          "id": "D7",
+          "sceneId": "S4",
+          "shot": "Overhead offer",
+          "visual": "Archive box burst open; tape taken, then placed dead center on the table.",
+          "camera": "Top-down locked frame.",
+          "light": "Flat overhead daylight feel.",
+          "sound": "Cardboard pop, cassette tap.",
+          "purpose": "Make mercy legible as action, not expression.",
+          "creativeThread": "Open placement replaces secrecy."
+        },
+        {
+          "id": "D8",
+          "sceneId": "S5",
+          "shot": "Final held two-shot",
+          "visual": "Open battery door, batteries beside player, tape within reach, one sibling closes the player empty.",
+          "camera": "Balanced profile two-shot, no cutaways.",
+          "light": "Side window light equal on both faces.",
+          "sound": "Door click, first line, hard cut.",
+          "purpose": "Land the decision on refusal after permission.",
+          "creativeThread": "The offer matters because it can be accepted and still declined."
+        }
+      ],
+      "storyboardSource": {
+        "status": "RENDERED",
+        "renderer": "STROMAN_PENCIL_SVG_V1",
+        "title": "Apartment 4C Holds Its Breath — Battery Door",
+        "frames": [
+          {
+            "id": "F1",
+            "beatId": "S1",
+            "title": "Forced Air",
+            "cameraLabel": "WIDE DIAGONAL / KITCHEN THRESHOLD",
+            "annotation": "Trash bag pauses at the stereo nook.",
+            "glyphs": [
+              { "kind": "DOOR", "x": 8, "y": 56, "scale": 0.8, "label": "Front door" },
+              { "kind": "WINDOW", "x": 23, "y": 18, "scale": 1, "label": "Front window" },
+              { "kind": "FRIDGE", "x": 74, "y": 44, "scale": 1.1, "label": "Dead fridge" },
+              { "kind": "TABLE", "x": 37, "y": 55, "scale": 0.9, "label": "Bare stereo table" },
+              { "kind": "ADULT", "x": 25, "y": 30, "scale": 1, "label": "Protective Sibling" },
+              {
+                "kind": "ADULT",
+                "x": 61,
+                "y": 58,
+                "scale": 0.95,
+                "label": "Proof-Seeking Sibling"
+              },
+              {
+                "kind": "OBJECT",
+                "x": 68,
+                "y": 67,
+                "scale": 0.7,
+                "label": "Trash bag of spoiled food"
+              }
+            ],
+            "arrows": [
+              { "fromX": 26, "fromY": 31, "toX": 24, "toY": 20, "label": "forces window" },
+              { "fromX": 63, "fromY": 57, "toX": 40, "toY": 49, "label": "detour to table" }
+            ]
+          },
+          {
+            "id": "F2",
+            "beatId": "S2",
+            "title": "Batteries in Meltwater",
+            "cameraLabel": "LOW FLOOR DIAGONAL / KITCHEN TILE",
+            "annotation": "A cleanup pocket becomes a listening pocket.",
+            "glyphs": [
+              { "kind": "FRIDGE", "x": 82, "y": 30, "scale": 0.95, "label": "Open freezer" },
+              { "kind": "COUNTER", "x": 67, "y": 25, "scale": 1.1, "label": "Kitchen counter" },
+              { "kind": "ADULT", "x": 46, "y": 68, "scale": 1, "label": "Proof-Seeking Sibling" },
+              { "kind": "ADULT", "x": 78, "y": 44, "scale": 0.9, "label": "Protective Sibling" },
+              { "kind": "OBJECT", "x": 47, "y": 77, "scale": 0.55, "label": "Dish towel" },
+              { "kind": "OBJECT", "x": 63, "y": 55, "scale": 0.4, "label": "AA batteries" },
+              { "kind": "OBJECT", "x": 70, "y": 40, "scale": 0.5, "label": "Junk drawer" }
+            ],
+            "arrows": [
+              { "fromX": 63, "fromY": 55, "toX": 51, "toY": 61, "label": "palms" },
+              { "fromX": 51, "fromY": 61, "toX": 49, "toY": 64, "label": "pockets" }
+            ]
+          },
+          {
+            "id": "F3",
+            "beatId": "S3",
+            "title": "The Listener Falls Out",
+            "cameraLabel": "HANDHELD THREE-QUARTER / BEDROOM WALL",
+            "annotation": "The player falls out before the tape does.",
+            "glyphs": [
+              { "kind": "WINDOW", "x": 88, "y": 16, "scale": 0.85, "label": "Back window" },
+              { "kind": "OBJECT", "x": 56, "y": 42, "scale": 1.35, "label": "Last dresser" },
+              { "kind": "ADULT", "x": 39, "y": 50, "scale": 1.05, "label": "Protective Sibling" },
+              { "kind": "ADULT", "x": 70, "y": 50, "scale": 1, "label": "Proof-Seeking Sibling" },
+              {
+                "kind": "OBJECT",
+                "x": 53,
+                "y": 73,
+                "scale": 0.55,
+                "label": "Portable cassette player"
+              },
+              { "kind": "OBJECT", "x": 61, "y": 76, "scale": 0.45, "label": "Empty cassette case" },
+              { "kind": "OBJECT", "x": 56, "y": 31, "scale": 0.65, "label": "Dust strip on wall" }
+            ],
+            "arrows": [
+              { "fromX": 57, "fromY": 44, "toX": 49, "toY": 55, "label": "heave forward" },
+              { "fromX": 56, "fromY": 58, "toX": 54, "toY": 72, "label": "player skitters" },
+              { "fromX": 62, "fromY": 60, "toX": 61, "toY": 75, "label": "case flips" }
+            ]
+          },
+          {
+            "id": "F4",
+            "beatId": "S4",
+            "title": "Plain Hiding Place",
+            "cameraLabel": "TOP-DOWN / BARE TABLE",
+            "annotation": "Winning turns into offering.",
+            "glyphs": [
+              { "kind": "TABLE", "x": 50, "y": 50, "scale": 1.25, "label": "Bare table" },
+              { "kind": "OBJECT", "x": 50, "y": 50, "scale": 0.95, "label": "Archive box" },
+              { "kind": "ADULT", "x": 30, "y": 50, "scale": 0.85, "label": "Protective Sibling" },
+              {
+                "kind": "ADULT",
+                "x": 70,
+                "y": 50,
+                "scale": 0.85,
+                "label": "Proof-Seeking Sibling"
+              },
+              { "kind": "OBJECT", "x": 43, "y": 47, "scale": 0.45, "label": "Bills" },
+              { "kind": "OBJECT", "x": 58, "y": 54, "scale": 0.5, "label": "Socks" },
+              { "kind": "OBJECT", "x": 50, "y": 44, "scale": 0.45, "label": "Cassette tape" }
+            ],
+            "arrows": [
+              { "fromX": 32, "fromY": 49, "toX": 50, "toY": 44, "label": "gets there first" },
+              { "fromX": 50, "fromY": 44, "toX": 50, "toY": 50, "label": "sets in open" }
+            ]
+          },
+          {
+            "id": "F5",
+            "beatId": "S5",
+            "title": "Battery Door",
+            "cameraLabel": "PROFILE TWO-SHOT / WINDOW TABLE",
+            "annotation": "Tape offered; player closed empty.",
+            "glyphs": [
+              { "kind": "WINDOW", "x": 86, "y": 18, "scale": 0.95, "label": "Window light" },
+              { "kind": "TABLE", "x": 52, "y": 64, "scale": 1.15, "label": "Bare table" },
+              { "kind": "ADULT", "x": 35, "y": 56, "scale": 1, "label": "Proof-Seeking Sibling" },
+              { "kind": "ADULT", "x": 72, "y": 48, "scale": 1.05, "label": "Protective Sibling" },
+              {
+                "kind": "OBJECT",
+                "x": 48,
+                "y": 58,
+                "scale": 0.6,
+                "label": "Portable cassette player"
+              },
+              { "kind": "OBJECT", "x": 42, "y": 58, "scale": 0.38, "label": "AA batteries" },
+              { "kind": "OBJECT", "x": 58, "y": 56, "scale": 0.4, "label": "Cassette tape" }
+            ],
+            "arrows": [
+              { "fromX": 72, "fromY": 48, "toX": 58, "toY": 56, "label": "slides tape closer" },
+              {
+                "fromX": 40,
+                "fromY": 58,
+                "toX": 48,
+                "toY": 62,
+                "label": "closes empty battery door"
+              }
+            ]
+          }
+        ],
+        "blocking": {
+          "title": "Apartment 4C blocking map",
+          "zones": [
+            { "id": "Z1", "label": "Front door", "x": 2, "y": 38, "width": 10, "height": 20 },
+            { "id": "Z2", "label": "Front window", "x": 14, "y": 10, "width": 20, "height": 20 },
+            {
+              "id": "Z3",
+              "label": "Bare stereo table",
+              "x": 18,
+              "y": 44,
+              "width": 18,
+              "height": 14
+            },
+            { "id": "Z4", "label": "Bare table", "x": 22, "y": 62, "width": 18, "height": 14 },
+            {
+              "id": "Z5",
+              "label": "Kitchen counter and fridge",
+              "x": 50,
+              "y": 22,
+              "width": 24,
+              "height": 32
+            },
+            { "id": "Z6", "label": "Hall pinch", "x": 42, "y": 36, "width": 8, "height": 24 },
+            {
+              "id": "Z7",
+              "label": "Bedroom dresser wall",
+              "x": 76,
+              "y": 20,
+              "width": 18,
+              "height": 24
+            },
+            { "id": "Z8", "label": "Back window", "x": 82, "y": 58, "width": 14, "height": 18 }
+          ],
+          "positions": [
+            { "label": "Protective Sibling S1", "x": 25, "y": 30, "kind": "SUBJECT" },
+            { "label": "Proof-Seeking Sibling S1", "x": 61, "y": 58, "kind": "SUBJECT" },
+            { "label": "Camera S1", "x": 84, "y": 34, "kind": "CAMERA" },
+            { "label": "Front window key S1", "x": 18, "y": 8, "kind": "LIGHT" },
+            { "label": "Proof-Seeking Sibling S2", "x": 46, "y": 68, "kind": "SUBJECT" },
+            { "label": "Protective Sibling S2", "x": 78, "y": 44, "kind": "SUBJECT" },
+            { "label": "Camera S2", "x": 18, "y": 84, "kind": "CAMERA" },
+            { "label": "Kitchen bounce S2", "x": 63, "y": 12, "kind": "LIGHT" },
+            { "label": "Protective Sibling S3", "x": 39, "y": 50, "kind": "SUBJECT" },
+            { "label": "Proof-Seeking Sibling S3", "x": 70, "y": 50, "kind": "SUBJECT" }
+          ],
+          "paths": [
+            {
+              "label": "Proof-Seeking route",
+              "points": [
+                { "x": 10, "y": 56 },
+                { "x": 61, "y": 58 },
+                { "x": 46, "y": 68 },
+                { "x": 70, "y": 50 },
+                { "x": 35, "y": 56 }
+              ]
+            },
+            {
+              "label": "Protective route",
+              "points": [
+                { "x": 25, "y": 30 },
+                { "x": 78, "y": 44 },
+                { "x": 39, "y": 50 },
+                { "x": 30, "y": 50 },
+                { "x": 72, "y": 48 }
+              ]
+            },
+            {
+              "label": "Dresser pull",
+              "points": [
+                { "x": 56, "y": 42 },
+                { "x": 49, "y": 55 }
+              ]
+            },
+            {
+              "label": "Tape offer",
+              "points": [
+                { "x": 32, "y": 49 },
+                { "x": 50, "y": 44 },
+                { "x": 50, "y": 50 },
+                { "x": 58, "y": 56 }
+              ]
+            },
+            {
+              "label": "Final refusal",
+              "points": [
+                { "x": 42, "y": 58 },
+                { "x": 48, "y": 58 },
+                { "x": 48, "y": 62 }
+              ]
+            }
+          ]
+        },
+        "look": {
+          "title": "Held Heat / Dust Light",
+          "swatches": [
+            {
+              "name": "Window White",
+              "color": "#F4EAD6",
+              "use": "blown daylight edges and overexposed relief"
+            },
+            {
+              "name": "Fridge Gray",
+              "color": "#B7B9BC",
+              "use": "dead appliance, metal, tile coolness"
+            },
+            {
+              "name": "Dust Brown",
+              "color": "#8A705A",
+              "use": "walls, dresser, cardboard, floor dirt"
+            },
+            {
+              "name": "Sweat Beige",
+              "color": "#D8C7A1",
+              "use": "skin, linen, heat-softened room tone"
+            },
+            { "name": "Oxide Black", "color": "#2B2624", "use": "cassette, player, deep accents" }
+          ],
+          "texture": "Graphite grain, damp paper warp, sticky summer air, dust made visible in side light."
+        }
+      },
+      "visualPlan": {
+        "version": 1,
+        "renderer": "STROMAN_PREVIS_SVG_V2",
+        "stage": "IDEA",
+        "creativeSpine": {
+          "film": "The decisive act is not finding the tape but choosing who must live with it once listening becomes possible.",
+          "why": "It turns the brief's hardest limits into mechanics: blackout removes easy exposition, silence makes hands readable, and the absent father never gets the last word.",
+          "audienceEffect": "A silent estate-cleanout thriller that earns tenderness through one irreversible act of restraint.",
+          "keyBeats": [
+            "Forced Air",
+            "Batteries in Meltwater",
+            "The Listener Falls Out",
+            "Plain Hiding Place",
+            "Battery Door"
+          ],
+          "nextDecision": "What kind of damage would hearing the tape do: shame, betrayal, or collapse of one sibling's self-story?"
+        },
+        "priorities": [
+          {
+            "priority": "MUST_SOLVE_NOW",
+            "label": "Decision 1",
+            "decision": "What kind of damage would hearing the tape do: shame, betrayal, or collapse of one sibling's self-story?"
+          },
+          {
+            "priority": "IMPORTANT",
+            "label": "Decision 2",
+            "decision": "Does the portable cassette player belong to the apartment residue or arrive hidden in a sibling's bag?"
+          },
+          {
+            "priority": "WORTH_EXPLORING",
+            "label": "Decision 3",
+            "decision": "Which sibling speaks the final line?"
+          }
+        ],
+        "shots": [
+          {
+            "id": "shot_1",
+            "sceneId": "S1",
+            "title": "Forced Air",
+            "purpose": "Teach the audience that practical work and covert search are the same action now.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_1_h",
+              "aspectRatio": "16:9",
+              "shotScale": "WIDE DIAGONAL / KITCHEN THRESHOLD",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Locked wide diagonal from kitchen threshold so the detour reads without coverage explan…",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Locked wide diagonal from kitchen threshold so the detour reads without coverage explanation.",
+              "hold": "Hold through: Protective Sibling catches the stereo-table detour and realizes the cleanup is cover.",
+              "executionStrip": [
+                "WIDE DIAGONAL / KITCHEN THRESHOLD · 16:9",
+                "Trash bag pauses at the stereo nook. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 15.5,
+                  "y": 1,
+                  "width": 19,
+                  "height": 58,
+                  "plane": "BACKGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 51.975,
+                  "y": 30.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLING",
+                  "x": 67,
+                  "y": 31,
+                  "width": 17,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "FRONT DOOR",
+                  "x": 1,
+                  "y": 36,
+                  "width": 15.200000000000001,
+                  "height": 40,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "FRONT WINDOW",
+                  "x": 13.5,
+                  "y": 1,
+                  "width": 19,
+                  "height": 50,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "DEAD FRIDGE",
+                  "x": 63.55,
+                  "y": 16.499999999999996,
+                  "width": 20.900000000000002,
+                  "height": 55.00000000000001,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "BARE STEREO TABLE",
+                  "x": 21.7,
+                  "y": 47.8,
+                  "width": 30.6,
+                  "height": 14.4,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "SPOILED FOOD BAG",
+                  "x": 62.05,
+                  "y": 61.75,
+                  "width": 11.899999999999999,
+                  "height": 10.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "forces window", "fromX": 26, "fromY": 31, "toX": 24, "toY": 20 },
+                { "label": "detour to table", "fromX": 63, "fromY": 57, "toX": 40, "toY": 49 }
+              ],
+              "light": [
+                {
+                  "label": "Harsh window backlight and ambient…",
+                  "fromX": 23,
+                  "fromY": 26,
+                  "toX": 25,
+                  "toY": 30,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Interior only; no dialogue; blackout legible through dead fridge and still air; no exterior detail shown.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_1_v",
+              "aspectRatio": "9:16",
+              "shotScale": "WIDE DIAGONAL / KITCHEN THRESHOLD",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Locked wide diagonal from kitchen threshold so the detour reads without coverage explan…",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Locked wide diagonal from kitchen threshold so the detour reads without coverage explanation.",
+              "hold": "Hold through: Protective Sibling catches the stereo-table detour and realizes the cleanup is cover.",
+              "executionStrip": [
+                "WIDE DIAGONAL / KITCHEN THRESHOLD · 9:16",
+                "Trash bag pauses at the stereo nook. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 21.674999999999997,
+                  "y": 5.399999999999999,
+                  "width": 25.650000000000002,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 44.63625,
+                  "y": 31.490000000000002,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLING",
+                  "x": 57,
+                  "y": 38,
+                  "width": 30,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "FRONT DOOR",
+                  "x": 14.688,
+                  "y": 37.28,
+                  "width": 18.544,
+                  "height": 40,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "FRONT WINDOW",
+                  "x": 21.670000000000005,
+                  "y": 1,
+                  "width": 23.18,
+                  "height": 50,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "DEAD FRIDGE",
+                  "x": 52.13099999999999,
+                  "y": 19.219999999999995,
+                  "width": 25.498,
+                  "height": 55.00000000000001,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "BARE STEREO TABLE",
+                  "x": 23.273999999999997,
+                  "y": 49.199999999999996,
+                  "width": 37.332,
+                  "height": 14.4,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "SPOILED FOOD BAG",
+                  "x": 53.900999999999996,
+                  "y": 61.71000000000001,
+                  "width": 14.517999999999997,
+                  "height": 10.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "forces window",
+                  "fromX": 35.120000000000005,
+                  "fromY": 35.28,
+                  "toX": 33.879999999999995,
+                  "toY": 25.6
+                },
+                {
+                  "label": "detour to table",
+                  "fromX": 58.06,
+                  "fromY": 58.160000000000004,
+                  "toX": 43.8,
+                  "toY": 51.12
+                }
+              ],
+              "light": [
+                {
+                  "label": "Harsh window backlight and ambient…",
+                  "fromX": 33.260000000000005,
+                  "fromY": 26,
+                  "toX": 34.5,
+                  "toY": 34.4,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Interior only; no dialogue; blackout legible through dead fridge and still air; no exterior detail shown.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_2",
+            "sceneId": "S2",
+            "title": "Batteries in Meltwater",
+            "purpose": "Make playback possible without yet producing the player or tape.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_2_h",
+              "aspectRatio": "16:9",
+              "shotScale": "LOW FLOOR DIAGONAL / KITCHEN TILE",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Floor-level diagonal so pocketing reads as furtive and tactile.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Floor-level diagonal so pocketing reads as furtive and tactile.",
+              "hold": "Hold through: The search narrows from grief-object hunting to listening prep.",
+              "executionStrip": [
+                "LOW FLOOR DIAGONAL / KITCHEN TILE · 16:9",
+                "A cleanup pocket becomes a listening pocket. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 36.5,
+                  "y": 39,
+                  "width": 19,
+                  "height": 58,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 69.45,
+                  "y": 17.9,
+                  "width": 17.1,
+                  "height": 52.2,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLING",
+                  "x": 67,
+                  "y": 31,
+                  "width": 17,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "FRIDGE",
+                  "label": "OPEN FREEZER",
+                  "x": 72.975,
+                  "y": 6.25,
+                  "width": 18.05,
+                  "height": 47.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 48.3,
+                  "y": 16.2,
+                  "width": 37.400000000000006,
+                  "height": 17.6,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DISH TOWEL",
+                  "x": 42.325,
+                  "y": 72.875,
+                  "width": 9.350000000000001,
+                  "height": 8.25,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "AA BATTERIES",
+                  "x": 59,
+                  "y": 51.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "JUNK DRAWER",
+                  "x": 65.75,
+                  "y": 36.25,
+                  "width": 8.5,
+                  "height": 7.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "palms", "fromX": 63, "fromY": 55, "toX": 51, "toY": 61 },
+                { "label": "pockets", "fromX": 51, "fromY": 61, "toX": 49, "toY": 64 }
+              ],
+              "light": [
+                {
+                  "label": "Soft bounce from kitchen window; ti…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 46,
+                  "toY": 68,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Silent, interior, no new rooms, blackout reinforced by dead appliances and hand work.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_2_v",
+              "aspectRatio": "9:16",
+              "shotScale": "LOW FLOOR DIAGONAL / KITCHEN TILE",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Floor-level diagonal so pocketing reads as furtive and tactile.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Floor-level diagonal so pocketing reads as furtive and tactile.",
+              "hold": "Hold through: The search narrows from grief-object hunting to listening prep.",
+              "executionStrip": [
+                "LOW FLOOR DIAGONAL / KITCHEN TILE · 9:16",
+                "A cleanup pocket becomes a listening pocket. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 34.695,
+                  "y": 38.84,
+                  "width": 25.650000000000002,
+                  "height": 58,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 55.817499999999995,
+                  "y": 20.619999999999997,
+                  "width": 23.085000000000004,
+                  "height": 52.2,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLING",
+                  "x": 57,
+                  "y": 38,
+                  "width": 30,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "FRIDGE",
+                  "label": "OPEN FREEZER",
+                  "x": 58.8295,
+                  "y": 10.649999999999999,
+                  "width": 22.021,
+                  "height": 47.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "KITCHEN COUNTER",
+                  "x": 37.726,
+                  "y": 21.2,
+                  "width": 45.62800000000001,
+                  "height": 17.6,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DISH TOWEL",
+                  "x": 42.4365,
+                  "y": 71.635,
+                  "width": 11.407000000000002,
+                  "height": 8.25,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "AA BATTERIES",
+                  "x": 53.18,
+                  "y": 52.9,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "JUNK DRAWER",
+                  "x": 57.214999999999996,
+                  "y": 39.45,
+                  "width": 10.37,
+                  "height": 7.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "palms", "fromX": 58.06, "fromY": 56.4, "toX": 50.62, "toY": 61.68 },
+                { "label": "pockets", "fromX": 50.62, "fromY": 61.68, "toX": 49.38, "toY": 64.32 }
+              ],
+              "light": [
+                {
+                  "label": "Soft bounce from kitchen window; ti…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 47.52,
+                  "toY": 67.84,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Silent, interior, no new rooms, blackout reinforced by dead appliances and hand work.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_3",
+            "sceneId": "S3",
+            "title": "The Listener Falls Out",
+            "purpose": "Convert suspicion into contained dread by completing the machine in pieces.",
+            "priority": "SAFETY",
+            "horizontal": {
+              "id": "shot_3_h",
+              "aspectRatio": "16:9",
+              "shotScale": "HANDHELD THREE-QUARTER / BEDROOM WALL",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Handheld three-quarter view only for the heave, then hold still once the player lands.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Handheld three-quarter view only for the heave, then hold still once the player lands.",
+              "hold": "Hold through: Playback becomes immediate tonight, not theoretical later.",
+              "executionStrip": [
+                "HANDHELD THREE-QUARTER / BEDROOM WALL · 16:9",
+                "The player falls out before the tape does. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 29.025,
+                  "y": 19.549999999999997,
+                  "width": 19.95,
+                  "height": 60.900000000000006,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 60.5,
+                  "y": 21,
+                  "width": 19,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLING",
+                  "x": 67,
+                  "y": 31,
+                  "width": 17,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "BACK WINDOW",
+                  "x": 79.925,
+                  "y": 1,
+                  "width": 16.15,
+                  "height": 42.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "LAST DRESSER",
+                  "x": 44.525,
+                  "y": 31.875,
+                  "width": 22.950000000000003,
+                  "height": 20.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CASSETTE PLAYER",
+                  "x": 48.325,
+                  "y": 68.875,
+                  "width": 9.350000000000001,
+                  "height": 8.25,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "EMPTY CASSETTE CASE",
+                  "x": 57,
+                  "y": 72.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DUST STRIP ON WALL",
+                  "x": 50.475,
+                  "y": 26.125,
+                  "width": 11.05,
+                  "height": 9.75,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "heave forward", "fromX": 57, "fromY": 44, "toX": 49, "toY": 55 },
+                { "label": "player skitters", "fromX": 56, "fromY": 58, "toX": 54, "toY": 72 },
+                { "label": "case flips", "fromX": 62, "fromY": 60, "toX": 61, "toY": 75 }
+              ],
+              "light": [
+                {
+                  "label": "Back-room daylight with dust made v…",
+                  "fromX": 88,
+                  "fromY": 22.25,
+                  "toX": 39,
+                  "toY": 50,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "No dialogue, no flashback, no voice-over; only discovered objects carry history.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_3_v",
+              "aspectRatio": "9:16",
+              "shotScale": "HANDHELD THREE-QUARTER / BEDROOM WALL",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Handheld three-quarter view only for the heave, then hold still once the player lands.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Handheld three-quarter view only for the heave, then hold still once the player lands.",
+              "hold": "Hold through: Playback becomes immediate tonight, not theoretical later.",
+              "executionStrip": [
+                "HANDHELD THREE-QUARTER / BEDROOM WALL · 9:16",
+                "The player falls out before the tape does. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 29.713749999999997,
+                  "y": 21.549999999999997,
+                  "width": 26.9325,
+                  "height": 60.900000000000006,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 49.574999999999996,
+                  "y": 23,
+                  "width": 25.650000000000002,
+                  "height": 58,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLING",
+                  "x": 57,
+                  "y": 38,
+                  "width": 30,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "BACK WINDOW",
+                  "x": 63.7085,
+                  "y": 1,
+                  "width": 19.703,
+                  "height": 42.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "LAST DRESSER",
+                  "x": 39.7205,
+                  "y": 34.835,
+                  "width": 27.999000000000002,
+                  "height": 20.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CASSETTE PLAYER",
+                  "x": 46.1565,
+                  "y": 68.115,
+                  "width": 11.407000000000002,
+                  "height": 8.25,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "EMPTY CASSETTE CASE",
+                  "x": 51.94,
+                  "y": 71.38,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DUST STRIP ON WALL",
+                  "x": 46.9795,
+                  "y": 30.405,
+                  "width": 13.481,
+                  "height": 9.75,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "heave forward",
+                  "fromX": 54.34,
+                  "fromY": 46.72,
+                  "toX": 49.38,
+                  "toY": 56.4
+                },
+                {
+                  "label": "player skitters",
+                  "fromX": 53.72,
+                  "fromY": 59.04,
+                  "toX": 52.48,
+                  "toY": 71.36
+                },
+                { "label": "case flips", "fromX": 57.44, "fromY": 60.8, "toX": 56.82, "toY": 74 }
+              ],
+              "light": [
+                {
+                  "label": "Back-room daylight with dust made v…",
+                  "fromX": 73.56,
+                  "fromY": 22.25,
+                  "toX": 43.18,
+                  "toY": 52,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "No dialogue, no flashback, no voice-over; only discovered objects carry history.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_4",
+            "sceneId": "S4",
+            "title": "Plain Hiding Place",
+            "purpose": "Let tenderness arrive as visible restraint rather than explanation.",
+            "priority": "OPTIONAL_EXPLORATION",
+            "horizontal": {
+              "id": "shot_4_h",
+              "aspectRatio": "16:9",
+              "shotScale": "TOP-DOWN / BARE TABLE",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Overhead so the offer reads as absolute, not emotionalized by faces.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Overhead so the offer reads as absolute, not emotionalized by faces.",
+              "hold": "Hold through: A winning move becomes an offering.",
+              "executionStrip": [
+                "TOP-DOWN / BARE TABLE · 16:9",
+                "Winning turns into offering. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 21.925,
+                  "y": 25.35,
+                  "width": 16.15,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 61.925,
+                  "y": 25.35,
+                  "width": 16.15,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "BARE TABLE",
+                  "x": 28.75,
+                  "y": 40,
+                  "width": 42.5,
+                  "height": 20,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "ARCHIVE BOX",
+                  "x": 41.925,
+                  "y": 42.875,
+                  "width": 16.15,
+                  "height": 14.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BILLS",
+                  "x": 39,
+                  "y": 43.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "SOCKS",
+                  "x": 53.75,
+                  "y": 50.25,
+                  "width": 8.5,
+                  "height": 7.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CASSETTE TAPE",
+                  "x": 46,
+                  "y": 40.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "gets there first", "fromX": 32, "fromY": 49, "toX": 50, "toY": 44 },
+                { "label": "sets in open", "fromX": 50, "fromY": 44, "toX": 50, "toY": 50 }
+              ],
+              "light": [
+                {
+                  "label": "Even table-top daylight; no glamor,…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 30,
+                  "toY": 50,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Still interior, still unheard, still silent.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_4_v",
+              "aspectRatio": "9:16",
+              "shotScale": "TOP-DOWN / BARE TABLE",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Overhead so the offer reads as absolute, not emotionalized by faces.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Overhead so the offer reads as absolute, not emotionalized by faces.",
+              "hold": "Hold through: A winning move becomes an offering.",
+              "executionStrip": [
+                "TOP-DOWN / BARE TABLE · 9:16",
+                "Winning turns into offering. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "PROTECTIVE SIBLING",
+                  "x": 26.698750000000004,
+                  "y": 27.35,
+                  "width": 21.8025,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "PROOF-SEEKING SIBLI…",
+                  "x": 51.49875,
+                  "y": 27.35,
+                  "width": 21.8025,
+                  "height": 49.3,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "BARE TABLE",
+                  "x": 24.075,
+                  "y": 42,
+                  "width": 51.85,
+                  "height": 20,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "ARCHIVE BOX",
+                  "x": 40.1485,
+                  "y": 44.875,
+                  "width": 19.703,
+                  "height": 14.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BILLS",
+                  "x": 40.779999999999994,
+                  "y": 45.86,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "SOCKS",
+                  "x": 49.775,
+                  "y": 51.77,
+                  "width": 10.37,
+                  "height": 7.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CASSETTE TAPE",
+                  "x": 45.12,
+                  "y": 43.22,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "gets there first",
+                  "fromX": 38.84,
+                  "fromY": 51.12,
+                  "toX": 50,
+                  "toY": 46.72
+                },
+                { "label": "sets in open", "fromX": 50, "fromY": 46.72, "toX": 50, "toY": 52 }
+              ],
+              "light": [
+                {
+                  "label": "Even table-top daylight; no glamor,…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 37.6,
+                  "toY": 52,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Still interior, still unheard, still silent.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          }
+        ],
+        "blocking": {
+          "title": "Apartment 4C blocking map",
+          "question": "Where are the people and cameras, and how do they move?",
+          "zones": [
+            { "id": "Z1", "label": "Front door", "x": 2, "y": 38, "width": 10, "height": 20 },
+            { "id": "Z2", "label": "Front window", "x": 14, "y": 10, "width": 20, "height": 20 },
+            {
+              "id": "Z3",
+              "label": "Bare stereo table",
+              "x": 18,
+              "y": 44,
+              "width": 18,
+              "height": 14
+            },
+            { "id": "Z4", "label": "Bare table", "x": 22, "y": 62, "width": 18, "height": 14 },
+            {
+              "id": "Z5",
+              "label": "Kitchen counter and fridge",
+              "x": 50,
+              "y": 22,
+              "width": 24,
+              "height": 32
+            },
+            { "id": "Z6", "label": "Hall pinch", "x": 42, "y": 36, "width": 8, "height": 24 },
+            {
+              "id": "Z7",
+              "label": "Bedroom dresser wall",
+              "x": 76,
+              "y": 20,
+              "width": 18,
+              "height": 24
+            },
+            { "id": "Z8", "label": "Back window", "x": 82, "y": 58, "width": 14, "height": 18 }
+          ],
+          "subjects": [
+            {
+              "id": "hosted_subject_1",
+              "label": "PROTECTIVE SIBLING",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 25, "y": 30, "note": "Protective Sibling S1" },
+                { "label": "2", "x": 78, "y": 44, "note": "Protective Sibling S2" },
+                { "label": "END", "x": 39, "y": 50, "note": "Protective Sibling S3" }
+              ]
+            },
+            {
+              "id": "hosted_subject_2",
+              "label": "PROOF-SEEKING SIBLING",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 61, "y": 58, "note": "Proof-Seeking Sibling S1" },
+                { "label": "2", "x": 46, "y": 68, "note": "Proof-Seeking Sibling S2" },
+                { "label": "END", "x": 70, "y": 50, "note": "Proof-Seeking Sibling S3" }
+              ]
+            }
+          ],
+          "cameras": [
+            {
+              "id": "hosted_camera_1",
+              "label": "Camera S1",
+              "x": 84,
+              "y": 34,
+              "aimX": 25,
+              "aimY": 30,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_2",
+              "label": "Camera S2",
+              "x": 18,
+              "y": 84,
+              "aimX": 78,
+              "aimY": 44,
+              "use": "Reproduce the frame-specific storyboard axis."
+            }
+          ],
+          "restrictions": [
+            "Diagram labels come from the hosted scene plan; location geometry remains provisional until the scout confirms it."
+          ]
+        },
+        "lighting": {
+          "title": "Held Heat / Dust Light",
+          "question": "Where are the meaningful sources, modifiers, and practicals?",
+          "zones": [
+            { "id": "Z1", "label": "Front door", "x": 2, "y": 38, "width": 10, "height": 20 },
+            { "id": "Z2", "label": "Front window", "x": 14, "y": 10, "width": 20, "height": 20 },
+            {
+              "id": "Z3",
+              "label": "Bare stereo table",
+              "x": 18,
+              "y": 44,
+              "width": 18,
+              "height": 14
+            },
+            { "id": "Z4", "label": "Bare table", "x": 22, "y": 62, "width": 18, "height": 14 },
+            {
+              "id": "Z5",
+              "label": "Kitchen counter and fridge",
+              "x": 50,
+              "y": 22,
+              "width": 24,
+              "height": 32
+            },
+            { "id": "Z6", "label": "Hall pinch", "x": 42, "y": 36, "width": 8, "height": 24 },
+            {
+              "id": "Z7",
+              "label": "Bedroom dresser wall",
+              "x": 76,
+              "y": 20,
+              "width": 18,
+              "height": 24
+            },
+            { "id": "Z8", "label": "Back window", "x": 82, "y": 58, "width": 14, "height": 18 }
+          ],
+          "sources": [
+            {
+              "id": "hosted_light_1",
+              "label": "Front window key S1",
+              "kind": "PRACTICAL",
+              "x": 18,
+              "y": 8,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Harsh window backlight and ambient spill only; no powered practicals."
+            },
+            {
+              "id": "hosted_light_2",
+              "label": "Kitchen bounce S2",
+              "kind": "PRACTICAL",
+              "x": 63,
+              "y": 12,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Harsh window backlight and ambient spill only; no powered practicals."
+            }
+          ],
+          "instruction": "Scene-derived intent: Harsh window backlight and ambient spill only; no powered practicals. Soft bounce from kitchen window; tile holds dim reflections from water. Back-room daylight with dust made visible; keep corners heavy. Even table-top daylight; no glam…"
+        },
+        "look": {
+          "title": "Held Heat / Dust Light",
+          "question": "What palette, contrast, texture, and grade direction govern the sequence?",
+          "swatches": [
+            {
+              "name": "Window White",
+              "color": "#F4EAD6",
+              "use": "blown daylight edges and overexposed relief"
+            },
+            {
+              "name": "Fridge Gray",
+              "color": "#B7B9BC",
+              "use": "dead appliance, metal, tile coolness"
+            },
+            {
+              "name": "Dust Brown",
+              "color": "#8A705A",
+              "use": "walls, dresser, cardboard, floor dirt"
+            },
+            {
+              "name": "Sweat Beige",
+              "color": "#D8C7A1",
+              "use": "skin, linen, heat-softened room tone"
+            },
+            { "name": "Oxide Black", "color": "#2B2624", "use": "cassette, player, deep accents" }
+          ],
+          "contrast": "Heat-bleached neutrals with one cold fridge-white void.",
+          "texture": "Graphite grain, damp paper warp, sticky summer air, dust made visible in side light.",
+          "restraint": "Treat the look as a hypothesis; reject decorative grading that does not serve the scene turn."
+        },
+        "sound": [
+          {
+            "sceneId": "S1",
+            "label": "Forced Air",
+            "mustRecord": [
+              "Window groan, fridge suction, wet packaging, bag crackle, blackout hush."
+            ],
+            "perspective": "No score; every noise is effort or concealment.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S2",
+            "label": "Batteries in Meltwater",
+            "mustRecord": ["Drip, towel drag, drawer rattle, battery click against battery."],
+            "perspective": "Amplify the tiny battery click so it lands like a plot beat.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S3",
+            "label": "The Listener Falls Out",
+            "mustRecord": [
+              "Wood drag, wall thud, plastic clatter, breath spike, sudden stillness."
+            ],
+            "perspective": "Let the player clatter ring longer than natural, then drop the room almost mute.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S4",
+            "label": "Plain Hiding Place",
+            "mustRecord": ["Tape rip, cardboard buckle, sock thud, a single plastic tap on wood."],
+            "perspective": "Isolate the cassette touching wood as the scene's emotional event.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S5",
+            "label": "Battery Door",
+            "mustRecord": [
+              "Battery door click, chair scrape, first human voice, cut before any playback mechanism starts."
+            ],
+            "perspective": "Voice arrives in a room already taught by objects; cut before curiosity can be rewarded.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          }
+        ],
+        "coverage": [
+          {
+            "id": "shot_1",
+            "priority": "MUST_GET",
+            "label": "Forced Air",
+            "serves": [
+              "Teach the audience that practical work and covert search are the same action now."
+            ],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_2",
+            "priority": "MUST_GET",
+            "label": "Batteries in Meltwater",
+            "serves": ["Make playback possible without yet producing the player or tape."],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_3",
+            "priority": "SAFETY",
+            "label": "The Listener Falls Out",
+            "serves": [
+              "Convert suspicion into contained dread by completing the machine in pieces."
+            ],
+            "why": "Take only after the must-get story turns work."
+          },
+          {
+            "id": "shot_4",
+            "priority": "OPTIONAL_EXPLORATION",
+            "label": "Plain Hiding Place",
+            "serves": ["Let tenderness arrive as visible restraint rather than explanation."],
+            "why": "Take only after the must-get story turns work."
+          }
+        ],
+        "location": {
+          "mode": "INTENT_ONLY",
+          "photos": [],
+          "claims": [],
+          "confirmationQuestion": "Add a wide and reverse location photo before locking physical geometry."
+        },
+        "delta": {
+          "trigger": "Hosted creative direction developed",
+          "changed": [
+            "Provider storyboard intent became independently composed 16:9 and 9:16 frame hypotheses."
+          ],
+          "unchanged": ["All physical geometry remains unverified until the scout confirms it."]
+        },
+        "productionReality": {
+          "crew": "",
+          "cameraBody": "",
+          "lenses": "",
+          "support": "",
+          "lighting": "",
+          "sound": "",
+          "shootTime": "",
+          "access": "",
+          "talent": "",
+          "budget": "",
+          "timeOfDay": ""
+        }
+      },
+      "questions": [
+        {
+          "prompt": "What kind of damage would hearing the tape do: shame, betrayal, or collapse of one sibling's self-story?",
+          "decisionItChanges": "Performance temperature and final-line weight."
+        },
+        {
+          "prompt": "Does the portable cassette player belong to the apartment residue or arrive hidden in a sibling's bag?",
+          "decisionItChanges": "Scene 3 prop reveal and search logic."
+        },
+        {
+          "prompt": "Which sibling speaks the final line?",
+          "decisionItChanges": "Point-of-view closure and last emotional reversal."
+        }
+      ],
+      "productionNextSteps": [
+        "Rehearse the five possession changes with no dialogue and record phone-video tests for clarity.",
+        "Source props that read instantly on camera: portable cassette player, matching empty case, working battery door, AA batteries, archive box, trash bag, dish towel.",
+        "Scout one railroad apartment with readable depth, two controllable windows, and a movable dresser wall.",
+        "Build a sound pre-list from practical actions only: window groan, fridge suction, bag crackle, towel drag, battery click, dresser scrape, cassette tap, battery door snap.",
+        "Block and mark the final table scene so the offer and refusal read in one held profile two-shot.",
+        "Decide the exact final line only after silent rehearsals prove what still needs saying."
+      ]
+    },
+    "projectSummary": "“Apartment 4C Holds Its Breath” is for Independent short; current format: narrative short film. Creative goal: Turn two estranged siblings clearing their late father's apartment into a choice about which version of him they are willing to keep. Intended audience: adult siblings who recognize how grief hides inside practical tasks. Intended feeling: contained dread opening into earned tenderness.",
+    "storyObjective": "Objective: Turn two estranged siblings clearing their late father's apartment into a choice about which version of him they are willing to keep. Use each creative choice to help the audience leave feeling contained dread opening into earned tenderness.",
+    "audienceAnalysis": "Primary audience: adult siblings who recognize how grief hides inside practical tasks. Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.",
+    "emotionalArc": [
+      "Forced Air — Teach the audience that practical work and covert search are the same action now.",
+      "Batteries in Meltwater — Make playback possible without yet producing the player or tape.",
+      "The Listener Falls Out — Convert suspicion into contained dread by completing the machine in pieces.",
+      "Plain Hiding Place — Let tenderness arrive as visible restraint rather than explanation.",
+      "Battery Door — End on shared mercy, not censorship."
+    ],
+    "recommendedStructure": "Recommended story engine — Separate the means of listening across the apartment: batteries in the kitchen, player behind the dresser, tape in the archive box. Each discovery exposes intent more plainly. When all three parts finally meet at the bare table, the last suspense is whether the sibling who came for proof still chooses playback once the other stops hiding. Procedural wides first, possession inserts second. Cut only on transfers of control or blocked movement. Reserve the first balanced profile two-shot for the empty battery door closing.",
+    "hookConcepts": [
+      {
+        "title": "Railroad Crossfire",
+        "description": "The railroad apartment's axis is the viewpoint; passage and blockage replace spoken argument. Spatial tension first, emotional meaning second, mercy as literal room-making."
+      },
+      {
+        "title": "Keep / Trash / Unknown",
+        "description": "The ethics of sorting define character: each sibling reveals themself by what they label, mislabel, or leave unmarked. Recognition of real cleanout behavior, then category failure, then tenderness through abandoning the system."
+      },
+      {
+        "title": "Heat Work",
+        "description": "Bodies under blackout: sweat, thirst, fatigue, and reluctant care. Discomfort, urgency, reflexive caretaking, then mercy."
+      }
+    ],
+    "editingBlueprint": [
+      "Procedural wides first, possession inserts second. Cut only on transfers of control or blocked movement. Reserve the first balanced profile two-shot for the empty battery door closing.",
+      "Forced Air: Protective Sibling heaves the stuck front window upward while Proof-Seeking Sibling opens the dead fridge, bags spoiled food, then briefly detours a hand across the bare stereo table before returning to the trash bag. Protective Sibling catches the stereo-table detour and realizes the cleanup is cover.",
+      "Batteries in Meltwater: Proof-Seeking Sibling kneels in freezer runoff with a dish towel, reaches into the kitchen junk drawer, palms two AA batteries, keeps wiping, then pockets them. Protective Sibling stacks washed plates at the counter and sees the pocketing. The search narrows from grief-object hunting to listening prep.",
+      "The Listener Falls Out: Both siblings brace and drag the last dresser off the bedroom wall. A portable cassette player and an empty cassette case skitter from the dust behind it. Proof-Seeking Sibling's hand jumps to the pocketed batteries; Protective Sibling sees it. Playback becomes immediate tonight, not theoretical later.",
+      "Plain Hiding Place: They reach the same archive box on the floor at once, wrench it open, and spill bills, socks, and one loose cassette. Protective Sibling gets to the tape first, then crosses to the bare table and places it in the center instead of pocketing it. A winning move becomes an offering.",
+      "Battery Door: Proof-Seeking Sibling sits at the bare table, opens the player battery compartment, lines the two batteries beside it, and reaches toward the cassette. Protective Sibling slides the tape within reach instead of stopping them. Proof-Seeking Sibling closes the empty battery door, speaks the film's only line, and leaves the tape outside the player. Because the tape is offered rather than withheld, Proof-Seeking Sibling becomes the one who refuses listening.",
+      "For short-form delivery, compress context before removing the decisive action or its aftermath."
+    ],
+    "interviewStrategy": null,
+    "brollPriorities": [
+      "Forced Air: Front room and kitchen in one strained diagonal; blown-out window light, open fridge, stripped walls, dust rectangle on the table.",
+      "Batteries in Meltwater: Low tile level; damp hand, open drawer, water line, pocket swallow.",
+      "The Listener Falls Out: Dust plume, dresser scrape, black player sliding, empty case flipped open near the floorboards.",
+      "Plain Hiding Place: Top-down geometry of two bodies and one plain cardboard box; the cassette isolated in open space.",
+      "Battery Door: Balanced profile two-shot; open player, batteries untouched, cassette beside it in plain reach, window light holding both faces equally."
+    ],
+    "risks": [
+      "No tape playback, no parental explanation, no neat factual reframe. The ending lives or dies on silent behavior.",
+      "Abandon this direction if table-read and rehearsal viewers cannot identify the difference between concealment, permission, and refusal without added dialogue, or if the story requires the tape's contents to alter plot comprehension on screen.",
+      "Do not lock production around an unverified audience (adult siblings who recognize how grief hides inside practical tasks) or emotional destination (contained dread opening into earned tenderness).",
+      "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve."
+    ]
+  },
+  "translationPath": "generateBlueprint(providerOutput)"
+}

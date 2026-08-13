@@ -83,6 +83,66 @@ describe("OpenAiCreativeReasoningProvider", () => {
       message: "Hosted creative reasoning request failed with status 429.",
     });
   });
+
+  it("retries one transient transport failure without changing the request", async () => {
+    const understanding = {
+      projectSpecificReading: "The morning is organized by interrupted care.",
+      insight: {
+        thesis: "The first bite is the proof.",
+        humanTruth: "Care can erase the caregiver.",
+        dramaticTension: "Her hunger remains easy to postpone.",
+        audiencePromise: "Relief can remain credible.",
+      },
+      verifiedIntent: ["commercial", "parents", "conversion"],
+      assumptions: ["meal available", "prep is truthful"],
+      constraints: ["never show the baby's face"],
+    };
+    const request = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError("transient connection loss"))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ output_text: JSON.stringify(understanding) }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const provider = new OpenAiCreativeReasoningProvider({
+      apiKey: "test-secret",
+      fetch: request,
+    });
+
+    await expect(provider.understand(brief())).resolves.toEqual(understanding);
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(request.mock.calls[1]).toEqual(request.mock.calls[0]);
+  });
+
+  it("allows a high-effort hosted stage up to ten minutes by default", async () => {
+    vi.useFakeTimers();
+    try {
+      let signal: AbortSignal | undefined;
+      const provider = new OpenAiCreativeReasoningProvider({
+        apiKey: "test-secret",
+        fetch: async (_input, init) => {
+          signal = init?.signal ?? undefined;
+          return await new Promise<Response>((_resolve, reject) => {
+            signal?.addEventListener("abort", () => {
+              reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+            });
+          });
+        },
+      });
+      const request = provider.understand(brief());
+      const rejection = expect(request).rejects.toMatchObject({
+        message: "Hosted creative reasoning timed out.",
+      });
+      await vi.advanceTimersByTimeAsync(120_001);
+      expect(signal?.aborted).toBe(false);
+      await vi.advanceTimersByTimeAsync(479_999);
+      await rejection;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe("creative reasoning provider composition", () => {

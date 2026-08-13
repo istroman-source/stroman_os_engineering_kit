@@ -263,7 +263,7 @@ export function BlueprintView({
         <p className="text-muted-foreground px-2 pt-1 text-[0.65rem] font-semibold tracking-wide uppercase">
           What stage are you solving?
         </p>
-        <div className="mt-1 flex gap-1 overflow-x-auto">
+        <div className="mt-1 flex flex-wrap gap-1 sm:flex-nowrap sm:overflow-x-auto">
           {stages.map(([value, label]) => (
             <button
               key={value}

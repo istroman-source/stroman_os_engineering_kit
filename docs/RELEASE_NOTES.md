@@ -1,6 +1,20 @@
 # Release Notes
 
-## Frame-accurate visual-planning candidate — hosted proof still pending (2026-08-10)
+## Hosted creative reasoning and frame-accurate visual planning (2026-08-11)
+
+- The configured server-side OpenAI Responses provider completed a real request and then generated
+  the Jimmy's Famous Meals calibration through the actual application path. The accepted result
+  scored 94/100 and is stored with its exact provider output, application translation, visual
+  quality report, and provider identity; no credential value or hidden reasoning is retained.
+- Cross-mode hosted calibration now covers commercial, documentary, narrative, performance, and
+  open development. The modes use materially different dramatic units and editorial laws rather
+  than substituting project nouns into one template.
+- A raw same-model general-purpose Jimmy lane is checked in for adversarial comparison. It supplies
+  competent conventional coverage; Stroman instead makes the mother actively change the caregiving
+  geometry, withholds the first clean product read until she sits, and names the tradeoff and
+  falsification condition.
+- An adversarial hosted fixture passed without following embedded prompt-injection language or
+  inventing prohibited baby-face coverage.
 
 - The symbolic storyboard has been replaced by four frame-specific shot pairs with independently
   composed 16:9 and 9:16 previs. Each frame places the subject and physical environment and carries
@@ -26,16 +40,20 @@
   independent review, and an evaluation gate now compares both checked-in outputs with the current
   generators to prevent stale evidence. Location photos and their hashes are tracked with the
   evaluation evidence.
+- Captured hosted outputs can be rerendered through the current application translator without a
+  new provider call. The rerender gate rejects semantic, mode, or visual regressions and produces a
+  hosted scout-grounded Jimmy artifact from the same accepted creative direction.
+- Dense storyboards use compact person, set, and action marks with a visible frame map. Multi-state
+  blocking uses named route marks and a route strip, so project-specific information stays legible
+  on desktop and mobile without anonymous red-dot grammar.
 - Existing persisted symbolic blueprints fail closed into re-analysis instead of being silently
   presented through the new contract. The migration only adds nullable planning context and does
   not rewrite source, provenance, project, or user data.
 
-This candidate is **not READY FOR HUMAN TESTING**. Credential-independent implementation and QA
-must clear browser inspection, exact-head CI, and independent visual/product review first. The
-final hosted creative-intelligence proof remains intentionally unstarted until the owner supplies
-`STROMAN_CREATIVE_REASONING_PROVIDER=openai`, a server-side `OPENAI_API_KEY`, and
-`STROMAN_CREATIVE_MODEL`. CI, review independence, SHA verification, repository safeguards, and
-filmmaker authority remain mandatory.
+Actual hosted output and rendered desktop/mobile artifacts cleared the local semantic, visual, and
+browser calibration described in `docs/HOSTED_CREATIVE_CALIBRATION.md`. Exact-head CI, independent
+Claude review of product meaning and rendered evidence, SHA verification, and post-merge main CI
+remain mandatory before the release is declared **READY FOR HUMAN TESTING**.
 
 ## Corrective creative-development candidate — hosted proof pending (2026-08-10)
 

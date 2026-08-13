@@ -1,0 +1,2505 @@
+{
+  "calibration": "HOSTED_CREATIVE_REASONING",
+  "generatedAt": "2026-08-11T20:30:46.524Z",
+  "case": {
+    "id": "performance-one-breath",
+    "expectedMode": "PERFORMANCE",
+    "brief": {
+      "title": "One Breath Before the Downbeat",
+      "client": "Glasshouse Sessions",
+      "projectType": "live music performance film",
+      "creativeGoal": "Make the fragile negotiation between breath and tempo feel more consequential than virtuosity.",
+      "targetAudience": "listeners accustomed to polished studio-session videos",
+      "desiredEmotion": "physical suspense followed by release",
+      "context": "A cellist and a drummer perform one continuous seven-minute take in a disused greenhouse at dawn. Three cameras, no playback, no audience, no relighting during the take. Condensation, bow noise, foot cues, and the drummer's visible count-in are available story material."
+    }
+  },
+  "provider": { "id": "openai-responses:gpt-5.4", "mode": "HOSTED" },
+  "applicationPath": "developCreativeBlueprint",
+  "semanticGate": "PASSED_BY_APPLICATION",
+  "creativeQuality": {
+    "passed": true,
+    "total": 92,
+    "scores": [
+      {
+        "dimension": "TRANSFORMATION",
+        "score": 9,
+        "evidence": "The thesis must discover a human or dramatic value beyond restating the stated goal."
+      },
+      {
+        "dimension": "PROJECT_SPECIFICITY",
+        "score": 9,
+        "evidence": "26/29 distinctive title, client, or context terms survive in the reasoning."
+      },
+      {
+        "dimension": "ACTIONABILITY",
+        "score": 10,
+        "evidence": "6 scenes contain physical action and a distinct dramatic turn; 6 make that action depend on project-specific material."
+      },
+      {
+        "dimension": "DISTINCTIVENESS",
+        "score": 9,
+        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
+      },
+      {
+        "dimension": "JUDGMENT",
+        "score": 10,
+        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
+      },
+      {
+        "dimension": "INNOVATION",
+        "score": 9,
+        "evidence": "At least one departure must name the convention, its value, the violation, project fit, and execution risk."
+      },
+      {
+        "dimension": "HUMANNESS",
+        "score": 9,
+        "evidence": "The insight names a human truth and lived dramatic pressure rather than a demographic label."
+      },
+      {
+        "dimension": "CRAFT_COHERENCE",
+        "score": 8,
+        "evidence": "5/6 scenes derive complete physical craft choices."
+      },
+      {
+        "dimension": "HONESTY",
+        "score": 9,
+        "evidence": "Assumptions and constraint handling remain explicit; hypothetical scenes are not presented as captured evidence."
+      },
+      {
+        "dimension": "VISUAL_COMPLETION",
+        "score": 10,
+        "evidence": "6 drawn frames, a blocking map, and a look palette are renderable."
+      }
+    ],
+    "blockingFindings": [],
+    "substitutionSignal": {
+      "projectTermsFound": [
+        "breath",
+        "before",
+        "downbeat",
+        "cellist",
+        "drummer",
+        "perform",
+        "continuous",
+        "seven-minute",
+        "take",
+        "disused",
+        "greenhouse",
+        "dawn",
+        "three",
+        "cameras",
+        "playback",
+        "relighting",
+        "during",
+        "condensation",
+        "noise",
+        "foot",
+        "cues",
+        "drummer's",
+        "visible",
+        "count-in",
+        "story",
+        "material"
+      ],
+      "weak": false
+    }
+  },
+  "visualQuality": { "passed": true, "findings": [] },
+  "providerOutput": {
+    "version": 2,
+    "reasoningSource": "HOSTED_REASONING",
+    "insight": {
+      "thesis": "The film matters at the instant private breath is surrendered to shared tempo, not when technique looks most impressive.",
+      "humanTruth": "Trust is often least verbal and most real when one body commits to another body's timing before certainty arrives.",
+      "dramaticTension": "The take holds if viewers can feel tempo authority offered, accepted, tested, relayed, and finally no longer needing rescue.",
+      "audiencePromise": "A polished-session audience gets a rarer payoff: the physical suspense of watching time become mutual, then the relief of feeling it settle."
+    },
+    "directionDecision": {
+      "title": "The Hand-Off / Clarity Ladder",
+      "pointOfView": "A witness to the moment one musician's internal timing is made public and then slowly stops needing proof.",
+      "storyEngine": "Silence becomes an arena; the drummer's count is visibly offered; the cellist accepts it with first contact; early playing is full of tiny corrections; breath, bow change, and foot cue relay responsibility; cue traffic thins; the last exhale lands after the last sound.",
+      "formalStrategy": "One continuous take. Camera A: fixed rear-center shared wide. Camera B: fixed cellist-side medium capturing ribcage, bow contact, and drummer at frame edge. Camera C: fixed drummer-side medium-low capturing count-in, stick restraint, kick foot, and cellist profile. Editorial law: cut only on visible transfers or confirmations of tempo authority. Secondary law: withhold the cleanest flattering detail until the bodies need fewer corrective signals.",
+      "audienceJourney": "Expected virtuoso coverage; forced cue-reading; suspense in every answered signal; release when the wide can simply hold.",
+      "whyThisProject": "The brief already names the plot material: visible count-in, breath, bow noise, foot cues, condensation, dawn, one take. This direction turns those into story mechanics instead of texture.",
+      "sacrifice": "We surrender hero coverage of the flashiest playing and some premium-session glamour. Beautiful dexterity may remain in a wide if it is not where timing authority changes hands.",
+      "assumptions": [
+        "The performers' cue exchanges are visible enough to read without explanation.",
+        "The drummer's count-in and the cellist's acceptance can be legible from the fixed three-camera grid.",
+        "Incidental sounds can stay exposed without feeling like errors.",
+        "A polished-session audience will accept delayed visual reward if the suspense is readable."
+      ],
+      "changeMyMindIf": "Abandon this if a cold-viewer rehearsal cut with the fixed three-camera layout fails to let most viewers identify the count-in handoff and at least two later tempo-relay moments without prompting.",
+      "projectDependencies": [
+        "One continuous seven-minute live performance.",
+        "A cellist and a drummer facing each other across an exposed aisle.",
+        "Three simultaneous cameras with no playback.",
+        "Visible count-in, breath, bow noise, and foot cues.",
+        "A disused greenhouse at dawn with readable condensation.",
+        "No relighting during the take."
+      ],
+      "innovation": {
+        "convention": "Performance films usually cut to dexterity, melodic lead, or phrase peaks.",
+        "whyConventionWorks": "It gives instant variety, flatters skill, and keeps viewers oriented to musical prominence.",
+        "departure": "Cut only when tempo authority visibly transfers or is confirmed, and delay the cleanest close detail until cue traffic has materially thinned.",
+        "projectBenefit": "The edit stops illustrating the music and starts proving synchronization. Viewers track trust as action, not mood.",
+        "executionRisk": "If the cues are too subtle, the rigor can read as undercoverage and viewers may miss the intended suspense."
+      }
+    },
+    "alternativeDecisions": [
+      {
+        "title": "Glass Between Them",
+        "pointOfView": "Synchronization searched through a room that refuses full clarity.",
+        "storyEngine": "Begin through condensation and structure; make viewers search for the count and the answer; reserve the clearest shared view for true lock-in.",
+        "formalStrategy": "One recurring obstructed angle plus two legibility-protecting angles in continuous time.",
+        "audienceJourney": "Visual discomfort, searching attention, late clarity.",
+        "whyThisProject": "It literalizes fragility by letting the greenhouse register stress.",
+        "sacrifice": "Immediate readability and some viewer trust in image control.",
+        "assumptions": [
+          "Condensation is visibly present.",
+          "Obstruction can pressure without hiding the cues.",
+          "The audience tolerates delayed image clarity."
+        ],
+        "changeMyMindIf": "Drop it as the spine if the count-in, first bow contact, or relay cues become unreadable in test frames through real condensation.",
+        "projectDependencies": [
+          "Condensation on greenhouse glass.",
+          "Dawn light catching the glass.",
+          "A performance whose cues survive partial obstruction."
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Floor Contract",
+        "pointOfView": "Tempo is first believed at floor level, not face level.",
+        "storyEngine": "Open on anchored endpin and pedal foot; let weight shifts and foot cues reveal the hidden conversation; widen only once corrections shrink.",
+        "formalStrategy": "One low axis dedicated to feet and anchors; two restrained body-level angles preserve continuity.",
+        "audienceJourney": "Deprived of glamour, then rewarded with mechanical intimacy, then bodily release.",
+        "whyThisProject": "Foot cues are named story material and the pair's lower-body timing is unusually consequential.",
+        "sacrifice": "Faces, chest, and upper-body anticipation are demoted.",
+        "assumptions": [
+          "Foot behavior carries enough meaning.",
+          "The floor plane is visually clean enough to read.",
+          "Breath is not the dominant signal."
+        ],
+        "changeMyMindIf": "Reject it if rehearsal review shows that the clearest corrections live mainly in breath, shoulders, and bow initiation rather than feet.",
+        "projectDependencies": [
+          "Readable endpin, pedal, and stance behavior.",
+          "A camera position low enough to hold both anchors.",
+          "A performance where weight shift is narratively useful."
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Daylight Proof",
+        "pointOfView": "The room's opening to morning mirrors ensemble alignment.",
+        "storyEngine": "Start before the room feels ready; let natural brightness and musical settling arrive together; hold the brighter aftermath.",
+        "formalStrategy": "A dawn witness wide runs all seven minutes while supporting angles appear more frequently later than earlier.",
+        "audienceJourney": "Austere beginning, gradual visual easing, post-performance exhale.",
+        "whyThisProject": "It turns the no-relighting fact into proof instead of limitation.",
+        "sacrifice": "A large share of the arc depends on natural change that the performance does not control.",
+        "assumptions": [
+          "Seven minutes of dawn will visibly shift.",
+          "The greenhouse reveals rather than flattens that shift.",
+          "The ensemble's settling can plausibly rhyme with it."
+        ],
+        "changeMyMindIf": "Do not build around it if the actual dawn window shows little visible progression across seven minutes.",
+        "projectDependencies": [
+          "Dawn capture.",
+          "The greenhouse's transparency.",
+          "A take whose musical arc can tolerate visual austerity early."
+        ],
+        "innovation": null
+      }
+    ],
+    "sceneHypotheses": [
+      {
+        "id": "S1",
+        "title": "Still Air",
+        "action": "Both musicians settle into position; the cellist lifts the bow and inhales while the drummer raises sticks without striking.",
+        "visual": "Shared wide; condensed glass, empty aisle, weak dawn, two bodies not yet aligned.",
+        "sound": "Room tone, clothing shift, breath, faint bow-hair touch.",
+        "turn": "Silence stops feeling private and starts feeling binding.",
+        "purpose": "Load suspense into the body before any note can claim attention.",
+        "constraintHandling": "Hold on Camera A's fixed wide; no relighting; no audience; no playback; let natural dawn and condensation carry exposure.",
+        "craft": {
+          "blocking": "Cellist seated left angled inward; drummer right behind kit angled inward; wide empty aisle between them keeps the distance dramatic.",
+          "camera": "Camera A locked rear-center at chest height.",
+          "light": "Unmodified dawn through greenhouse glass and roof panels.",
+          "design": "Keep wet floor, metal ribs, and unused benches visible; no decorative cleanup that removes abandonment.",
+          "color": "Cold silver-green field with isolated warm wood.",
+          "sound": "Leave breath and room tone unmasked."
+        }
+      },
+      {
+        "id": "S2",
+        "title": "Count Accepted",
+        "action": "The drummer gives a visible count-in; on the last count the cellist lowers the bow to the string and commits the first stroke.",
+        "visual": "Drummer's sticks mark time in the air; the bow waits, then drops with intent.",
+        "sound": "Visible count, inhale, first bow scrape.",
+        "turn": "The drummer's external time becomes shared time because the cellist answers it.",
+        "purpose": "Make the ignition point unmistakable.",
+        "constraintHandling": "Lead with Camera C for the count and cut to Camera B only when the last count is physically answered; continuous live sound only.",
+        "craft": {
+          "blocking": "Drummer dominates foreground right; cellist stays readable in the rear-left diagonal so offer and acceptance belong to one space.",
+          "camera": "Camera C holds the offer; Camera B takes the acceptance on contact.",
+          "light": "Dawn edge light catches sticks and bow hair without adjustment.",
+          "design": "Keep the greenhouse aisle behind them open so the count feels exposed.",
+          "color": "Cold glass around a sharp warm line of bow wood.",
+          "sound": "Do not bury the scrape; it is the acceptance cue."
+        }
+      },
+      {
+        "id": "S3",
+        "title": "Pulse on Trial",
+        "action": "The drummer enters sparingly; the cellist sustains through audible bow noise while both make small foot and torso adjustments.",
+        "visual": "Kick pedal, endpin, hardware, shoulders, and bow all look slightly taut.",
+        "sound": "Bow noise, pedal thump, restrained stick articulation.",
+        "turn": "A pulse exists, but both bodies are still testing whether it will hold.",
+        "purpose": "Extend suspense past the downbeat and refuse instant relief.",
+        "constraintHandling": "Use Camera C's medium-low diagonal to keep pedal and endpin readable inside the fixed setup; continuous one-take coverage preserved.",
+        "craft": {
+          "blocking": "Low diagonal ties the drummer's pedal side to the cellist's planted endpin as twin anchors.",
+          "camera": "Camera C medium-low, held rather than chasing hands.",
+          "light": "Wet floor and metal hardware catch enough dawn sheen to reveal micro-motions.",
+          "design": "Keep puddle sheen and hardware in frame; avoid prettifying the floor.",
+          "color": "Charcoal and silver with small amber interruptions.",
+          "sound": "Pedal thump and scrape share equal narrative weight."
+        }
+      },
+      {
+        "id": "S4",
+        "title": "Relay",
+        "action": "At a phrase edge, the cellist takes a visible breath and changes bow; the drummer checks the stick in the air and answers with a clear foot cue before rejoining the pulse.",
+        "visual": "Foreground torso lift answered by background stick restraint and pedal action.",
+        "sound": "Inhale, bow-change tick, foot cue, resumed pulse.",
+        "turn": "Tempo authority passes from cellist to drummer and back without speech.",
+        "purpose": "Let viewers see trust as exchanged responsibility rather than sentiment.",
+        "constraintHandling": "Keep both players in the frame during the relay; cut only on the answered cue; no inserted explanation.",
+        "craft": {
+          "blocking": "Cellist foreground left; drummer background right on the same axis so cue and answer are visually chained.",
+          "camera": "Camera B leads the breath and bow change; Camera C can confirm the foot answer if needed.",
+          "light": "Side light makes chest lift and stick pause readable.",
+          "design": "Greenhouse uprights frame the gap between cue and reply.",
+          "color": "Warm bow wood crossing cool green structure.",
+          "sound": "Allow inhale and bow change to lead the beat."
+        }
+      },
+      {
+        "id": "S5",
+        "title": "Corrections Thin",
+        "action": "Both keep playing, but cues shrink: fewer glances, smaller feet, longer strokes, steadier stick path.",
+        "visual": "The shared frame holds more calmly; greenhouse lines stop feeling like barriers.",
+        "sound": "Stable pulse foregrounded; incidental noises recede underneath it.",
+        "turn": "What looked fragile begins to feel inevitable.",
+        "purpose": "Convert vigilance into physical release.",
+        "constraintHandling": "Return to Camera A for the longest uninterrupted hold; do not cut for prettiness; let natural dawn lift do any softening.",
+        "craft": {
+          "blocking": "The same distance between players now reads chosen rather than precarious.",
+          "camera": "Camera A long hold; Camera B only if a new transfer clearly appears.",
+          "light": "Natural dawn slightly opens the room without any relight.",
+          "design": "Condensation and benches remain present but less dominant.",
+          "color": "Lighter silver-green field with wood tones finally feeling at home.",
+          "sound": "Keep the live imperfections present but no longer alarming."
+        }
+      },
+      {
+        "id": "S6",
+        "title": "After the Last Stroke",
+        "action": "The final stroke and final hit decay; neither musician moves immediately, then both exhale and loosen out of performance posture.",
+        "visual": "Bow hangs for a beat, sticks lower, condensation catches brighter dawn behind them.",
+        "sound": "Resonance, breath release, greenhouse decay.",
+        "turn": "Release lands after the music, not on it.",
+        "purpose": "Give the audience one shared exhale instead of a hard stop.",
+        "constraintHandling": "Stay in a two-player frame; no cutaway, no playback insert, no audience reaction, no relight change.",
+        "craft": {
+          "blocking": "Nobody leaves the frame; the release happens in shoulders, hands, and breath.",
+          "camera": "Camera B medium-wide two-shot from the cellist side to keep both postures readable.",
+          "light": "Brighter rim on bow hair and glass, still entirely natural.",
+          "design": "Hold the empty greenhouse around them; no graphic interruption.",
+          "color": "Cool room, warm instrument afterglow.",
+          "sound": "Let decay and breath finish the scene."
+        }
+      }
+    ],
+    "directorNotebook": [
+      {
+        "id": "D1",
+        "sceneId": "S1",
+        "shot": "A1 - Arena Wide",
+        "visual": "Both separated by the aisle; bow not yet on string; sticks suspended.",
+        "camera": "Camera A locked rear-center.",
+        "light": "Raw dawn through glass and roof.",
+        "sound": "Breath and room tone forward.",
+        "purpose": "Turn silence into public risk.",
+        "creativeThread": "No virtuoso reward before commitment."
+      },
+      {
+        "id": "D2",
+        "sceneId": "S2",
+        "shot": "C1 - Count Offer",
+        "visual": "Drummer foreground; cellist waiting in the rear diagonal.",
+        "camera": "Camera C fixed drummer-side 3/4.",
+        "light": "Stick edges catch dawn.",
+        "sound": "Count left dry and naked.",
+        "purpose": "Make tempo authority visible.",
+        "creativeThread": "Time is offered, not assumed."
+      },
+      {
+        "id": "D3",
+        "sceneId": "S2",
+        "shot": "B1 - Bow Answer",
+        "visual": "Cellist lowers the bow on the last count.",
+        "camera": "Cut to Camera B only on contact.",
+        "light": "Bow hair bright against cold glass.",
+        "sound": "First scrape stays unsoftened.",
+        "purpose": "Show acceptance, not setup.",
+        "creativeThread": "Private breath becomes shared time."
+      },
+      {
+        "id": "D4",
+        "sceneId": "S3",
+        "shot": "C2 - Floor Trial",
+        "visual": "Kick pedal and endpin read as twin anchors under strain.",
+        "camera": "Camera C medium-low diagonal.",
+        "light": "Floor reflections reveal micro-motion.",
+        "sound": "Pedal thump and scrape equalized.",
+        "purpose": "Extend suspense into the first groove.",
+        "creativeThread": "Tempo must survive friction."
+      },
+      {
+        "id": "D5",
+        "sceneId": "S3",
+        "shot": "B2 - Bow Friction",
+        "visual": "Shoulders high; stroke still looks effortful.",
+        "camera": "Camera B medium profile.",
+        "light": "Side light on ribcage and bow.",
+        "sound": "Bow noise stays exposed.",
+        "purpose": "Keep effort legible.",
+        "creativeThread": "Control is earned, not given."
+      },
+      {
+        "id": "D6",
+        "sceneId": "S4",
+        "shot": "A2 - Shared Proof",
+        "visual": "Both remain in frame as breath triggers answer.",
+        "camera": "Camera A returns to verify the relay.",
+        "light": "Even dawn across the gap.",
+        "sound": "Inhale precedes response.",
+        "purpose": "Prove the exchange is mutual.",
+        "creativeThread": "Trust needs both bodies visible."
+      },
+      {
+        "id": "D7",
+        "sceneId": "S4",
+        "shot": "C3 - Foot Answer",
+        "visual": "Stick checks above; foot answers below.",
+        "camera": "Camera C confirms the reply.",
+        "light": "Hardware glints keep the foot readable.",
+        "sound": "Foot cue punctuates the handoff.",
+        "purpose": "Make the reply concrete.",
+        "creativeThread": "Authority returns through action, not dominance."
+      },
+      {
+        "id": "D8",
+        "sceneId": "S5",
+        "shot": "A3 - Long Hold",
+        "visual": "Symmetry steadies; fewer corrections interrupt the frame.",
+        "camera": "Camera A held beyond normal session rhythm.",
+        "light": "Room opens naturally.",
+        "sound": "Incidental noise recedes under a stable center.",
+        "purpose": "Let release arrive through duration.",
+        "creativeThread": "The wide no longer feels unsafe."
+      }
+    ],
+    "storyboard": {
+      "status": "RENDERED",
+      "renderer": "STROMAN_PENCIL_SVG_V1",
+      "title": "One Breath Before the Downbeat - The Hand-Off / Clarity Ladder",
+      "frames": [
+        {
+          "id": "F1",
+          "beatId": "S1",
+          "title": "Still Air",
+          "cameraLabel": "Camera A / shared wide",
+          "annotation": "Both settle; inhale and raised sticks turn waiting into risk.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 18, "y": 18, "scale": 1.1, "label": "greenhouse glass wall" },
+            { "kind": "WINDOW", "x": 82, "y": 18, "scale": 1.1, "label": "greenhouse glass wall" },
+            { "kind": "DOOR", "x": 50, "y": 47, "scale": 0.9, "label": "greenhouse door" },
+            { "kind": "TABLE", "x": 13, "y": 67, "scale": 0.8, "label": "potting bench" },
+            { "kind": "ADULT", "x": 33, "y": 65, "scale": 0.95, "label": "cellist" },
+            { "kind": "OBJECT", "x": 38, "y": 67, "scale": 1.05, "label": "cello" },
+            { "kind": "OBJECT", "x": 43, "y": 58, "scale": 0.55, "label": "bow" }
+          ],
+          "arrows": [
+            { "fromX": 42, "fromY": 60, "toX": 42, "toY": 54, "label": "inhale + bow lift" },
+            { "fromX": 69, "fromY": 51, "toX": 69, "toY": 44, "label": "sticks rise" }
+          ]
+        },
+        {
+          "id": "F2",
+          "beatId": "S2",
+          "title": "Count Accepted",
+          "cameraLabel": "Camera C / drummer 3/4",
+          "annotation": "Visible count becomes shared time when the waiting bow drops to string.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 16, "y": 18, "scale": 0.95, "label": "greenhouse glass wall" },
+            { "kind": "DOOR", "x": 44, "y": 47, "scale": 0.7, "label": "greenhouse door" },
+            { "kind": "OBJECT", "x": 11, "y": 25, "scale": 0.45, "label": "condensation streak" },
+            { "kind": "ADULT", "x": 71, "y": 56, "scale": 1.2, "label": "drummer" },
+            { "kind": "OBJECT", "x": 79, "y": 60, "scale": 1.35, "label": "drum kit" },
+            { "kind": "ADULT", "x": 27, "y": 63, "scale": 0.75, "label": "cellist" },
+            { "kind": "OBJECT", "x": 32, "y": 67, "scale": 0.9, "label": "cello" }
+          ],
+          "arrows": [
+            { "fromX": 68, "fromY": 44, "toX": 68, "toY": 33, "label": "visible count-in" },
+            { "fromX": 34, "fromY": 61, "toX": 35, "toY": 68, "label": "bow to string" }
+          ]
+        },
+        {
+          "id": "F3",
+          "beatId": "S3",
+          "title": "Pulse on Trial",
+          "cameraLabel": "Camera C / low foot axis",
+          "annotation": "Pedal press and bow scrape keep testing whether the new pulse can hold.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 50, "y": 18, "scale": 1.1, "label": "greenhouse glass wall" },
+            { "kind": "TABLE", "x": 12, "y": 52, "scale": 0.65, "label": "potting bench" },
+            { "kind": "ADULT", "x": 23, "y": 49, "scale": 0.95, "label": "cellist" },
+            { "kind": "OBJECT", "x": 33, "y": 61, "scale": 1.25, "label": "cello" },
+            { "kind": "OBJECT", "x": 37, "y": 82, "scale": 0.6, "label": "cello endpin" },
+            { "kind": "ADULT", "x": 80, "y": 43, "scale": 0.95, "label": "drummer" },
+            { "kind": "OBJECT", "x": 82, "y": 55, "scale": 1.2, "label": "drum kit" }
+          ],
+          "arrows": [
+            { "fromX": 72, "fromY": 83, "toX": 72, "toY": 74, "label": "pedal press" },
+            { "fromX": 37, "fromY": 78, "toX": 40, "toY": 60, "label": "long scrape" }
+          ]
+        },
+        {
+          "id": "F4",
+          "beatId": "S4",
+          "title": "Relay",
+          "cameraLabel": "Camera B / cellist-side medium",
+          "annotation": "Breath and bow change are answered by checked stick and foot cue; responsibility passes and returns.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 86, "y": 18, "scale": 1, "label": "greenhouse glass wall" },
+            { "kind": "DOOR", "x": 55, "y": 43, "scale": 0.6, "label": "greenhouse door" },
+            { "kind": "ADULT", "x": 33, "y": 58, "scale": 1.15, "label": "cellist" },
+            { "kind": "OBJECT", "x": 41, "y": 63, "scale": 1.25, "label": "cello" },
+            { "kind": "OBJECT", "x": 49, "y": 56, "scale": 0.6, "label": "bow" },
+            { "kind": "ADULT", "x": 75, "y": 50, "scale": 0.9, "label": "drummer" },
+            { "kind": "OBJECT", "x": 80, "y": 58, "scale": 1.15, "label": "drum kit" }
+          ],
+          "arrows": [
+            { "fromX": 32, "fromY": 49, "toX": 32, "toY": 40, "label": "visible breath" },
+            { "fromX": 73, "fromY": 49, "toX": 73, "toY": 40, "label": "stick check" },
+            { "fromX": 78, "fromY": 78, "toX": 78, "toY": 68, "label": "foot answer" }
+          ]
+        },
+        {
+          "id": "F5",
+          "beatId": "S5",
+          "title": "Corrections Thin",
+          "cameraLabel": "Camera A / long wide hold",
+          "annotation": "Longer strokes and steadier stick path make the shared frame feel inevitable instead of fragile.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 20, "y": 18, "scale": 1.1, "label": "greenhouse glass wall" },
+            { "kind": "WINDOW", "x": 80, "y": 18, "scale": 1.1, "label": "greenhouse glass wall" },
+            { "kind": "DOOR", "x": 50, "y": 46, "scale": 0.9, "label": "greenhouse door" },
+            { "kind": "OBJECT", "x": 86, "y": 24, "scale": 0.4, "label": "condensation smear" },
+            { "kind": "ADULT", "x": 37, "y": 66, "scale": 0.9, "label": "cellist" },
+            { "kind": "OBJECT", "x": 42, "y": 67, "scale": 1, "label": "cello" },
+            { "kind": "ADULT", "x": 64, "y": 57, "scale": 0.95, "label": "drummer" }
+          ],
+          "arrows": [
+            { "fromX": 39, "fromY": 62, "toX": 48, "toY": 62, "label": "longer bow stroke" },
+            { "fromX": 63, "fromY": 48, "toX": 67, "toY": 54, "label": "even stick path" }
+          ]
+        },
+        {
+          "id": "F6",
+          "beatId": "S6",
+          "title": "After the Last Stroke",
+          "cameraLabel": "Camera B / medium-wide two-shot",
+          "annotation": "The last sound decays; bow hangs, sticks lower, and both bodies exhale into release.",
+          "glyphs": [
+            { "kind": "WINDOW", "x": 88, "y": 20, "scale": 1, "label": "greenhouse glass wall" },
+            { "kind": "DOOR", "x": 58, "y": 44, "scale": 0.65, "label": "greenhouse door" },
+            { "kind": "OBJECT", "x": 91, "y": 23, "scale": 0.45, "label": "condensation streak" },
+            { "kind": "ADULT", "x": 26, "y": 60, "scale": 1.2, "label": "cellist" },
+            { "kind": "OBJECT", "x": 34, "y": 66, "scale": 1.3, "label": "cello" },
+            { "kind": "OBJECT", "x": 47, "y": 50, "scale": 0.65, "label": "bow" },
+            { "kind": "ADULT", "x": 73, "y": 54, "scale": 1, "label": "drummer" }
+          ],
+          "arrows": [
+            { "fromX": 47, "fromY": 50, "toX": 47, "toY": 43, "label": "bow hangs" },
+            { "fromX": 73, "fromY": 45, "toX": 73, "toY": 56, "label": "sticks lower" },
+            { "fromX": 30, "fromY": 52, "toX": 30, "toY": 46, "label": "exhale" }
+          ]
+        }
+      ],
+      "blocking": {
+        "title": "Greenhouse blocking / fixed three-camera grid",
+        "zones": [
+          { "id": "Z1", "label": "cellist lane", "x": 16, "y": 48, "width": 22, "height": 26 },
+          { "id": "Z2", "label": "center aisle", "x": 42, "y": 42, "width": 16, "height": 34 },
+          { "id": "Z3", "label": "drummer lane", "x": 60, "y": 44, "width": 24, "height": 28 },
+          { "id": "Z4", "label": "greenhouse door", "x": 46, "y": 36, "width": 8, "height": 18 },
+          { "id": "Z5", "label": "rear camera bay", "x": 40, "y": 82, "width": 20, "height": 12 },
+          {
+            "id": "Z6",
+            "label": "glass wall / dawn source",
+            "x": 0,
+            "y": 0,
+            "width": 100,
+            "height": 18
+          }
+        ],
+        "positions": [
+          { "label": "cellist", "x": 30, "y": 63, "kind": "SUBJECT" },
+          { "label": "drummer", "x": 71, "y": 56, "kind": "SUBJECT" },
+          { "label": "Camera A", "x": 50, "y": 88, "kind": "CAMERA" },
+          { "label": "Camera B", "x": 18, "y": 74, "kind": "CAMERA" },
+          { "label": "Camera C", "x": 86, "y": 72, "kind": "CAMERA" },
+          { "label": "dawn east glass", "x": 82, "y": 10, "kind": "LIGHT" },
+          { "label": "roof glow", "x": 50, "y": 6, "kind": "LIGHT" }
+        ],
+        "paths": [
+          {
+            "label": "Camera A sightline",
+            "points": [
+              { "x": 50, "y": 88 },
+              { "x": 50, "y": 60 },
+              { "x": 50, "y": 44 }
+            ]
+          },
+          {
+            "label": "Camera B sightline",
+            "points": [
+              { "x": 18, "y": 74 },
+              { "x": 32, "y": 62 },
+              { "x": 63, "y": 55 }
+            ]
+          },
+          {
+            "label": "Camera C sightline",
+            "points": [
+              { "x": 86, "y": 72 },
+              { "x": 74, "y": 66 },
+              { "x": 36, "y": 72 }
+            ]
+          }
+        ]
+      },
+      "look": {
+        "title": "Dawn greenhouse pencil look",
+        "swatches": [
+          { "name": "dawn silver", "color": "#C8CED6", "use": "glass, wet floor, morning air" },
+          { "name": "moss green", "color": "#5C6A58", "use": "frames, algae, background metal" },
+          { "name": "rust umber", "color": "#7A513B", "use": "disused hardware, bench legs" },
+          {
+            "name": "cello amber",
+            "color": "#9B6436",
+            "use": "instrument wood, sticks, late warmth"
+          },
+          {
+            "name": "charcoal cloth",
+            "color": "#2D2F33",
+            "use": "wardrobe, kit shadows, negative space"
+          }
+        ],
+        "texture": "Soft graphite line, damp smudge at the frame edges, pale eraser bloom on condensation, no glossy finish."
+      }
+    },
+    "questions": [
+      {
+        "prompt": "From the fixed wide, can unprompted viewers clearly read both the raised-stick count and the cellist's acceptance of it?",
+        "decisionItChanges": "Whether Scene S1 can hold longer before the first cut, or whether S2 must arrive earlier on Camera C."
+      },
+      {
+        "prompt": "Does Camera C's low diagonal make pedal and endpin legible without turning Scene S3 into a mechanics-only detour?",
+        "decisionItChanges": "Whether the floor-axis emphasis remains a full beat or is shortened to a single confirming insert within the take."
+      },
+      {
+        "prompt": "Across the real dawn window, does the greenhouse naturally open enough by minute five to support the Clarity Ladder without any lighting intervention?",
+        "decisionItChanges": "How much visual reward is withheld until S5 and whether the late wide can carry the release alone."
+      }
+    ],
+    "productionNextSteps": [
+      "Tape the fixed three-camera grid in the greenhouse and run one full seven-minute rehearsal without playback.",
+      "Review a cold-viewer cut made strictly by cue-transfer rules and record whether the count-in handoff and two later relays are identified.",
+      "Adjust performer orientation only enough to keep ribcage breath, bow contact, stick check, and pedal action readable from the fixed positions.",
+      "Sound-check for exposed breath, bow scrape, and foot cue so they remain intentional evidence rather than accidental noise.",
+      "Test the actual dawn window for condensation visibility and minute-five room lift before locking the hold lengths."
+    ]
+  },
+  "blueprint": {
+    "development": {
+      "basis": "PROJECT_INTENT_ONLY",
+      "mode": "PERFORMANCE",
+      "version": 2,
+      "reasoningSource": "HOSTED_REASONING",
+      "insight": {
+        "thesis": "The film matters at the instant private breath is surrendered to shared tempo, not when technique looks most impressive.",
+        "humanTruth": "Trust is often least verbal and most real when one body commits to another body's timing before certainty arrives.",
+        "dramaticTension": "The take holds if viewers can feel tempo authority offered, accepted, tested, relayed, and finally no longer needing rescue.",
+        "audiencePromise": "A polished-session audience gets a rarer payoff: the physical suspense of watching time become mutual, then the relief of feeling it settle."
+      },
+      "directionDecision": {
+        "title": "The Hand-Off / Clarity Ladder",
+        "pointOfView": "A witness to the moment one musician's internal timing is made public and then slowly stops needing proof.",
+        "storyEngine": "Silence becomes an arena; the drummer's count is visibly offered; the cellist accepts it with first contact; early playing is full of tiny corrections; breath, bow change, and foot cue relay responsibility; cue traffic thins; the last exhale lands after the last sound.",
+        "formalStrategy": "One continuous take. Camera A: fixed rear-center shared wide. Camera B: fixed cellist-side medium capturing ribcage, bow contact, and drummer at frame edge. Camera C: fixed drummer-side medium-low capturing count-in, stick restraint, kick foot, and cellist profile. Editorial law: cut only on visible transfers or confirmations of tempo authority. Secondary law: withhold the cleanest flattering detail until the bodies need fewer corrective signals.",
+        "audienceJourney": "Expected virtuoso coverage; forced cue-reading; suspense in every answered signal; release when the wide can simply hold.",
+        "whyThisProject": "The brief already names the plot material: visible count-in, breath, bow noise, foot cues, condensation, dawn, one take. This direction turns those into story mechanics instead of texture.",
+        "sacrifice": "We surrender hero coverage of the flashiest playing and some premium-session glamour. Beautiful dexterity may remain in a wide if it is not where timing authority changes hands.",
+        "assumptions": [
+          "The performers' cue exchanges are visible enough to read without explanation.",
+          "The drummer's count-in and the cellist's acceptance can be legible from the fixed three-camera grid.",
+          "Incidental sounds can stay exposed without feeling like errors.",
+          "A polished-session audience will accept delayed visual reward if the suspense is readable."
+        ],
+        "changeMyMindIf": "Abandon this if a cold-viewer rehearsal cut with the fixed three-camera layout fails to let most viewers identify the count-in handoff and at least two later tempo-relay moments without prompting.",
+        "projectDependencies": [
+          "One continuous seven-minute live performance.",
+          "A cellist and a drummer facing each other across an exposed aisle.",
+          "Three simultaneous cameras with no playback.",
+          "Visible count-in, breath, bow noise, and foot cues.",
+          "A disused greenhouse at dawn with readable condensation.",
+          "No relighting during the take."
+        ],
+        "innovation": {
+          "convention": "Performance films usually cut to dexterity, melodic lead, or phrase peaks.",
+          "whyConventionWorks": "It gives instant variety, flatters skill, and keeps viewers oriented to musical prominence.",
+          "departure": "Cut only when tempo authority visibly transfers or is confirmed, and delay the cleanest close detail until cue traffic has materially thinned.",
+          "projectBenefit": "The edit stops illustrating the music and starts proving synchronization. Viewers track trust as action, not mood.",
+          "executionRisk": "If the cues are too subtle, the rigor can read as undercoverage and viewers may miss the intended suspense."
+        }
+      },
+      "alternativeDecisions": [
+        {
+          "title": "Glass Between Them",
+          "pointOfView": "Synchronization searched through a room that refuses full clarity.",
+          "storyEngine": "Begin through condensation and structure; make viewers search for the count and the answer; reserve the clearest shared view for true lock-in.",
+          "formalStrategy": "One recurring obstructed angle plus two legibility-protecting angles in continuous time.",
+          "audienceJourney": "Visual discomfort, searching attention, late clarity.",
+          "whyThisProject": "It literalizes fragility by letting the greenhouse register stress.",
+          "sacrifice": "Immediate readability and some viewer trust in image control.",
+          "assumptions": [
+            "Condensation is visibly present.",
+            "Obstruction can pressure without hiding the cues.",
+            "The audience tolerates delayed image clarity."
+          ],
+          "changeMyMindIf": "Drop it as the spine if the count-in, first bow contact, or relay cues become unreadable in test frames through real condensation.",
+          "projectDependencies": [
+            "Condensation on greenhouse glass.",
+            "Dawn light catching the glass.",
+            "A performance whose cues survive partial obstruction."
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Floor Contract",
+          "pointOfView": "Tempo is first believed at floor level, not face level.",
+          "storyEngine": "Open on anchored endpin and pedal foot; let weight shifts and foot cues reveal the hidden conversation; widen only once corrections shrink.",
+          "formalStrategy": "One low axis dedicated to feet and anchors; two restrained body-level angles preserve continuity.",
+          "audienceJourney": "Deprived of glamour, then rewarded with mechanical intimacy, then bodily release.",
+          "whyThisProject": "Foot cues are named story material and the pair's lower-body timing is unusually consequential.",
+          "sacrifice": "Faces, chest, and upper-body anticipation are demoted.",
+          "assumptions": [
+            "Foot behavior carries enough meaning.",
+            "The floor plane is visually clean enough to read.",
+            "Breath is not the dominant signal."
+          ],
+          "changeMyMindIf": "Reject it if rehearsal review shows that the clearest corrections live mainly in breath, shoulders, and bow initiation rather than feet.",
+          "projectDependencies": [
+            "Readable endpin, pedal, and stance behavior.",
+            "A camera position low enough to hold both anchors.",
+            "A performance where weight shift is narratively useful."
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Daylight Proof",
+          "pointOfView": "The room's opening to morning mirrors ensemble alignment.",
+          "storyEngine": "Start before the room feels ready; let natural brightness and musical settling arrive together; hold the brighter aftermath.",
+          "formalStrategy": "A dawn witness wide runs all seven minutes while supporting angles appear more frequently later than earlier.",
+          "audienceJourney": "Austere beginning, gradual visual easing, post-performance exhale.",
+          "whyThisProject": "It turns the no-relighting fact into proof instead of limitation.",
+          "sacrifice": "A large share of the arc depends on natural change that the performance does not control.",
+          "assumptions": [
+            "Seven minutes of dawn will visibly shift.",
+            "The greenhouse reveals rather than flattens that shift.",
+            "The ensemble's settling can plausibly rhyme with it."
+          ],
+          "changeMyMindIf": "Do not build around it if the actual dawn window shows little visible progression across seven minutes.",
+          "projectDependencies": [
+            "Dawn capture.",
+            "The greenhouse's transparency.",
+            "A take whose musical arc can tolerate visual austerity early."
+          ],
+          "innovation": null
+        }
+      ],
+      "sceneHypotheses": [
+        {
+          "id": "S1",
+          "title": "Still Air",
+          "action": "Both musicians settle into position; the cellist lifts the bow and inhales while the drummer raises sticks without striking.",
+          "visual": "Shared wide; condensed glass, empty aisle, weak dawn, two bodies not yet aligned.",
+          "sound": "Room tone, clothing shift, breath, faint bow-hair touch.",
+          "turn": "Silence stops feeling private and starts feeling binding.",
+          "purpose": "Load suspense into the body before any note can claim attention.",
+          "constraintHandling": "Hold on Camera A's fixed wide; no relighting; no audience; no playback; let natural dawn and condensation carry exposure.",
+          "craft": {
+            "blocking": "Cellist seated left angled inward; drummer right behind kit angled inward; wide empty aisle between them keeps the distance dramatic.",
+            "camera": "Camera A locked rear-center at chest height.",
+            "light": "Unmodified dawn through greenhouse glass and roof panels.",
+            "design": "Keep wet floor, metal ribs, and unused benches visible; no decorative cleanup that removes abandonment.",
+            "color": "Cold silver-green field with isolated warm wood.",
+            "sound": "Leave breath and room tone unmasked."
+          }
+        },
+        {
+          "id": "S2",
+          "title": "Count Accepted",
+          "action": "The drummer gives a visible count-in; on the last count the cellist lowers the bow to the string and commits the first stroke.",
+          "visual": "Drummer's sticks mark time in the air; the bow waits, then drops with intent.",
+          "sound": "Visible count, inhale, first bow scrape.",
+          "turn": "The drummer's external time becomes shared time because the cellist answers it.",
+          "purpose": "Make the ignition point unmistakable.",
+          "constraintHandling": "Lead with Camera C for the count and cut to Camera B only when the last count is physically answered; continuous live sound only.",
+          "craft": {
+            "blocking": "Drummer dominates foreground right; cellist stays readable in the rear-left diagonal so offer and acceptance belong to one space.",
+            "camera": "Camera C holds the offer; Camera B takes the acceptance on contact.",
+            "light": "Dawn edge light catches sticks and bow hair without adjustment.",
+            "design": "Keep the greenhouse aisle behind them open so the count feels exposed.",
+            "color": "Cold glass around a sharp warm line of bow wood.",
+            "sound": "Do not bury the scrape; it is the acceptance cue."
+          }
+        },
+        {
+          "id": "S3",
+          "title": "Pulse on Trial",
+          "action": "The drummer enters sparingly; the cellist sustains through audible bow noise while both make small foot and torso adjustments.",
+          "visual": "Kick pedal, endpin, hardware, shoulders, and bow all look slightly taut.",
+          "sound": "Bow noise, pedal thump, restrained stick articulation.",
+          "turn": "A pulse exists, but both bodies are still testing whether it will hold.",
+          "purpose": "Extend suspense past the downbeat and refuse instant relief.",
+          "constraintHandling": "Use Camera C's medium-low diagonal to keep pedal and endpin readable inside the fixed setup; continuous one-take coverage preserved.",
+          "craft": {
+            "blocking": "Low diagonal ties the drummer's pedal side to the cellist's planted endpin as twin anchors.",
+            "camera": "Camera C medium-low, held rather than chasing hands.",
+            "light": "Wet floor and metal hardware catch enough dawn sheen to reveal micro-motions.",
+            "design": "Keep puddle sheen and hardware in frame; avoid prettifying the floor.",
+            "color": "Charcoal and silver with small amber interruptions.",
+            "sound": "Pedal thump and scrape share equal narrative weight."
+          }
+        },
+        {
+          "id": "S4",
+          "title": "Relay",
+          "action": "At a phrase edge, the cellist takes a visible breath and changes bow; the drummer checks the stick in the air and answers with a clear foot cue before rejoining the pulse.",
+          "visual": "Foreground torso lift answered by background stick restraint and pedal action.",
+          "sound": "Inhale, bow-change tick, foot cue, resumed pulse.",
+          "turn": "Tempo authority passes from cellist to drummer and back without speech.",
+          "purpose": "Let viewers see trust as exchanged responsibility rather than sentiment.",
+          "constraintHandling": "Keep both players in the frame during the relay; cut only on the answered cue; no inserted explanation.",
+          "craft": {
+            "blocking": "Cellist foreground left; drummer background right on the same axis so cue and answer are visually chained.",
+            "camera": "Camera B leads the breath and bow change; Camera C can confirm the foot answer if needed.",
+            "light": "Side light makes chest lift and stick pause readable.",
+            "design": "Greenhouse uprights frame the gap between cue and reply.",
+            "color": "Warm bow wood crossing cool green structure.",
+            "sound": "Allow inhale and bow change to lead the beat."
+          }
+        },
+        {
+          "id": "S5",
+          "title": "Corrections Thin",
+          "action": "Both keep playing, but cues shrink: fewer glances, smaller feet, longer strokes, steadier stick path.",
+          "visual": "The shared frame holds more calmly; greenhouse lines stop feeling like barriers.",
+          "sound": "Stable pulse foregrounded; incidental noises recede underneath it.",
+          "turn": "What looked fragile begins to feel inevitable.",
+          "purpose": "Convert vigilance into physical release.",
+          "constraintHandling": "Return to Camera A for the longest uninterrupted hold; do not cut for prettiness; let natural dawn lift do any softening.",
+          "craft": {
+            "blocking": "The same distance between players now reads chosen rather than precarious.",
+            "camera": "Camera A long hold; Camera B only if a new transfer clearly appears.",
+            "light": "Natural dawn slightly opens the room without any relight.",
+            "design": "Condensation and benches remain present but less dominant.",
+            "color": "Lighter silver-green field with wood tones finally feeling at home.",
+            "sound": "Keep the live imperfections present but no longer alarming."
+          }
+        },
+        {
+          "id": "S6",
+          "title": "After the Last Stroke",
+          "action": "The final stroke and final hit decay; neither musician moves immediately, then both exhale and loosen out of performance posture.",
+          "visual": "Bow hangs for a beat, sticks lower, condensation catches brighter dawn behind them.",
+          "sound": "Resonance, breath release, greenhouse decay.",
+          "turn": "Release lands after the music, not on it.",
+          "purpose": "Give the audience one shared exhale instead of a hard stop.",
+          "constraintHandling": "Stay in a two-player frame; no cutaway, no playback insert, no audience reaction, no relight change.",
+          "craft": {
+            "blocking": "Nobody leaves the frame; the release happens in shoulders, hands, and breath.",
+            "camera": "Camera B medium-wide two-shot from the cellist side to keep both postures readable.",
+            "light": "Brighter rim on bow hair and glass, still entirely natural.",
+            "design": "Hold the empty greenhouse around them; no graphic interruption.",
+            "color": "Cool room, warm instrument afterglow.",
+            "sound": "Let decay and breath finish the scene."
+          }
+        }
+      ],
+      "directorNotebook": [
+        {
+          "id": "D1",
+          "sceneId": "S1",
+          "shot": "A1 - Arena Wide",
+          "visual": "Both separated by the aisle; bow not yet on string; sticks suspended.",
+          "camera": "Camera A locked rear-center.",
+          "light": "Raw dawn through glass and roof.",
+          "sound": "Breath and room tone forward.",
+          "purpose": "Turn silence into public risk.",
+          "creativeThread": "No virtuoso reward before commitment."
+        },
+        {
+          "id": "D2",
+          "sceneId": "S2",
+          "shot": "C1 - Count Offer",
+          "visual": "Drummer foreground; cellist waiting in the rear diagonal.",
+          "camera": "Camera C fixed drummer-side 3/4.",
+          "light": "Stick edges catch dawn.",
+          "sound": "Count left dry and naked.",
+          "purpose": "Make tempo authority visible.",
+          "creativeThread": "Time is offered, not assumed."
+        },
+        {
+          "id": "D3",
+          "sceneId": "S2",
+          "shot": "B1 - Bow Answer",
+          "visual": "Cellist lowers the bow on the last count.",
+          "camera": "Cut to Camera B only on contact.",
+          "light": "Bow hair bright against cold glass.",
+          "sound": "First scrape stays unsoftened.",
+          "purpose": "Show acceptance, not setup.",
+          "creativeThread": "Private breath becomes shared time."
+        },
+        {
+          "id": "D4",
+          "sceneId": "S3",
+          "shot": "C2 - Floor Trial",
+          "visual": "Kick pedal and endpin read as twin anchors under strain.",
+          "camera": "Camera C medium-low diagonal.",
+          "light": "Floor reflections reveal micro-motion.",
+          "sound": "Pedal thump and scrape equalized.",
+          "purpose": "Extend suspense into the first groove.",
+          "creativeThread": "Tempo must survive friction."
+        },
+        {
+          "id": "D5",
+          "sceneId": "S3",
+          "shot": "B2 - Bow Friction",
+          "visual": "Shoulders high; stroke still looks effortful.",
+          "camera": "Camera B medium profile.",
+          "light": "Side light on ribcage and bow.",
+          "sound": "Bow noise stays exposed.",
+          "purpose": "Keep effort legible.",
+          "creativeThread": "Control is earned, not given."
+        },
+        {
+          "id": "D6",
+          "sceneId": "S4",
+          "shot": "A2 - Shared Proof",
+          "visual": "Both remain in frame as breath triggers answer.",
+          "camera": "Camera A returns to verify the relay.",
+          "light": "Even dawn across the gap.",
+          "sound": "Inhale precedes response.",
+          "purpose": "Prove the exchange is mutual.",
+          "creativeThread": "Trust needs both bodies visible."
+        },
+        {
+          "id": "D7",
+          "sceneId": "S4",
+          "shot": "C3 - Foot Answer",
+          "visual": "Stick checks above; foot answers below.",
+          "camera": "Camera C confirms the reply.",
+          "light": "Hardware glints keep the foot readable.",
+          "sound": "Foot cue punctuates the handoff.",
+          "purpose": "Make the reply concrete.",
+          "creativeThread": "Authority returns through action, not dominance."
+        },
+        {
+          "id": "D8",
+          "sceneId": "S5",
+          "shot": "A3 - Long Hold",
+          "visual": "Symmetry steadies; fewer corrections interrupt the frame.",
+          "camera": "Camera A held beyond normal session rhythm.",
+          "light": "Room opens naturally.",
+          "sound": "Incidental noise recedes under a stable center.",
+          "purpose": "Let release arrive through duration.",
+          "creativeThread": "The wide no longer feels unsafe."
+        }
+      ],
+      "storyboardSource": {
+        "status": "RENDERED",
+        "renderer": "STROMAN_PENCIL_SVG_V1",
+        "title": "One Breath Before the Downbeat - The Hand-Off / Clarity Ladder",
+        "frames": [
+          {
+            "id": "F1",
+            "beatId": "S1",
+            "title": "Still Air",
+            "cameraLabel": "Camera A / shared wide",
+            "annotation": "Both settle; inhale and raised sticks turn waiting into risk.",
+            "glyphs": [
+              {
+                "kind": "WINDOW",
+                "x": 18,
+                "y": 18,
+                "scale": 1.1,
+                "label": "greenhouse glass wall"
+              },
+              {
+                "kind": "WINDOW",
+                "x": 82,
+                "y": 18,
+                "scale": 1.1,
+                "label": "greenhouse glass wall"
+              },
+              { "kind": "DOOR", "x": 50, "y": 47, "scale": 0.9, "label": "greenhouse door" },
+              { "kind": "TABLE", "x": 13, "y": 67, "scale": 0.8, "label": "potting bench" },
+              { "kind": "ADULT", "x": 33, "y": 65, "scale": 0.95, "label": "cellist" },
+              { "kind": "OBJECT", "x": 38, "y": 67, "scale": 1.05, "label": "cello" },
+              { "kind": "OBJECT", "x": 43, "y": 58, "scale": 0.55, "label": "bow" }
+            ],
+            "arrows": [
+              { "fromX": 42, "fromY": 60, "toX": 42, "toY": 54, "label": "inhale + bow lift" },
+              { "fromX": 69, "fromY": 51, "toX": 69, "toY": 44, "label": "sticks rise" }
+            ]
+          },
+          {
+            "id": "F2",
+            "beatId": "S2",
+            "title": "Count Accepted",
+            "cameraLabel": "Camera C / drummer 3/4",
+            "annotation": "Visible count becomes shared time when the waiting bow drops to string.",
+            "glyphs": [
+              {
+                "kind": "WINDOW",
+                "x": 16,
+                "y": 18,
+                "scale": 0.95,
+                "label": "greenhouse glass wall"
+              },
+              { "kind": "DOOR", "x": 44, "y": 47, "scale": 0.7, "label": "greenhouse door" },
+              { "kind": "OBJECT", "x": 11, "y": 25, "scale": 0.45, "label": "condensation streak" },
+              { "kind": "ADULT", "x": 71, "y": 56, "scale": 1.2, "label": "drummer" },
+              { "kind": "OBJECT", "x": 79, "y": 60, "scale": 1.35, "label": "drum kit" },
+              { "kind": "ADULT", "x": 27, "y": 63, "scale": 0.75, "label": "cellist" },
+              { "kind": "OBJECT", "x": 32, "y": 67, "scale": 0.9, "label": "cello" }
+            ],
+            "arrows": [
+              { "fromX": 68, "fromY": 44, "toX": 68, "toY": 33, "label": "visible count-in" },
+              { "fromX": 34, "fromY": 61, "toX": 35, "toY": 68, "label": "bow to string" }
+            ]
+          },
+          {
+            "id": "F3",
+            "beatId": "S3",
+            "title": "Pulse on Trial",
+            "cameraLabel": "Camera C / low foot axis",
+            "annotation": "Pedal press and bow scrape keep testing whether the new pulse can hold.",
+            "glyphs": [
+              {
+                "kind": "WINDOW",
+                "x": 50,
+                "y": 18,
+                "scale": 1.1,
+                "label": "greenhouse glass wall"
+              },
+              { "kind": "TABLE", "x": 12, "y": 52, "scale": 0.65, "label": "potting bench" },
+              { "kind": "ADULT", "x": 23, "y": 49, "scale": 0.95, "label": "cellist" },
+              { "kind": "OBJECT", "x": 33, "y": 61, "scale": 1.25, "label": "cello" },
+              { "kind": "OBJECT", "x": 37, "y": 82, "scale": 0.6, "label": "cello endpin" },
+              { "kind": "ADULT", "x": 80, "y": 43, "scale": 0.95, "label": "drummer" },
+              { "kind": "OBJECT", "x": 82, "y": 55, "scale": 1.2, "label": "drum kit" }
+            ],
+            "arrows": [
+              { "fromX": 72, "fromY": 83, "toX": 72, "toY": 74, "label": "pedal press" },
+              { "fromX": 37, "fromY": 78, "toX": 40, "toY": 60, "label": "long scrape" }
+            ]
+          },
+          {
+            "id": "F4",
+            "beatId": "S4",
+            "title": "Relay",
+            "cameraLabel": "Camera B / cellist-side medium",
+            "annotation": "Breath and bow change are answered by checked stick and foot cue; responsibility passes and returns.",
+            "glyphs": [
+              { "kind": "WINDOW", "x": 86, "y": 18, "scale": 1, "label": "greenhouse glass wall" },
+              { "kind": "DOOR", "x": 55, "y": 43, "scale": 0.6, "label": "greenhouse door" },
+              { "kind": "ADULT", "x": 33, "y": 58, "scale": 1.15, "label": "cellist" },
+              { "kind": "OBJECT", "x": 41, "y": 63, "scale": 1.25, "label": "cello" },
+              { "kind": "OBJECT", "x": 49, "y": 56, "scale": 0.6, "label": "bow" },
+              { "kind": "ADULT", "x": 75, "y": 50, "scale": 0.9, "label": "drummer" },
+              { "kind": "OBJECT", "x": 80, "y": 58, "scale": 1.15, "label": "drum kit" }
+            ],
+            "arrows": [
+              { "fromX": 32, "fromY": 49, "toX": 32, "toY": 40, "label": "visible breath" },
+              { "fromX": 73, "fromY": 49, "toX": 73, "toY": 40, "label": "stick check" },
+              { "fromX": 78, "fromY": 78, "toX": 78, "toY": 68, "label": "foot answer" }
+            ]
+          },
+          {
+            "id": "F5",
+            "beatId": "S5",
+            "title": "Corrections Thin",
+            "cameraLabel": "Camera A / long wide hold",
+            "annotation": "Longer strokes and steadier stick path make the shared frame feel inevitable instead of fragile.",
+            "glyphs": [
+              {
+                "kind": "WINDOW",
+                "x": 20,
+                "y": 18,
+                "scale": 1.1,
+                "label": "greenhouse glass wall"
+              },
+              {
+                "kind": "WINDOW",
+                "x": 80,
+                "y": 18,
+                "scale": 1.1,
+                "label": "greenhouse glass wall"
+              },
+              { "kind": "DOOR", "x": 50, "y": 46, "scale": 0.9, "label": "greenhouse door" },
+              { "kind": "OBJECT", "x": 86, "y": 24, "scale": 0.4, "label": "condensation smear" },
+              { "kind": "ADULT", "x": 37, "y": 66, "scale": 0.9, "label": "cellist" },
+              { "kind": "OBJECT", "x": 42, "y": 67, "scale": 1, "label": "cello" },
+              { "kind": "ADULT", "x": 64, "y": 57, "scale": 0.95, "label": "drummer" }
+            ],
+            "arrows": [
+              { "fromX": 39, "fromY": 62, "toX": 48, "toY": 62, "label": "longer bow stroke" },
+              { "fromX": 63, "fromY": 48, "toX": 67, "toY": 54, "label": "even stick path" }
+            ]
+          },
+          {
+            "id": "F6",
+            "beatId": "S6",
+            "title": "After the Last Stroke",
+            "cameraLabel": "Camera B / medium-wide two-shot",
+            "annotation": "The last sound decays; bow hangs, sticks lower, and both bodies exhale into release.",
+            "glyphs": [
+              { "kind": "WINDOW", "x": 88, "y": 20, "scale": 1, "label": "greenhouse glass wall" },
+              { "kind": "DOOR", "x": 58, "y": 44, "scale": 0.65, "label": "greenhouse door" },
+              { "kind": "OBJECT", "x": 91, "y": 23, "scale": 0.45, "label": "condensation streak" },
+              { "kind": "ADULT", "x": 26, "y": 60, "scale": 1.2, "label": "cellist" },
+              { "kind": "OBJECT", "x": 34, "y": 66, "scale": 1.3, "label": "cello" },
+              { "kind": "OBJECT", "x": 47, "y": 50, "scale": 0.65, "label": "bow" },
+              { "kind": "ADULT", "x": 73, "y": 54, "scale": 1, "label": "drummer" }
+            ],
+            "arrows": [
+              { "fromX": 47, "fromY": 50, "toX": 47, "toY": 43, "label": "bow hangs" },
+              { "fromX": 73, "fromY": 45, "toX": 73, "toY": 56, "label": "sticks lower" },
+              { "fromX": 30, "fromY": 52, "toX": 30, "toY": 46, "label": "exhale" }
+            ]
+          }
+        ],
+        "blocking": {
+          "title": "Greenhouse blocking / fixed three-camera grid",
+          "zones": [
+            { "id": "Z1", "label": "cellist lane", "x": 16, "y": 48, "width": 22, "height": 26 },
+            { "id": "Z2", "label": "center aisle", "x": 42, "y": 42, "width": 16, "height": 34 },
+            { "id": "Z3", "label": "drummer lane", "x": 60, "y": 44, "width": 24, "height": 28 },
+            { "id": "Z4", "label": "greenhouse door", "x": 46, "y": 36, "width": 8, "height": 18 },
+            { "id": "Z5", "label": "rear camera bay", "x": 40, "y": 82, "width": 20, "height": 12 },
+            {
+              "id": "Z6",
+              "label": "glass wall / dawn source",
+              "x": 0,
+              "y": 0,
+              "width": 100,
+              "height": 18
+            }
+          ],
+          "positions": [
+            { "label": "cellist", "x": 30, "y": 63, "kind": "SUBJECT" },
+            { "label": "drummer", "x": 71, "y": 56, "kind": "SUBJECT" },
+            { "label": "Camera A", "x": 50, "y": 88, "kind": "CAMERA" },
+            { "label": "Camera B", "x": 18, "y": 74, "kind": "CAMERA" },
+            { "label": "Camera C", "x": 86, "y": 72, "kind": "CAMERA" },
+            { "label": "dawn east glass", "x": 82, "y": 10, "kind": "LIGHT" },
+            { "label": "roof glow", "x": 50, "y": 6, "kind": "LIGHT" }
+          ],
+          "paths": [
+            {
+              "label": "Camera A sightline",
+              "points": [
+                { "x": 50, "y": 88 },
+                { "x": 50, "y": 60 },
+                { "x": 50, "y": 44 }
+              ]
+            },
+            {
+              "label": "Camera B sightline",
+              "points": [
+                { "x": 18, "y": 74 },
+                { "x": 32, "y": 62 },
+                { "x": 63, "y": 55 }
+              ]
+            },
+            {
+              "label": "Camera C sightline",
+              "points": [
+                { "x": 86, "y": 72 },
+                { "x": 74, "y": 66 },
+                { "x": 36, "y": 72 }
+              ]
+            }
+          ]
+        },
+        "look": {
+          "title": "Dawn greenhouse pencil look",
+          "swatches": [
+            { "name": "dawn silver", "color": "#C8CED6", "use": "glass, wet floor, morning air" },
+            { "name": "moss green", "color": "#5C6A58", "use": "frames, algae, background metal" },
+            { "name": "rust umber", "color": "#7A513B", "use": "disused hardware, bench legs" },
+            {
+              "name": "cello amber",
+              "color": "#9B6436",
+              "use": "instrument wood, sticks, late warmth"
+            },
+            {
+              "name": "charcoal cloth",
+              "color": "#2D2F33",
+              "use": "wardrobe, kit shadows, negative space"
+            }
+          ],
+          "texture": "Soft graphite line, damp smudge at the frame edges, pale eraser bloom on condensation, no glossy finish."
+        }
+      },
+      "visualPlan": {
+        "version": 1,
+        "renderer": "STROMAN_PREVIS_SVG_V2",
+        "stage": "IDEA",
+        "creativeSpine": {
+          "film": "The film matters at the instant private breath is surrendered to shared tempo, not when technique looks most impressive.",
+          "why": "The brief already names the plot material: visible count-in, breath, bow noise, foot cues, condensation, dawn, one take. This direction turns those into story mechanics instead of texture.",
+          "audienceEffect": "A polished-session audience gets a rarer payoff: the physical suspense of watching time become mutual, then the relief of feeling it settle.",
+          "keyBeats": [
+            "Still Air",
+            "Count Accepted",
+            "Pulse on Trial",
+            "Relay",
+            "Corrections Thin",
+            "After the Last Stroke"
+          ],
+          "nextDecision": "From the fixed wide, can unprompted viewers clearly read both the raised-stick count and the cellist's acceptance of it?"
+        },
+        "priorities": [
+          {
+            "priority": "MUST_SOLVE_NOW",
+            "label": "Decision 1",
+            "decision": "From the fixed wide, can unprompted viewers clearly read both the raised-stick count and the cellist's acceptance of it?"
+          },
+          {
+            "priority": "IMPORTANT",
+            "label": "Decision 2",
+            "decision": "Does Camera C's low diagonal make pedal and endpin legible without turning Scene S3 into a mechanics-only detour?"
+          },
+          {
+            "priority": "WORTH_EXPLORING",
+            "label": "Decision 3",
+            "decision": "Across the real dawn window, does the greenhouse naturally open enough by minute five to support the Clarity Ladder without any lighting intervention?"
+          }
+        ],
+        "shots": [
+          {
+            "id": "shot_1",
+            "sceneId": "S1",
+            "title": "Still Air",
+            "purpose": "Load suspense into the body before any note can claim attention.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_1_h",
+              "aspectRatio": "16:9",
+              "shotScale": "Camera A / shared wide",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Camera A locked rear-center at chest height.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Camera A locked rear-center at chest height.",
+              "hold": "Hold through: Silence stops feeling private and starts feeling binding.",
+              "executionStrip": [
+                "Camera A / shared wide · 16:9",
+                "Both settle; inhale and raised sticks turn waiting into risk. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 23.975,
+                  "y": 37.45,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 67,
+                  "y": 31,
+                  "width": 17,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 7.549999999999999,
+                  "y": 1,
+                  "width": 20.900000000000002,
+                  "height": 55.00000000000001,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 71.55,
+                  "y": 1,
+                  "width": 20.900000000000002,
+                  "height": 55.00000000000001,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "GREENHOUSE DOOR",
+                  "x": 41.45,
+                  "y": 24.5,
+                  "width": 17.1,
+                  "height": 45,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "POTTING BENCH",
+                  "x": 1,
+                  "y": 60.6,
+                  "width": 27.200000000000003,
+                  "height": 12.8,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 29.075,
+                  "y": 59.125,
+                  "width": 17.85,
+                  "height": 15.75,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOW",
+                  "x": 38.325,
+                  "y": 53.875,
+                  "width": 9.350000000000001,
+                  "height": 8.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "inhale + bow lift", "fromX": 42, "fromY": 60, "toX": 42, "toY": 54 },
+                { "label": "sticks rise", "fromX": 69, "fromY": 51, "toX": 69, "toY": 44 }
+              ],
+              "light": [
+                {
+                  "label": "Unmodified dawn through greenhouse…",
+                  "fromX": 18,
+                  "fromY": 28.500000000000004,
+                  "toX": 33,
+                  "toY": 65,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Hold on Camera A's fixed wide; no relighting; no audience; no playback; let natural dawn and condensation carry exposure.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_1_v",
+              "aspectRatio": "9:16",
+              "shotScale": "Camera A / shared wide",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Camera A locked rear-center at chest height.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Camera A locked rear-center at chest height.",
+              "hold": "Hold through: Silence stops feeling private and starts feeling binding.",
+              "executionStrip": [
+                "Camera A / shared wide · 9:16",
+                "Both settle; inhale and raised sticks turn waiting into risk. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 27.276249999999997,
+                  "y": 37.650000000000006,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 57,
+                  "y": 38,
+                  "width": 30,
+                  "height": 54,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 17.411,
+                  "y": 1,
+                  "width": 25.498,
+                  "height": 55.00000000000001,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 57.091,
+                  "y": 1,
+                  "width": 25.498,
+                  "height": 55.00000000000001,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "GREENHOUSE DOOR",
+                  "x": 39.569,
+                  "y": 26.86,
+                  "width": 20.862000000000002,
+                  "height": 45,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "POTTING BENCH",
+                  "x": 10.467999999999996,
+                  "y": 60.56000000000001,
+                  "width": 33.184000000000005,
+                  "height": 12.8,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 31.6715,
+                  "y": 59.08500000000001,
+                  "width": 21.777,
+                  "height": 15.75,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOW",
+                  "x": 39.9565,
+                  "y": 54.915,
+                  "width": 11.407000000000002,
+                  "height": 8.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "inhale + bow lift",
+                  "fromX": 45.04,
+                  "fromY": 60.8,
+                  "toX": 45.04,
+                  "toY": 55.52
+                },
+                {
+                  "label": "sticks rise",
+                  "fromX": 61.78,
+                  "fromY": 52.88,
+                  "toX": 61.78,
+                  "toY": 46.72
+                }
+              ],
+              "light": [
+                {
+                  "label": "Unmodified dawn through greenhouse…",
+                  "fromX": 30.160000000000004,
+                  "fromY": 28.500000000000004,
+                  "toX": 39.46,
+                  "toY": 65.2,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Hold on Camera A's fixed wide; no relighting; no audience; no playback; let natural dawn and condensation carry exposure.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_2",
+            "sceneId": "S2",
+            "title": "Count Accepted",
+            "purpose": "Make the ignition point unmistakable.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_2_h",
+              "aspectRatio": "16:9",
+              "shotScale": "Camera C / drummer 3/4",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Camera C holds the offer; Camera B takes the acceptance on contact.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Camera C holds the offer; Camera B takes the acceptance on contact.",
+              "hold": "Hold through: The drummer's external time becomes shared time because the cellist answers it.",
+              "executionStrip": [
+                "Camera C / drummer 3/4 · 16:9",
+                "Visible count becomes shared time when the waiting bow drops to string. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 59.6,
+                  "y": 21.200000000000003,
+                  "width": 22.8,
+                  "height": 69.6,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 19.875,
+                  "y": 41.25,
+                  "width": 14.25,
+                  "height": 43.5,
+                  "plane": "FOREGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 6.975,
+                  "y": 1,
+                  "width": 18.05,
+                  "height": 47.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "GREENHOUSE DOOR",
+                  "x": 37.35,
+                  "y": 29.5,
+                  "width": 13.299999999999999,
+                  "height": 35,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CONDENSATION STREAK",
+                  "x": 7,
+                  "y": 21.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "BACKGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DRUM KIT",
+                  "x": 67.525,
+                  "y": 49.875,
+                  "width": 22.950000000000003,
+                  "height": 20.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 24.35,
+                  "y": 60.25,
+                  "width": 15.3,
+                  "height": 13.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "visible count-in", "fromX": 68, "fromY": 44, "toX": 68, "toY": 33 },
+                { "label": "bow to string", "fromX": 34, "fromY": 61, "toX": 35, "toY": 68 }
+              ],
+              "light": [
+                {
+                  "label": "Dawn edge light catches sticks and…",
+                  "fromX": 16,
+                  "fromY": 24.75,
+                  "toX": 71,
+                  "toY": 56,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Lead with Camera C for the count and cut to Camera B only when the last count is physically answered; continuous live sound only.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_2_v",
+              "aspectRatio": "9:16",
+              "shotScale": "Camera C / drummer 3/4",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Camera C holds the offer; Camera B takes the acceptance on contact.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Camera C holds the offer; Camera B takes the acceptance on contact.",
+              "hold": "Hold through: The drummer's external time becomes shared time because the cellist answers it.",
+              "executionStrip": [
+                "Camera C / drummer 3/4 · 9:16",
+                "Visible count becomes shared time when the waiting bow drops to string. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 47.629999999999995,
+                  "y": 22.480000000000004,
+                  "width": 30.780000000000005,
+                  "height": 69.6,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 26.121250000000003,
+                  "y": 41.69,
+                  "width": 19.2375,
+                  "height": 43.5,
+                  "plane": "FOREGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 17.9095,
+                  "y": 1,
+                  "width": 22.021,
+                  "height": 47.5,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "GREENHOUSE DOOR",
+                  "x": 38.167,
+                  "y": 31.86,
+                  "width": 16.226,
+                  "height": 35,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CONDENSATION STREAK",
+                  "x": 20.94,
+                  "y": 26.5,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "BACKGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DRUM KIT",
+                  "x": 53.980500000000006,
+                  "y": 50.675,
+                  "width": 27.999000000000002,
+                  "height": 20.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 29.507000000000005,
+                  "y": 60.21000000000001,
+                  "width": 18.666,
+                  "height": 13.5,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "visible count-in",
+                  "fromX": 61.16,
+                  "fromY": 46.72,
+                  "toX": 61.16,
+                  "toY": 37.04
+                },
+                {
+                  "label": "bow to string",
+                  "fromX": 40.08,
+                  "fromY": 61.68,
+                  "toX": 40.7,
+                  "toY": 67.84
+                }
+              ],
+              "light": [
+                {
+                  "label": "Dawn edge light catches sticks and…",
+                  "fromX": 28.92,
+                  "fromY": 24.75,
+                  "toX": 63.019999999999996,
+                  "toY": 57.28,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Lead with Camera C for the count and cut to Camera B only when the last count is physically answered; continuous live sound only.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_3",
+            "sceneId": "S3",
+            "title": "Pulse on Trial",
+            "purpose": "Extend suspense past the downbeat and refuse instant relief.",
+            "priority": "SAFETY",
+            "horizontal": {
+              "id": "shot_3_h",
+              "aspectRatio": "16:9",
+              "shotScale": "Camera C / low foot axis",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Camera C medium-low, held rather than chasing hands.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Camera C medium-low, held rather than chasing hands.",
+              "hold": "Hold through: A pulse exists, but both bodies are still testing whether it will hold.",
+              "executionStrip": [
+                "Camera C / low foot axis · 16:9",
+                "Pedal press and bow scrape keep testing whether the new pulse can hold. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 13.975,
+                  "y": 21.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 70.975,
+                  "y": 15.450000000000003,
+                  "width": 18.05,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 39.55,
+                  "y": 1,
+                  "width": 20.900000000000002,
+                  "height": 55.00000000000001,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "POTTING BENCH",
+                  "x": 1,
+                  "y": 46.8,
+                  "width": 22.1,
+                  "height": 10.4,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 22.375,
+                  "y": 51.625,
+                  "width": 21.25,
+                  "height": 18.75,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO ENDPIN",
+                  "x": 31.9,
+                  "y": 77.5,
+                  "width": 10.2,
+                  "height": 9,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DRUM KIT",
+                  "x": 71.8,
+                  "y": 46,
+                  "width": 20.4,
+                  "height": 18,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "pedal press", "fromX": 72, "fromY": 83, "toX": 72, "toY": 74 },
+                { "label": "long scrape", "fromX": 37, "fromY": 78, "toX": 40, "toY": 60 }
+              ],
+              "light": [
+                {
+                  "label": "Wet floor and metal hardware catch…",
+                  "fromX": 50,
+                  "fromY": 28.500000000000004,
+                  "toX": 23,
+                  "toY": 49,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Use Camera C's medium-low diagonal to keep pedal and endpin readable inside the fixed setup; continuous one-take coverage preserved.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_3_v",
+              "aspectRatio": "9:16",
+              "shotScale": "Camera C / low foot axis",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Camera C medium-low, held rather than chasing hands.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Camera C medium-low, held rather than chasing hands.",
+              "hold": "Hold through: A pulse exists, but both bodies are still testing whether it will hold.",
+              "executionStrip": [
+                "Camera C / low foot axis · 9:16",
+                "Pedal press and bow scrape keep testing whether the new pulse can hold. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 21.07625,
+                  "y": 23.57,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 56.41624999999999,
+                  "y": 18.290000000000006,
+                  "width": 24.367500000000003,
+                  "height": 55.099999999999994,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 37.251,
+                  "y": 1,
+                  "width": 25.498,
+                  "height": 55.00000000000001,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "TABLE",
+                  "label": "POTTING BENCH",
+                  "x": 12.959000000000001,
+                  "y": 48.559999999999995,
+                  "width": 26.962,
+                  "height": 10.4,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 26.497500000000002,
+                  "y": 52.305,
+                  "width": 25.925,
+                  "height": 18.75,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO ENDPIN",
+                  "x": 35.717999999999996,
+                  "y": 75.66,
+                  "width": 12.443999999999999,
+                  "height": 9,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DRUM KIT",
+                  "x": 57.396,
+                  "y": 47.4,
+                  "width": 24.887999999999998,
+                  "height": 18,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "pedal press",
+                  "fromX": 63.64,
+                  "fromY": 81.04,
+                  "toX": 63.64,
+                  "toY": 73.12
+                },
+                { "label": "long scrape", "fromX": 41.94, "fromY": 76.64, "toX": 43.8, "toY": 60.8 }
+              ],
+              "light": [
+                {
+                  "label": "Wet floor and metal hardware catch…",
+                  "fromX": 50,
+                  "fromY": 28.500000000000004,
+                  "toX": 33.260000000000005,
+                  "toY": 51.12,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Use Camera C's medium-low diagonal to keep pedal and endpin readable inside the fixed setup; continuous one-take coverage preserved.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_4",
+            "sceneId": "S4",
+            "title": "Relay",
+            "purpose": "Let viewers see trust as exchanged responsibility rather than sentiment.",
+            "priority": "OPTIONAL_EXPLORATION",
+            "horizontal": {
+              "id": "shot_4_h",
+              "aspectRatio": "16:9",
+              "shotScale": "Camera B / cellist-side medium",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Camera B leads the breath and bow change; Camera C can confirm the foot answer if neede…",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Camera B leads the breath and bow change; Camera C can confirm the foot answer if needed.",
+              "hold": "Hold through: Tempo authority passes from cellist to drummer and back without speech.",
+              "executionStrip": [
+                "Camera B / cellist-side medium · 16:9",
+                "Breath and bow change are answered by checked stick and foot cue; responsibility passes and returns. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 22.075000000000003,
+                  "y": 24.650000000000006,
+                  "width": 21.849999999999998,
+                  "height": 66.69999999999999,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 66.45,
+                  "y": 23.9,
+                  "width": 17.1,
+                  "height": 52.2,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 76.5,
+                  "y": 1,
+                  "width": 19,
+                  "height": 50,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "GREENHOUSE DOOR",
+                  "x": 49.3,
+                  "y": 28,
+                  "width": 11.4,
+                  "height": 30,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 30.375,
+                  "y": 53.625,
+                  "width": 21.25,
+                  "height": 18.75,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOW",
+                  "x": 43.9,
+                  "y": 51.5,
+                  "width": 10.2,
+                  "height": 9,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DRUM KIT",
+                  "x": 70.225,
+                  "y": 49.375,
+                  "width": 19.549999999999997,
+                  "height": 17.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "visible breath", "fromX": 32, "fromY": 49, "toX": 32, "toY": 40 },
+                { "label": "stick check", "fromX": 73, "fromY": 49, "toX": 73, "toY": 40 },
+                { "label": "foot answer", "fromX": 78, "fromY": 78, "toX": 78, "toY": 68 }
+              ],
+              "light": [
+                {
+                  "label": "Side light makes chest lift and sti…",
+                  "fromX": 86,
+                  "fromY": 26,
+                  "toX": 33,
+                  "toY": 58,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Keep both players in the frame during the relay; cut only on the answered cue; no inserted explanation.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_4_v",
+              "aspectRatio": "9:16",
+              "shotScale": "Camera B / cellist-side medium",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Camera B leads the breath and bow change; Camera C can confirm the foot answer if neede…",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Camera B leads the breath and bow change; Camera C can confirm the foot answer if needed.",
+              "hold": "Hold through: Tempo authority passes from cellist to drummer and back without speech.",
+              "executionStrip": [
+                "Camera B / cellist-side medium · 9:16",
+                "Breath and bow change are answered by checked stick and foot cue; responsibility passes and returns. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "CELLIST",
+                  "x": 24.71125,
+                  "y": 25.690000000000005,
+                  "width": 29.4975,
+                  "height": 66.69999999999999,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                },
+                {
+                  "kind": "ADULT",
+                  "label": "DRUMMER",
+                  "x": 53.957499999999996,
+                  "y": 25.9,
+                  "width": 23.085000000000004,
+                  "height": 52.2,
+                  "plane": "MIDGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "WINDOW",
+                  "label": "GREENHOUSE GLASS WA…",
+                  "x": 60.72999999999999,
+                  "y": 1,
+                  "width": 23.18,
+                  "height": 50,
+                  "plane": "BACKGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "GREENHOUSE DOOR",
+                  "x": 46.146,
+                  "y": 30.840000000000003,
+                  "width": 13.908,
+                  "height": 30,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CELLO",
+                  "x": 31.457500000000003,
+                  "y": 54.065,
+                  "width": 25.925,
+                  "height": 18.75,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOW",
+                  "x": 43.158,
+                  "y": 52.78,
+                  "width": 12.443999999999999,
+                  "height": 9,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "DRUM KIT",
+                  "x": 56.674499999999995,
+                  "y": 50.415,
+                  "width": 23.850999999999996,
+                  "height": 17.25,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "visible breath",
+                  "fromX": 38.84,
+                  "fromY": 51.12,
+                  "toX": 38.84,
+                  "toY": 43.2
+                },
+                {
+                  "label": "stick check",
+                  "fromX": 64.26,
+                  "fromY": 51.12,
+                  "toX": 64.26,
+                  "toY": 43.2
+                },
+                {
+                  "label": "foot answer",
+                  "fromX": 67.36,
+                  "fromY": 76.64,
+                  "toX": 67.36,
+                  "toY": 67.84
+                }
+              ],
+              "light": [
+                {
+                  "label": "Side light makes chest lift and sti…",
+                  "fromX": 72.32,
+                  "fromY": 26,
+                  "toX": 39.46,
+                  "toY": 59.04,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Keep both players in the frame during the relay; cut only on the answered cue; no inserted explanation.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          }
+        ],
+        "blocking": {
+          "title": "Greenhouse blocking / fixed three-camera grid",
+          "question": "Where are the people and cameras, and how do they move?",
+          "zones": [
+            { "id": "Z1", "label": "cellist lane", "x": 16, "y": 48, "width": 22, "height": 26 },
+            { "id": "Z2", "label": "center aisle", "x": 42, "y": 42, "width": 16, "height": 34 },
+            { "id": "Z3", "label": "drummer lane", "x": 60, "y": 44, "width": 24, "height": 28 },
+            { "id": "Z4", "label": "greenhouse door", "x": 46, "y": 36, "width": 8, "height": 18 },
+            { "id": "Z5", "label": "rear camera bay", "x": 40, "y": 82, "width": 20, "height": 12 },
+            {
+              "id": "Z6",
+              "label": "glass wall / dawn source",
+              "x": 0,
+              "y": 0,
+              "width": 100,
+              "height": 18
+            }
+          ],
+          "subjects": [
+            {
+              "id": "hosted_subject_1",
+              "label": "CELLIST",
+              "carries": null,
+              "states": [{ "label": "START", "x": 30, "y": 63, "note": "cellist" }]
+            },
+            {
+              "id": "hosted_subject_2",
+              "label": "DRUMMER",
+              "carries": null,
+              "states": [{ "label": "START", "x": 71, "y": 56, "note": "drummer" }]
+            }
+          ],
+          "cameras": [
+            {
+              "id": "hosted_camera_1",
+              "label": "Camera A",
+              "x": 50,
+              "y": 88,
+              "aimX": 30,
+              "aimY": 63,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_2",
+              "label": "Camera B",
+              "x": 18,
+              "y": 74,
+              "aimX": 71,
+              "aimY": 56,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_3",
+              "label": "Camera C",
+              "x": 86,
+              "y": 72,
+              "aimX": 30,
+              "aimY": 63,
+              "use": "Reproduce the frame-specific storyboard axis."
+            }
+          ],
+          "restrictions": [
+            "Diagram labels come from the hosted scene plan; location geometry remains provisional until the scout confirms it."
+          ]
+        },
+        "lighting": {
+          "title": "Dawn greenhouse pencil look",
+          "question": "Where are the meaningful sources, modifiers, and practicals?",
+          "zones": [
+            { "id": "Z1", "label": "cellist lane", "x": 16, "y": 48, "width": 22, "height": 26 },
+            { "id": "Z2", "label": "center aisle", "x": 42, "y": 42, "width": 16, "height": 34 },
+            { "id": "Z3", "label": "drummer lane", "x": 60, "y": 44, "width": 24, "height": 28 },
+            { "id": "Z4", "label": "greenhouse door", "x": 46, "y": 36, "width": 8, "height": 18 },
+            { "id": "Z5", "label": "rear camera bay", "x": 40, "y": 82, "width": 20, "height": 12 },
+            {
+              "id": "Z6",
+              "label": "glass wall / dawn source",
+              "x": 0,
+              "y": 0,
+              "width": 100,
+              "height": 18
+            }
+          ],
+          "sources": [
+            {
+              "id": "hosted_light_1",
+              "label": "dawn east glass",
+              "kind": "PRACTICAL",
+              "x": 82,
+              "y": 10,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Unmodified dawn through greenhouse glass and roof panels."
+            },
+            {
+              "id": "hosted_light_2",
+              "label": "roof glow",
+              "kind": "PRACTICAL",
+              "x": 50,
+              "y": 6,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Brighter rim on bow hair and glass, still entirely natural."
+            }
+          ],
+          "instruction": "Scene-derived intent: Unmodified dawn through greenhouse glass and roof panels. Dawn edge light catches sticks and bow hair without adjustment. Wet floor and metal hardware catch enough dawn sheen to reveal micro-motions. Side light makes chest lift and stick…"
+        },
+        "look": {
+          "title": "Dawn greenhouse pencil look",
+          "question": "What palette, contrast, texture, and grade direction govern the sequence?",
+          "swatches": [
+            { "name": "dawn silver", "color": "#C8CED6", "use": "glass, wet floor, morning air" },
+            { "name": "moss green", "color": "#5C6A58", "use": "frames, algae, background metal" },
+            { "name": "rust umber", "color": "#7A513B", "use": "disused hardware, bench legs" },
+            {
+              "name": "cello amber",
+              "color": "#9B6436",
+              "use": "instrument wood, sticks, late warmth"
+            },
+            {
+              "name": "charcoal cloth",
+              "color": "#2D2F33",
+              "use": "wardrobe, kit shadows, negative space"
+            }
+          ],
+          "contrast": "Cold silver-green field with isolated warm wood.",
+          "texture": "Soft graphite line, damp smudge at the frame edges, pale eraser bloom on condensation, no glossy finish.",
+          "restraint": "Treat the look as a hypothesis; reject decorative grading that does not serve the scene turn."
+        },
+        "sound": [
+          {
+            "sceneId": "S1",
+            "label": "Still Air",
+            "mustRecord": ["Room tone, clothing shift, breath, faint bow-hair touch."],
+            "perspective": "Leave breath and room tone unmasked.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S2",
+            "label": "Count Accepted",
+            "mustRecord": ["Visible count, inhale, first bow scrape."],
+            "perspective": "Do not bury the scrape; it is the acceptance cue.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S3",
+            "label": "Pulse on Trial",
+            "mustRecord": ["Bow noise, pedal thump, restrained stick articulation."],
+            "perspective": "Pedal thump and scrape share equal narrative weight.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S4",
+            "label": "Relay",
+            "mustRecord": ["Inhale, bow-change tick, foot cue, resumed pulse."],
+            "perspective": "Allow inhale and bow change to lead the beat.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S5",
+            "label": "Corrections Thin",
+            "mustRecord": ["Stable pulse foregrounded; incidental noises recede underneath it."],
+            "perspective": "Keep the live imperfections present but no longer alarming.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "S6",
+            "label": "After the Last Stroke",
+            "mustRecord": ["Resonance, breath release, greenhouse decay."],
+            "perspective": "Let decay and breath finish the scene.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          }
+        ],
+        "coverage": [
+          {
+            "id": "shot_1",
+            "priority": "MUST_GET",
+            "label": "Still Air",
+            "serves": ["Load suspense into the body before any note can claim attention."],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_2",
+            "priority": "MUST_GET",
+            "label": "Count Accepted",
+            "serves": ["Make the ignition point unmistakable."],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_3",
+            "priority": "SAFETY",
+            "label": "Pulse on Trial",
+            "serves": ["Extend suspense past the downbeat and refuse instant relief."],
+            "why": "Take only after the must-get story turns work."
+          },
+          {
+            "id": "shot_4",
+            "priority": "OPTIONAL_EXPLORATION",
+            "label": "Relay",
+            "serves": ["Let viewers see trust as exchanged responsibility rather than sentiment."],
+            "why": "Take only after the must-get story turns work."
+          }
+        ],
+        "location": {
+          "mode": "INTENT_ONLY",
+          "photos": [],
+          "claims": [],
+          "confirmationQuestion": "Add a wide and reverse location photo before locking physical geometry."
+        },
+        "delta": {
+          "trigger": "Hosted creative direction developed",
+          "changed": [
+            "Provider storyboard intent became independently composed 16:9 and 9:16 frame hypotheses."
+          ],
+          "unchanged": ["All physical geometry remains unverified until the scout confirms it."]
+        },
+        "productionReality": {
+          "crew": "",
+          "cameraBody": "",
+          "lenses": "",
+          "support": "",
+          "lighting": "",
+          "sound": "",
+          "shootTime": "",
+          "access": "",
+          "talent": "",
+          "budget": "",
+          "timeOfDay": ""
+        }
+      },
+      "questions": [
+        {
+          "prompt": "From the fixed wide, can unprompted viewers clearly read both the raised-stick count and the cellist's acceptance of it?",
+          "decisionItChanges": "Whether Scene S1 can hold longer before the first cut, or whether S2 must arrive earlier on Camera C."
+        },
+        {
+          "prompt": "Does Camera C's low diagonal make pedal and endpin legible without turning Scene S3 into a mechanics-only detour?",
+          "decisionItChanges": "Whether the floor-axis emphasis remains a full beat or is shortened to a single confirming insert within the take."
+        },
+        {
+          "prompt": "Across the real dawn window, does the greenhouse naturally open enough by minute five to support the Clarity Ladder without any lighting intervention?",
+          "decisionItChanges": "How much visual reward is withheld until S5 and whether the late wide can carry the release alone."
+        }
+      ],
+      "productionNextSteps": [
+        "Tape the fixed three-camera grid in the greenhouse and run one full seven-minute rehearsal without playback.",
+        "Review a cold-viewer cut made strictly by cue-transfer rules and record whether the count-in handoff and two later relays are identified.",
+        "Adjust performer orientation only enough to keep ribcage breath, bow contact, stick check, and pedal action readable from the fixed positions.",
+        "Sound-check for exposed breath, bow scrape, and foot cue so they remain intentional evidence rather than accidental noise.",
+        "Test the actual dawn window for condensation visibility and minute-five room lift before locking the hold lengths."
+      ]
+    },
+    "projectSummary": "“One Breath Before the Downbeat” is for Glasshouse Sessions; current format: live music performance film. Creative goal: Make the fragile negotiation between breath and tempo feel more consequential than virtuosity. Intended audience: listeners accustomed to polished studio-session videos. Intended feeling: physical suspense followed by release.",
+    "storyObjective": "Objective: Make the fragile negotiation between breath and tempo feel more consequential than virtuosity. Use each creative choice to help the audience leave feeling physical suspense followed by release.",
+    "audienceAnalysis": "Primary audience: listeners accustomed to polished studio-session videos. Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.",
+    "emotionalArc": [
+      "Still Air — Load suspense into the body before any note can claim attention.",
+      "Count Accepted — Make the ignition point unmistakable.",
+      "Pulse on Trial — Extend suspense past the downbeat and refuse instant relief.",
+      "Relay — Let viewers see trust as exchanged responsibility rather than sentiment.",
+      "Corrections Thin — Convert vigilance into physical release.",
+      "After the Last Stroke — Give the audience one shared exhale instead of a hard stop."
+    ],
+    "recommendedStructure": "Recommended story engine — Silence becomes an arena; the drummer's count is visibly offered; the cellist accepts it with first contact; early playing is full of tiny corrections; breath, bow change, and foot cue relay responsibility; cue traffic thins; the last exhale lands after the last sound. One continuous take. Camera A: fixed rear-center shared wide. Camera B: fixed cellist-side medium capturing ribcage, bow contact, and drummer at frame edge. Camera C: fixed drummer-side medium-low capturing count-in, stick restraint, kick foot, and cellist profile. Editorial law: cut only on visible transfers or confirmations of tempo authority. Secondary law: withhold the cleanest flattering detail until the bodies need fewer corrective signals.",
+    "hookConcepts": [
+      {
+        "title": "Glass Between Them",
+        "description": "Synchronization searched through a room that refuses full clarity. Visual discomfort, searching attention, late clarity."
+      },
+      {
+        "title": "Floor Contract",
+        "description": "Tempo is first believed at floor level, not face level. Deprived of glamour, then rewarded with mechanical intimacy, then bodily release."
+      },
+      {
+        "title": "Daylight Proof",
+        "description": "The room's opening to morning mirrors ensemble alignment. Austere beginning, gradual visual easing, post-performance exhale."
+      }
+    ],
+    "editingBlueprint": [
+      "One continuous take. Camera A: fixed rear-center shared wide. Camera B: fixed cellist-side medium capturing ribcage, bow contact, and drummer at frame edge. Camera C: fixed drummer-side medium-low capturing count-in, stick restraint, kick foot, and cellist profile. Editorial law: cut only on visible transfers or confirmations of tempo authority. Secondary law: withhold the cleanest flattering detail until the bodies need fewer corrective signals.",
+      "Still Air: Both musicians settle into position; the cellist lifts the bow and inhales while the drummer raises sticks without striking. Silence stops feeling private and starts feeling binding.",
+      "Count Accepted: The drummer gives a visible count-in; on the last count the cellist lowers the bow to the string and commits the first stroke. The drummer's external time becomes shared time because the cellist answers it.",
+      "Pulse on Trial: The drummer enters sparingly; the cellist sustains through audible bow noise while both make small foot and torso adjustments. A pulse exists, but both bodies are still testing whether it will hold.",
+      "Relay: At a phrase edge, the cellist takes a visible breath and changes bow; the drummer checks the stick in the air and answers with a clear foot cue before rejoining the pulse. Tempo authority passes from cellist to drummer and back without speech.",
+      "Corrections Thin: Both keep playing, but cues shrink: fewer glances, smaller feet, longer strokes, steadier stick path. What looked fragile begins to feel inevitable.",
+      "After the Last Stroke: The final stroke and final hit decay; neither musician moves immediately, then both exhale and loosen out of performance posture. Release lands after the music, not on it."
+    ],
+    "interviewStrategy": null,
+    "brollPriorities": [
+      "Still Air: Shared wide; condensed glass, empty aisle, weak dawn, two bodies not yet aligned.",
+      "Count Accepted: Drummer's sticks mark time in the air; the bow waits, then drops with intent.",
+      "Pulse on Trial: Kick pedal, endpin, hardware, shoulders, and bow all look slightly taut.",
+      "Relay: Foreground torso lift answered by background stick restraint and pedal action.",
+      "Corrections Thin: The shared frame holds more calmly; greenhouse lines stop feeling like barriers.",
+      "After the Last Stroke: Bow hangs for a beat, sticks lower, condensation catches brighter dawn behind them."
+    ],
+    "risks": [
+      "We surrender hero coverage of the flashiest playing and some premium-session glamour. Beautiful dexterity may remain in a wide if it is not where timing authority changes hands.",
+      "Abandon this if a cold-viewer rehearsal cut with the fixed three-camera layout fails to let most viewers identify the count-in handoff and at least two later tempo-relay moments without prompting.",
+      "Do not lock production around an unverified audience (listeners accustomed to polished studio-session videos) or emotional destination (physical suspense followed by release).",
+      "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve."
+    ]
+  },
+  "translationPath": "generateBlueprint(providerOutput)"
+}

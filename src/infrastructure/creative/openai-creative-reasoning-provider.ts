@@ -275,7 +275,10 @@ export class OpenAiCreativeReasoningProvider implements CreativeReasoningProvide
     this.apiKey = options.apiKey;
     this.model = options.model?.trim() || "gpt-5.4";
     this.endpoint = options.endpoint ?? "https://api.openai.com/v1/responses";
-    this.timeoutMs = options.timeoutMs ?? 120_000;
+    // High-effort synthesis can legitimately exceed several minutes on the hosted
+    // reasoning path. Keep a hard bound, but leave enough room for the model to
+    // finish the structured artifact instead of rewarding shallower output.
+    this.timeoutMs = options.timeoutMs ?? 600_000;
     this.request = options.fetch ?? globalThis.fetch.bind(globalThis);
     this.id = `openai-responses:${this.model}`;
   }
@@ -324,7 +327,7 @@ export class OpenAiCreativeReasoningProvider implements CreativeReasoningProvide
     const result = await this.respond<Omit<MeaningfulDevelopment, "version" | "reasoningSource">>(
       "creative_development_synthesis",
       synthesisSchema,
-      "Choose and materially improve one direction. Build concrete hypothetical scenes, concise shot/beat cards, and a drawable pencil-storyboard specification with blocking and look references. Coordinates are percentages from 0 to 100. Respect every supplied safety constraint. The artifact must communicate story choices, not decorate prose.",
+      "Choose and materially improve one direction. Build concrete hypothetical scenes, concise shot/beat cards, and a drawable pencil-storyboard specification with blocking and look references. Every storyboard frame must correspond to a scene and depict its specific physical action, people, meaningful objects, environment, and turn; label the actual role or object, never PRIMARY SUBJECT, OBJECT, or LOCATION. Vary composition and blocking between beats instead of repeating a diagram. Coordinates are percentages from 0 to 100 and scale is approximately 0.35 to 1.5. Respect every supplied safety constraint. The artifact must communicate story choices without explanatory prose.",
       { brief: briefPayload(brief), understanding, candidates, critiques },
     );
     return { version: 2, reasoningSource: "HOSTED_REASONING", ...result };
@@ -339,7 +342,7 @@ export class OpenAiCreativeReasoningProvider implements CreativeReasoningProvide
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
-      const response = await this.request(this.endpoint, {
+      const request = {
         method: "POST",
         headers: {
           Authorization: `Bearer ${this.apiKey}`,
@@ -367,7 +370,19 @@ export class OpenAiCreativeReasoningProvider implements CreativeReasoningProvide
           },
         }),
         signal: controller.signal,
-      });
+      } satisfies RequestInit;
+      let response: Response | undefined;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          response = await this.request(this.endpoint, request);
+        } catch (cause) {
+          if (cause instanceof Error && cause.name === "AbortError") throw cause;
+          if (attempt === 0) continue;
+          throw cause;
+        }
+        if (![408, 409, 500, 502, 503, 504].includes(response.status) || attempt === 1) break;
+      }
+      if (!response) throw new CreativeReasoningError("Hosted creative reasoning is unavailable.");
       if (!response.ok) {
         throw new CreativeReasoningError(
           `Hosted creative reasoning request failed with status ${response.status}.`,

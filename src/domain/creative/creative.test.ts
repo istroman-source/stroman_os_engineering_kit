@@ -189,4 +189,17 @@ describe("generateBlueprint", () => {
     expect(bp.development.mode).toBe("PERFORMANCE");
     expect(bp.development.directionDecision.title).toBe("Let the constraint shape the performance");
   });
+
+  it("preserves an explicitly open moving-image format even when family language is present", () => {
+    const bp = blueprintFor(
+      brief({
+        title: "The Weight of an Empty Chair",
+        projectType: "open-format moving-image study",
+        context:
+          "Three adult cousins disagree about an inherited kitchen chair; the result may become an installation loop or hybrid.",
+      }),
+    );
+
+    expect(bp.development.mode).toBe("OPEN");
+  });
 });

@@ -1,0 +1,2596 @@
+{
+  "calibration": "HOSTED_CREATIVE_REASONING",
+  "generatedAt": "2026-08-11T20:58:02.331Z",
+  "case": {
+    "id": "documentary-harbor-third-shift",
+    "expectedMode": "DOCUMENTARY",
+    "brief": {
+      "title": "Third Shift at Harbor Light",
+      "client": "Baltimore Working Waterfront Archive",
+      "projectType": "observational documentary profile",
+      "creativeGoal": "Make the invisible judgment of overnight dock work legible without turning workers into heroic symbols.",
+      "targetAudience": "Baltimore residents who only encounter the harbor in daylight",
+      "desiredEmotion": "alert respect rather than nostalgia",
+      "context": "Access is limited to one overnight shift, the break room, loading berth, and live radio traffic. One veteran dispatcher and one first-week crane spotter have consented to filming. No family archive is available; do not stage danger, invent testimony, or identify unconsented workers."
+    }
+  },
+  "provider": { "id": "openai-responses:gpt-5.4", "mode": "HOSTED" },
+  "applicationPath": "developCreativeBlueprint",
+  "semanticGate": "PASSED_BY_APPLICATION",
+  "creativeQuality": {
+    "passed": true,
+    "total": 93,
+    "scores": [
+      {
+        "dimension": "TRANSFORMATION",
+        "score": 9,
+        "evidence": "The thesis must discover a human or dramatic value beyond restating the stated goal."
+      },
+      {
+        "dimension": "PROJECT_SPECIFICITY",
+        "score": 8,
+        "evidence": "27/35 distinctive title, client, or context terms survive in the reasoning."
+      },
+      {
+        "dimension": "ACTIONABILITY",
+        "score": 10,
+        "evidence": "6 scenes contain physical action and a distinct dramatic turn; 6 make that action depend on project-specific material."
+      },
+      {
+        "dimension": "DISTINCTIVENESS",
+        "score": 9,
+        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
+      },
+      {
+        "dimension": "JUDGMENT",
+        "score": 10,
+        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
+      },
+      {
+        "dimension": "INNOVATION",
+        "score": 9,
+        "evidence": "At least one departure must name the convention, its value, the violation, project fit, and execution risk."
+      },
+      {
+        "dimension": "HUMANNESS",
+        "score": 9,
+        "evidence": "The insight names a human truth and lived dramatic pressure rather than a demographic label."
+      },
+      {
+        "dimension": "CRAFT_COHERENCE",
+        "score": 10,
+        "evidence": "6/6 scenes derive complete physical craft choices."
+      },
+      {
+        "dimension": "HONESTY",
+        "score": 9,
+        "evidence": "Assumptions and constraint handling remain explicit; hypothetical scenes are not presented as captured evidence."
+      },
+      {
+        "dimension": "VISUAL_COMPLETION",
+        "score": 10,
+        "evidence": "6 drawn frames, a blocking map, and a look palette are renderable."
+      }
+    ],
+    "blockingFindings": [],
+    "substitutionSignal": {
+      "projectTermsFound": [
+        "third",
+        "shift",
+        "harbor",
+        "light",
+        "waterfront",
+        "access",
+        "limited",
+        "overnight",
+        "break",
+        "room",
+        "loading",
+        "berth",
+        "live",
+        "radio",
+        "traffic",
+        "veteran",
+        "dispatcher",
+        "first-week",
+        "crane",
+        "spotter",
+        "consented",
+        "available",
+        "stage",
+        "danger",
+        "identify",
+        "unconsented",
+        "workers"
+      ],
+      "weak": false
+    }
+  },
+  "visualQuality": { "passed": true, "findings": [] },
+  "providerOutput": {
+    "version": 2,
+    "reasoningSource": "HOSTED_REASONING",
+    "insight": {
+      "thesis": "Overnight dock work is a chain of custody for information: judgment passes from radio to body to confirmation, preventing visible trouble before daylight residents would ever know it existed.",
+      "humanTruth": "The skill people miss most easily is the skill that leaves no spectacle behind. When someone keeps a system stable, their competence can look like ordinary restraint.",
+      "dramaticTension": "The film must make stakes legible through pauses, repeats, and partial sightlines while refusing both heroic iconography and anonymous-industrial nostalgia.",
+      "audiencePromise": "A viewer who knows the harbor only by day will leave able to read the nighttime waterfront as an active system of attention, not an empty backdrop."
+    },
+    "directionDecision": {
+      "title": "Third Shift at Harbor Light — Hold / Repeat / Confirm",
+      "pointOfView": "The protagonist is the handoff of judgment between the veteran dispatcher and the first-week crane spotter; the audience learns to read three recurring signals: hold, locate, confirm.",
+      "storyEngine": "Three linked decision chains, each shorter than the last. Chain 1 teaches the grammar; Chain 2 deepens it; Chain 3 lets the audience anticipate the bodily check before the release comes. The tension is whether small corrections keep the chain unbroken for one shift.",
+      "formalStrategy": "Alternate break room and loading berth on matched actions instead of biography: hovering thumb over radio / planted feet on the berth; shorter wording / shorter movement; lowered radio / resumed routine. Start in partial comprehension, not explanation. Use privacy-safe fragments of live radio only when they become legible through observed consequence. No scenic harbor inserts, no sunrise payoff, no montage of unidentified labor.",
+      "audienceJourney": "Disorientation -> pattern recognition -> anticipatory alert respect.",
+      "whyThisProject": "This most directly serves the brief's subject: invisible judgment. The improvement is a learnable visual grammar, not just a process diagram, so the audience earns comprehension through repeated observed chains rather than through heroic framing or heavy explanation.",
+      "sacrifice": "No life-story spine, minimal personal exposition, no panoramic harbor orientation, and any visually strong moment without a trackable judgment chain gets cut.",
+      "assumptions": [
+        "The recorded shift will contain at least three privacy-safe call-to-check-to-confirm chains.",
+        "The dispatcher and spotter will each show repeated physical listening behavior that can become visual motifs.",
+        "Radio traffic will be intelligible enough in fragments to support pattern recognition without exposing names or unconsented workers.",
+        "The berth offers at least one safe angle where the spotter's checks are visible without identifying others."
+      ],
+      "changeMyMindIf": "Change my mind if the shift yields fewer than three complete, privacy-safe decision chains, or if the repeated physical signals of judgment never become visible enough for viewers to learn the grammar without explanatory repair.",
+      "projectDependencies": [
+        "Clean production sound from radio plus room/berth ambience",
+        "Repeatable safe coverage in break room and at least one berth sightline",
+        "Editorial willingness to omit striking material that does not link to a legible chain",
+        "Privacy-safe subtitle/redaction approach for radio traffic"
+      ],
+      "innovation": {
+        "convention": "Observational labor profiles usually anchor viewers with one charismatic worker plus early explanatory context.",
+        "whyConventionWorks": "A single lead and direct explanation reduce opacity fast and supply emotion even when the work itself is technical.",
+        "departure": "Make the custody chain of judgment the lead instead of either worker. Build the edit from recurring matched actions across spaces, and delay clean decoding until a repeated radio fragment has already produced visible physical consequence.",
+        "projectBenefit": "This exact departure fits a film about legibility without heroization. It turns the actual constraints—one shift, two spaces, two consented workers, live radio—into the formal spine and lets respect come from recognition rather than reverence.",
+        "executionRisk": "If the chains are sparse or muddy, the film can feel schematic or emotionally cool, and the delayed decoding can read as mere opacity."
+      }
+    },
+    "alternativeDecisions": [
+      {
+        "title": "Two Rooms, One Harbor",
+        "pointOfView": "Spatial POV: the harbor is understood only through the break room and loading berth.",
+        "storyEngine": "Meaning accumulates through repeated crossings between indoor talk and outdoor looking.",
+        "formalStrategy": "Use threshold compositions and hard sound-temperature shifts to make the doorway the film's punctuation.",
+        "audienceJourney": "Confinement -> recognition of partial visibility -> respect for relay work.",
+        "whyThisProject": "Most honest about limited access and strong if the doorway repeatedly changes what information means.",
+        "sacrifice": "Less operational clarity and less sense of decision custody than the recommendation.",
+        "assumptions": [
+          "The break room is an active operational site, not only downtime.",
+          "There are enough crossings to create a pattern with new meaning."
+        ],
+        "changeMyMindIf": "Change my mind if there are at least four meaningful threshold crossings where information is visibly reinterpreted from one space to the other.",
+        "projectDependencies": [
+          "Repeatable doorway coverage",
+          "Distinct interior/exterior sound signatures",
+          "A cut willing to stay geographically narrow"
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Nothing to See, Everything to Judge",
+        "pointOfView": "Negative-space POV: prevented trouble is the real event.",
+        "storyEngine": "Each apparent promise of action resolves into a pause, recheck, or confirmation.",
+        "formalStrategy": "Favor real-time duration, pauses, and routine continuation over incident-driven escalation.",
+        "audienceJourney": "Expectation of spectacle -> recalibrated attention -> respect for vigilance.",
+        "whyThisProject": "Strong conceptual answer to anti-heroization and the hidden nature of successful judgment.",
+        "sacrifice": "Least immediate clarity; highest risk of flatness or accidental atmosphere-first viewing.",
+        "assumptions": [
+          "Observable rechecks will read as decisions on camera.",
+          "Sound and duration can carry consequence without overt incident."
+        ],
+        "changeMyMindIf": "Change my mind if the shift captures at least three clearly readable stop-recheck-confirm moments whose stakes are understandable from action and actual radio alone.",
+        "projectDependencies": [
+          "Patient coverage",
+          "Strong sync sound",
+          "Privacy-safe framing of calm rather than spectacle"
+        ],
+        "innovation": null
+      },
+      {
+        "title": "Borrowed Ears",
+        "pointOfView": "Audience-aligned listening POV through the first-week spotter's partial understanding.",
+        "storyEngine": "The night becomes a progression in hearing: confusion, repeat, recognition.",
+        "formalStrategy": "Let the viewer learn recurring radio language before any explicit decoding.",
+        "audienceJourney": "Outsider confusion -> earned listening -> changed perception.",
+        "whyThisProject": "Most directly tailored to daylight residents if the novice arc naturally appears.",
+        "sacrifice": "Narrower balance between the two workers and heavier dependence on intelligible radio.",
+        "assumptions": [
+          "The spotter will visibly ask, repeat, or clarify enough to create a learning curve.",
+          "Radio language will recur across the shift."
+        ],
+        "changeMyMindIf": "Change my mind if the spotter has at least two early clarify moments and one later comparable moment handled without extra help.",
+        "projectDependencies": [
+          "Exceptionally clear radio sound",
+          "Careful subtitle design",
+          "Strict privacy-safe transcript handling"
+        ],
+        "innovation": null
+      }
+    ],
+    "sceneHypotheses": [
+      {
+        "id": "SC1",
+        "title": "Hover, Then Key",
+        "action": "In the break room, the dispatcher reaches for the hand radio, stops with thumb above the talk button, listens through a full burst of traffic, then keys a shorter reply.",
+        "visual": "Plastic table, paper cup, fridge, counter, fluorescent ceiling wash; the dispatcher stays seated and ordinary.",
+        "sound": "Refrigerator buzz, room hum, radio crackle, a beat of held silence before speech.",
+        "turn": "The first visible skill is not command but restraint.",
+        "purpose": "Reframe waiting as labor and teach the film's first rule: speed yields to certainty.",
+        "constraintHandling": "Frame only the consenting dispatcher; exclude other workers; use only privacy-safe fragments of actual radio if usable.",
+        "craft": {
+          "blocking": "Seated stillness with one interrupted reach makes the halt legible.",
+          "camera": "Tight close-up on hand, mouth, and radio, then hold without cutting away.",
+          "light": "Existing fluorescent practicals only; flat, unsentimental.",
+          "design": "Ordinary break-room objects stay in frame to resist control-room myth.",
+          "color": "Cool green-white room with a small red radio indicator.",
+          "sound": "Radio rides above room tone, but the room buzz remains to keep the action mundane."
+        }
+      },
+      {
+        "id": "SC2",
+        "title": "Plant and Point",
+        "action": "At the loading berth, the first-week spotter steps out from the door, plants both feet on the safe lane stripe, raises the radio, and points toward a container corner and berth edge before answering.",
+        "visual": "Door glow behind, dark berth ahead, reflective tape and painted stripe catching light; the spotter is seen mostly from behind or three-quarter back.",
+        "sound": "Door thud, wind, low machinery, grit under boots, radio reply.",
+        "turn": "Abstract radio language becomes bodily geometry.",
+        "purpose": "Convert invisible chatter into a readable physical judgment for daylight viewers.",
+        "constraintHandling": "Camera stays in a safe area; rear/side angle avoids identifying unconsented workers; no staged proximity to hazard.",
+        "craft": {
+          "blocking": "A clear move from doorway to stripe to planted halt makes the check readable.",
+          "camera": "Medium-wide over-shoulder with slight compression to connect finger point and distant reference.",
+          "light": "Mixed sodium exterior and door spill; no added dramatizing contrast.",
+          "design": "Safe lane stripe, bollard, container corner, berth edge as the scene's map.",
+          "color": "Amber-black field with safety orange accents.",
+          "sound": "Hold long enough after the answer for the environment to explain why the check matters."
+        }
+      },
+      {
+        "id": "SC3",
+        "title": "Shorter Words, Higher Stakes",
+        "action": "Back in the break room, the dispatcher leans toward the radio, gives a shorter follow-up, lowers it, and taps one finger on the table while waiting for confirmation.",
+        "visual": "Locked wide frame: table, wall phone, fridge, door, empty corners of the room making the dispatcher small in space.",
+        "sound": "Same radio channel, fewer words, longer silence afterward.",
+        "turn": "Experience sounds compressed, not louder.",
+        "purpose": "Show expertise as precise economy inside an ordinary room, avoiding mythic authority.",
+        "constraintHandling": "Keep the frame solitary or cropped to exclude others; do not over-translate radio language beyond privacy-safe fragments.",
+        "craft": {
+          "blocking": "Minimal movement after the lean-in makes the wait visible.",
+          "camera": "Static frontal wide to contrast with SC1's close-up.",
+          "light": "Full fluorescent flatness, no sculpting.",
+          "design": "Wall phone and table anchor the room as everyday infrastructure.",
+          "color": "Washed whites, pale green, faded surfaces.",
+          "sound": "The silence after transmission becomes the tension beat."
+        }
+      },
+      {
+        "id": "SC4",
+        "title": "Hold, Shift, Recheck",
+        "action": "On the berth, the spotter starts forward, stops mid-step, raises a flat palm for hold, sidesteps left two paces, looks again, then answers into the radio.",
+        "visual": "Oblique angle with boots crossing the painted stripe; bollard near foreground, container corner beyond; the spotter's body is active but not glorified.",
+        "sound": "Footsteps stop, jacket rustle, machinery hum continues, clipped radio answer.",
+        "turn": "First-week status does not mean passivity; caution is active judgment.",
+        "purpose": "Reject the hero/apprentice cliché and make careful re-reading feel competent rather than tentative.",
+        "constraintHandling": "Safe lane only; avoid visible unconsented faces; do not stage or imply danger beyond the observed check.",
+        "craft": {
+          "blocking": "The lateral sidestep is the key readable action.",
+          "camera": "Low-medium oblique angle to make the stop and shift graphic.",
+          "light": "Available sodium side light with reflective tape catching the move.",
+          "design": "Stripe, bollard, container corner make the geometry explicit.",
+          "color": "Dark charcoal field with amber and reflective white hits.",
+          "sound": "Let the stopped footsteps mark the turn more than the radio does."
+        }
+      },
+      {
+        "id": "SC5",
+        "title": "Routine Interrupted",
+        "action": "In the break room, the dispatcher pulls a packed meal closer, the wrapper crackles, radio cuts in, and the meal is set down unfinished while the reply goes out.",
+        "visual": "High-angle tabletop composition with meal, radio, paper towel, cup, and the dispatcher's hands.",
+        "sound": "Plastic crinkle abruptly interrupted by radio traffic and a clipped answer.",
+        "turn": "The nerve center is not theatrical; judgment lives inside routine interruption.",
+        "purpose": "Humanize without biography and keep the film anti-heroic.",
+        "constraintHandling": "Single-consent frame; no staged dialogue; if no meal exists, substitute another ordinary break-room interruption without changing the beat logic.",
+        "craft": {
+          "blocking": "Small hand movements carry the whole beat.",
+          "camera": "Overhead-ish close composition that privileges objects and interruption.",
+          "light": "Top practical fluorescent; no mood enhancement.",
+          "design": "Packed meal, hand radio, cup, paper towel as concrete night-shift evidence.",
+          "color": "Beige food tones against green-white room and radio red.",
+          "sound": "Hard cut from wrapper texture to radio crackle sharpens the interruption."
+        }
+      },
+      {
+        "id": "SC6",
+        "title": "Release Without Applause",
+        "action": "Back on the berth, the spotter lowers the radio, shoulders drop, and resumes walking the safe lane while the berth itself stays visually almost unchanged.",
+        "visual": "Rear wide: small body moving through a large dark berth, door glow distant, light mast and container lights fixed in place.",
+        "sound": "Radio click off, wind, machinery settling back into steady ambient with no score.",
+        "turn": "The payoff is continuation, not spectacle.",
+        "purpose": "Land alert respect by showing that successful judgment often looks like nothing dramatic happened.",
+        "constraintHandling": "Back view only; exclude or defocus others; remain in safe zone; no added action for closure.",
+        "craft": {
+          "blocking": "Movement away from camera de-centers the subject and privileges the resumed system.",
+          "camera": "Locked rear wide or very restrained follow, then stillness.",
+          "light": "Only available berth practicals and distant spill.",
+          "design": "Safe lane stripe receding into darkness, light mast, fixed container lights.",
+          "color": "Charcoal, sodium amber, small white reflective marks.",
+          "sound": "Let release breathe in real time so calm feels earned, not empty."
+        }
+      }
+    ],
+    "directorNotebook": [
+      {
+        "id": "NB1",
+        "sceneId": "SC1",
+        "shot": "CU hover",
+        "visual": "Thumb suspended over talk button beside paper cup.",
+        "camera": "Locked close-up at table height.",
+        "light": "Fluorescent practicals.",
+        "sound": "Fridge buzz under radio burst.",
+        "purpose": "Teach that the held beat is active judgment.",
+        "creativeThread": "Hold before speech."
+      },
+      {
+        "id": "NB2",
+        "sceneId": "SC1",
+        "shot": "Profile listen",
+        "visual": "Dispatcher in partial profile, radio near mouth, no reply yet.",
+        "camera": "Short lateral move into stillness.",
+        "light": "Same flat room wash.",
+        "sound": "Static and room hum, no music.",
+        "purpose": "Keep the first tension internal, not dramaticized.",
+        "creativeThread": "Ordinary room / high consequence."
+      },
+      {
+        "id": "NB3",
+        "sceneId": "SC2",
+        "shot": "Doorway follow",
+        "visual": "Spotter crosses from lit door into dark berth lane.",
+        "camera": "Behind-the-shoulder follow, stopping at safe line.",
+        "light": "Door spill into sodium exterior.",
+        "sound": "Door thud to wind.",
+        "purpose": "Translate information into space.",
+        "creativeThread": "Handoff leaves the room."
+      },
+      {
+        "id": "NB4",
+        "sceneId": "SC2",
+        "shot": "Plant and point",
+        "visual": "Feet planted on stripe, finger marking the read line toward container corner.",
+        "camera": "Compressed medium-wide.",
+        "light": "Exterior practicals only.",
+        "sound": "Boot grit and clipped answer.",
+        "purpose": "Make radio judgment visible.",
+        "creativeThread": "Body completes the sentence."
+      },
+      {
+        "id": "NB5",
+        "sceneId": "SC3",
+        "shot": "Locked room wide",
+        "visual": "Dispatcher small in frame, leaning toward radio at table.",
+        "camera": "Static frontal wide.",
+        "light": "Flat fluorescent.",
+        "sound": "Short transmission followed by waiting silence.",
+        "purpose": "Show expertise as economy, not authority pose.",
+        "creativeThread": "Precision shrinks speech."
+      },
+      {
+        "id": "NB6",
+        "sceneId": "SC4",
+        "shot": "Palm up stop",
+        "visual": "Spotter mid-step, flat palm raised, body arrested before shift.",
+        "camera": "Low oblique medium.",
+        "light": "Sodium side light catches reflective trim.",
+        "sound": "Footstep stop is foregrounded.",
+        "purpose": "Make caution legible as decision.",
+        "creativeThread": "Hold repeats in a new body."
+      },
+      {
+        "id": "NB7",
+        "sceneId": "SC4",
+        "shot": "Sidestep geometry",
+        "visual": "Boots crossing stripe, container corner and bollard re-aligning in frame.",
+        "camera": "Lower insert-height angle.",
+        "light": "Practical spill with deep falloff.",
+        "sound": "Jacket rustle, hum steady.",
+        "purpose": "Show the re-read, not just the answer.",
+        "creativeThread": "Judgment is repositioning."
+      },
+      {
+        "id": "NB8",
+        "sceneId": "SC5",
+        "shot": "Interrupted meal",
+        "visual": "Packed meal and radio share the tabletop; hand leaves food for the radio.",
+        "camera": "Overhead-ish close.",
+        "light": "Top practical.",
+        "sound": "Wrapper crackle cut by radio.",
+        "purpose": "Human scale without confession or backstory.",
+        "creativeThread": "Routine becomes relay."
+      }
+    ],
+    "storyboard": {
+      "status": "RENDERED",
+      "renderer": "STROMAN_PENCIL_SVG_V1",
+      "title": "Third Shift at Harbor Light — Hold / Repeat / Confirm",
+      "frames": [
+        {
+          "id": "F1",
+          "beatId": "SC1",
+          "title": "Hover, Then Key",
+          "cameraLabel": "CU / table edge",
+          "annotation": "Thumb pauses above hand radio; restraint is the first turn.",
+          "glyphs": [
+            { "kind": "ADULT", "x": 31, "y": 63, "scale": 0.92, "label": "dispatcher" },
+            { "kind": "TABLE", "x": 38, "y": 78, "scale": 1.12, "label": "break room table" },
+            { "kind": "OBJECT", "x": 44, "y": 69, "scale": 0.42, "label": "hand radio" },
+            { "kind": "OBJECT", "x": 27, "y": 71, "scale": 0.38, "label": "paper cup" },
+            { "kind": "FRIDGE", "x": 84, "y": 34, "scale": 0.84, "label": "fridge" },
+            { "kind": "COUNTER", "x": 73, "y": 67, "scale": 0.92, "label": "counter" },
+            { "kind": "DOOR", "x": 11, "y": 47, "scale": 0.78, "label": "break room door" }
+          ],
+          "arrows": [
+            { "fromX": 35, "fromY": 66, "toX": 43, "toY": 69, "label": "reach stops" },
+            { "fromX": 44, "fromY": 69, "toX": 31, "toY": 61, "label": "listen before reply" }
+          ]
+        },
+        {
+          "id": "F2",
+          "beatId": "SC2",
+          "title": "Plant and Point",
+          "cameraLabel": "MW / over shoulder",
+          "annotation": "The call becomes geometry when the spotter plants and points.",
+          "glyphs": [
+            { "kind": "DOOR", "x": 13, "y": 54, "scale": 0.98, "label": "berth door" },
+            { "kind": "ADULT", "x": 37, "y": 64, "scale": 0.98, "label": "first-week spotter" },
+            { "kind": "OBJECT", "x": 41, "y": 55, "scale": 0.36, "label": "hand radio" },
+            { "kind": "OBJECT", "x": 55, "y": 81, "scale": 1.34, "label": "safe lane stripe" },
+            { "kind": "OBJECT", "x": 78, "y": 47, "scale": 1.02, "label": "container corner" },
+            { "kind": "OBJECT", "x": 68, "y": 71, "scale": 0.54, "label": "bollard" },
+            { "kind": "OBJECT", "x": 92, "y": 60, "scale": 0.88, "label": "berth edge" }
+          ],
+          "arrows": [
+            { "fromX": 20, "fromY": 61, "toX": 35, "toY": 67, "label": "steps out" },
+            { "fromX": 40, "fromY": 58, "toX": 77, "toY": 48, "label": "points to verify" }
+          ]
+        },
+        {
+          "id": "F3",
+          "beatId": "SC3",
+          "title": "Shorter Words, Higher Stakes",
+          "cameraLabel": "WIDE / locked frontal",
+          "annotation": "Fewer words, longer wait.",
+          "glyphs": [
+            { "kind": "ADULT", "x": 58, "y": 61, "scale": 0.82, "label": "dispatcher" },
+            { "kind": "TABLE", "x": 56, "y": 77, "scale": 1.2, "label": "break room table" },
+            { "kind": "OBJECT", "x": 51, "y": 67, "scale": 0.4, "label": "hand radio" },
+            { "kind": "PHONE", "x": 83, "y": 49, "scale": 0.62, "label": "wall phone" },
+            { "kind": "FRIDGE", "x": 18, "y": 39, "scale": 0.82, "label": "fridge" },
+            { "kind": "COUNTER", "x": 24, "y": 71, "scale": 0.86, "label": "counter" },
+            { "kind": "DOOR", "x": 8, "y": 53, "scale": 0.76, "label": "break room door" }
+          ],
+          "arrows": [
+            { "fromX": 58, "fromY": 59, "toX": 51, "toY": 67, "label": "shorter follow-up" },
+            { "fromX": 55, "fromY": 67, "toX": 47, "toY": 76, "label": "waits for confirm" }
+          ]
+        },
+        {
+          "id": "F4",
+          "beatId": "SC4",
+          "title": "Hold, Shift, Recheck",
+          "cameraLabel": "OBLIQUE / low-medium",
+          "annotation": "A stop and sidestep make care visible.",
+          "glyphs": [
+            { "kind": "ADULT", "x": 50, "y": 58, "scale": 0.96, "label": "first-week spotter" },
+            { "kind": "OBJECT", "x": 39, "y": 83, "scale": 1.4, "label": "safe lane stripe" },
+            { "kind": "OBJECT", "x": 76, "y": 37, "scale": 1.08, "label": "container corner" },
+            { "kind": "OBJECT", "x": 27, "y": 63, "scale": 0.58, "label": "bollard" },
+            { "kind": "OBJECT", "x": 92, "y": 55, "scale": 0.9, "label": "berth edge" },
+            { "kind": "DOOR", "x": 10, "y": 72, "scale": 0.72, "label": "door glow" }
+          ],
+          "arrows": [
+            { "fromX": 50, "fromY": 60, "toX": 40, "toY": 60, "label": "sidestep left" },
+            { "fromX": 53, "fromY": 52, "toX": 72, "toY": 44, "label": "recheck line" },
+            { "fromX": 48, "fromY": 52, "toX": 43, "toY": 49, "label": "hold" }
+          ]
+        },
+        {
+          "id": "F5",
+          "beatId": "SC5",
+          "title": "Routine Interrupted",
+          "cameraLabel": "HIGH / tabletop",
+          "annotation": "Food stops; relay work resumes.",
+          "glyphs": [
+            { "kind": "ADULT", "x": 46, "y": 38, "scale": 0.84, "label": "dispatcher" },
+            { "kind": "TABLE", "x": 50, "y": 56, "scale": 1.3, "label": "break room table" },
+            { "kind": "OBJECT", "x": 59, "y": 52, "scale": 0.42, "label": "hand radio" },
+            { "kind": "MEAL", "x": 34, "y": 58, "scale": 0.56, "label": "packed meal" },
+            { "kind": "OBJECT", "x": 42, "y": 62, "scale": 0.36, "label": "wrapper" },
+            { "kind": "COUNTER", "x": 82, "y": 56, "scale": 0.9, "label": "counter" },
+            { "kind": "FRIDGE", "x": 89, "y": 23, "scale": 0.72, "label": "fridge" }
+          ],
+          "arrows": [
+            { "fromX": 37, "fromY": 59, "toX": 58, "toY": 52, "label": "wrapper cut off by radio" },
+            { "fromX": 49, "fromY": 47, "toX": 58, "toY": 52, "label": "sets food down, answers" }
+          ]
+        },
+        {
+          "id": "F6",
+          "beatId": "SC6",
+          "title": "Release Without Applause",
+          "cameraLabel": "REAR WIDE / locked",
+          "annotation": "The radio lowers and the berth looks almost unchanged.",
+          "glyphs": [
+            { "kind": "ADULT", "x": 60, "y": 63, "scale": 0.86, "label": "first-week spotter" },
+            { "kind": "OBJECT", "x": 56, "y": 55, "scale": 0.34, "label": "hand radio" },
+            { "kind": "OBJECT", "x": 58, "y": 84, "scale": 1.42, "label": "safe lane stripe" },
+            { "kind": "DOOR", "x": 18, "y": 61, "scale": 0.72, "label": "break room door" },
+            { "kind": "OBJECT", "x": 84, "y": 19, "scale": 0.9, "label": "light mast" },
+            { "kind": "OBJECT", "x": 78, "y": 45, "scale": 0.62, "label": "container lights" },
+            { "kind": "OBJECT", "x": 96, "y": 58, "scale": 0.9, "label": "berth edge" }
+          ],
+          "arrows": [
+            { "fromX": 56, "fromY": 55, "toX": 59, "toY": 65, "label": "radio lowers" },
+            { "fromX": 60, "fromY": 63, "toX": 77, "toY": 71, "label": "walk resumes" }
+          ]
+        }
+      ],
+      "blocking": {
+        "title": "Break Room / Berth Blocking Map",
+        "zones": [
+          { "id": "Z1", "label": "break room table", "x": 14, "y": 56, "width": 32, "height": 24 },
+          { "id": "Z2", "label": "break room counter", "x": 0, "y": 18, "width": 26, "height": 24 },
+          { "id": "Z3", "label": "break room door", "x": 42, "y": 46, "width": 10, "height": 18 },
+          { "id": "Z4", "label": "threshold", "x": 52, "y": 46, "width": 8, "height": 18 },
+          { "id": "Z5", "label": "berth safe lane", "x": 60, "y": 56, "width": 28, "height": 20 },
+          { "id": "Z6", "label": "berth sightline", "x": 70, "y": 24, "width": 22, "height": 22 },
+          { "id": "Z7", "label": "berth edge", "x": 88, "y": 34, "width": 12, "height": 28 }
+        ],
+        "positions": [
+          { "label": "dispatcher seat", "x": 28, "y": 66, "kind": "SUBJECT" },
+          { "label": "spotter doorway start", "x": 57, "y": 62, "kind": "SUBJECT" },
+          { "label": "spotter planted check", "x": 72, "y": 66, "kind": "SUBJECT" },
+          { "label": "camera break-room close", "x": 46, "y": 74, "kind": "CAMERA" },
+          { "label": "camera break-room wide", "x": 63, "y": 78, "kind": "CAMERA" },
+          { "label": "camera berth over-shoulder", "x": 61, "y": 74, "kind": "CAMERA" },
+          { "label": "camera berth low-oblique", "x": 63, "y": 48, "kind": "CAMERA" },
+          { "label": "fluorescent practical", "x": 24, "y": 12, "kind": "LIGHT" },
+          { "label": "door spill", "x": 54, "y": 56, "kind": "LIGHT" },
+          { "label": "sodium mast spill", "x": 86, "y": 12, "kind": "LIGHT" }
+        ],
+        "paths": [
+          {
+            "label": "dispatcher micro-path",
+            "points": [
+              { "x": 27, "y": 66 },
+              { "x": 34, "y": 66 },
+              { "x": 30, "y": 66 }
+            ]
+          },
+          {
+            "label": "spotter chain A",
+            "points": [
+              { "x": 57, "y": 62 },
+              { "x": 66, "y": 66 },
+              { "x": 72, "y": 66 }
+            ]
+          },
+          {
+            "label": "spotter chain B recheck",
+            "points": [
+              { "x": 74, "y": 64 },
+              { "x": 70, "y": 60 },
+              { "x": 66, "y": 64 },
+              { "x": 72, "y": 66 }
+            ]
+          },
+          {
+            "label": "spotter release",
+            "points": [
+              { "x": 72, "y": 66 },
+              { "x": 78, "y": 68 },
+              { "x": 86, "y": 72 }
+            ]
+          },
+          {
+            "label": "camera threshold follow",
+            "points": [
+              { "x": 60, "y": 74 },
+              { "x": 62, "y": 72 },
+              { "x": 62, "y": 72 }
+            ]
+          }
+        ]
+      },
+      "look": {
+        "title": "Pencil Look Reference",
+        "swatches": [
+          {
+            "name": "fluorescent mint",
+            "color": "#C7D3C4",
+            "use": "break room walls and overhead wash"
+          },
+          {
+            "name": "sodium amber",
+            "color": "#C98A3D",
+            "use": "berth practical spill and night air"
+          },
+          { "name": "radio red", "color": "#A33A32", "use": "small instrument accents only" },
+          {
+            "name": "safety orange",
+            "color": "#D66A2C",
+            "use": "reflective trim, lane emphasis, no glamour"
+          },
+          { "name": "charcoal black", "color": "#242424", "use": "water, sky, negative space" },
+          { "name": "paper beige", "color": "#D8C6A6", "use": "meal and tabletop objects" }
+        ],
+        "texture": "Dry pencil line with crosshatched darkness, scuffed vinyl and wet steel surfaces, restrained highlights on reflective tape; avoid postcard glow."
+      }
+    },
+    "questions": [
+      {
+        "prompt": "Can radio subtitles use partial redaction or omission when names, call signs, or identifiers appear?",
+        "decisionItChanges": "Subtitle timing and how much comprehension is earned from audio versus physical action."
+      },
+      {
+        "prompt": "Will the dispatcher remain in the break room enough to anchor three separate decision chains?",
+        "decisionItChanges": "Whether the recommended structure is viable or should shift to a spatial-threshold concept."
+      },
+      {
+        "prompt": "Is there one safe berth angle where the spotter's checks are visible without showing unconsented faces?",
+        "decisionItChanges": "Camera grammar for SC2, SC4, and SC6."
+      }
+    ],
+    "productionNextSteps": [
+      "Build a live logging sheet for each observed chain: origin space, resolving space, repeated phrase, physical check, confirmation outcome.",
+      "Test radio isolation in both spaces and predefine a privacy-safe transcript/redaction workflow.",
+      "Scout and mark one break-room close-up position, one break-room locked wide, one berth over-shoulder, and one berth low-oblique safe angle.",
+      "Adopt an edit rule before shooting: no scenic inserts, no sunrise release, no visually strong beat without a legible judgment link.",
+      "Prepare a coverage priority list that favors repeated motifs over breadth: hovering hand, planted feet, stop-and-sidestep, lowered radio, resumed routine."
+    ]
+  },
+  "blueprint": {
+    "development": {
+      "basis": "PROJECT_INTENT_ONLY",
+      "mode": "DOCUMENTARY",
+      "version": 2,
+      "reasoningSource": "HOSTED_REASONING",
+      "insight": {
+        "thesis": "Overnight dock work is a chain of custody for information: judgment passes from radio to body to confirmation, preventing visible trouble before daylight residents would ever know it existed.",
+        "humanTruth": "The skill people miss most easily is the skill that leaves no spectacle behind. When someone keeps a system stable, their competence can look like ordinary restraint.",
+        "dramaticTension": "The film must make stakes legible through pauses, repeats, and partial sightlines while refusing both heroic iconography and anonymous-industrial nostalgia.",
+        "audiencePromise": "A viewer who knows the harbor only by day will leave able to read the nighttime waterfront as an active system of attention, not an empty backdrop."
+      },
+      "directionDecision": {
+        "title": "Third Shift at Harbor Light — Hold / Repeat / Confirm",
+        "pointOfView": "The protagonist is the handoff of judgment between the veteran dispatcher and the first-week crane spotter; the audience learns to read three recurring signals: hold, locate, confirm.",
+        "storyEngine": "Three linked decision chains, each shorter than the last. Chain 1 teaches the grammar; Chain 2 deepens it; Chain 3 lets the audience anticipate the bodily check before the release comes. The tension is whether small corrections keep the chain unbroken for one shift.",
+        "formalStrategy": "Alternate break room and loading berth on matched actions instead of biography: hovering thumb over radio / planted feet on the berth; shorter wording / shorter movement; lowered radio / resumed routine. Start in partial comprehension, not explanation. Use privacy-safe fragments of live radio only when they become legible through observed consequence. No scenic harbor inserts, no sunrise payoff, no montage of unidentified labor.",
+        "audienceJourney": "Disorientation -> pattern recognition -> anticipatory alert respect.",
+        "whyThisProject": "This most directly serves the brief's subject: invisible judgment. The improvement is a learnable visual grammar, not just a process diagram, so the audience earns comprehension through repeated observed chains rather than through heroic framing or heavy explanation.",
+        "sacrifice": "No life-story spine, minimal personal exposition, no panoramic harbor orientation, and any visually strong moment without a trackable judgment chain gets cut.",
+        "assumptions": [
+          "The recorded shift will contain at least three privacy-safe call-to-check-to-confirm chains.",
+          "The dispatcher and spotter will each show repeated physical listening behavior that can become visual motifs.",
+          "Radio traffic will be intelligible enough in fragments to support pattern recognition without exposing names or unconsented workers.",
+          "The berth offers at least one safe angle where the spotter's checks are visible without identifying others."
+        ],
+        "changeMyMindIf": "Change my mind if the shift yields fewer than three complete, privacy-safe decision chains, or if the repeated physical signals of judgment never become visible enough for viewers to learn the grammar without explanatory repair.",
+        "projectDependencies": [
+          "Clean production sound from radio plus room/berth ambience",
+          "Repeatable safe coverage in break room and at least one berth sightline",
+          "Editorial willingness to omit striking material that does not link to a legible chain",
+          "Privacy-safe subtitle/redaction approach for radio traffic"
+        ],
+        "innovation": {
+          "convention": "Observational labor profiles usually anchor viewers with one charismatic worker plus early explanatory context.",
+          "whyConventionWorks": "A single lead and direct explanation reduce opacity fast and supply emotion even when the work itself is technical.",
+          "departure": "Make the custody chain of judgment the lead instead of either worker. Build the edit from recurring matched actions across spaces, and delay clean decoding until a repeated radio fragment has already produced visible physical consequence.",
+          "projectBenefit": "This exact departure fits a film about legibility without heroization. It turns the actual constraints—one shift, two spaces, two consented workers, live radio—into the formal spine and lets respect come from recognition rather than reverence.",
+          "executionRisk": "If the chains are sparse or muddy, the film can feel schematic or emotionally cool, and the delayed decoding can read as mere opacity."
+        }
+      },
+      "alternativeDecisions": [
+        {
+          "title": "Two Rooms, One Harbor",
+          "pointOfView": "Spatial POV: the harbor is understood only through the break room and loading berth.",
+          "storyEngine": "Meaning accumulates through repeated crossings between indoor talk and outdoor looking.",
+          "formalStrategy": "Use threshold compositions and hard sound-temperature shifts to make the doorway the film's punctuation.",
+          "audienceJourney": "Confinement -> recognition of partial visibility -> respect for relay work.",
+          "whyThisProject": "Most honest about limited access and strong if the doorway repeatedly changes what information means.",
+          "sacrifice": "Less operational clarity and less sense of decision custody than the recommendation.",
+          "assumptions": [
+            "The break room is an active operational site, not only downtime.",
+            "There are enough crossings to create a pattern with new meaning."
+          ],
+          "changeMyMindIf": "Change my mind if there are at least four meaningful threshold crossings where information is visibly reinterpreted from one space to the other.",
+          "projectDependencies": [
+            "Repeatable doorway coverage",
+            "Distinct interior/exterior sound signatures",
+            "A cut willing to stay geographically narrow"
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Nothing to See, Everything to Judge",
+          "pointOfView": "Negative-space POV: prevented trouble is the real event.",
+          "storyEngine": "Each apparent promise of action resolves into a pause, recheck, or confirmation.",
+          "formalStrategy": "Favor real-time duration, pauses, and routine continuation over incident-driven escalation.",
+          "audienceJourney": "Expectation of spectacle -> recalibrated attention -> respect for vigilance.",
+          "whyThisProject": "Strong conceptual answer to anti-heroization and the hidden nature of successful judgment.",
+          "sacrifice": "Least immediate clarity; highest risk of flatness or accidental atmosphere-first viewing.",
+          "assumptions": [
+            "Observable rechecks will read as decisions on camera.",
+            "Sound and duration can carry consequence without overt incident."
+          ],
+          "changeMyMindIf": "Change my mind if the shift captures at least three clearly readable stop-recheck-confirm moments whose stakes are understandable from action and actual radio alone.",
+          "projectDependencies": [
+            "Patient coverage",
+            "Strong sync sound",
+            "Privacy-safe framing of calm rather than spectacle"
+          ],
+          "innovation": null
+        },
+        {
+          "title": "Borrowed Ears",
+          "pointOfView": "Audience-aligned listening POV through the first-week spotter's partial understanding.",
+          "storyEngine": "The night becomes a progression in hearing: confusion, repeat, recognition.",
+          "formalStrategy": "Let the viewer learn recurring radio language before any explicit decoding.",
+          "audienceJourney": "Outsider confusion -> earned listening -> changed perception.",
+          "whyThisProject": "Most directly tailored to daylight residents if the novice arc naturally appears.",
+          "sacrifice": "Narrower balance between the two workers and heavier dependence on intelligible radio.",
+          "assumptions": [
+            "The spotter will visibly ask, repeat, or clarify enough to create a learning curve.",
+            "Radio language will recur across the shift."
+          ],
+          "changeMyMindIf": "Change my mind if the spotter has at least two early clarify moments and one later comparable moment handled without extra help.",
+          "projectDependencies": [
+            "Exceptionally clear radio sound",
+            "Careful subtitle design",
+            "Strict privacy-safe transcript handling"
+          ],
+          "innovation": null
+        }
+      ],
+      "sceneHypotheses": [
+        {
+          "id": "SC1",
+          "title": "Hover, Then Key",
+          "action": "In the break room, the dispatcher reaches for the hand radio, stops with thumb above the talk button, listens through a full burst of traffic, then keys a shorter reply.",
+          "visual": "Plastic table, paper cup, fridge, counter, fluorescent ceiling wash; the dispatcher stays seated and ordinary.",
+          "sound": "Refrigerator buzz, room hum, radio crackle, a beat of held silence before speech.",
+          "turn": "The first visible skill is not command but restraint.",
+          "purpose": "Reframe waiting as labor and teach the film's first rule: speed yields to certainty.",
+          "constraintHandling": "Frame only the consenting dispatcher; exclude other workers; use only privacy-safe fragments of actual radio if usable.",
+          "craft": {
+            "blocking": "Seated stillness with one interrupted reach makes the halt legible.",
+            "camera": "Tight close-up on hand, mouth, and radio, then hold without cutting away.",
+            "light": "Existing fluorescent practicals only; flat, unsentimental.",
+            "design": "Ordinary break-room objects stay in frame to resist control-room myth.",
+            "color": "Cool green-white room with a small red radio indicator.",
+            "sound": "Radio rides above room tone, but the room buzz remains to keep the action mundane."
+          }
+        },
+        {
+          "id": "SC2",
+          "title": "Plant and Point",
+          "action": "At the loading berth, the first-week spotter steps out from the door, plants both feet on the safe lane stripe, raises the radio, and points toward a container corner and berth edge before answering.",
+          "visual": "Door glow behind, dark berth ahead, reflective tape and painted stripe catching light; the spotter is seen mostly from behind or three-quarter back.",
+          "sound": "Door thud, wind, low machinery, grit under boots, radio reply.",
+          "turn": "Abstract radio language becomes bodily geometry.",
+          "purpose": "Convert invisible chatter into a readable physical judgment for daylight viewers.",
+          "constraintHandling": "Camera stays in a safe area; rear/side angle avoids identifying unconsented workers; no staged proximity to hazard.",
+          "craft": {
+            "blocking": "A clear move from doorway to stripe to planted halt makes the check readable.",
+            "camera": "Medium-wide over-shoulder with slight compression to connect finger point and distant reference.",
+            "light": "Mixed sodium exterior and door spill; no added dramatizing contrast.",
+            "design": "Safe lane stripe, bollard, container corner, berth edge as the scene's map.",
+            "color": "Amber-black field with safety orange accents.",
+            "sound": "Hold long enough after the answer for the environment to explain why the check matters."
+          }
+        },
+        {
+          "id": "SC3",
+          "title": "Shorter Words, Higher Stakes",
+          "action": "Back in the break room, the dispatcher leans toward the radio, gives a shorter follow-up, lowers it, and taps one finger on the table while waiting for confirmation.",
+          "visual": "Locked wide frame: table, wall phone, fridge, door, empty corners of the room making the dispatcher small in space.",
+          "sound": "Same radio channel, fewer words, longer silence afterward.",
+          "turn": "Experience sounds compressed, not louder.",
+          "purpose": "Show expertise as precise economy inside an ordinary room, avoiding mythic authority.",
+          "constraintHandling": "Keep the frame solitary or cropped to exclude others; do not over-translate radio language beyond privacy-safe fragments.",
+          "craft": {
+            "blocking": "Minimal movement after the lean-in makes the wait visible.",
+            "camera": "Static frontal wide to contrast with SC1's close-up.",
+            "light": "Full fluorescent flatness, no sculpting.",
+            "design": "Wall phone and table anchor the room as everyday infrastructure.",
+            "color": "Washed whites, pale green, faded surfaces.",
+            "sound": "The silence after transmission becomes the tension beat."
+          }
+        },
+        {
+          "id": "SC4",
+          "title": "Hold, Shift, Recheck",
+          "action": "On the berth, the spotter starts forward, stops mid-step, raises a flat palm for hold, sidesteps left two paces, looks again, then answers into the radio.",
+          "visual": "Oblique angle with boots crossing the painted stripe; bollard near foreground, container corner beyond; the spotter's body is active but not glorified.",
+          "sound": "Footsteps stop, jacket rustle, machinery hum continues, clipped radio answer.",
+          "turn": "First-week status does not mean passivity; caution is active judgment.",
+          "purpose": "Reject the hero/apprentice cliché and make careful re-reading feel competent rather than tentative.",
+          "constraintHandling": "Safe lane only; avoid visible unconsented faces; do not stage or imply danger beyond the observed check.",
+          "craft": {
+            "blocking": "The lateral sidestep is the key readable action.",
+            "camera": "Low-medium oblique angle to make the stop and shift graphic.",
+            "light": "Available sodium side light with reflective tape catching the move.",
+            "design": "Stripe, bollard, container corner make the geometry explicit.",
+            "color": "Dark charcoal field with amber and reflective white hits.",
+            "sound": "Let the stopped footsteps mark the turn more than the radio does."
+          }
+        },
+        {
+          "id": "SC5",
+          "title": "Routine Interrupted",
+          "action": "In the break room, the dispatcher pulls a packed meal closer, the wrapper crackles, radio cuts in, and the meal is set down unfinished while the reply goes out.",
+          "visual": "High-angle tabletop composition with meal, radio, paper towel, cup, and the dispatcher's hands.",
+          "sound": "Plastic crinkle abruptly interrupted by radio traffic and a clipped answer.",
+          "turn": "The nerve center is not theatrical; judgment lives inside routine interruption.",
+          "purpose": "Humanize without biography and keep the film anti-heroic.",
+          "constraintHandling": "Single-consent frame; no staged dialogue; if no meal exists, substitute another ordinary break-room interruption without changing the beat logic.",
+          "craft": {
+            "blocking": "Small hand movements carry the whole beat.",
+            "camera": "Overhead-ish close composition that privileges objects and interruption.",
+            "light": "Top practical fluorescent; no mood enhancement.",
+            "design": "Packed meal, hand radio, cup, paper towel as concrete night-shift evidence.",
+            "color": "Beige food tones against green-white room and radio red.",
+            "sound": "Hard cut from wrapper texture to radio crackle sharpens the interruption."
+          }
+        },
+        {
+          "id": "SC6",
+          "title": "Release Without Applause",
+          "action": "Back on the berth, the spotter lowers the radio, shoulders drop, and resumes walking the safe lane while the berth itself stays visually almost unchanged.",
+          "visual": "Rear wide: small body moving through a large dark berth, door glow distant, light mast and container lights fixed in place.",
+          "sound": "Radio click off, wind, machinery settling back into steady ambient with no score.",
+          "turn": "The payoff is continuation, not spectacle.",
+          "purpose": "Land alert respect by showing that successful judgment often looks like nothing dramatic happened.",
+          "constraintHandling": "Back view only; exclude or defocus others; remain in safe zone; no added action for closure.",
+          "craft": {
+            "blocking": "Movement away from camera de-centers the subject and privileges the resumed system.",
+            "camera": "Locked rear wide or very restrained follow, then stillness.",
+            "light": "Only available berth practicals and distant spill.",
+            "design": "Safe lane stripe receding into darkness, light mast, fixed container lights.",
+            "color": "Charcoal, sodium amber, small white reflective marks.",
+            "sound": "Let release breathe in real time so calm feels earned, not empty."
+          }
+        }
+      ],
+      "directorNotebook": [
+        {
+          "id": "NB1",
+          "sceneId": "SC1",
+          "shot": "CU hover",
+          "visual": "Thumb suspended over talk button beside paper cup.",
+          "camera": "Locked close-up at table height.",
+          "light": "Fluorescent practicals.",
+          "sound": "Fridge buzz under radio burst.",
+          "purpose": "Teach that the held beat is active judgment.",
+          "creativeThread": "Hold before speech."
+        },
+        {
+          "id": "NB2",
+          "sceneId": "SC1",
+          "shot": "Profile listen",
+          "visual": "Dispatcher in partial profile, radio near mouth, no reply yet.",
+          "camera": "Short lateral move into stillness.",
+          "light": "Same flat room wash.",
+          "sound": "Static and room hum, no music.",
+          "purpose": "Keep the first tension internal, not dramaticized.",
+          "creativeThread": "Ordinary room / high consequence."
+        },
+        {
+          "id": "NB3",
+          "sceneId": "SC2",
+          "shot": "Doorway follow",
+          "visual": "Spotter crosses from lit door into dark berth lane.",
+          "camera": "Behind-the-shoulder follow, stopping at safe line.",
+          "light": "Door spill into sodium exterior.",
+          "sound": "Door thud to wind.",
+          "purpose": "Translate information into space.",
+          "creativeThread": "Handoff leaves the room."
+        },
+        {
+          "id": "NB4",
+          "sceneId": "SC2",
+          "shot": "Plant and point",
+          "visual": "Feet planted on stripe, finger marking the read line toward container corner.",
+          "camera": "Compressed medium-wide.",
+          "light": "Exterior practicals only.",
+          "sound": "Boot grit and clipped answer.",
+          "purpose": "Make radio judgment visible.",
+          "creativeThread": "Body completes the sentence."
+        },
+        {
+          "id": "NB5",
+          "sceneId": "SC3",
+          "shot": "Locked room wide",
+          "visual": "Dispatcher small in frame, leaning toward radio at table.",
+          "camera": "Static frontal wide.",
+          "light": "Flat fluorescent.",
+          "sound": "Short transmission followed by waiting silence.",
+          "purpose": "Show expertise as economy, not authority pose.",
+          "creativeThread": "Precision shrinks speech."
+        },
+        {
+          "id": "NB6",
+          "sceneId": "SC4",
+          "shot": "Palm up stop",
+          "visual": "Spotter mid-step, flat palm raised, body arrested before shift.",
+          "camera": "Low oblique medium.",
+          "light": "Sodium side light catches reflective trim.",
+          "sound": "Footstep stop is foregrounded.",
+          "purpose": "Make caution legible as decision.",
+          "creativeThread": "Hold repeats in a new body."
+        },
+        {
+          "id": "NB7",
+          "sceneId": "SC4",
+          "shot": "Sidestep geometry",
+          "visual": "Boots crossing stripe, container corner and bollard re-aligning in frame.",
+          "camera": "Lower insert-height angle.",
+          "light": "Practical spill with deep falloff.",
+          "sound": "Jacket rustle, hum steady.",
+          "purpose": "Show the re-read, not just the answer.",
+          "creativeThread": "Judgment is repositioning."
+        },
+        {
+          "id": "NB8",
+          "sceneId": "SC5",
+          "shot": "Interrupted meal",
+          "visual": "Packed meal and radio share the tabletop; hand leaves food for the radio.",
+          "camera": "Overhead-ish close.",
+          "light": "Top practical.",
+          "sound": "Wrapper crackle cut by radio.",
+          "purpose": "Human scale without confession or backstory.",
+          "creativeThread": "Routine becomes relay."
+        }
+      ],
+      "storyboardSource": {
+        "status": "RENDERED",
+        "renderer": "STROMAN_PENCIL_SVG_V1",
+        "title": "Third Shift at Harbor Light — Hold / Repeat / Confirm",
+        "frames": [
+          {
+            "id": "F1",
+            "beatId": "SC1",
+            "title": "Hover, Then Key",
+            "cameraLabel": "CU / table edge",
+            "annotation": "Thumb pauses above hand radio; restraint is the first turn.",
+            "glyphs": [
+              { "kind": "ADULT", "x": 31, "y": 63, "scale": 0.92, "label": "dispatcher" },
+              { "kind": "TABLE", "x": 38, "y": 78, "scale": 1.12, "label": "break room table" },
+              { "kind": "OBJECT", "x": 44, "y": 69, "scale": 0.42, "label": "hand radio" },
+              { "kind": "OBJECT", "x": 27, "y": 71, "scale": 0.38, "label": "paper cup" },
+              { "kind": "FRIDGE", "x": 84, "y": 34, "scale": 0.84, "label": "fridge" },
+              { "kind": "COUNTER", "x": 73, "y": 67, "scale": 0.92, "label": "counter" },
+              { "kind": "DOOR", "x": 11, "y": 47, "scale": 0.78, "label": "break room door" }
+            ],
+            "arrows": [
+              { "fromX": 35, "fromY": 66, "toX": 43, "toY": 69, "label": "reach stops" },
+              { "fromX": 44, "fromY": 69, "toX": 31, "toY": 61, "label": "listen before reply" }
+            ]
+          },
+          {
+            "id": "F2",
+            "beatId": "SC2",
+            "title": "Plant and Point",
+            "cameraLabel": "MW / over shoulder",
+            "annotation": "The call becomes geometry when the spotter plants and points.",
+            "glyphs": [
+              { "kind": "DOOR", "x": 13, "y": 54, "scale": 0.98, "label": "berth door" },
+              { "kind": "ADULT", "x": 37, "y": 64, "scale": 0.98, "label": "first-week spotter" },
+              { "kind": "OBJECT", "x": 41, "y": 55, "scale": 0.36, "label": "hand radio" },
+              { "kind": "OBJECT", "x": 55, "y": 81, "scale": 1.34, "label": "safe lane stripe" },
+              { "kind": "OBJECT", "x": 78, "y": 47, "scale": 1.02, "label": "container corner" },
+              { "kind": "OBJECT", "x": 68, "y": 71, "scale": 0.54, "label": "bollard" },
+              { "kind": "OBJECT", "x": 92, "y": 60, "scale": 0.88, "label": "berth edge" }
+            ],
+            "arrows": [
+              { "fromX": 20, "fromY": 61, "toX": 35, "toY": 67, "label": "steps out" },
+              { "fromX": 40, "fromY": 58, "toX": 77, "toY": 48, "label": "points to verify" }
+            ]
+          },
+          {
+            "id": "F3",
+            "beatId": "SC3",
+            "title": "Shorter Words, Higher Stakes",
+            "cameraLabel": "WIDE / locked frontal",
+            "annotation": "Fewer words, longer wait.",
+            "glyphs": [
+              { "kind": "ADULT", "x": 58, "y": 61, "scale": 0.82, "label": "dispatcher" },
+              { "kind": "TABLE", "x": 56, "y": 77, "scale": 1.2, "label": "break room table" },
+              { "kind": "OBJECT", "x": 51, "y": 67, "scale": 0.4, "label": "hand radio" },
+              { "kind": "PHONE", "x": 83, "y": 49, "scale": 0.62, "label": "wall phone" },
+              { "kind": "FRIDGE", "x": 18, "y": 39, "scale": 0.82, "label": "fridge" },
+              { "kind": "COUNTER", "x": 24, "y": 71, "scale": 0.86, "label": "counter" },
+              { "kind": "DOOR", "x": 8, "y": 53, "scale": 0.76, "label": "break room door" }
+            ],
+            "arrows": [
+              { "fromX": 58, "fromY": 59, "toX": 51, "toY": 67, "label": "shorter follow-up" },
+              { "fromX": 55, "fromY": 67, "toX": 47, "toY": 76, "label": "waits for confirm" }
+            ]
+          },
+          {
+            "id": "F4",
+            "beatId": "SC4",
+            "title": "Hold, Shift, Recheck",
+            "cameraLabel": "OBLIQUE / low-medium",
+            "annotation": "A stop and sidestep make care visible.",
+            "glyphs": [
+              { "kind": "ADULT", "x": 50, "y": 58, "scale": 0.96, "label": "first-week spotter" },
+              { "kind": "OBJECT", "x": 39, "y": 83, "scale": 1.4, "label": "safe lane stripe" },
+              { "kind": "OBJECT", "x": 76, "y": 37, "scale": 1.08, "label": "container corner" },
+              { "kind": "OBJECT", "x": 27, "y": 63, "scale": 0.58, "label": "bollard" },
+              { "kind": "OBJECT", "x": 92, "y": 55, "scale": 0.9, "label": "berth edge" },
+              { "kind": "DOOR", "x": 10, "y": 72, "scale": 0.72, "label": "door glow" }
+            ],
+            "arrows": [
+              { "fromX": 50, "fromY": 60, "toX": 40, "toY": 60, "label": "sidestep left" },
+              { "fromX": 53, "fromY": 52, "toX": 72, "toY": 44, "label": "recheck line" },
+              { "fromX": 48, "fromY": 52, "toX": 43, "toY": 49, "label": "hold" }
+            ]
+          },
+          {
+            "id": "F5",
+            "beatId": "SC5",
+            "title": "Routine Interrupted",
+            "cameraLabel": "HIGH / tabletop",
+            "annotation": "Food stops; relay work resumes.",
+            "glyphs": [
+              { "kind": "ADULT", "x": 46, "y": 38, "scale": 0.84, "label": "dispatcher" },
+              { "kind": "TABLE", "x": 50, "y": 56, "scale": 1.3, "label": "break room table" },
+              { "kind": "OBJECT", "x": 59, "y": 52, "scale": 0.42, "label": "hand radio" },
+              { "kind": "MEAL", "x": 34, "y": 58, "scale": 0.56, "label": "packed meal" },
+              { "kind": "OBJECT", "x": 42, "y": 62, "scale": 0.36, "label": "wrapper" },
+              { "kind": "COUNTER", "x": 82, "y": 56, "scale": 0.9, "label": "counter" },
+              { "kind": "FRIDGE", "x": 89, "y": 23, "scale": 0.72, "label": "fridge" }
+            ],
+            "arrows": [
+              {
+                "fromX": 37,
+                "fromY": 59,
+                "toX": 58,
+                "toY": 52,
+                "label": "wrapper cut off by radio"
+              },
+              { "fromX": 49, "fromY": 47, "toX": 58, "toY": 52, "label": "sets food down, answers" }
+            ]
+          },
+          {
+            "id": "F6",
+            "beatId": "SC6",
+            "title": "Release Without Applause",
+            "cameraLabel": "REAR WIDE / locked",
+            "annotation": "The radio lowers and the berth looks almost unchanged.",
+            "glyphs": [
+              { "kind": "ADULT", "x": 60, "y": 63, "scale": 0.86, "label": "first-week spotter" },
+              { "kind": "OBJECT", "x": 56, "y": 55, "scale": 0.34, "label": "hand radio" },
+              { "kind": "OBJECT", "x": 58, "y": 84, "scale": 1.42, "label": "safe lane stripe" },
+              { "kind": "DOOR", "x": 18, "y": 61, "scale": 0.72, "label": "break room door" },
+              { "kind": "OBJECT", "x": 84, "y": 19, "scale": 0.9, "label": "light mast" },
+              { "kind": "OBJECT", "x": 78, "y": 45, "scale": 0.62, "label": "container lights" },
+              { "kind": "OBJECT", "x": 96, "y": 58, "scale": 0.9, "label": "berth edge" }
+            ],
+            "arrows": [
+              { "fromX": 56, "fromY": 55, "toX": 59, "toY": 65, "label": "radio lowers" },
+              { "fromX": 60, "fromY": 63, "toX": 77, "toY": 71, "label": "walk resumes" }
+            ]
+          }
+        ],
+        "blocking": {
+          "title": "Break Room / Berth Blocking Map",
+          "zones": [
+            {
+              "id": "Z1",
+              "label": "break room table",
+              "x": 14,
+              "y": 56,
+              "width": 32,
+              "height": 24
+            },
+            {
+              "id": "Z2",
+              "label": "break room counter",
+              "x": 0,
+              "y": 18,
+              "width": 26,
+              "height": 24
+            },
+            { "id": "Z3", "label": "break room door", "x": 42, "y": 46, "width": 10, "height": 18 },
+            { "id": "Z4", "label": "threshold", "x": 52, "y": 46, "width": 8, "height": 18 },
+            { "id": "Z5", "label": "berth safe lane", "x": 60, "y": 56, "width": 28, "height": 20 },
+            { "id": "Z6", "label": "berth sightline", "x": 70, "y": 24, "width": 22, "height": 22 },
+            { "id": "Z7", "label": "berth edge", "x": 88, "y": 34, "width": 12, "height": 28 }
+          ],
+          "positions": [
+            { "label": "dispatcher seat", "x": 28, "y": 66, "kind": "SUBJECT" },
+            { "label": "spotter doorway start", "x": 57, "y": 62, "kind": "SUBJECT" },
+            { "label": "spotter planted check", "x": 72, "y": 66, "kind": "SUBJECT" },
+            { "label": "camera break-room close", "x": 46, "y": 74, "kind": "CAMERA" },
+            { "label": "camera break-room wide", "x": 63, "y": 78, "kind": "CAMERA" },
+            { "label": "camera berth over-shoulder", "x": 61, "y": 74, "kind": "CAMERA" },
+            { "label": "camera berth low-oblique", "x": 63, "y": 48, "kind": "CAMERA" },
+            { "label": "fluorescent practical", "x": 24, "y": 12, "kind": "LIGHT" },
+            { "label": "door spill", "x": 54, "y": 56, "kind": "LIGHT" },
+            { "label": "sodium mast spill", "x": 86, "y": 12, "kind": "LIGHT" }
+          ],
+          "paths": [
+            {
+              "label": "dispatcher micro-path",
+              "points": [
+                { "x": 27, "y": 66 },
+                { "x": 34, "y": 66 },
+                { "x": 30, "y": 66 }
+              ]
+            },
+            {
+              "label": "spotter chain A",
+              "points": [
+                { "x": 57, "y": 62 },
+                { "x": 66, "y": 66 },
+                { "x": 72, "y": 66 }
+              ]
+            },
+            {
+              "label": "spotter chain B recheck",
+              "points": [
+                { "x": 74, "y": 64 },
+                { "x": 70, "y": 60 },
+                { "x": 66, "y": 64 },
+                { "x": 72, "y": 66 }
+              ]
+            },
+            {
+              "label": "spotter release",
+              "points": [
+                { "x": 72, "y": 66 },
+                { "x": 78, "y": 68 },
+                { "x": 86, "y": 72 }
+              ]
+            },
+            {
+              "label": "camera threshold follow",
+              "points": [
+                { "x": 60, "y": 74 },
+                { "x": 62, "y": 72 },
+                { "x": 62, "y": 72 }
+              ]
+            }
+          ]
+        },
+        "look": {
+          "title": "Pencil Look Reference",
+          "swatches": [
+            {
+              "name": "fluorescent mint",
+              "color": "#C7D3C4",
+              "use": "break room walls and overhead wash"
+            },
+            {
+              "name": "sodium amber",
+              "color": "#C98A3D",
+              "use": "berth practical spill and night air"
+            },
+            { "name": "radio red", "color": "#A33A32", "use": "small instrument accents only" },
+            {
+              "name": "safety orange",
+              "color": "#D66A2C",
+              "use": "reflective trim, lane emphasis, no glamour"
+            },
+            { "name": "charcoal black", "color": "#242424", "use": "water, sky, negative space" },
+            { "name": "paper beige", "color": "#D8C6A6", "use": "meal and tabletop objects" }
+          ],
+          "texture": "Dry pencil line with crosshatched darkness, scuffed vinyl and wet steel surfaces, restrained highlights on reflective tape; avoid postcard glow."
+        }
+      },
+      "visualPlan": {
+        "version": 1,
+        "renderer": "STROMAN_PREVIS_SVG_V2",
+        "stage": "IDEA",
+        "creativeSpine": {
+          "film": "Overnight dock work is a chain of custody for information: judgment passes from radio to body to confirmation, preventing visible trouble before daylight residents would ever know it existed.",
+          "why": "This most directly serves the brief's subject: invisible judgment. The improvement is a learnable visual grammar, not just a process diagram, so the audience earns comprehension through repeated observed chains rather than through heroic framing or heavy explanation.",
+          "audienceEffect": "A viewer who knows the harbor only by day will leave able to read the nighttime waterfront as an active system of attention, not an empty backdrop.",
+          "keyBeats": [
+            "Hover, Then Key",
+            "Plant and Point",
+            "Shorter Words, Higher Stakes",
+            "Hold, Shift, Recheck",
+            "Routine Interrupted",
+            "Release Without Applause"
+          ],
+          "nextDecision": "Can radio subtitles use partial redaction or omission when names, call signs, or identifiers appear?"
+        },
+        "priorities": [
+          {
+            "priority": "MUST_SOLVE_NOW",
+            "label": "Decision 1",
+            "decision": "Can radio subtitles use partial redaction or omission when names, call signs, or identifiers appear?"
+          },
+          {
+            "priority": "IMPORTANT",
+            "label": "Decision 2",
+            "decision": "Will the dispatcher remain in the break room enough to anchor three separate decision chains?"
+          },
+          {
+            "priority": "WORTH_EXPLORING",
+            "label": "Decision 3",
+            "decision": "Is there one safe berth angle where the spotter's checks are visible without showing unconsented faces?"
+          }
+        ],
+        "shots": [
+          {
+            "id": "shot_1",
+            "sceneId": "SC1",
+            "title": "Hover, Then Key",
+            "purpose": "Reframe waiting as labor and teach the film's first rule: speed yields to certainty.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_1_h",
+              "aspectRatio": "16:9",
+              "shotScale": "CU / table edge",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Tight close-up on hand, mouth, and radio, then hold without cutting away.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Tight close-up on hand, mouth, and radio, then hold without cutting away.",
+              "hold": "Hold through: The first visible skill is not command but restraint.",
+              "executionStrip": [
+                "CU / table edge · 16:9",
+                "Thumb pauses above hand radio; restraint is the first turn. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "DISPATCHER",
+                  "x": 22.259999999999998,
+                  "y": 36.32,
+                  "width": 17.48,
+                  "height": 53.36,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "BREAK ROOM TABLE",
+                  "x": 18.959999999999997,
+                  "y": 69.03999999999999,
+                  "width": 38.080000000000005,
+                  "height": 17.92,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HAND RADIO",
+                  "x": 40,
+                  "y": 65.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "PAPER CUP",
+                  "x": 23,
+                  "y": 67.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 76.02,
+                  "y": 13,
+                  "width": 15.959999999999999,
+                  "height": 42,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "COUNTER",
+                  "x": 57.36,
+                  "y": 59.64,
+                  "width": 31.28,
+                  "height": 14.72,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "BREAK ROOM DOOR",
+                  "x": 3.59,
+                  "y": 27.5,
+                  "width": 14.82,
+                  "height": 39,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "reach stops", "fromX": 35, "fromY": 66, "toX": 43, "toY": 69 },
+                { "label": "listen before reply", "fromX": 44, "fromY": 69, "toX": 31, "toY": 61 }
+              ],
+              "light": [
+                {
+                  "label": "Existing fluorescent practicals onl…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 31,
+                  "toY": 63,
+                  "tone": "COOL"
+                }
+              ],
+              "constraint": "Frame only the consenting dispatcher; exclude other workers; use only privacy-safe fragments of actual radio if usable.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_1_v",
+              "aspectRatio": "9:16",
+              "shotScale": "CU / table edge",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Tight close-up on hand, mouth, and radio, then hold without cutting away.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Tight close-up on hand, mouth, and radio, then hold without cutting away.",
+              "hold": "Hold through: The first visible skill is not command but restraint.",
+              "executionStrip": [
+                "CU / table edge · 9:16",
+                "Thumb pauses above hand radio; restraint is the first turn. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "DISPATCHER",
+                  "x": 26.421,
+                  "y": 36.76,
+                  "width": 23.598000000000003,
+                  "height": 53.36,
+                  "plane": "FOREGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "BREAK ROOM TABLE",
+                  "x": 19.3312,
+                  "y": 67.68,
+                  "width": 46.457600000000006,
+                  "height": 17.92,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HAND RADIO",
+                  "x": 41.4,
+                  "y": 65.22,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "PAPER CUP",
+                  "x": 30.860000000000003,
+                  "y": 66.97999999999999,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 61.3444,
+                  "y": 16.92,
+                  "width": 19.4712,
+                  "height": 42,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "COUNTER",
+                  "x": 45.17920000000001,
+                  "y": 59.60000000000001,
+                  "width": 38.1616,
+                  "height": 14.72,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "BREAK ROOM DOOR",
+                  "x": 16.7798,
+                  "y": 29.86,
+                  "width": 18.0804,
+                  "height": 39,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "reach stops",
+                  "fromX": 40.7,
+                  "fromY": 66.08,
+                  "toX": 45.66,
+                  "toY": 68.72
+                },
+                {
+                  "label": "listen before reply",
+                  "fromX": 46.28,
+                  "fromY": 68.72,
+                  "toX": 38.22,
+                  "toY": 61.68
+                }
+              ],
+              "light": [
+                {
+                  "label": "Existing fluorescent practicals onl…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 38.22,
+                  "toY": 63.44,
+                  "tone": "COOL"
+                }
+              ],
+              "constraint": "Frame only the consenting dispatcher; exclude other workers; use only privacy-safe fragments of actual radio if usable.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_2",
+            "sceneId": "SC2",
+            "title": "Plant and Point",
+            "purpose": "Convert invisible chatter into a readable physical judgment for daylight viewers.",
+            "priority": "MUST_GET",
+            "horizontal": {
+              "id": "shot_2_h",
+              "aspectRatio": "16:9",
+              "shotScale": "MW / over shoulder",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Medium-wide over-shoulder with slight compression to connect finger point and distant r…",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Medium-wide over-shoulder with slight compression to connect finger point and distant reference.",
+              "hold": "Hold through: Abstract radio language becomes bodily geometry.",
+              "executionStrip": [
+                "MW / over shoulder · 16:9",
+                "The call becomes geometry when the spotter plants and points. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "FIRST-WEEK SPOTTER",
+                  "x": 27.689999999999998,
+                  "y": 35.58,
+                  "width": 18.62,
+                  "height": 56.839999999999996,
+                  "plane": "FOREGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "BERTH DOOR",
+                  "x": 3.6899999999999995,
+                  "y": 29.5,
+                  "width": 18.62,
+                  "height": 49,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HAND RADIO",
+                  "x": 37,
+                  "y": 51.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "SAFE LANE STRIPE",
+                  "x": 43.61,
+                  "y": 70.95,
+                  "width": 22.78,
+                  "height": 20.1,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CONTAINER CORNER",
+                  "x": 69.33,
+                  "y": 39.35,
+                  "width": 17.34,
+                  "height": 15.3,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOLLARD",
+                  "x": 63.41,
+                  "y": 66.95,
+                  "width": 9.18,
+                  "height": 8.100000000000001,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BERTH EDGE",
+                  "x": 84.03999999999999,
+                  "y": 53.4,
+                  "width": 14.96,
+                  "height": 13.2,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                { "label": "steps out", "fromX": 20, "fromY": 61, "toX": 35, "toY": 67 },
+                { "label": "points to verify", "fromX": 40, "fromY": 58, "toX": 77, "toY": 48 }
+              ],
+              "light": [
+                {
+                  "label": "Mixed sodium exterior and door spil…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 37,
+                  "toY": 64,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Camera stays in a safe area; rear/side angle avoids identifying unconsented workers; no staged proximity to hazard.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_2_v",
+              "aspectRatio": "9:16",
+              "shotScale": "MW / over shoulder",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Medium-wide over-shoulder with slight compression to connect finger point and distant r…",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Medium-wide over-shoulder with slight compression to connect finger point and distant reference.",
+              "hold": "Hold through: Abstract radio language becomes bodily geometry.",
+              "executionStrip": [
+                "MW / over shoulder · 9:16",
+                "The call becomes geometry when the spotter plants and points. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "FIRST-WEEK SPOTTER",
+                  "x": 29.371499999999997,
+                  "y": 35.89999999999999,
+                  "width": 25.137000000000004,
+                  "height": 56.839999999999996,
+                  "plane": "FOREGROUND",
+                  "facing": "LEFT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "DOOR",
+                  "label": "BERTH DOOR",
+                  "x": 15.701799999999999,
+                  "y": 31.020000000000003,
+                  "width": 22.7164,
+                  "height": 49,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HAND RADIO",
+                  "x": 39.54,
+                  "y": 52.9,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "SAFE LANE STRIPE",
+                  "x": 39.2042,
+                  "y": 69.23,
+                  "width": 27.791600000000003,
+                  "height": 20.1,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CONTAINER CORNER",
+                  "x": 56.7826,
+                  "y": 41.71,
+                  "width": 21.154799999999998,
+                  "height": 15.3,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOLLARD",
+                  "x": 55.560199999999995,
+                  "y": 66.42999999999999,
+                  "width": 11.1996,
+                  "height": 8.100000000000001,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BERTH EDGE",
+                  "x": 66.91439999999999,
+                  "y": 54.199999999999996,
+                  "width": 18.2512,
+                  "height": 13.2,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "steps out",
+                  "fromX": 31.4,
+                  "fromY": 61.68,
+                  "toX": 40.7,
+                  "toY": 66.96000000000001
+                },
+                {
+                  "label": "points to verify",
+                  "fromX": 43.8,
+                  "fromY": 59.04,
+                  "toX": 66.74,
+                  "toY": 50.24
+                }
+              ],
+              "light": [
+                {
+                  "label": "Mixed sodium exterior and door spil…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 41.94,
+                  "toY": 64.32,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Camera stays in a safe area; rear/side angle avoids identifying unconsented workers; no staged proximity to hazard.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_3",
+            "sceneId": "SC3",
+            "title": "Shorter Words, Higher Stakes",
+            "purpose": "Show expertise as precise economy inside an ordinary room, avoiding mythic authority.",
+            "priority": "SAFETY",
+            "horizontal": {
+              "id": "shot_3_h",
+              "aspectRatio": "16:9",
+              "shotScale": "WIDE / locked frontal",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Static frontal wide to contrast with SC1's close-up.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Static frontal wide to contrast with SC1's close-up.",
+              "hold": "Hold through: Experience sounds compressed, not louder.",
+              "executionStrip": [
+                "WIDE / locked frontal · 16:9",
+                "Fewer words, longer wait. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "DISPATCHER",
+                  "x": 50.21,
+                  "y": 37.22,
+                  "width": 15.579999999999998,
+                  "height": 47.559999999999995,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "BREAK ROOM TABLE",
+                  "x": 35.6,
+                  "y": 67.4,
+                  "width": 40.8,
+                  "height": 19.2,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HAND RADIO",
+                  "x": 47,
+                  "y": 63.5,
+                  "width": 8,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "WALL PHONE",
+                  "x": 77.73,
+                  "y": 44.35,
+                  "width": 10.54,
+                  "height": 9.3,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 10.21,
+                  "y": 18.5,
+                  "width": 15.579999999999998,
+                  "height": 41,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "COUNTER",
+                  "x": 9.38,
+                  "y": 64.12,
+                  "width": 29.24,
+                  "height": 13.76,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "BREAK ROOM DOOR",
+                  "x": 1,
+                  "y": 34,
+                  "width": 14.44,
+                  "height": 38,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "shorter follow-up", "fromX": 58, "fromY": 59, "toX": 51, "toY": 67 },
+                { "label": "waits for confirm", "fromX": 55, "fromY": 67, "toX": 47, "toY": 76 }
+              ],
+              "light": [
+                {
+                  "label": "Full fluorescent flatness, no sculp…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 58,
+                  "toY": 61,
+                  "tone": "COOL"
+                }
+              ],
+              "constraint": "Keep the frame solitary or cropped to exclude others; do not over-translate radio language beyond privacy-safe fragments.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_3_v",
+              "aspectRatio": "9:16",
+              "shotScale": "WIDE / locked frontal",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Static frontal wide to contrast with SC1's close-up.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Static frontal wide to contrast with SC1's close-up.",
+              "hold": "Hold through: Experience sounds compressed, not louder.",
+              "executionStrip": [
+                "WIDE / locked frontal · 9:16",
+                "Fewer words, longer wait. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "DISPATCHER",
+                  "x": 44.4435,
+                  "y": 37.900000000000006,
+                  "width": 21.032999999999998,
+                  "height": 47.559999999999995,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "TABLE",
+                  "label": "BREAK ROOM TABLE",
+                  "x": 28.832,
+                  "y": 66.16000000000001,
+                  "width": 49.775999999999996,
+                  "height": 19.2,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "HAND RADIO",
+                  "x": 45.739999999999995,
+                  "y": 63.46000000000001,
+                  "width": 9.76,
+                  "height": 7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "WALL PHONE",
+                  "x": 64.0306,
+                  "y": 46.47,
+                  "width": 12.858799999999999,
+                  "height": 9.3,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "FRIDGE",
+                  "label": "FRIDGE",
+                  "x": 20.656200000000002,
+                  "y": 21.82,
+                  "width": 19.007599999999996,
+                  "height": 41,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "COUNTER",
+                  "label": "COUNTER",
+                  "x": 16.043599999999998,
+                  "y": 63.59999999999999,
+                  "width": 35.672799999999995,
+                  "height": 13.76,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "BREAK ROOM DOOR",
+                  "x": 15.151600000000002,
+                  "y": 35.64,
+                  "width": 17.616799999999998,
+                  "height": 38,
+                  "plane": "MIDGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                {
+                  "label": "shorter follow-up",
+                  "fromX": 54.96,
+                  "fromY": 59.92,
+                  "toX": 50.62,
+                  "toY": 66.96000000000001
+                },
+                {
+                  "label": "waits for confirm",
+                  "fromX": 53.1,
+                  "fromY": 66.96000000000001,
+                  "toX": 48.14,
+                  "toY": 74.88
+                }
+              ],
+              "light": [
+                {
+                  "label": "Full fluorescent flatness, no sculp…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 54.96,
+                  "toY": 61.68000000000001,
+                  "tone": "COOL"
+                }
+              ],
+              "constraint": "Keep the frame solitary or cropped to exclude others; do not over-translate radio language beyond privacy-safe fragments.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          },
+          {
+            "id": "shot_4",
+            "sceneId": "SC4",
+            "title": "Hold, Shift, Recheck",
+            "purpose": "Reject the hero/apprentice cliché and make careful re-reading feel competent rather than tentative.",
+            "priority": "OPTIONAL_EXPLORATION",
+            "horizontal": {
+              "id": "shot_4_h",
+              "aspectRatio": "16:9",
+              "shotScale": "OBLIQUE / low-medium",
+              "lens": "horizontal lens choice — verify",
+              "cameraHeight": "Low-medium oblique angle to make the stop and shift graphic.",
+              "cameraDistance": "show subject, action, and consequence in one causal geography",
+              "movement": "Low-medium oblique angle to make the stop and shift graphic.",
+              "hold": "Hold through: First-week status does not mean passivity; caution is active judgment.",
+              "executionStrip": [
+                "OBLIQUE / low-medium · 16:9",
+                "A stop and sidestep make care visible. · protect geography"
+              ],
+              "headroom": 8,
+              "eyelineY": 34,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "FIRST-WEEK SPOTTER",
+                  "x": 40.88,
+                  "y": 30.16,
+                  "width": 18.24,
+                  "height": 55.68,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "OBJECT",
+                  "label": "SAFE LANE STRIPE",
+                  "x": 27.1,
+                  "y": 72.5,
+                  "width": 23.799999999999997,
+                  "height": 21,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CONTAINER CORNER",
+                  "x": 66.82,
+                  "y": 28.9,
+                  "width": 18.36,
+                  "height": 16.200000000000003,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOLLARD",
+                  "x": 22.07,
+                  "y": 58.65,
+                  "width": 9.86,
+                  "height": 8.7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BERTH EDGE",
+                  "x": 83.7,
+                  "y": 48.25,
+                  "width": 15.3,
+                  "height": 13.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "DOOR GLOW",
+                  "x": 3.16,
+                  "y": 54,
+                  "width": 13.68,
+                  "height": 36,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "sidestep left", "fromX": 50, "fromY": 60, "toX": 40, "toY": 60 },
+                { "label": "recheck line", "fromX": 53, "fromY": 52, "toX": 72, "toY": 44 },
+                { "label": "hold", "fromX": 48, "fromY": 52, "toX": 43, "toY": 49 }
+              ],
+              "light": [
+                {
+                  "label": "Available sodium side light with re…",
+                  "fromX": 88,
+                  "fromY": 12,
+                  "toX": 50,
+                  "toY": 58,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Safe lane only; avoid visible unconsented faces; do not stage or imply danger beyond the observed check.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            },
+            "vertical": {
+              "id": "shot_4_v",
+              "aspectRatio": "9:16",
+              "shotScale": "OBLIQUE / low-medium",
+              "lens": "portrait lens choice — verify",
+              "cameraHeight": "Low-medium oblique angle to make the stop and shift graphic.",
+              "cameraDistance": "new portrait camera position; preserve the governing action",
+              "movement": "Low-medium oblique angle to make the stop and shift graphic.",
+              "hold": "Hold through: First-week status does not mean passivity; caution is active judgment.",
+              "executionStrip": [
+                "OBLIQUE / low-medium · 9:16",
+                "A stop and sidestep make care visible. · recompose vertically"
+              ],
+              "headroom": 5,
+              "eyelineY": 28,
+              "negativeSpace": null,
+              "figures": [
+                {
+                  "kind": "ADULT",
+                  "label": "FIRST-WEEK SPOTTER",
+                  "x": 37.688,
+                  "y": 31.2,
+                  "width": 24.624,
+                  "height": 55.68,
+                  "plane": "MIDGROUND",
+                  "facing": "RIGHT"
+                }
+              ],
+              "setPieces": [
+                {
+                  "kind": "OBJECT",
+                  "label": "SAFE LANE STRIPE",
+                  "x": 28.662000000000003,
+                  "y": 70.54,
+                  "width": 29.035999999999994,
+                  "height": 21,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "CONTAINER CORNER",
+                  "x": 54.9204,
+                  "y": 32.46,
+                  "width": 22.3992,
+                  "height": 16.200000000000003,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BOLLARD",
+                  "x": 29.7254,
+                  "y": 59.089999999999996,
+                  "width": 12.0292,
+                  "height": 8.7,
+                  "plane": "FOREGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "OBJECT",
+                  "label": "BERTH EDGE",
+                  "x": 66.707,
+                  "y": 49.65,
+                  "width": 18.666,
+                  "height": 13.5,
+                  "plane": "MIDGROUND",
+                  "emphasis": "STORY"
+                },
+                {
+                  "kind": "DOOR",
+                  "label": "DOOR GLOW",
+                  "x": 16.8552,
+                  "y": 53.36,
+                  "width": 16.6896,
+                  "height": 36,
+                  "plane": "FOREGROUND",
+                  "emphasis": "CONTEXT"
+                }
+              ],
+              "motion": [
+                { "label": "sidestep left", "fromX": 50, "fromY": 60.8, "toX": 43.8, "toY": 60.8 },
+                {
+                  "label": "recheck line",
+                  "fromX": 51.86,
+                  "fromY": 53.76,
+                  "toX": 63.64,
+                  "toY": 46.72
+                },
+                { "label": "hold", "fromX": 48.76, "fromY": 53.76, "toX": 45.66, "toY": 51.12 }
+              ],
+              "light": [
+                {
+                  "label": "Available sodium side light with re…",
+                  "fromX": 84,
+                  "fromY": 12,
+                  "toX": 50,
+                  "toY": 59.04,
+                  "tone": "NEUTRAL"
+                }
+              ],
+              "constraint": "Safe lane only; avoid visible unconsented faces; do not stage or imply danger beyond the observed check.",
+              "locationDependencies": [
+                "verify every drawn boundary against the scout",
+                "preserve the scene's governing action"
+              ]
+            }
+          }
+        ],
+        "blocking": {
+          "title": "Break Room / Berth Blocking Map",
+          "question": "Where are the people and cameras, and how do they move?",
+          "zones": [
+            {
+              "id": "Z1",
+              "label": "break room table",
+              "x": 14,
+              "y": 56,
+              "width": 32,
+              "height": 24
+            },
+            {
+              "id": "Z2",
+              "label": "break room counter",
+              "x": 0,
+              "y": 18,
+              "width": 26,
+              "height": 24
+            },
+            { "id": "Z3", "label": "break room door", "x": 42, "y": 46, "width": 10, "height": 18 },
+            { "id": "Z4", "label": "threshold", "x": 52, "y": 46, "width": 8, "height": 18 },
+            { "id": "Z5", "label": "berth safe lane", "x": 60, "y": 56, "width": 28, "height": 20 },
+            { "id": "Z6", "label": "berth sightline", "x": 70, "y": 24, "width": 22, "height": 22 },
+            { "id": "Z7", "label": "berth edge", "x": 88, "y": 34, "width": 12, "height": 28 }
+          ],
+          "subjects": [
+            {
+              "id": "hosted_subject_1",
+              "label": "DISPATCHER",
+              "carries": null,
+              "states": [
+                { "label": "START", "x": 27, "y": 66, "note": "dispatcher micro-path" },
+                { "label": "2", "x": 34, "y": 66, "note": "dispatcher micro-path" },
+                { "label": "END", "x": 30, "y": 66, "note": "dispatcher micro-path" }
+              ]
+            },
+            {
+              "id": "hosted_subject_2",
+              "label": "SPOTTER",
+              "carries": null,
+              "states": [
+                {
+                  "label": "START",
+                  "x": 57,
+                  "y": 62,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "2",
+                  "x": 66,
+                  "y": 66,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "3",
+                  "x": 72,
+                  "y": 66,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "4",
+                  "x": 74,
+                  "y": 64,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "5",
+                  "x": 70,
+                  "y": 60,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "6",
+                  "x": 66,
+                  "y": 64,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "7",
+                  "x": 72,
+                  "y": 66,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "8",
+                  "x": 72,
+                  "y": 66,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "9",
+                  "x": 78,
+                  "y": 68,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                },
+                {
+                  "label": "END",
+                  "x": 86,
+                  "y": 72,
+                  "note": "spotter chain A / spotter chain B recheck / spotter release"
+                }
+              ]
+            }
+          ],
+          "cameras": [
+            {
+              "id": "hosted_camera_1",
+              "label": "camera break-room close",
+              "x": 46,
+              "y": 74,
+              "aimX": 27,
+              "aimY": 66,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_2",
+              "label": "camera break-room wide",
+              "x": 63,
+              "y": 78,
+              "aimX": 34,
+              "aimY": 66,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_3",
+              "label": "camera berth over-shoulder",
+              "x": 61,
+              "y": 74,
+              "aimX": 30,
+              "aimY": 66,
+              "use": "Reproduce the frame-specific storyboard axis."
+            },
+            {
+              "id": "hosted_camera_4",
+              "label": "camera berth low-oblique",
+              "x": 63,
+              "y": 48,
+              "aimX": 57,
+              "aimY": 62,
+              "use": "Reproduce the frame-specific storyboard axis."
+            }
+          ],
+          "restrictions": [
+            "Diagram labels come from the hosted scene plan; location geometry remains provisional until the scout confirms it."
+          ]
+        },
+        "lighting": {
+          "title": "Pencil Look Reference",
+          "question": "Where are the meaningful sources, modifiers, and practicals?",
+          "zones": [
+            {
+              "id": "Z1",
+              "label": "break room table",
+              "x": 14,
+              "y": 56,
+              "width": 32,
+              "height": 24
+            },
+            {
+              "id": "Z2",
+              "label": "break room counter",
+              "x": 0,
+              "y": 18,
+              "width": 26,
+              "height": 24
+            },
+            { "id": "Z3", "label": "break room door", "x": 42, "y": 46, "width": 10, "height": 18 },
+            { "id": "Z4", "label": "threshold", "x": 52, "y": 46, "width": 8, "height": 18 },
+            { "id": "Z5", "label": "berth safe lane", "x": 60, "y": 56, "width": 28, "height": 20 },
+            { "id": "Z6", "label": "berth sightline", "x": 70, "y": 24, "width": 22, "height": 22 },
+            { "id": "Z7", "label": "berth edge", "x": 88, "y": 34, "width": 12, "height": 28 }
+          ],
+          "sources": [
+            {
+              "id": "hosted_light_1",
+              "label": "fluorescent practical",
+              "kind": "PRACTICAL",
+              "x": 24,
+              "y": 12,
+              "toX": 50,
+              "toY": 50,
+              "tone": "COOL",
+              "control": "UNKNOWN",
+              "use": "Existing fluorescent practicals only; flat, unsentimental."
+            },
+            {
+              "id": "hosted_light_2",
+              "label": "door spill",
+              "kind": "PRACTICAL",
+              "x": 54,
+              "y": 56,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Mixed sodium exterior and door spill; no added dramatizing contrast."
+            },
+            {
+              "id": "hosted_light_3",
+              "label": "sodium mast spill",
+              "kind": "PRACTICAL",
+              "x": 86,
+              "y": 12,
+              "toX": 50,
+              "toY": 50,
+              "tone": "NEUTRAL",
+              "control": "UNKNOWN",
+              "use": "Only available berth practicals and distant spill."
+            }
+          ],
+          "instruction": "Scene-derived intent: Existing fluorescent practicals only; flat, unsentimental. Mixed sodium exterior and door spill; no added dramatizing contrast. Full fluorescent flatness, no sculpting. Available sodium side light with reflective tape catching the move.…"
+        },
+        "look": {
+          "title": "Pencil Look Reference",
+          "question": "What palette, contrast, texture, and grade direction govern the sequence?",
+          "swatches": [
+            {
+              "name": "fluorescent mint",
+              "color": "#C7D3C4",
+              "use": "break room walls and overhead wash"
+            },
+            {
+              "name": "sodium amber",
+              "color": "#C98A3D",
+              "use": "berth practical spill and night air"
+            },
+            { "name": "radio red", "color": "#A33A32", "use": "small instrument accents only" },
+            {
+              "name": "safety orange",
+              "color": "#D66A2C",
+              "use": "reflective trim, lane emphasis, no glamour"
+            },
+            { "name": "charcoal black", "color": "#242424", "use": "water, sky, negative space" },
+            { "name": "paper beige", "color": "#D8C6A6", "use": "meal and tabletop objects" }
+          ],
+          "contrast": "Cool green-white room with a small red radio indicator.",
+          "texture": "Dry pencil line with crosshatched darkness, scuffed vinyl and wet steel surfaces, restrained highlights on reflective tape; avoid postcard glow.",
+          "restraint": "Treat the look as a hypothesis; reject decorative grading that does not serve the scene turn."
+        },
+        "sound": [
+          {
+            "sceneId": "SC1",
+            "label": "Hover, Then Key",
+            "mustRecord": [
+              "Refrigerator buzz, room hum, radio crackle, a beat of held silence before speech."
+            ],
+            "perspective": "Radio rides above room tone, but the room buzz remains to keep the action mundane.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "SC2",
+            "label": "Plant and Point",
+            "mustRecord": ["Door thud, wind, low machinery, grit under boots, radio reply."],
+            "perspective": "Hold long enough after the answer for the environment to explain why the check matters.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "SC3",
+            "label": "Shorter Words, Higher Stakes",
+            "mustRecord": ["Same radio channel, fewer words, longer silence afterward."],
+            "perspective": "The silence after transmission becomes the tension beat.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "SC4",
+            "label": "Hold, Shift, Recheck",
+            "mustRecord": [
+              "Footsteps stop, jacket rustle, machinery hum continues, clipped radio answer."
+            ],
+            "perspective": "Let the stopped footsteps mark the turn more than the radio does.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "SC5",
+            "label": "Routine Interrupted",
+            "mustRecord": [
+              "Plastic crinkle abruptly interrupted by radio traffic and a clipped answer."
+            ],
+            "perspective": "Hard cut from wrapper texture to radio crackle sharpens the interruption.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          },
+          {
+            "sceneId": "SC6",
+            "label": "Release Without Applause",
+            "mustRecord": [
+              "Radio click off, wind, machinery settling back into steady ambient with no score."
+            ],
+            "perspective": "Let release breathe in real time so calm feels earned, not empty.",
+            "restraint": "Capture real sources before adding score or sound-design punctuation."
+          }
+        ],
+        "coverage": [
+          {
+            "id": "shot_1",
+            "priority": "MUST_GET",
+            "label": "Hover, Then Key",
+            "serves": [
+              "Reframe waiting as labor and teach the film's first rule: speed yields to certainty."
+            ],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_2",
+            "priority": "MUST_GET",
+            "label": "Plant and Point",
+            "serves": [
+              "Convert invisible chatter into a readable physical judgment for daylight viewers."
+            ],
+            "why": "Carries a required story turn."
+          },
+          {
+            "id": "shot_3",
+            "priority": "SAFETY",
+            "label": "Shorter Words, Higher Stakes",
+            "serves": [
+              "Show expertise as precise economy inside an ordinary room, avoiding mythic authority."
+            ],
+            "why": "Take only after the must-get story turns work."
+          },
+          {
+            "id": "shot_4",
+            "priority": "OPTIONAL_EXPLORATION",
+            "label": "Hold, Shift, Recheck",
+            "serves": [
+              "Reject the hero/apprentice cliché and make careful re-reading feel competent rather than tentative."
+            ],
+            "why": "Take only after the must-get story turns work."
+          }
+        ],
+        "location": {
+          "mode": "INTENT_ONLY",
+          "photos": [],
+          "claims": [],
+          "confirmationQuestion": "Add a wide and reverse location photo before locking physical geometry."
+        },
+        "delta": {
+          "trigger": "Hosted creative direction developed",
+          "changed": [
+            "Provider storyboard intent became independently composed 16:9 and 9:16 frame hypotheses."
+          ],
+          "unchanged": ["All physical geometry remains unverified until the scout confirms it."]
+        },
+        "productionReality": {
+          "crew": "",
+          "cameraBody": "",
+          "lenses": "",
+          "support": "",
+          "lighting": "",
+          "sound": "",
+          "shootTime": "",
+          "access": "",
+          "talent": "",
+          "budget": "",
+          "timeOfDay": ""
+        }
+      },
+      "questions": [
+        {
+          "prompt": "Can radio subtitles use partial redaction or omission when names, call signs, or identifiers appear?",
+          "decisionItChanges": "Subtitle timing and how much comprehension is earned from audio versus physical action."
+        },
+        {
+          "prompt": "Will the dispatcher remain in the break room enough to anchor three separate decision chains?",
+          "decisionItChanges": "Whether the recommended structure is viable or should shift to a spatial-threshold concept."
+        },
+        {
+          "prompt": "Is there one safe berth angle where the spotter's checks are visible without showing unconsented faces?",
+          "decisionItChanges": "Camera grammar for SC2, SC4, and SC6."
+        }
+      ],
+      "productionNextSteps": [
+        "Build a live logging sheet for each observed chain: origin space, resolving space, repeated phrase, physical check, confirmation outcome.",
+        "Test radio isolation in both spaces and predefine a privacy-safe transcript/redaction workflow.",
+        "Scout and mark one break-room close-up position, one break-room locked wide, one berth over-shoulder, and one berth low-oblique safe angle.",
+        "Adopt an edit rule before shooting: no scenic inserts, no sunrise release, no visually strong beat without a legible judgment link.",
+        "Prepare a coverage priority list that favors repeated motifs over breadth: hovering hand, planted feet, stop-and-sidestep, lowered radio, resumed routine."
+      ]
+    },
+    "projectSummary": "“Third Shift at Harbor Light” is for Baltimore Working Waterfront Archive; current format: observational documentary profile. Creative goal: Make the invisible judgment of overnight dock work legible without turning workers into heroic symbols. Intended audience: Baltimore residents who only encounter the harbor in daylight. Intended feeling: alert respect rather than nostalgia.",
+    "storyObjective": "Objective: Make the invisible judgment of overnight dock work legible without turning workers into heroic symbols. Use each creative choice to help the audience leave feeling alert respect rather than nostalgia.",
+    "audienceAnalysis": "Primary audience: Baltimore residents who only encounter the harbor in daylight. Identify what they already believe, then choose an opening that tests or rewards that belief instead of repeating the brief.",
+    "emotionalArc": [
+      "Hover, Then Key — Reframe waiting as labor and teach the film's first rule: speed yields to certainty.",
+      "Plant and Point — Convert invisible chatter into a readable physical judgment for daylight viewers.",
+      "Shorter Words, Higher Stakes — Show expertise as precise economy inside an ordinary room, avoiding mythic authority.",
+      "Hold, Shift, Recheck — Reject the hero/apprentice cliché and make careful re-reading feel competent rather than tentative.",
+      "Routine Interrupted — Humanize without biography and keep the film anti-heroic.",
+      "Release Without Applause — Land alert respect by showing that successful judgment often looks like nothing dramatic happened."
+    ],
+    "recommendedStructure": "Recommended story engine — Three linked decision chains, each shorter than the last. Chain 1 teaches the grammar; Chain 2 deepens it; Chain 3 lets the audience anticipate the bodily check before the release comes. The tension is whether small corrections keep the chain unbroken for one shift. Alternate break room and loading berth on matched actions instead of biography: hovering thumb over radio / planted feet on the berth; shorter wording / shorter movement; lowered radio / resumed routine. Start in partial comprehension, not explanation. Use privacy-safe fragments of live radio only when they become legible through observed consequence. No scenic harbor inserts, no sunrise payoff, no montage of unidentified labor.",
+    "hookConcepts": [
+      {
+        "title": "Two Rooms, One Harbor",
+        "description": "Spatial POV: the harbor is understood only through the break room and loading berth. Confinement -> recognition of partial visibility -> respect for relay work."
+      },
+      {
+        "title": "Nothing to See, Everything to Judge",
+        "description": "Negative-space POV: prevented trouble is the real event. Expectation of spectacle -> recalibrated attention -> respect for vigilance."
+      },
+      {
+        "title": "Borrowed Ears",
+        "description": "Audience-aligned listening POV through the first-week spotter's partial understanding. Outsider confusion -> earned listening -> changed perception."
+      }
+    ],
+    "editingBlueprint": [
+      "Alternate break room and loading berth on matched actions instead of biography: hovering thumb over radio / planted feet on the berth; shorter wording / shorter movement; lowered radio / resumed routine. Start in partial comprehension, not explanation. Use privacy-safe fragments of live radio only when they become legible through observed consequence. No scenic harbor inserts, no sunrise payoff, no montage of unidentified labor.",
+      "Hover, Then Key: In the break room, the dispatcher reaches for the hand radio, stops with thumb above the talk button, listens through a full burst of traffic, then keys a shorter reply. The first visible skill is not command but restraint.",
+      "Plant and Point: At the loading berth, the first-week spotter steps out from the door, plants both feet on the safe lane stripe, raises the radio, and points toward a container corner and berth edge before answering. Abstract radio language becomes bodily geometry.",
+      "Shorter Words, Higher Stakes: Back in the break room, the dispatcher leans toward the radio, gives a shorter follow-up, lowers it, and taps one finger on the table while waiting for confirmation. Experience sounds compressed, not louder.",
+      "Hold, Shift, Recheck: On the berth, the spotter starts forward, stops mid-step, raises a flat palm for hold, sidesteps left two paces, looks again, then answers into the radio. First-week status does not mean passivity; caution is active judgment.",
+      "Routine Interrupted: In the break room, the dispatcher pulls a packed meal closer, the wrapper crackles, radio cuts in, and the meal is set down unfinished while the reply goes out. The nerve center is not theatrical; judgment lives inside routine interruption.",
+      "Release Without Applause: Back on the berth, the spotter lowers the radio, shoulders drop, and resumes walking the safe lane while the berth itself stays visually almost unchanged. The payoff is continuation, not spectacle."
+    ],
+    "interviewStrategy": [
+      "Pre-interview to find the real story before rolling; note the exact quotes you need.",
+      "Ask questions that surface alert respect rather than nostalgia — feelings and turning points, not just facts.",
+      "Ask subjects to answer in full sentences that restate the question, so clips stand alone.",
+      "Capture room tone and reaction shots for flexible editing."
+    ],
+    "brollPriorities": [
+      "Hover, Then Key: Plastic table, paper cup, fridge, counter, fluorescent ceiling wash; the dispatcher stays seated and ordinary.",
+      "Plant and Point: Door glow behind, dark berth ahead, reflective tape and painted stripe catching light; the spotter is seen mostly from behind or three-quarter back.",
+      "Shorter Words, Higher Stakes: Locked wide frame: table, wall phone, fridge, door, empty corners of the room making the dispatcher small in space.",
+      "Hold, Shift, Recheck: Oblique angle with boots crossing the painted stripe; bollard near foreground, container corner beyond; the spotter's body is active but not glorified.",
+      "Routine Interrupted: High-angle tabletop composition with meal, radio, paper towel, cup, and the dispatcher's hands.",
+      "Release Without Applause: Rear wide: small body moving through a large dark berth, door glow distant, light mast and container lights fixed in place."
+    ],
+    "risks": [
+      "No life-story spine, minimal personal exposition, no panoramic harbor orientation, and any visually strong moment without a trackable judgment chain gets cut.",
+      "Change my mind if the shift yields fewer than three complete, privacy-safe decision chains, or if the repeated physical signals of judgment never become visible enough for viewers to learn the grammar without explanatory repair.",
+      "Do not lock production around an unverified audience (Baltimore residents who only encounter the harbor in daylight) or emotional destination (alert respect rather than nostalgia).",
+      "Do not confuse novelty with value; retain an unconventional direction only when meaning, execution, and audience effect improve."
+    ]
+  },
+  "translationPath": "generateBlueprint(providerOutput)"
+}

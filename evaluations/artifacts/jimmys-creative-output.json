@@ -307,6 +307,366 @@
           "creativeThread": "Pressure is restless; relief is the first complete action and the first still frame."
         }
       ],
+      "storyboardSource": {
+        "status": "RENDERED",
+        "renderer": "STROMAN_PENCIL_SVG_V1",
+        "title": "The first quiet bite · storyboard",
+        "frames": [
+          {
+            "id": "frame_1",
+            "beatId": "beat_1",
+            "title": "Monitor before picture",
+            "cameraLabel": "threshold · shoulder height · physically present",
+            "annotation": "house asks before brand speaks",
+            "glyphs": [
+              {
+                "kind": "DOOR",
+                "x": 8,
+                "y": 18,
+                "scale": 0.9,
+                "label": "dark hall"
+              },
+              {
+                "kind": "ADULT",
+                "x": 55,
+                "y": 42,
+                "scale": 0.9,
+                "label": "one free hand"
+              },
+              {
+                "kind": "BABY_HANDS",
+                "x": 63,
+                "y": 39,
+                "scale": 0.55,
+                "label": "face hidden"
+              },
+              {
+                "kind": "MONITOR",
+                "x": 18,
+                "y": 68,
+                "scale": 0.55,
+                "label": "sound first"
+              },
+              {
+                "kind": "FRIDGE",
+                "x": 82,
+                "y": 32,
+                "scale": 0.85,
+                "label": "still closed"
+              }
+            ],
+            "arrows": [
+              {
+                "fromX": 54,
+                "fromY": 53,
+                "toX": 78,
+                "toY": 48,
+                "label": "interrupted path"
+              }
+            ]
+          },
+          {
+            "id": "frame_2",
+            "beatId": "beat_2",
+            "title": "One hand, five decisions",
+            "cameraLabel": "waist height · reframe only when her hand changes tasks",
+            "annotation": "divided attention becomes choreography",
+            "glyphs": [
+              {
+                "kind": "COUNTER",
+                "x": 45,
+                "y": 66,
+                "scale": 1.25,
+                "label": "unfinished tasks"
+              },
+              {
+                "kind": "ADULT",
+                "x": 45,
+                "y": 38,
+                "scale": 0.8,
+                "label": "anchored here"
+              },
+              {
+                "kind": "BABY_FEET",
+                "x": 63,
+                "y": 45,
+                "scale": 0.55,
+                "label": "safe crop"
+              },
+              {
+                "kind": "PHONE",
+                "x": 22,
+                "y": 66,
+                "scale": 0.45,
+                "label": "buzz"
+              },
+              {
+                "kind": "OBJECT",
+                "x": 72,
+                "y": 66,
+                "scale": 0.55,
+                "label": "bottle / bag"
+              }
+            ],
+            "arrows": [
+              {
+                "fromX": 48,
+                "fromY": 48,
+                "toX": 24,
+                "toY": 62,
+                "label": "task 1"
+              },
+              {
+                "fromX": 48,
+                "fromY": 48,
+                "toX": 70,
+                "toY": 62,
+                "label": "task 2"
+              }
+            ]
+          },
+          {
+            "id": "frame_3",
+            "beatId": "beat_3",
+            "title": "The task already finished",
+            "cameraLabel": "locked three-quarter · hold fridge, board, and hand",
+            "annotation": "show the work that disappears",
+            "glyphs": [
+              {
+                "kind": "FRIDGE",
+                "x": 18,
+                "y": 34,
+                "scale": 1,
+                "label": "warm source"
+              },
+              {
+                "kind": "ADULT",
+                "x": 53,
+                "y": 42,
+                "scale": 0.85,
+                "label": "path stops"
+              },
+              {
+                "kind": "MEAL",
+                "x": 43,
+                "y": 58,
+                "scale": 0.65,
+                "label": "relief"
+              },
+              {
+                "kind": "COUNTER",
+                "x": 72,
+                "y": 66,
+                "scale": 0.9,
+                "label": "clean board"
+              },
+              {
+                "kind": "BABY_HANDS",
+                "x": 61,
+                "y": 49,
+                "scale": 0.45,
+                "label": "reach only"
+              }
+            ],
+            "arrows": [
+              {
+                "fromX": 25,
+                "fromY": 45,
+                "toX": 43,
+                "toY": 56,
+                "label": "one complete action"
+              }
+            ]
+          },
+          {
+            "id": "frame_4",
+            "beatId": "beat_4",
+            "title": "First stillness",
+            "cameraLabel": "camera stops · two planes · hold through shoulder release",
+            "annotation": "brand arrives after emotional proof",
+            "glyphs": [
+              {
+                "kind": "TABLE",
+                "x": 48,
+                "y": 68,
+                "scale": 1.15,
+                "label": "real counter"
+              },
+              {
+                "kind": "ADULT",
+                "x": 54,
+                "y": 39,
+                "scale": 0.9,
+                "label": "body finally still"
+              },
+              {
+                "kind": "MEAL",
+                "x": 46,
+                "y": 62,
+                "scale": 0.6,
+                "label": "label later"
+              },
+              {
+                "kind": "BABY_FEET",
+                "x": 20,
+                "y": 58,
+                "scale": 0.75,
+                "label": "foreground intimacy"
+              },
+              {
+                "kind": "WINDOW",
+                "x": 82,
+                "y": 24,
+                "scale": 0.8,
+                "label": "morning not fantasy"
+              }
+            ],
+            "arrows": []
+          }
+        ],
+        "blocking": {
+          "title": "Kitchen pressure path → relief path",
+          "zones": [
+            {
+              "id": "zone_fridge",
+              "label": "FRIDGE",
+              "x": 6,
+              "y": 8,
+              "width": 22,
+              "height": 28
+            },
+            {
+              "id": "zone_counter",
+              "label": "COUNTER / ISLAND",
+              "x": 37,
+              "y": 34,
+              "width": 38,
+              "height": 22
+            },
+            {
+              "id": "zone_sink",
+              "label": "SINK",
+              "x": 78,
+              "y": 8,
+              "width": 16,
+              "height": 22
+            },
+            {
+              "id": "zone_hall",
+              "label": "HALL / BABY",
+              "x": 5,
+              "y": 68,
+              "width": 24,
+              "height": 20
+            }
+          ],
+          "positions": [
+            {
+              "label": "M1 start",
+              "x": 22,
+              "y": 61,
+              "kind": "SUBJECT"
+            },
+            {
+              "label": "M2 pivot",
+              "x": 48,
+              "y": 63,
+              "kind": "SUBJECT"
+            },
+            {
+              "label": "M3 still",
+              "x": 62,
+              "y": 62,
+              "kind": "SUBJECT"
+            },
+            {
+              "label": "C1 threshold",
+              "x": 12,
+              "y": 52,
+              "kind": "CAMERA"
+            },
+            {
+              "label": "C2 locked",
+              "x": 88,
+              "y": 67,
+              "kind": "CAMERA"
+            },
+            {
+              "label": "fridge practical",
+              "x": 20,
+              "y": 22,
+              "kind": "LIGHT"
+            }
+          ],
+          "paths": [
+            {
+              "label": "pressure: unfinished pivots",
+              "points": [
+                {
+                  "x": 22,
+                  "y": 61
+                },
+                {
+                  "x": 48,
+                  "y": 63
+                },
+                {
+                  "x": 20,
+                  "y": 48
+                },
+                {
+                  "x": 48,
+                  "y": 63
+                }
+              ]
+            },
+            {
+              "label": "relief: one complete line",
+              "points": [
+                {
+                  "x": 20,
+                  "y": 48
+                },
+                {
+                  "x": 62,
+                  "y": 62
+                }
+              ]
+            }
+          ]
+        },
+        "look": {
+          "title": "Pre-dawn pressure → earned warmth",
+          "swatches": [
+            {
+              "name": "pre-dawn charcoal",
+              "color": "#27313a",
+              "use": "room and residual shadow"
+            },
+            {
+              "name": "monitor blue",
+              "color": "#6c8797",
+              "use": "small electronic pressure cues"
+            },
+            {
+              "name": "fridge oatmeal",
+              "color": "#e6d6b8",
+              "use": "relief entering locally"
+            },
+            {
+              "name": "Jimmy's red",
+              "color": "#9f3f35",
+              "use": "one restrained brand accent"
+            },
+            {
+              "name": "skin / linen",
+              "color": "#c9997a",
+              "use": "human warmth without beauty polish"
+            }
+          ],
+          "texture": "Natural mixed practicals, soft highlight roll-off, visible morning shadow, worn domestic surfaces, no glossy lifestyle finish."
+        }
+      },
       "visualPlan": {
         "version": 1,
         "renderer": "STROMAN_PREVIS_SVG_V2",

@@ -43,6 +43,7 @@ describe("BlueprintView", () => {
     expect(screen.getAllByText("16:9")).toHaveLength(4);
     expect(screen.getAllByText("9:16")).toHaveLength(4);
     expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(8);
+    expect(screen.getAllByText("Frame map")).toHaveLength(8);
     expect(screen.getByRole("button", { name: "Blocking" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Lighting" })).toBeInTheDocument();
   });
@@ -146,5 +147,106 @@ describe("BlueprintView", () => {
       "The practical over the island can be dimmed.",
       null,
     );
+  });
+
+  it("uses named route marks instead of overlapping people for dense blocking paths", async () => {
+    const base = creativeAnalysisFixture();
+    const visualPlan = base.blueprint.development.visualPlan;
+    const analysis = {
+      ...base,
+      blueprint: {
+        ...base.blueprint,
+        development: {
+          ...base.blueprint.development,
+          visualPlan: {
+            ...visualPlan,
+            blocking: {
+              ...visualPlan.blocking,
+              subjects: [
+                {
+                  id: "mom",
+                  label: "MOM",
+                  carries: null,
+                  states: [
+                    { label: "START", x: 18, y: 57, note: "entry" },
+                    { label: "2", x: 46, y: 50, note: "counter" },
+                    { label: "3", x: 38, y: 59, note: "table" },
+                    { label: "4", x: 74, y: 58, note: "high chair" },
+                    { label: "END", x: 39, y: 60, note: "table" },
+                  ],
+                },
+                {
+                  id: "baby",
+                  label: "BABY",
+                  carries: null,
+                  states: [{ label: "START", x: 79, y: 58, note: "high chair" }],
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ analysis })} />);
+    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: "Blocking" }));
+    expect(screen.getByText("MOM route")).toBeInTheDocument();
+    expect(screen.getByText("BABY position")).toBeInTheDocument();
+    expect(screen.getByText("M3·M5")).toBeInTheDocument();
+  });
+
+  it("keeps camera names in a keyed legend instead of colliding inside the blocking map", async () => {
+    const base = creativeAnalysisFixture();
+    const visualPlan = base.blueprint.development.visualPlan;
+    const cameraLabel = "Camera bedroom diagonal with protected doorway axis";
+    const analysis = {
+      ...base,
+      blueprint: {
+        ...base.blueprint,
+        development: {
+          ...base.blueprint.development,
+          visualPlan: {
+            ...visualPlan,
+            blocking: {
+              ...visualPlan.blocking,
+              cameras: [
+                {
+                  ...visualPlan.blocking.cameras[0]!,
+                  id: "cluster_camera_1",
+                  label: cameraLabel,
+                  x: 20,
+                  y: 20,
+                },
+                {
+                  ...visualPlan.blocking.cameras[0]!,
+                  id: "cluster_camera_2",
+                  label: "Camera doorway safety",
+                  x: 23,
+                  y: 22,
+                },
+                {
+                  ...visualPlan.blocking.cameras[0]!,
+                  id: "cluster_camera_3",
+                  label: "Camera table profile",
+                  x: 25,
+                  y: 21,
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ analysis })} />);
+    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: "Blocking" }));
+
+    const diagram = screen.getByRole("img", { name: /where are the people and cameras/i });
+    const inDiagram = [...diagram.querySelectorAll("text")].map((label) => label.textContent);
+    expect(inDiagram).toContain("C1/2/3");
+    expect(inDiagram).not.toContain(cameraLabel);
+    expect(screen.getByText(cameraLabel)).toBeInTheDocument();
   });
 });

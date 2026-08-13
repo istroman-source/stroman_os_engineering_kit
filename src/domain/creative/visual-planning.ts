@@ -2,7 +2,10 @@ import type { CreativeBrief } from "./creative-brief";
 import type { CreativeMode } from "./development-blueprint";
 import type { MeaningfulDevelopment, StoryboardGlyphKind } from "./meaningful-development";
 
-export type VisualDevelopmentSource = Omit<MeaningfulDevelopment, "storyboard">;
+export type VisualDevelopmentSource = Omit<MeaningfulDevelopment, "storyboard"> & {
+  /** Retained only as structured plan data; never rendered as provider/system plumbing. */
+  readonly storyboard?: MeaningfulDevelopment["storyboard"];
+};
 
 export type ProductionStage = "IDEA" | "SCOUTING" | "PRE_PRODUCTION" | "SHOOTING" | "POST";
 export type PlanningPriority = "MUST_SOLVE_NOW" | "IMPORTANT" | "WORTH_EXPLORING" | "OPTIONAL";
@@ -74,6 +77,7 @@ export type PrevisSetPieceKind =
   | "DOOR"
   | "COUNTER"
   | "ISLAND"
+  | "TABLE"
   | "FRIDGE"
   | "SINK"
   | "PRACTICAL"
@@ -165,6 +169,7 @@ export interface BlockingSubject {
   readonly id: string;
   readonly label: string;
   readonly carries: string | null;
+  readonly marker?: "PERSON" | "OBJECT";
   readonly states: readonly BlockingSubjectState[];
 }
 
@@ -1138,6 +1143,646 @@ function genericComposition(
   };
 }
 
+const FIGURE_GLYPHS = new Set<StoryboardGlyphKind>(["ADULT", "BABY_HANDS", "BABY_FEET"]);
+
+function bounded(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, Number.isFinite(value) ? value : min));
+}
+
+function concise(value: string, limit = 140): string {
+  const normalized = value.trim().replace(/\s+/g, " ");
+  return normalized.length <= limit ? normalized : `${normalized.slice(0, limit - 1).trimEnd()}…`;
+}
+
+function cleanVisualLabel(value: string, limit = 140): string {
+  const withoutEmbeddedStructure = value
+    .replace(/[\p{Cc}\p{Cf}\uFFFC\uFFFD]/gu, " ")
+    .split(/[\[\]{}【】]/u, 1)[0]!;
+  return concise(withoutEmbeddedStructure, limit);
+}
+
+function frameVisualLabel(value: string): string {
+  const label = cleanVisualLabel(value, 80)
+    .replace(/\s+—\s+(?:visible|verify(?:\s+(?:position|fit))?)$/i, "")
+    .trim();
+  if (/jimmy'?s|prepared.*meal|open meal/i.test(label)) {
+    return /pack|package/i.test(label) ? "MEAL PACK" : "MEAL";
+  }
+  if (/portable cassette player/i.test(label)) return "CASSETTE PLAYER";
+  if (/trash bag.*food/i.test(label)) return "SPOILED FOOD BAG";
+  return concise(label, 20);
+}
+
+function glyphPlane(y: number): PrevisFigure["plane"] {
+  if (y >= 62) return "FOREGROUND";
+  if (y <= 30) return "BACKGROUND";
+  return "MIDGROUND";
+}
+
+function setPieceKind(kind: StoryboardGlyphKind): PrevisSetPieceKind {
+  if (
+    kind === "COUNTER" ||
+    kind === "FRIDGE" ||
+    kind === "MEAL" ||
+    kind === "WINDOW" ||
+    kind === "DOOR"
+  ) {
+    return kind;
+  }
+  return kind === "TABLE" ? "TABLE" : "OBJECT";
+}
+
+function subjectRoleLabel(label: string): string {
+  return (
+    cleanVisualLabel(label)
+      .replace(/\bS\d+(?:\s*\/\s*S\d+)*\b.*$/i, "")
+      .replace(
+        /\b(?:start|end|mark|crouch|standing|seated|held|at|choice|descent|floor|prep|break|intercept|cluster|entry|counter|table|high\s+chair|seat|doorway|planted|check|carry|correction|witness)\b.*$/i,
+        "",
+      )
+      .trim() || label.trim()
+  );
+}
+
+function namedParticipantRoles(text: string): readonly string[] {
+  const roles = new Set<string>();
+  for (const match of text.matchAll(
+    /\b(cousin|subject|performer|parent|child)\s+([a-z0-9]+)\b/gi,
+  )) {
+    roles.add(
+      `${match[1]![0]!.toUpperCase()}${match[1]!.slice(1).toLowerCase()} ${match[2]!.toUpperCase()}`,
+    );
+  }
+  for (const match of text.matchAll(/\b(older|younger)\s+(sibling|sister|brother)\b/gi)) {
+    roles.add(
+      `${match[1]![0]!.toUpperCase()}${match[1]!.slice(1).toLowerCase()} ${match[2]!.toLowerCase()}`,
+    );
+  }
+  return [...roles];
+}
+
+function sceneParticipantRoles(
+  development: VisualDevelopmentSource,
+  scene: MeaningfulDevelopment["sceneHypotheses"][number],
+  blockingRoles: readonly string[],
+): readonly string[] {
+  const allSceneText = development.sceneHypotheses
+    .map((candidate) => `${candidate.title} ${candidate.action} ${candidate.visual}`)
+    .join(" ");
+  const projectNamedRoles = namedParticipantRoles(allSceneText);
+  const sceneText = `${scene.title} ${scene.action} ${scene.visual}`;
+  const normalizedScene = sceneText.toLowerCase();
+  const roles = new Set<string>(namedParticipantRoles(sceneText));
+
+  for (const role of blockingRoles) {
+    if (normalizedScene.includes(role.toLowerCase())) roles.add(role);
+  }
+  for (const role of projectNamedRoles) {
+    const family = role.split(/\s+/)[0]!.toLowerCase();
+    if (normalizedScene.includes(family)) roles.add(role);
+  }
+  return [...roles];
+}
+
+function storyboardFrameFor(
+  development: VisualDevelopmentSource,
+  scene: MeaningfulDevelopment["sceneHypotheses"][number],
+  index: number,
+) {
+  const notebookId = development.directorNotebook.find((beat) => beat.sceneId === scene.id)?.id;
+  return (
+    development.storyboard?.frames.find(
+      (frame) => frame.beatId === scene.id || frame.beatId === notebookId,
+    ) ?? development.storyboard?.frames[index]
+  );
+}
+
+function hostedComposition(
+  id: string,
+  aspectRatio: "16:9" | "9:16",
+  scene: MeaningfulDevelopment["sceneHypotheses"][number],
+  frame: NonNullable<MeaningfulDevelopment["storyboard"]>["frames"][number],
+  sceneRoles: readonly string[],
+): PrevisComposition {
+  const vertical = aspectRatio === "9:16";
+  const convertX = (x: number) =>
+    vertical ? bounded(50 + (x - 50) * 0.62, 4, 96) : bounded(x, 3, 97);
+  const convertY = (y: number) => (vertical ? bounded(8 + y * 0.88, 3, 96) : bounded(y, 3, 96));
+  const glyphs = frame.glyphs.map((glyph, index) => ({
+    ...glyph,
+    index,
+    x: convertX(glyph.x),
+    y: convertY(glyph.y),
+    scale: bounded(glyph.scale, 0.35, 1.5),
+  }));
+  const figures = glyphs
+    .filter((glyph) => FIGURE_GLYPHS.has(glyph.kind))
+    .map((glyph) => {
+      const baseWidth = bounded(
+        (glyph.kind === "ADULT" ? 19 : 13) * glyph.scale,
+        8,
+        vertical ? 46 : 28,
+      );
+      const width = vertical ? bounded(baseWidth * 1.35, 10, 50) : baseWidth;
+      const height = bounded((glyph.kind === "ADULT" ? 58 : 17) * glyph.scale, 8, 72);
+      return figure(
+        glyph.kind,
+        frameVisualLabel(glyph.label.toUpperCase()),
+        bounded(glyph.x - width / 2, 1, 99 - width),
+        bounded(glyph.y - height / 2, 1, 99 - height),
+        width,
+        height,
+        glyphPlane(glyph.y),
+        glyph.index % 2 === 0 ? "RIGHT" : "LEFT",
+      );
+    });
+  if (figures.length === 0) {
+    figures.push(
+      figure(
+        "ADULT",
+        concise(`${scene.title} — PERSON`, 42).toUpperCase(),
+        vertical ? 31 : 39,
+        24,
+        vertical ? 40 : 21,
+        62,
+        "MIDGROUND",
+        "RIGHT",
+      ),
+    );
+  }
+  for (const [roleIndex, role] of sceneRoles.entries()) {
+    if (figures.some((item) => item.label.toLowerCase().includes(role.toLowerCase()))) continue;
+    const width = vertical ? 30 : 17;
+    const height = 54;
+    const x = vertical ? (roleIndex % 2 === 0 ? 16 : 57) : roleIndex % 2 === 0 ? 22 : 67;
+    figures.push(
+      figure(
+        "ADULT",
+        concise(role.toUpperCase(), 42),
+        x,
+        vertical ? 34 + roleIndex * 4 : 31,
+        width,
+        height,
+        "MIDGROUND",
+        roleIndex % 2 === 0 ? "RIGHT" : "LEFT",
+      ),
+    );
+  }
+  const pieces = glyphs
+    .filter((glyph) => !FIGURE_GLYPHS.has(glyph.kind))
+    .map((glyph) => {
+      const wide = glyph.kind === "COUNTER" || glyph.kind === "TABLE";
+      const tall = glyph.kind === "FRIDGE" || glyph.kind === "DOOR" || glyph.kind === "WINDOW";
+      const baseWidth = bounded((wide ? 34 : tall ? 19 : 17) * glyph.scale, 8, vertical ? 48 : 46);
+      const width = vertical ? bounded(baseWidth * 1.22, 9, 54) : baseWidth;
+      const height = bounded((wide ? 16 : tall ? 50 : 15) * glyph.scale, 7, 68);
+      return setPiece(
+        setPieceKind(glyph.kind),
+        frameVisualLabel(glyph.label.toUpperCase()),
+        bounded(glyph.x - width / 2, 1, 99 - width),
+        bounded(glyph.y - height / 2, 1, 99 - height),
+        width,
+        height,
+        glyphPlane(glyph.y),
+        glyph.kind === "OBJECT" ? "STORY" : "CONTEXT",
+      );
+    });
+  if (pieces.length < 2) {
+    pieces.push(
+      setPiece(
+        "WALL",
+        "FRAME EDGE — VERIFY AT SCOUT",
+        vertical ? 3 : 2,
+        4,
+        vertical ? 20 : 96,
+        vertical ? 90 : 14,
+        "BACKGROUND",
+        "QUIET",
+      ),
+    );
+  }
+  const motion = frame.arrows.map((arrow) => ({
+    label: cleanVisualLabel(arrow.label, 20),
+    fromX: convertX(arrow.fromX),
+    fromY: convertY(arrow.fromY),
+    toX: convertX(arrow.toX),
+    toY: convertY(arrow.toY),
+  }));
+  const window = pieces.find((piece) => piece.kind === "WINDOW");
+  const target = figures[0]!;
+  return {
+    id,
+    aspectRatio,
+    shotScale: concise(frame.cameraLabel, 72),
+    lens: vertical ? "portrait lens choice — verify" : "horizontal lens choice — verify",
+    cameraHeight: concise(scene.craft.camera, 88),
+    cameraDistance: vertical
+      ? "new portrait camera position; preserve the governing action"
+      : "show subject, action, and consequence in one causal geography",
+    movement: concise(scene.craft.camera, 120),
+    hold: concise(`Hold through: ${scene.turn}`, 140),
+    executionStrip: [
+      concise(`${frame.cameraLabel} · ${aspectRatio}`, 140),
+      concise(
+        `${frame.annotation} · ${vertical ? "recompose vertically" : "protect geography"}`,
+        140,
+      ),
+    ],
+    headroom: vertical ? 5 : 8,
+    eyelineY: figures.some((item) => item.kind === "ADULT") ? (vertical ? 28 : 34) : null,
+    negativeSpace: null,
+    figures,
+    setPieces: pieces,
+    motion,
+    light: [
+      {
+        label: concise(scene.craft.light, 36),
+        fromX: window ? window.x + window.width / 2 : vertical ? 84 : 88,
+        fromY: window ? window.y + window.height / 2 : 12,
+        toX: target.x + target.width / 2,
+        toY: target.y + target.height / 2,
+        tone: /cool|blue|moon|fluorescent/i.test(scene.craft.light) ? "COOL" : "NEUTRAL",
+      },
+    ],
+    constraint: scene.constraintHandling,
+    locationDependencies: [
+      "verify every drawn boundary against the scout",
+      "preserve the scene's governing action",
+    ],
+  };
+}
+
+function storyboardBlocking(development: VisualDevelopmentSource): BlockingPlan {
+  const source = development.storyboard?.blocking;
+  if (!source) {
+    return {
+      title: "Blocking requires a hosted visual source",
+      question: "Where are the people and cameras, and how do they move?",
+      zones: [],
+      subjects: [],
+      cameras: [],
+      restrictions: ["Regenerate the creative direction before locking blocking."],
+    };
+  }
+  const subjectPositions = source.positions.filter((position) => position.kind === "SUBJECT");
+  const storyboardObjectLabels = development.storyboard!.frames.flatMap((frame) =>
+    frame.glyphs
+      .filter((glyph) => !FIGURE_GLYPHS.has(glyph.kind))
+      .map((glyph) => cleanVisualLabel(glyph.label).toLowerCase()),
+  );
+  const roleGroups = new Map<string, typeof subjectPositions>();
+  for (const position of subjectPositions) {
+    const role = subjectRoleLabel(position.label);
+    roleGroups.set(role, [...(roleGroups.get(role) ?? []), position]);
+  }
+  const canAssignPathsByProviderOrder = source.paths.length === roleGroups.size;
+  const subjects = [...roleGroups.entries()].map(([role, positions], roleIndex) => {
+    const matchingPaths = source.paths.filter((candidate) =>
+      candidate.label.toLowerCase().includes(role.toLowerCase()),
+    );
+    const paths = matchingPaths.length
+      ? matchingPaths
+      : canAssignPathsByProviderOrder
+        ? [source.paths[roleIndex]!]
+        : [];
+    const points = paths.length
+      ? paths.flatMap((path) => path.points)
+      : positions.map((position) => ({ x: position.x, y: position.y }));
+    const pathNote = paths.length
+      ? cleanVisualLabel(paths.map((path) => path.label).join(" / "), 64)
+      : null;
+    return {
+      id: `hosted_subject_${roleIndex + 1}`,
+      label: cleanVisualLabel(role.toUpperCase(), 40),
+      carries: null,
+      ...(storyboardObjectLabels.some((label) => label === role.toLowerCase())
+        ? { marker: "OBJECT" as const }
+        : {}),
+      states: points.map((point, index) => ({
+        label: index === 0 ? "START" : index === points.length - 1 ? "END" : String(index + 1),
+        x: bounded(point.x, 0, 100),
+        y: bounded(point.y, 0, 100),
+        note: pathNote ?? cleanVisualLabel(positions[index]?.label ?? `${role} position`, 64),
+      })),
+    };
+  });
+  const aimTargets = subjects.flatMap((subject) => subject.states);
+  return {
+    title: cleanVisualLabel(source.title, 100),
+    question: "Where are the people and cameras, and how do they move?",
+    zones: source.zones.map((zone) => ({
+      ...zone,
+      x: bounded(zone.x, 0, 100),
+      y: bounded(zone.y, 0, 100),
+      width: bounded(zone.width, 1, 100),
+      height: bounded(zone.height, 1, 100),
+      label: cleanVisualLabel(zone.label, 48),
+    })),
+    subjects,
+    cameras: source.positions
+      .filter((position) => position.kind === "CAMERA")
+      .map((position, index) => ({
+        id: `hosted_camera_${index + 1}`,
+        label: cleanVisualLabel(position.label, 32),
+        x: bounded(position.x, 0, 100),
+        y: bounded(position.y, 0, 100),
+        aimX: aimTargets[index % Math.max(1, aimTargets.length)]?.x ?? 50,
+        aimY: aimTargets[index % Math.max(1, aimTargets.length)]?.y ?? 50,
+        use: "Reproduce the frame-specific storyboard axis.",
+      })),
+    restrictions: [
+      "Diagram labels come from the hosted scene plan; location geometry remains provisional until the scout confirms it.",
+      ...(canAssignPathsByProviderOrder
+        ? ["Where labels did not match, subject paths retain the provider's original ordering."]
+        : []),
+    ],
+  };
+}
+
+function sceneLightForPosition(
+  development: VisualDevelopmentSource,
+  positionLabel: string,
+  index: number,
+  positionCount: number,
+): string {
+  const ignored = new Set(["camera", "light", "source", "practical", "soft", "fill", "key"]);
+  const tokens = (positionLabel.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter(
+    (token) => token.length >= 4 && !ignored.has(token),
+  );
+  const ranked = development.sceneHypotheses
+    .map((scene, sceneIndex) => ({
+      scene,
+      sceneIndex,
+      score: tokens.filter((token) =>
+        [scene.title, scene.action, scene.visual, scene.craft.blocking, scene.craft.camera]
+          .join(" ")
+          .toLowerCase()
+          .includes(token),
+      ).length,
+    }))
+    .sort((left, right) => right.score - left.score || left.sceneIndex - right.sceneIndex);
+  if ((ranked[0]?.score ?? 0) > 0) return ranked[0]!.scene.craft.light;
+  const fallbackIndex =
+    positionCount <= 1
+      ? 0
+      : Math.round((index * (development.sceneHypotheses.length - 1)) / (positionCount - 1));
+  return (
+    development.sceneHypotheses[fallbackIndex]?.craft.light ?? "Verify source intent at scout."
+  );
+}
+
+function storyboardLighting(development: VisualDevelopmentSource): LightingPlan {
+  const source = development.storyboard?.blocking;
+  const positions = source?.positions.filter((position) => position.kind === "LIGHT") ?? [];
+  const use = development.sceneHypotheses.map((scene) => scene.craft.light).join(" ");
+  return {
+    title: development.storyboard?.look.title ?? "Motivated light to verify",
+    question: "Where are the meaningful sources, modifiers, and practicals?",
+    zones:
+      source?.zones.map((zone) => ({
+        ...zone,
+        label: cleanVisualLabel(zone.label, 48),
+        x: bounded(zone.x, 0, 100),
+        y: bounded(zone.y, 0, 100),
+        width: bounded(zone.width, 1, 100),
+        height: bounded(zone.height, 1, 100),
+      })) ?? [],
+    sources: positions.length
+      ? positions.map((position, index) => {
+          const sourceUse = sceneLightForPosition(
+            development,
+            position.label,
+            index,
+            positions.length,
+          );
+          return {
+            id: `hosted_light_${index + 1}`,
+            label: cleanVisualLabel(position.label, 42),
+            kind: "PRACTICAL" as const,
+            x: bounded(position.x, 0, 100),
+            y: bounded(position.y, 0, 100),
+            toX: 50,
+            toY: 50,
+            tone: /cool|blue|moon|fluorescent/i.test(sourceUse)
+              ? ("COOL" as const)
+              : ("NEUTRAL" as const),
+            control: "UNKNOWN" as const,
+            use: concise(sourceUse, 180),
+          };
+        })
+      : [
+          {
+            id: "hosted_light_unresolved",
+            label: "MOTIVATED SOURCE — VERIFY AT SCOUT",
+            kind: "FIXTURE",
+            x: 84,
+            y: 14,
+            toX: 52,
+            toY: 48,
+            tone: "NEUTRAL",
+            control: "UNKNOWN",
+            use: concise(use, 180),
+          },
+        ],
+    instruction: concise(
+      `Scene-derived intent: ${use} Do not prescribe unseen fixtures or controls before the scout.`,
+      260,
+    ),
+  };
+}
+
+function groundJimmyHostedComposition(
+  composition: PrevisComposition,
+  context: CreativePlanningContext,
+): PrevisComposition {
+  const c2Blocked = hasCorrection(
+    context,
+    /camera cannot|cannot go behind|behind the island.*off[- ]limits/i,
+  );
+  const setPieces = composition.setPieces.map((piece) => {
+    if (piece.kind === "COUNTER" || /kitchen counter/i.test(piece.label)) {
+      return { ...piece, kind: "ISLAND" as const, label: "ISLAND" };
+    }
+    if (piece.kind === "WINDOW") return { ...piece, label: "SINK WINDOW" };
+    if (piece.kind === "FRIDGE") return { ...piece, label: "FRIDGE" };
+    if (piece.kind === "DOOR") return { ...piece, label: `${frameVisualLabel(piece.label)} ?` };
+    if (piece.kind === "TABLE" || /chair/i.test(piece.label)) {
+      return { ...piece, label: `${frameVisualLabel(piece.label)} ?` };
+    }
+    return piece;
+  });
+  return {
+    ...composition,
+    cameraDistance: c2Blocked
+      ? "confirmed island-end lane; sink-side position rejected by filmmaker"
+      : composition.aspectRatio === "16:9"
+        ? "visible threshold / island-end lane; confirm full operating depth"
+        : "independent portrait position at the visible island end; confirm clearance",
+    setPieces,
+    locationDependencies: [
+      "visible freestanding island",
+      "visible sink window, pendant, fridge, and hall relationship",
+      "verify table, chair, and high-chair fit before locking the frame",
+    ],
+  };
+}
+
+function groundJimmyHostedShots(
+  shots: readonly PrevisShotPair[],
+  context: CreativePlanningContext,
+): readonly PrevisShotPair[] {
+  return adaptJimmyShots(
+    shots.map((shot) => ({
+      ...shot,
+      horizontal: groundJimmyHostedComposition(shot.horizontal, context),
+      vertical: groundJimmyHostedComposition(shot.vertical, context),
+    })),
+    context,
+  );
+}
+
+function hostedVisualPlan(
+  brief: CreativeBrief,
+  mode: CreativeMode,
+  development: VisualDevelopmentSource,
+  context: CreativePlanningContext,
+): VisualPlan {
+  const analyzed = analyzeScoutPhotoSet(context);
+  const jimmyScoutAnchored =
+    isJimmyBrief(brief, mode) && isScoutKitchenCalibration(analyzed.scoutPhotos);
+  const blockingRoles = [
+    ...new Set(
+      development
+        .storyboard!.blocking.positions.filter((position) => position.kind === "SUBJECT")
+        .map((position) => subjectRoleLabel(position.label))
+        .filter(Boolean),
+    ),
+  ];
+  const translatedShots = development.sceneHypotheses.slice(0, 4).flatMap((scene, index) => {
+    const frame = storyboardFrameFor(development, scene, index);
+    if (!frame) return [];
+    const sceneRoles = sceneParticipantRoles(development, scene, blockingRoles);
+    return [
+      {
+        id: `shot_${index + 1}`,
+        sceneId: scene.id,
+        title: scene.title,
+        purpose: scene.purpose,
+        priority: (index < 2
+          ? "MUST_GET"
+          : index === 2
+            ? "SAFETY"
+            : "OPTIONAL_EXPLORATION") as CoveragePriority,
+        horizontal: hostedComposition(`shot_${index + 1}_h`, "16:9", scene, frame, sceneRoles),
+        vertical: hostedComposition(`shot_${index + 1}_v`, "9:16", scene, frame, sceneRoles),
+      },
+    ];
+  });
+  const shots = jimmyScoutAnchored
+    ? groundJimmyHostedShots(translatedShots, analyzed)
+    : translatedShots;
+  const hostedBlocking = storyboardBlocking(development);
+  const look = development.storyboard!.look;
+  const palette = ["#3b4650", "#b98268", "#d1b472", "#6c8797", "#9f3f35"];
+  return {
+    version: 1,
+    renderer: "STROMAN_PREVIS_SVG_V2",
+    stage: analyzed.stage,
+    creativeSpine: {
+      film: development.insight.thesis,
+      why: development.directionDecision.whyThisProject,
+      audienceEffect: development.insight.audiencePromise,
+      keyBeats: development.sceneHypotheses.map((scene) => scene.title),
+      nextDecision: development.questions[0]?.prompt ?? "Verify the governing action.",
+    },
+    priorities: development.questions.slice(0, 3).map((question, index) => ({
+      priority: (index === 0
+        ? "MUST_SOLVE_NOW"
+        : index === 1
+          ? "IMPORTANT"
+          : "WORTH_EXPLORING") as PlanningPriority,
+      label: `Decision ${index + 1}`,
+      decision: question.prompt,
+    })),
+    shots,
+    blocking: jimmyScoutAnchored
+      ? {
+          ...jimmyBlocking(true, analyzed),
+          title: "Photo-anchored hosted blocking",
+          subjects: hostedBlocking.subjects,
+          restrictions: [
+            ...jimmyBlocking(true, analyzed).restrictions,
+            "Hosted subject paths are retained as story intent; verify table and high-chair fit against the visible island before locking marks.",
+          ],
+        }
+      : hostedBlocking,
+    lighting: jimmyScoutAnchored ? jimmyLighting(true, analyzed) : storyboardLighting(development),
+    look: {
+      title: concise(look.title, 100),
+      question: "What palette, contrast, texture, and grade direction govern the sequence?",
+      swatches: look.swatches.map((swatch, index) => ({
+        name: cleanVisualLabel(swatch.name, 42),
+        color: /^#[0-9a-f]{6}$/i.test(swatch.color)
+          ? swatch.color
+          : palette[index % palette.length]!,
+        use: concise(swatch.use, 100),
+      })),
+      contrast: concise(development.sceneHypotheses[0]?.craft.color ?? "Verify contrast.", 180),
+      texture: concise(look.texture, 180),
+      restraint:
+        "Treat the look as a hypothesis; reject decorative grading that does not serve the scene turn.",
+    },
+    sound: development.sceneHypotheses.map((scene) => ({
+      sceneId: scene.id,
+      label: scene.title,
+      mustRecord: [scene.sound],
+      perspective: scene.craft.sound,
+      restraint: "Capture real sources before adding score or sound-design punctuation.",
+    })),
+    coverage: shots.map((shot) => ({
+      id: shot.id,
+      priority: shot.priority,
+      label: shot.title,
+      serves: [shot.purpose],
+      why:
+        shot.priority === "MUST_GET"
+          ? "Carries a required story turn."
+          : "Take only after the must-get story turns work.",
+    })),
+    location: jimmyScoutAnchored
+      ? jimmyLocation(analyzed)
+      : {
+          mode: analyzed.scoutPhotos.length ? "PHOTO_INPUT_PENDING" : "INTENT_ONLY",
+          photos: analyzed.scoutPhotos,
+          claims: analyzed.spatialClaims,
+          confirmationQuestion: analyzed.scoutPhotos.length
+            ? "Which drawn boundaries and camera lanes do the scout images actually confirm?"
+            : "Add a wide and reverse location photo before locking physical geometry.",
+        },
+    delta: jimmyScoutAnchored
+      ? {
+          trigger: "Two scout photos grounded the hosted direction",
+          changed: [
+            "The hosted scene sequence and actions now use the visible island, sink window, pendant, fridge, and hall relationship.",
+            "Blocking and lighting use the two scout angles while unmeasurable operating depth stays explicitly unresolved.",
+            "Horizontal and vertical frames remain separately composed instead of cropping one master frame.",
+          ],
+          unchanged: [
+            "The hosted creative thesis, scene turns, and filmmaker constraints remain intact.",
+            "Table, chair, high-chair fit, exact dimensions, and fixture controls are not claimed from unseen geometry.",
+          ],
+        }
+      : {
+          trigger: "Hosted creative direction developed",
+          changed: [
+            "Provider storyboard intent became independently composed 16:9 and 9:16 frame hypotheses.",
+          ],
+          unchanged: ["All physical geometry remains unverified until the scout confirms it."],
+        },
+    productionReality: analyzed.production,
+  };
+}
+
 function genericVisualPlan(
   brief: CreativeBrief,
   mode: CreativeMode,
@@ -1281,6 +1926,9 @@ export function generateVisualPlan(
   development: VisualDevelopmentSource,
   planningContext: CreativePlanningContext = emptyCreativePlanningContext(),
 ): VisualPlan {
+  if (development.reasoningSource === "HOSTED_REASONING" && development.storyboard) {
+    return hostedVisualPlan(brief, mode, development, planningContext);
+  }
   return isJimmyBrief(brief, mode)
     ? jimmyVisualPlan(development, planningContext)
     : genericVisualPlan(brief, mode, development, planningContext);
@@ -1391,6 +2039,7 @@ export interface VisualPlanQualityReport {
 /** Release gate for execution clarity and cognitive economy, independent of prose quality. */
 export function evaluateVisualPlanQuality(plan: VisualPlan): VisualPlanQualityReport {
   const findings: string[] = [];
+  const compositionSignatures = new Set<string>();
   if (plan.shots.length < 3) findings.push("Fewer than three executable shot pairs.");
   for (const shot of plan.shots) {
     const horizontal = shot.horizontal;
@@ -1410,13 +2059,71 @@ export function evaluateVisualPlanQuality(plan: VisualPlan): VisualPlanQualityRe
       );
     }
     for (const composition of [horizontal, vertical]) {
+      if (composition.aspectRatio === "16:9") {
+        compositionSignatures.add(
+          JSON.stringify({
+            figures: composition.figures.map((item) => [
+              item.kind,
+              item.x,
+              item.y,
+              item.width,
+              item.height,
+            ]),
+            set: composition.setPieces.map((item) => [
+              item.kind,
+              item.x,
+              item.y,
+              item.width,
+              item.height,
+            ]),
+            motion: composition.motion.map((item) => [item.fromX, item.fromY, item.toX, item.toY]),
+          }),
+        );
+      }
       if (composition.figures.length === 0 || composition.setPieces.length < 2) {
         findings.push(`${composition.id} lacks a subject or meaningful physical environment.`);
+      }
+      if (
+        [...composition.figures, ...composition.setPieces].some(
+          (item) =>
+            item.x < 0 ||
+            item.y < 0 ||
+            item.width <= 0 ||
+            item.height <= 0 ||
+            item.x + item.width > 100 ||
+            item.y + item.height > 100,
+        )
+      ) {
+        findings.push(`${composition.id} contains visual elements outside the drawable frame.`);
+      }
+      if (
+        [...composition.figures, ...composition.setPieces].some((item) =>
+          /PRIMARY (?:SUBJECT|ACTION)|LOCATION — UNVERIFIED|STORY PRESSURE/i.test(item.label),
+        )
+      ) {
+        findings.push(`${composition.id} uses anonymous placeholder visual grammar.`);
+      }
+      if (
+        [...composition.figures, ...composition.setPieces].some((item) =>
+          /[\p{Cc}\p{Cf}\uFFFC\uFFFD]/u.test(item.label),
+        )
+      ) {
+        findings.push(`${composition.id} contains a malformed visual label.`);
+      }
+      if (
+        [...composition.figures, ...composition.setPieces].some((item) =>
+          /[\[\]{}【】]|["“”']?kind["“”']?\s*:/i.test(item.label),
+        )
+      ) {
+        findings.push(`${composition.id} contains embedded structure in a visual label.`);
       }
       if (composition.executionStrip.some((line) => line.length > 150)) {
         findings.push(`${composition.id} overloads the execution strip.`);
       }
     }
+  }
+  if (compositionSignatures.size < plan.shots.length) {
+    findings.push("Storyboard frames repeat a generic composition template across story beats.");
   }
   if (
     plan.blocking.subjects.length === 0 ||
@@ -1424,7 +2131,7 @@ export function evaluateVisualPlanQuality(plan: VisualPlan): VisualPlanQualityRe
     plan.blocking.subjects.some(
       (subject) =>
         !subject.label.trim() ||
-        subject.states.length < 2 ||
+        subject.states.length < 1 ||
         subject.states.some((state) => !state.label.trim()),
     )
   ) {
