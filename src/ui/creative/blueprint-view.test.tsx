@@ -61,10 +61,49 @@ describe("BlueprintView", () => {
     const diagram = screen.getByRole("img", { name: /motivated source hypothesis/i });
     const labels = [...diagram.querySelectorAll("text")];
     const zoneLabel = labels.find((label) => label.textContent === "SINK + WINDOW")!;
-    const sourceLabel = labels.find((label) => label.textContent === "WINDOW")!;
+    const sourceLabel = labels.find((label) => label.textContent === "L1")!;
     expect(
       Number(zoneLabel.getAttribute("y")) - Number(sourceLabel.getAttribute("y")),
     ).toBeGreaterThan(4);
+    expect(screen.getByText(/window — cool ambience/i)).toBeInTheDocument();
+  });
+
+  it("keys clustered lighting sources to a readable execution legend", async () => {
+    const base = creativeAnalysisFixture();
+    const visualPlan = base.blueprint.development.visualPlan;
+    const firstSource = visualPlan.lighting.sources[0]!;
+    const analysis = {
+      ...base,
+      blueprint: {
+        ...base.blueprint,
+        development: {
+          ...base.blueprint.development,
+          visualPlan: {
+            ...visualPlan,
+            lighting: {
+              ...visualPlan.lighting,
+              sources: [
+                { ...firstSource, id: "bedroom_window", label: "BEDROOM WINDOW KEY", x: 80, y: 20 },
+                { ...firstSource, id: "kitchen_window", label: "KITCHEN WINDOW KEY", x: 82, y: 21 },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ analysis })} />);
+    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: "Lighting" }));
+
+    const diagram = screen.getByRole("img", { name: /where are the meaningful sources/i });
+    const inDiagram = [...diagram.querySelectorAll("text")].map((label) => label.textContent);
+    expect(inDiagram).toContain("L1");
+    expect(inDiagram).toContain("L2");
+    expect(inDiagram).not.toContain("BEDROOM WINDOW KEY");
+    expect(inDiagram).not.toContain("KITCHEN WINDOW KEY");
+    expect(screen.getByText(/bedroom window key/i)).toBeInTheDocument();
+    expect(screen.getByText(/kitchen window key/i)).toBeInTheDocument();
   });
 
   it("keeps alternatives and craft reasoning in the optional Deep room", async () => {

@@ -91,6 +91,30 @@ Structured evidence lives under `evaluations/artifacts/hosted/`:
 - `jimmys-scout-*-desktop.jpg` and `jimmys-scout-mobile-*.jpg` — rendered location, storyboard,
   blocking, lighting, responsive, and vertical-frame evidence
 
+### Jimmy scout evidence correspondence
+
+The retained Jimmy scout renders below are one signed-in application inspection of
+`jimmys-famous-meals-hosted-scout.json`; they are not evidence for any earlier Jimmy direction.
+The structured artifact identifies the hosted provider as `openai-responses:gpt-5.4`, the
+application path as `developCreativeBlueprint`, and the translation path as
+`generateBlueprint(providerOutput, scoutContext)`. Visible anchors shared by the JSON and renders
+include **Before She Sits**, **Counter Before Coffee**, **First Almost-Sit**, the island / fridge /
+sink-window / pendant geography, the MOM route, and independently composed 16:9 and 9:16 frames.
+
+| Render | Product surface verified |
+| --- | --- |
+| `jimmys-scout-location-desktop.jpg` | signed-in scout-photo grounding and uncertainty states |
+| `jimmys-scout-frames-desktop.jpg` | scene-specific paired 16:9 / 9:16 storyboard compositions |
+| `jimmys-scout-blocking-desktop.jpg` | named subject route, camera marks, and protected geography |
+| `jimmys-scout-lighting-desktop.jpg` | separate source / modifier / practical lighting artifact |
+| `jimmys-scout-mobile-top.jpg` | 390-pixel progressive-disclosure entry state |
+| `jimmys-scout-mobile-frames.jpg` | responsive paired-frame behavior |
+| `jimmys-scout-mobile-vertical.jpg` | independently understandable portrait composition |
+
+Five superseded `actual-app-jimmys-*.png` files were removed after independent review established
+that they depicted a different earlier direction. Keeping them beside the final hosted JSON made
+the release evidence internally contradictory.
+
 Independent product review must inspect these artifacts together with
 `CREATIVE_INTELLIGENCE_DOCTRINE.md`, `FILMMAKING_INTELLIGENCE_DIRECTION.md`, and the permanent
 negative fixture at `evaluations/fixtures/jimmys-famous-meals.json`. Valid JSON, provider

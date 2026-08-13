@@ -755,9 +755,10 @@ function LightingDiagram({ plan }: { plan: LightingPlan }) {
             </text>
           </g>
         ))}
-        {plan.sources.map((source) => {
+        {plan.sources.map((source, index) => {
           const color =
             source.tone === "COOL" ? "#668998" : source.tone === "WARM" ? "#c28b32" : "#6d6b66";
+          const code = `L${index + 1}`;
           return (
             <g key={source.id}>
               <path
@@ -769,26 +770,28 @@ function LightingDiagram({ plan }: { plan: LightingPlan }) {
               <circle cx={source.x} cy={source.y} r="3.2" fill={color} />
               <text
                 x={source.x}
-                y={source.y - 5}
+                y={source.y + 0.8}
                 textAnchor="middle"
                 fontSize="1.8"
-                fill="#3e3932"
-                fontWeight="700"
+                fill="#fffaf0"
+                fontWeight="800"
               >
-                {source.label.split(" — ")[0]}
-              </text>
-              <text x={source.x} y={source.y + 6} textAnchor="middle" fontSize="1.4" fill="#625d55">
-                {source.control}
+                {code}
               </text>
             </g>
           );
         })}
       </svg>
       <div className="mx-auto mt-3 grid max-w-4xl gap-2 sm:grid-cols-2">
-        {plan.sources.map((source) => (
+        {plan.sources.map((source, index) => (
           <div key={source.id} className="rounded-md border border-[#c9c1b4] bg-white/45 px-3 py-2">
-            <p className="text-xs font-semibold">
-              {source.label} · {source.control.toLowerCase()}
+            <p className="flex items-start gap-2 text-xs font-semibold">
+              <span className="rounded bg-[#5d574f] px-1.5 py-0.5 font-mono text-[#fffaf0]">
+                L{index + 1}
+              </span>
+              <span>
+                {source.label} · {source.control.toLowerCase()}
+              </span>
             </p>
             <p className="mt-1 text-xs text-[#625d55]">{source.use}</p>
           </div>
