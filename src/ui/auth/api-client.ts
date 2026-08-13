@@ -24,7 +24,21 @@ async function requestRaw(
 ): Promise<{ body: unknown; etag: string | null }> {
   const res = await fetch(path, { credentials: "same-origin", ...init });
   const text = await res.text();
-  const body = text ? (JSON.parse(text) as unknown) : null;
+  let body: unknown = null;
+  if (text) {
+    try {
+      body = JSON.parse(text) as unknown;
+    } catch {
+      // Reverse proxies can terminate a long-running upstream request with a
+      // plain-text body. Never surface that body (or a JSON parser exception)
+      // to the filmmaker UI; preserve a typed signal so the caller can recover.
+      throw new ApiRequestError(
+        res.status,
+        "INVALID_UPSTREAM_RESPONSE",
+        "The service returned an unreadable response.",
+      );
+    }
+  }
   if (!res.ok) {
     const err = (body as { error?: { code?: string; message?: string } } | null)?.error;
     throw new ApiRequestError(
@@ -181,6 +195,10 @@ export function friendlyError(err: unknown): string {
       return "Stroman OS is currently in private testing. This account does not have access yet.";
     case "ACCESS_CONTROL_UNAVAILABLE":
       return "Private access verification is temporarily unavailable.";
+    case "INVALID_UPSTREAM_RESPONSE":
+      return "The service returned an unexpected response. Please try again.";
+    case "CREATIVE_DEVELOPMENT_PENDING":
+      return "Creative development is still finishing. Keep this page open or return shortly; do not submit it again.";
     case "VALIDATION_FAILED":
     case "MALFORMED_JSON":
       return "Please check your input and try again.";
