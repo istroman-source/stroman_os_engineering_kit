@@ -6,6 +6,7 @@ const EXPECTED_SECURITY_HEADERS = {
   "permissions-policy": "camera=(), microphone=(), geolocation=()",
   "cross-origin-opener-policy": "same-origin",
   "x-content-type-options": "nosniff",
+  "strict-transport-security": "max-age=31536000",
 } as const;
 
 test.describe("deployed security boundary", () => {

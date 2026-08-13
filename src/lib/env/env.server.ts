@@ -15,7 +15,6 @@ import { EnvironmentValidationError, issuesFromZodError } from "./error";
 export const serverEnvSchema = clientEnvSchema
   .extend({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-    // Optional at this stage: no domain models depend on the database yet.
     DATABASE_URL: z.string().url().optional(),
     FEATURE_FLAGS: z.string().default(""),
     LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
@@ -34,6 +33,21 @@ export const serverEnvSchema = clientEnvSchema
     APP_ALLOWED_ORIGINS: z.string().default(""),
     /** Same-origin callback the provider email link returns to (defaults derived). */
     SUPABASE_EMAIL_REDIRECT_URL: z.string().url().optional(),
+    /** Verified email used only to claim the singleton initial-owner grant. */
+    STROMAN_PRIVATE_BETA_OWNER_EMAIL: z.string().email().optional(),
+    /** Safe deployment identity surfaced by health endpoints. */
+    STROMAN_RELEASE_SHA: z
+      .string()
+      .regex(/^[0-9a-f]{40}$/i)
+      .optional(),
+    /** Persistent runtime path for imported source material. */
+    STROMAN_SOURCE_STORAGE_PATH: z.string().min(1).optional(),
+    /** Hosted creative reasoning is mandatory for the private web release. */
+    STROMAN_CREATIVE_REASONING_PROVIDER: z
+      .enum(["auto", "openai", "deterministic"])
+      .default("auto"),
+    STROMAN_CREATIVE_MODEL: z.string().min(1).default("gpt-5.4"),
+    OPENAI_API_KEY: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
     // Fail closed at startup if production is missing required auth configuration,
@@ -51,6 +65,49 @@ export const serverEnvSchema = clientEnvSchema
         code: z.ZodIssueCode.custom,
         path: ["SUPABASE_ANON_KEY"],
         message: "SUPABASE_ANON_KEY is required in production.",
+      });
+    }
+    const required: ReadonlyArray<keyof typeof env> = [
+      "DATABASE_URL",
+      "APP_ALLOWED_ORIGINS",
+      "SUPABASE_EMAIL_REDIRECT_URL",
+      "STROMAN_PRIVATE_BETA_OWNER_EMAIL",
+      "STROMAN_RELEASE_SHA",
+      "STROMAN_SOURCE_STORAGE_PATH",
+      "OPENAI_API_KEY",
+    ];
+    for (const name of required) {
+      if (!env[name]) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [name],
+          message: `${name} is required in production.`,
+        });
+      }
+    }
+    if (!env.NEXT_PUBLIC_APP_URL.startsWith("https://")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["NEXT_PUBLIC_APP_URL"],
+        message: "NEXT_PUBLIC_APP_URL must use HTTPS in production.",
+      });
+    }
+    if (env.SUPABASE_EMAIL_REDIRECT_URL) {
+      const appOrigin = new URL(env.NEXT_PUBLIC_APP_URL).origin;
+      const redirect = new URL(env.SUPABASE_EMAIL_REDIRECT_URL);
+      if (redirect.origin !== appOrigin || redirect.pathname !== "/auth/callback") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["SUPABASE_EMAIL_REDIRECT_URL"],
+          message: "SUPABASE_EMAIL_REDIRECT_URL must be the app's same-origin /auth/callback URL.",
+        });
+      }
+    }
+    if (env.STROMAN_CREATIVE_REASONING_PROVIDER !== "openai") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["STROMAN_CREATIVE_REASONING_PROVIDER"],
+        message: "Hosted OpenAI creative reasoning is required in production.",
       });
     }
   });

@@ -1,5 +1,9 @@
 export * from "./types";
-export { authenticateRequest } from "./authenticate-request";
+export {
+  authenticateRequest,
+  resolvePrivateBetaRole,
+  resolveRequestIdentity,
+} from "./authenticate-request";
 export {
   cookieName,
   clearSessionCookie,

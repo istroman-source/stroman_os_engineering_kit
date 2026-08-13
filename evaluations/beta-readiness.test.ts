@@ -15,6 +15,7 @@ describe("beta readiness automated gate", () => {
       "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
       "Cross-Origin-Opener-Policy": "same-origin",
       "X-Content-Type-Options": "nosniff",
+      "Strict-Transport-Security": "max-age=31536000",
     });
   });
 
@@ -22,7 +23,7 @@ describe("beta readiness automated gate", () => {
     const response = live();
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("no-store");
-    expect(await response.json()).toEqual({ status: "ok" });
+    expect(await response.json()).toEqual({ status: "ok", release: "unknown" });
   });
 
   it("redacts nested credentials and authorization material from operational logs", () => {

@@ -24,18 +24,22 @@ function stubFetch(status: number, body: unknown) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("api-client", () => {
-  it("getSession returns true/false and never throws", async () => {
-    stubFetch(200, { authenticated: true });
-    expect(await getSession()).toBe(true);
-    stubFetch(200, { authenticated: false });
-    expect(await getSession()).toBe(false);
+  it("getSession distinguishes authorized, denied, signed-out, and unavailable state", async () => {
+    stubFetch(200, { authenticated: true, privateBetaAccess: true });
+    expect(await getSession()).toEqual({ state: "AUTHORIZED" });
+    stubFetch(200, { authenticated: true, privateBetaAccess: false });
+    expect(await getSession()).toEqual({ state: "PRIVATE_BETA_DENIED" });
+    stubFetch(200, { authenticated: false, privateBetaAccess: false });
+    expect(await getSession()).toEqual({ state: "SIGNED_OUT" });
+    stubFetch(401, { error: { code: "AUTHENTICATION_REQUIRED", message: "Sign in." } });
+    expect(await getSession()).toEqual({ state: "SIGNED_OUT" });
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => {
         throw new Error("network");
       }),
     );
-    expect(await getSession()).toBe(false);
+    expect(await getSession()).toEqual({ state: "UNAVAILABLE" });
   });
 
   it("startOtp resolves on 200 and throws a typed error on 429", async () => {

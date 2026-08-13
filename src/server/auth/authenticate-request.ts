@@ -5,7 +5,12 @@ import {
   type AuthenticatedActor,
   resolveAuthenticatedActor,
 } from "@/application/identity";
-import { getApiContext, getAuthGateway, getRequestAuthenticator } from "@/server/composition";
+import {
+  getApiContext,
+  getAuthGateway,
+  getPrivateBetaAccessAuthorizer,
+  getRequestAuthenticator,
+} from "@/server/composition";
 import { HttpError } from "@/server/http/http-error";
 import { getAllowedOrigins, isCookieSecure } from "./config";
 import { cookieName, parseCookies, serializeSessionCookie } from "./cookies";
@@ -32,6 +37,43 @@ const DEFAULT_ACCESS_TTL_SECONDS = 3600;
  * Identity is NEVER taken from a request body, query, or caller-chosen header.
  */
 export async function authenticateRequest(req: Request): Promise<AuthenticatedActor> {
+  const resolved = await resolveRequestIdentity(req);
+  const role = await resolvePrivateBetaRole(resolved);
+  if (!role) {
+    throw new HttpError(
+      403,
+      "PRIVATE_BETA_ACCESS_REQUIRED",
+      "Stroman OS is currently in private testing. This account does not have access yet.",
+    );
+  }
+  return resolved.actor;
+}
+
+export interface ResolvedRequestIdentity {
+  readonly actor: AuthenticatedActor;
+  readonly principal: Extract<AuthOutcome, { kind: "authenticated" }>["principal"];
+}
+
+/** Resolve beta authorization while keeping storage failures distinct from denial. */
+export async function resolvePrivateBetaRole(
+  resolved: ResolvedRequestIdentity,
+): Promise<"OWNER" | "TESTER" | null> {
+  try {
+    return await getPrivateBetaAccessAuthorizer().authorize(
+      resolved.actor.userId,
+      resolved.principal.email,
+    );
+  } catch {
+    throw new HttpError(
+      503,
+      "ACCESS_CONTROL_UNAVAILABLE",
+      "Access control is temporarily unavailable.",
+    );
+  }
+}
+
+/** Verify the session and resolve the stable internal identity before beta access. */
+export async function resolveRequestIdentity(req: Request): Promise<ResolvedRequestIdentity> {
   let outcome = await getRequestAuthenticator().authenticate(req);
 
   // The access token is gone or expired — try the refresh cookie before failing.
@@ -74,11 +116,11 @@ export async function authenticateRequest(req: Request): Promise<AuthenticatedAc
     }
   }
 
-  const resolved = await resolveAuthenticatedActor(getApiContext(), {
+  const resolvedActor = await resolveAuthenticatedActor(getApiContext(), {
     principal: outcome.principal,
   });
-  if (!resolved.ok) {
-    if (resolved.error instanceof AccountDisabledError) {
+  if (!resolvedActor.ok) {
+    if (resolvedActor.error instanceof AccountDisabledError) {
       throw new HttpError(403, "ACCOUNT_DISABLED", "This account is disabled.");
     }
     // Identity store failure — never grant access.
@@ -88,7 +130,7 @@ export async function authenticateRequest(req: Request): Promise<AuthenticatedAc
       "Authentication is temporarily unavailable.",
     );
   }
-  return resolved.value;
+  return { actor: resolvedActor.value, principal: outcome.principal };
 }
 
 /**

@@ -86,13 +86,26 @@ export interface ProjectItem {
   readonly concurrencyToken?: string;
 }
 
-/** True if the caller has a valid session. Never throws (treats errors as signed-out). */
-export async function getSession(): Promise<boolean> {
+/** Session state for the app-shell UX. Server authorization remains authoritative. */
+export type SessionState =
+  | { readonly state: "SIGNED_OUT" }
+  | { readonly state: "PRIVATE_BETA_DENIED" }
+  | { readonly state: "UNAVAILABLE" }
+  | { readonly state: "AUTHORIZED" };
+
+export async function getSession(): Promise<SessionState> {
   try {
-    const body = await request<{ authenticated: boolean }>("/api/auth/session", { method: "GET" });
-    return body.authenticated === true;
-  } catch {
-    return false;
+    const body = await request<{ authenticated: boolean; privateBetaAccess: boolean }>(
+      "/api/auth/session",
+      { method: "GET" },
+    );
+    if (!body.authenticated) return { state: "SIGNED_OUT" };
+    return body.privateBetaAccess ? { state: "AUTHORIZED" } : { state: "PRIVATE_BETA_DENIED" };
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 401) {
+      return { state: "SIGNED_OUT" };
+    }
+    return { state: "UNAVAILABLE" };
   }
 }
 
@@ -164,6 +177,10 @@ export function friendlyError(err: unknown): string {
     case "ACCOUNT_DISABLED":
     case "REQUEST_ORIGIN_REJECTED":
       return "You do not have permission to access this resource.";
+    case "PRIVATE_BETA_ACCESS_REQUIRED":
+      return "Stroman OS is currently in private testing. This account does not have access yet.";
+    case "ACCESS_CONTROL_UNAVAILABLE":
+      return "Private access verification is temporarily unavailable.";
     case "VALIDATION_FAILED":
     case "MALFORMED_JSON":
       return "Please check your input and try again.";

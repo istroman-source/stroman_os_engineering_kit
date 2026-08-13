@@ -2,6 +2,11 @@ import "server-only";
 
 import { createIdGenerator, systemClock } from "@/application/shared";
 import type { Clock, IdGenerator } from "@/application/shared";
+import {
+  PrivateBetaAccessService,
+  type PrivateBetaAccessAuthorizer,
+  type PrivateBetaAccessRepository,
+} from "@/application/private-beta";
 import type { SourceImportRepository, SourceStorage } from "@/application/source-import";
 import type { MaterializationRepository } from "@/application/knowledge-acquisition";
 import type { ContentRepository } from "@/domain/content";
@@ -47,6 +52,7 @@ import {
   PrismaReviewRunRepository,
   PrismaRetrospectiveRepository,
   PrismaIdentityRepository,
+  PrismaPrivateBetaAccessRepository,
   PrismaInsightRepository,
   PrismaMemoryRepository,
   PrismaProjectRepository,
@@ -76,6 +82,7 @@ import { createCreativeReasoningProvider } from "@/infrastructure/creative";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
 import { isCookieSecure } from "@/server/auth/config";
 import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
+import { getServerEnv } from "@/lib/env/env.server";
 
 /**
  * The single server-side composition boundary. It wires infrastructure adapters
@@ -94,6 +101,7 @@ export interface ApiContext {
   readonly retrospectives: RetrospectiveRepository;
   readonly decisions: DecisionRepository;
   readonly identity: IdentityRepository;
+  readonly privateBetaAccess: PrivateBetaAccessRepository;
   readonly creativeBriefs: CreativeBriefRepository;
   readonly creativeReasoning: CreativeReasoningProvider;
   readonly entities: EntityRepository;
@@ -132,6 +140,7 @@ export function createApiContext(): ApiContext {
     retrospectives: new PrismaRetrospectiveRepository(prisma),
     decisions: new PrismaDecisionRepository(prisma),
     identity: new PrismaIdentityRepository(prisma),
+    privateBetaAccess: new PrismaPrivateBetaAccessRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),
     creativeReasoning: createCreativeReasoningProvider(),
     entities: new PrismaEntityRepository(prisma),
@@ -195,6 +204,12 @@ let authenticatorOverride: RequestAuthenticator | undefined;
 let cachedAuthenticator: RequestAuthenticator | undefined;
 let gatewayOverride: AuthGateway | undefined;
 let cachedGateway: AuthGateway | undefined;
+let privateBetaAuthorizerOverride: PrivateBetaAccessAuthorizer | undefined;
+let cachedPrivateBetaAuthorizer: PrivateBetaAccessAuthorizer | undefined;
+
+const allowAllPrivateBetaForTests: PrivateBetaAccessAuthorizer = {
+  authorize: async () => "TESTER",
+};
 
 function assertNotProduction(what: string): void {
   if (process.env.NODE_ENV === "production") {
@@ -214,10 +229,30 @@ export function getAuthGateway(): AuthGateway {
   return cachedGateway;
 }
 
+export function getPrivateBetaAccessAuthorizer(): PrivateBetaAccessAuthorizer {
+  if (privateBetaAuthorizerOverride) return privateBetaAuthorizerOverride;
+  cachedPrivateBetaAuthorizer ??= new PrivateBetaAccessService({
+    access: getApiContext().privateBetaAccess,
+    bootstrapOwnerEmail: getServerEnv().STROMAN_PRIVATE_BETA_OWNER_EMAIL,
+    now: () => systemClock.now(),
+    eventId: () => createIdGenerator().generate("pbe"),
+  });
+  return cachedPrivateBetaAuthorizer;
+}
+
 /** Test-only: inject a deterministic authenticator. Throws in production. */
 export function setRequestAuthenticatorForTests(authenticator: RequestAuthenticator): void {
   assertNotProduction("A test authenticator");
   authenticatorOverride = authenticator;
+  privateBetaAuthorizerOverride ??= allowAllPrivateBetaForTests;
+}
+
+/** Test-only: override the persistent private-beta decision. */
+export function setPrivateBetaAccessAuthorizerForTests(
+  authorizer: PrivateBetaAccessAuthorizer,
+): void {
+  assertNotProduction("A private-beta authorizer");
+  privateBetaAuthorizerOverride = authorizer;
 }
 
 /** Test-only: inject a fake auth gateway. Throws in production. */
@@ -231,4 +266,5 @@ export function resetAuthForTests(): void {
   assertNotProduction("Auth overrides");
   authenticatorOverride = undefined;
   gatewayOverride = undefined;
+  privateBetaAuthorizerOverride = undefined;
 }

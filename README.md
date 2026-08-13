@@ -44,6 +44,7 @@ docker compose up -d
 - `docs/CODING_STANDARDS.md` — conventions and quality bar
 - `docs/BUILD_PROGRESS.md` — verified log, one entry per build step
 - `docs/AUTOPILOT.md` — one-command engineering automation, gates, and recovery
+- `docs/PRIVATE_WEB_DEPLOYMENT.md` — private-beta deployment, access, and rollback runbook
 
 ## Tech stack
 

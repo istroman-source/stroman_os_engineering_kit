@@ -33,9 +33,9 @@ export function LoginView() {
 
   useEffect(() => {
     let active = true;
-    void getSession().then((authenticated) => {
+    void getSession().then((session) => {
       if (!active) return;
-      if (authenticated) router.replace("/projects");
+      if (session.state !== "SIGNED_OUT") router.replace("/projects");
       else setPhase("email");
     });
     return () => {

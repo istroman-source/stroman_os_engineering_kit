@@ -22,6 +22,13 @@ describe("parseServerEnv", () => {
       LOG_LEVEL: "warn",
       SUPABASE_URL: "https://ref.supabase.co",
       SUPABASE_ANON_KEY: "anon-key",
+      APP_ALLOWED_ORIGINS: "https://app.example.com",
+      SUPABASE_EMAIL_REDIRECT_URL: "https://app.example.com/auth/callback",
+      STROMAN_PRIVATE_BETA_OWNER_EMAIL: "owner@example.com",
+      STROMAN_RELEASE_SHA: "a".repeat(40),
+      STROMAN_SOURCE_STORAGE_PATH: "/app/.data/source-imports",
+      STROMAN_CREATIVE_REASONING_PROVIDER: "openai",
+      OPENAI_API_KEY: "configured",
     });
     expect(env.NODE_ENV).toBe("production");
     expect(env.DATABASE_URL).toBe("postgresql://u:p@localhost:5432/db");
@@ -29,7 +36,7 @@ describe("parseServerEnv", () => {
     expect(env.SUPABASE_JWT_AUD).toBe("authenticated");
   });
 
-  it("requires Supabase auth configuration in production (fail closed)", () => {
+  it("requires complete release configuration in production (fail closed)", () => {
     try {
       parseServerEnv({
         NODE_ENV: "production",
@@ -41,6 +48,9 @@ describe("parseServerEnv", () => {
       const issues = (error as EnvironmentValidationError).issues.join();
       expect(issues).toContain("SUPABASE_URL");
       expect(issues).toContain("SUPABASE_ANON_KEY");
+      expect(issues).toContain("STROMAN_PRIVATE_BETA_OWNER_EMAIL");
+      expect(issues).toContain("OPENAI_API_KEY");
+      expect(issues).toContain("Hosted OpenAI creative reasoning");
     }
   });
 

@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import {
   resetAuthForTests,
+  setPrivateBetaAccessAuthorizerForTests,
   setAuthGatewayForTests,
   setRequestAuthenticatorForTests,
 } from "@/server/composition";
@@ -231,10 +232,43 @@ describe("email OTP endpoints", () => {
 
   it("session reports authentication state without leaking identity", async () => {
     const anon = await call(sessionRoute, {});
-    expect((anon.body as { authenticated: boolean }).authenticated).toBe(false);
+    expect(anon.body).toEqual({ authenticated: false, privateBetaAccess: false });
     const authed = await call(sessionRoute, { principal: A });
-    expect((authed.body as { authenticated: boolean }).authenticated).toBe(true);
-    expect(Object.keys(authed.body as object)).toEqual(["authenticated"]);
+    expect(authed.body).toEqual({ authenticated: true, privateBetaAccess: true });
+    expect(Object.keys(authed.body as object)).toEqual(["authenticated", "privateBetaAccess"]);
+  });
+
+  it("denies authenticated non-allowlisted users in both session UX and protected APIs", async () => {
+    setPrivateBetaAccessAuthorizerForTests({ authorize: async () => null });
+    const session = await call(sessionRoute, { principal: A });
+    expect(session.body).toEqual({ authenticated: true, privateBetaAccess: false });
+
+    const protectedApi = await call(listProjects, { principal: A });
+    expect(protectedApi.status).toBe(403);
+    expect((protectedApi.body as { error: { code: string; message: string } }).error).toMatchObject(
+      {
+        code: "PRIVATE_BETA_ACCESS_REQUIRED",
+        message:
+          "Stroman OS is currently in private testing. This account does not have access yet.",
+      },
+    );
+  });
+
+  it("fails closed when private-beta authorization storage is unavailable", async () => {
+    setPrivateBetaAccessAuthorizerForTests({
+      authorize: async () => {
+        throw new Error("database unavailable");
+      },
+    });
+    for (const res of [
+      await call(sessionRoute, { principal: A }),
+      await call(listProjects, { principal: A }),
+    ]) {
+      expect(res.status).toBe(503);
+      expect((res.body as { error: { code: string } }).error.code).toBe(
+        "ACCESS_CONTROL_UNAVAILABLE",
+      );
+    }
   });
 
   it("sign-out clears cookies and is CSRF-protected", async () => {
