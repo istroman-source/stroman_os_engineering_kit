@@ -100,10 +100,12 @@ verified against a real database (integration tests). Genuine remaining limits:
 
 ## CI/CD gaps
 
-- No PostgreSQL service in the e2e job yet (no DB-backed routes exist). Add when
-  routes read data.
-- No dependency-audit gate (`npm audit`/Dependabot) — deferred to avoid flaky
-  failures on transitive advisories; add a scheduled audit before beta.
+- Playwright remains a browser-shell smoke rather than a live-PostgreSQL end-to-end suite;
+  real API and persistence behavior run in the separate CI API/integration suites against
+  embedded PostgreSQL.
+- Dependabot is not configured. CI now runs `npm audit --audit-level=high` on every change,
+  including development dependencies, and separately builds and smoke-tests the exact-lock
+  production image.
 - No Playwright browser caching in CI (minor speed cost).
 
 ## Quality gaps (foundation-appropriate, tracked)

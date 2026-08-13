@@ -2,6 +2,9 @@
 
 ## Private web deployment candidate (2026-08-13)
 
+- Closed the release-gate CI gap: GitHub Actions now runs format and OpenAPI validation,
+  dependency audit, the real-PostgreSQL API and integration suites, and an exact-lock
+  production-image build with an entrypoint smoke proving uid/gid 1001 and mounted-data writes.
 - Added a persistent, server-enforced private-beta grant keyed to Stroman's stable internal user
   identity. A verified deployment-only email can atomically bootstrap exactly one owner; ongoing
   authorization never depends on email.

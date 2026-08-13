@@ -68,8 +68,8 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
 - **Migration rehearsal automation.** Automate applying migrations against a copy
   of production state and document operational rollback (Prisma emits no down
   migrations; recovery is restore-from-backup today).
-- **CI PostgreSQL.** Wire integration tests into CI with a PostgreSQL service or
-  the embedded-postgres approach used locally.
+- **CI PostgreSQL.** Completed for the private-web release gate: API and integration tests
+  now run in CI with the same embedded-PostgreSQL setup used locally.
 
 ## Discovered during Prompt 006A (HTTP delivery layer)
 
@@ -80,8 +80,8 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
 - **Rate limiting** once the API is externally exposed.
 - **Idempotency keys** for create/command endpoints once external clients or webhooks
   exist (optimistic concurrency is not idempotency).
-- **CI API integration tests**: run `npm run test:api` (embedded PostgreSQL) and
-  `npm run openapi:validate` in CI.
+- **CI API integration tests**: completed for the private-web release gate; CI runs
+  `npm run test:api`, `npm run test:integration`, and `npm run openapi:validate`.
 - **API client generation** from the OpenAPI spec if a typed client is justified.
 - **Pagination** for list endpoints when collections can grow unbounded.
 
@@ -106,7 +106,8 @@ Record useful but out-of-scope findings here. Do not silently expand prompt scop
   or Supabase client-side data access is introduced.
 - **User deletion/anonymization** policy (disable-only today; no cascade of business
   records).
-- **CI**: run `npm run test:auth` alongside `test:api`/`openapi:validate`.
+- **CI authentication coverage**: completed through the unit suite plus the complete API
+  suite, including the authentication routes, alongside OpenAPI validation.
 
 ## Discovered during Milestone 2 (decision workspace)
 

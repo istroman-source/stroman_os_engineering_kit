@@ -33,8 +33,23 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Validate OpenAPI contract
+        run: npm run openapi:validate
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+
       - name: Unit tests
         run: npm test
+
+      - name: API tests
+        run: npm run test:api
+
+      - name: Integration tests
+        run: npm run test:integration
 
       - name: Autopilot tests
         run: npm run test:autopilot
@@ -47,6 +62,22 @@ jobs:
         env:
           DATABASE_URL: postgresql://stroman:stroman@localhost:5432/stroman_os?schema=public
           NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+  production-image:
+    name: Production image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build exact-lock production image
+        run: docker build --tag stroman-os:ci .
+
+      - name: Verify non-root runtime and writable mounted data path
+        run: >-
+          docker run --rm
+          --mount type=tmpfs,destination=/app/.data
+          stroman-os:ci
+          sh -c 'test "$(id -u)" = 1001 && test "$(id -g)" = 1001 && touch /app/.data/ci-write-test && npx prisma --version >/dev/null'
 
   e2e:
     name: End-to-end (Playwright)
