@@ -17,6 +17,19 @@ const EMPTY: AnalyzeFields = {
   context: "",
 };
 
+function editableFields(initial?: AnalyzeFields): AnalyzeFields {
+  if (!initial) return EMPTY;
+  return {
+    title: initial.title,
+    client: initial.client,
+    projectType: initial.projectType,
+    creativeGoal: initial.creativeGoal,
+    targetAudience: initial.targetAudience,
+    desiredEmotion: initial.desiredEmotion,
+    context: initial.context,
+  };
+}
+
 /**
  * Captures the creator's context for a project. No uploads — the creator states
  * what they're making and why, and Stroman OS analyzes it into a blueprint.
@@ -32,7 +45,10 @@ export function AnalyzeForm({
   error: string | null;
   onSubmit: (fields: AnalyzeFields) => void;
 }) {
-  const [fields, setFields] = useState<AnalyzeFields>(initial ?? EMPTY);
+  // A saved brief also carries response-only metadata (ids, timestamps, and
+  // planning context). Copy only editable fields into form state so a later
+  // update cannot spread that metadata into the API's strict request body.
+  const [fields, setFields] = useState<AnalyzeFields>(() => editableFields(initial));
 
   function set(key: keyof AnalyzeFields, value: string) {
     setFields((current) => ({ ...current, [key]: value }));
