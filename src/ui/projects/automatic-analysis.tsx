@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/ui/primitives/button";
 
 interface AnalysisResult {
@@ -31,6 +31,8 @@ function interpretationLabel(kind: string): string {
       return "Story progression";
     case "INFERENCE":
       return "Inference";
+    case "PROMPT":
+      return "Unknown to verify";
     default:
       return "Interpretation";
   }
@@ -52,9 +54,16 @@ function FindingList({
       </p>
     );
   }
+  const timestamp = (output: AnalysisOutput) => {
+    const match = output.content.match(/^\[OBSERVED @ (\d+):(\d+(?:\.\d+)?)\]/);
+    return match ? Number(match[1]) * 60 + Number(match[2]) : Number.POSITIVE_INFINITY;
+  };
+  const displayed = interpretation
+    ? outputs
+    : [...outputs].sort((left, right) => timestamp(left) - timestamp(right));
   return (
     <ul className="mt-2 space-y-2">
-      {outputs.map((output) => (
+      {displayed.map((output) => (
         <li key={output.id} className="border-border rounded border p-3">
           <div className="text-muted-foreground flex flex-wrap gap-2 text-xs tracking-wide uppercase">
             <span>
@@ -79,28 +88,35 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loadLatest = useCallback(async () => {
+    const response = await fetch(`/api/v1/projects/${projectId}/automatic-analysis`, {
+      credentials: "same-origin",
+    });
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error("Saved analysis is temporarily unavailable.");
+    return (await response.json()) as AnalysisResult;
+  }, [projectId]);
+
   useEffect(() => {
     let active = true;
-    fetch(`/api/v1/projects/${projectId}/automatic-analysis`, {
-      credentials: "same-origin",
-    })
-      .then(async (response) => {
-        if (response.status === 404) return null;
-        if (!response.ok) throw new Error("Saved analysis is temporarily unavailable.");
-        return (await response.json()) as AnalysisResult;
-      })
-      .then((value) => {
-        if (active && value) setResult(value);
-      })
-      .catch((caught) => {
-        if (active) {
-          setError(caught instanceof Error ? caught.message : "Saved analysis is unavailable.");
-        }
-      });
+    const refresh = () => {
+      loadLatest()
+        .then((value) => {
+          if (active && value) setResult(value);
+        })
+        .catch((caught) => {
+          if (active) {
+            setError(caught instanceof Error ? caught.message : "Saved analysis is unavailable.");
+          }
+        });
+    };
+    refresh();
+    window.addEventListener("stroman:analysis-completed", refresh);
     return () => {
       active = false;
+      window.removeEventListener("stroman:analysis-completed", refresh);
     };
-  }, [projectId]);
+  }, [loadLatest]);
 
   async function run() {
     setBusy(true);
@@ -142,8 +158,9 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
             Evidence-grounded analysis
           </h2>
           <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-            Create observations, themes, and an editorial starting point from imported transcripts.
-            Every claim keeps its source evidence; recommendations remain advisory.
+            Create observations, themes, and an editorial starting point from imported transcripts
+            and sampled video frames. Every claim keeps its source evidence; recommendations remain
+            advisory.
           </p>
         </div>
         <Button type="button" onClick={run} disabled={busy}>
@@ -163,8 +180,8 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
           <div>
             <h3 className="text-sm font-semibold">Source-backed moments</h3>
             <p className="text-muted-foreground mt-1 text-xs">
-              Direct transcript evidence. These moments are factual source material, not story
-              conclusions.
+              Direct transcript or visible-frame evidence. These moments are source material, not
+              story conclusions.
             </p>
             <FindingList
               outputs={result.outputs.filter((output) => output.kind === "OBSERVATION")}

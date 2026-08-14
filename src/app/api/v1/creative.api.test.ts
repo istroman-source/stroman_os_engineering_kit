@@ -11,6 +11,7 @@ import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectI
 import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
 import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
 import { GET as getScoutPhoto } from "./projects/[projectId]/scout-photos/[mediaAssetId]/route";
+import { instructionAtDeskShotPlanning } from "@/domain/creative";
 
 const ACTOR = "subject-owner-a";
 const OTHER = "subject-owner-b";
@@ -133,6 +134,44 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
         },
       },
     });
+  });
+
+  it("round-trips the exact versioned spatial shot through the authenticated API", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const shotPlanning = instructionAtDeskShotPlanning();
+    const planned = await call(updatePlanning, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: { shotPlanning },
+    });
+
+    expect(planned.status).toBe(200);
+    expect(planned.body).toMatchObject({
+      brief: {
+        planningContext: {
+          shotPlanning: {
+            activeShot: {
+              title: "Instruction at the Desk",
+              camera: { focalLengthMm: 35, aspectRatio: "16:9" },
+              geometryConfidence: "ESTIMATED",
+            },
+          },
+        },
+      },
+    });
+    const reloaded = await call(getAnalysis, { principal: ACTOR, params: { projectId } });
+    expect(reloaded.status).toBe(200);
+    expect(
+      (reloaded.body as { brief: { planningContext: { shotPlanning: unknown } } }).brief
+        .planningContext.shotPlanning,
+    ).toEqual(shotPlanning);
   });
 
   it("imports two scout photos, grounds the plan, and serves only the owned image", async () => {

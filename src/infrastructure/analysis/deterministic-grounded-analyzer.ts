@@ -86,6 +86,8 @@ const STOP_WORDS = new Set([
 const LOW_SIGNAL_CUES = [
   /^(?:(?:slate|scene\s+(?:\d+[a-z]?|[a-z]\d+|one|two|three|four|five|six|seven|eight|nine|ten)|take\s+(?:\d+[a-z]?|[a-z]\d+|one|two|three|four|five|six|seven|eight|nine|ten)|test|testing)[\s,.:!-]*)+$/i,
   /^(?:camera(?: rolling)?|sound(?: speed)?|marker|rolling|speed)[.! ]*$/i,
+  /^(?:(?:slate[,.:! -]*)?scene\s+(?:\d+[a-z]?|[a-z]\d+|one|two|three|four|five|six|seven|eight|nine|ten)[,.:! -]*)?take\s+(?:\d+[a-z]?|[a-z]\d+|one|two|three|four|five|six|seven|eight|nine|ten)[,.:! -]*(?:hold for (?:room tone|sound)|room tone)[.! ]*$/i,
+  /^(?:hold for )?(?:room tone|sound)[.! ]*$/i,
   /^(?:cut|thanks?|thank you|okay|ok|all right|right|yeah|yes|that(?:'s| is) (?:all|it)|we(?:'re| are) done)[.! ]*$/i,
   /^(?:okay|ok|all right|right|yeah|yes)[,!. ]+(?:thanks?|thank you)[,!. ]+(?:that(?:'s| is) (?:all|it)|we(?:'re| are) done)[.! ]*$/i,
 ];
@@ -125,7 +127,8 @@ function storySignalCount(text: string): number {
 }
 
 function isLowSignal(text: string): boolean {
-  return text.length === 0 || LOW_SIGNAL_CUES.some((pattern) => pattern.test(text));
+  const cueText = text.replace(/^(?:production|crew|director)\s*:\s*/i, "");
+  return cueText.length === 0 || LOW_SIGNAL_CUES.some((pattern) => pattern.test(cueText));
 }
 
 function prepare(segment: AnalysisSourceSegment): PreparedSegment {

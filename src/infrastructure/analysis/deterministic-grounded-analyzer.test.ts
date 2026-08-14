@@ -44,24 +44,30 @@ describe("DeterministicGroundedAnalyzer", () => {
       segments: [
         segment("trseg_00000010", 0, "Scene one, take two. Testing, testing.", "Unknown"),
         segment(
-          "trseg_00000011",
+          "trseg_00000015",
           1,
+          "PRODUCTION: Scene four, take two. Hold for room tone.",
+          "Unknown",
+        ),
+        segment(
+          "trseg_00000011",
+          2,
           "When I first arrived, the environment was unfamiliar and I could not speak the language.",
           "Unknown",
         ),
         segment(
           "trseg_00000012",
-          2,
+          3,
           "I had to start at the bottom, but over time I learned how the whole operation worked.",
           "Unknown",
         ),
         segment(
           "trseg_00000013",
-          3,
+          4,
           "Eventually I could contribute, and now our work has become part of the foundation here.",
           "Unknown",
         ),
-        segment("trseg_00000014", 4, "Okay, thanks, that's all.", "Unknown"),
+        segment("trseg_00000014", 5, "Okay, thanks, that's all.", "Unknown"),
       ],
     });
 
@@ -71,6 +77,7 @@ describe("DeterministicGroundedAnalyzer", () => {
       .toLowerCase();
     expect(rendered).not.toContain("unknown");
     expect(rendered).not.toContain("testing, testing");
+    expect(rendered).not.toContain("hold for room tone");
     expect(rendered).not.toContain("thanks, that's all");
     expect(rendered).not.toContain("unknown, know, say");
     expect(rendered).toContain("possible source-backed progression");

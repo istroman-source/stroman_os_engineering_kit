@@ -88,18 +88,33 @@ framing, depth, movement, focus, duration, production design, props, wardrobe, t
 grade, sound perspective, silence, music, transitions, pace, and rhythm. Deep internal reasoning
 should become concise, production-literate language—not verbose explanations of every choice.
 
-## Director-notebook visual language
+## Story → Plan → Edit and spatial authorship
 
-Visual planning defaults to a **director's notebook**, not office software or generic AI art.
-Thumbnail storyboards and blocking plans should be rough, composition-first, fast to scan, easy to
-revise, and clearly shootable: hand-drawn or marker-like frames, readable geography, useful arrows,
-loose labels, and margin notes. Avoid sterile flowcharts, glossy pseudo-cinematic images,
-over-rendered faces, corporate diagrams, and decorative complexity.
+The permanent filmmaker-facing mental model is **STORY → PLAN → EDIT**. Internal reasoning passes,
+provider names, evidence graphs, and rendering machinery never become primary navigation.
 
-The provider-neutral visual contract must support thumbnail frames, overhead blocking, look
-direction, a director sheet, and a concise crew sheet. When no verified renderer or credential is
-available, the product must say so and present a structured blueprint. It must never fake a
-generated storyboard.
+**Plan** is an interactive spatial filmmaking workspace, not a static diagram, generic AI image,
+or simplified 3D application. Stroman proposes a shot; the filmmaker directs it. Camera position,
+aim, height, focal length, aspect ratio, support, subject blocking, and camera movement form one
+authoritative state. Moving or changing that state must update the view through camera, saved
+storyboard, shooting information, and execution guidance. A saved shot is a versioned creative
+decision, not a screenshot.
+
+Horizontal and vertical compositions are separately authored shots. A center-crop guide is not a
+vertical plan. Blocking, lighting, look, sound, and execution information answer separate questions
+and remain available through progressive disclosure. Diagrams use named subjects, cameras, set
+pieces, starts, paths, and ends—never anonymous red-dot grammar.
+
+Location grounding is optional. Spatial claims are explicitly **OBSERVED**, **ESTIMATED**,
+**UNKNOWN**, or **FILMMAKER_CONFIRMED**. Photos, footage, scripts, transcripts, or no additional
+material are all valid entry conditions, but supplied material must actually change recommendations
+when it is used. The system never invents unseen geometry, measured clearance, captured action, or
+source facts.
+
+Storyboard frames remain composition-first, fast to scan, easy to revise, and clearly shootable.
+They are generated from the authoritative camera and scene state, not maintained as an independent
+decorative artifact. The system must never fake a rendered frame or claim spatial certainty it does
+not possess.
 
 ## Measurable creative improvement
 

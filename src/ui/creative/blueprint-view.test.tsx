@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { BlueprintView } from "./blueprint-view";
@@ -14,6 +14,7 @@ function props(overrides: Record<string, unknown> = {}) {
     onProduction: vi.fn().mockResolvedValue(undefined),
     onUploadScoutPhotos: vi.fn().mockResolvedValue(undefined),
     onCorrection: vi.fn().mockResolvedValue(undefined),
+    onShotPlanning: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }
@@ -35,23 +36,57 @@ describe("BlueprintView", () => {
     expect(screen.queryByText(/discarded directions and tradeoffs/i)).not.toBeInTheDocument();
   });
 
-  it("reveals independently composed 16:9 and 9:16 previs only in Blueprint depth", async () => {
+  it("reveals independently composed 16:9 and 9:16 previs only in Plan", async () => {
     const user = userEvent.setup();
     render(<BlueprintView {...props()} />);
-    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
     expect(screen.getByText(/horizontal and vertical are separate setups/i)).toBeInTheDocument();
-    expect(screen.getAllByText("16:9")).toHaveLength(4);
-    expect(screen.getAllByText("9:16")).toHaveLength(4);
+    expect(screen.getAllByText("16:9").length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText("9:16").length).toBeGreaterThanOrEqual(4);
     expect(screen.getAllByRole("img").length).toBeGreaterThanOrEqual(8);
     expect(screen.getAllByText("Frame map")).toHaveLength(8);
     expect(screen.getByRole("button", { name: "Blocking" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Lighting" })).toBeInTheDocument();
   });
 
+  it("seeds the spatial workspace from this project and saves the exact edited camera state", async () => {
+    const onShotPlanning = vi.fn().mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ onShotPlanning })} />);
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
+
+    expect(
+      screen.getByRole("heading", { level: 2, name: /the house asks first/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", {
+        name: /three-dimensional room with draggable camera, target, subject, and movement path/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/instruction at the desk/i)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByRole("slider", { name: "Focal length" }), {
+      target: { value: "52" },
+    });
+    await user.selectOptions(screen.getByRole("combobox", { name: "Aspect ratio" }), "9:16");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Camera movement" }), "PUSH");
+    await user.click(screen.getByRole("button", { name: "Save this shot" }));
+
+    expect(onShotPlanning).toHaveBeenCalledOnce();
+    const saved = onShotPlanning.mock.calls[0]![0];
+    expect(saved.activeShot.camera).toMatchObject({ focalLengthMm: 52, aspectRatio: "9:16" });
+    expect(saved.activeShot.movement.kind).toBe("PUSH");
+    expect(saved.activeShot.camera.support).toBe("DOLLY");
+    expect(saved.activeShot.setPieces.length).toBeGreaterThan(0);
+    expect(saved.savedShots).toHaveLength(1);
+    expect(
+      screen.getAllByRole("img", { name: /9:16 camera view at 52 millimeters/i }),
+    ).toHaveLength(2);
+  });
+
   it("keeps blocking and lighting in separate single-question diagrams", async () => {
     const user = userEvent.setup();
     render(<BlueprintView {...props()} />);
-    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
     await user.click(screen.getByRole("button", { name: "Blocking" }));
     expect(screen.getByText(/where are the people and cameras/i)).toBeInTheDocument();
     expect(screen.queryByText(/where are the meaningful sources/i)).not.toBeInTheDocument();
@@ -93,7 +128,7 @@ describe("BlueprintView", () => {
     };
     const user = userEvent.setup();
     render(<BlueprintView {...props({ analysis })} />);
-    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
     await user.click(screen.getByRole("button", { name: "Lighting" }));
 
     const diagram = screen.getByRole("img", { name: /where are the meaningful sources/i });
@@ -106,10 +141,10 @@ describe("BlueprintView", () => {
     expect(screen.getByText(/kitchen window key/i)).toBeInTheDocument();
   });
 
-  it("keeps alternatives and craft reasoning in the optional Deep room", async () => {
+  it("keeps alternatives and craft reasoning in the optional Edit depth", async () => {
     const user = userEvent.setup();
     render(<BlueprintView {...props()} />);
-    await user.click(screen.getByRole("button", { name: /deep roomreasoning/i }));
+    await user.click(screen.getByRole("button", { name: /editwork with captured material/i }));
     expect(screen.getByText(/discarded directions and tradeoffs/i)).toBeInTheDocument();
     expect(screen.getByText(/detailed scene and craft reasoning/i)).toBeInTheDocument();
   });
@@ -228,7 +263,7 @@ describe("BlueprintView", () => {
     };
     const user = userEvent.setup();
     render(<BlueprintView {...props({ analysis })} />);
-    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
     await user.click(screen.getByRole("button", { name: "Blocking" }));
     expect(screen.getByText("MOM route")).toBeInTheDocument();
     expect(screen.getByText("BABY position")).toBeInTheDocument();
@@ -279,7 +314,7 @@ describe("BlueprintView", () => {
     };
     const user = userEvent.setup();
     render(<BlueprintView {...props({ analysis })} />);
-    await user.click(screen.getByRole("button", { name: /blueprinthow to execute/i }));
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
     await user.click(screen.getByRole("button", { name: "Blocking" }));
 
     const diagram = screen.getByRole("img", { name: /where are the people and cameras/i });

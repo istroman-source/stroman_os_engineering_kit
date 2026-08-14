@@ -6,6 +6,8 @@ import {
   createCreativeBrief,
   generateBlueprint,
   generateDevelopmentBlueprint,
+  instructionAtDeskShotPlanning,
+  isShotPlanningState,
   reviseCreativeBrief,
 } from "./index";
 
@@ -73,6 +75,21 @@ describe("createCreativeBrief", () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.value.targetAudience).toBe("");
+  });
+});
+
+describe("spatial shot planning", () => {
+  it("keeps the permanent desk fixture shootable, honest, and serializable", () => {
+    const state = instructionAtDeskShotPlanning();
+    expect(isShotPlanningState(JSON.parse(JSON.stringify(state)))).toBe(true);
+    expect(state.activeShot).toMatchObject({
+      title: "Instruction at the Desk",
+      camera: { focalLengthMm: 35, aspectRatio: "16:9", support: "LOCKED" },
+      geometryConfidence: "ESTIMATED",
+    });
+    expect(state.activeShot.setPieces.map((piece) => piece.label)).toEqual(
+      expect.arrayContaining(["Desk", "Desk phone", "Yellow reminder", "Drawer · keyboard · mug"]),
+    );
   });
 });
 

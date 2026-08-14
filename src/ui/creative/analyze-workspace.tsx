@@ -9,13 +9,13 @@ import { BlueprintView } from "./blueprint-view";
 import { type Analysis, type AnalyzeFields, analyzeProject, getAnalysis } from "./creative-api";
 import { updatePlanning, uploadScoutPhotos } from "./creative-api";
 import type { ProductionReality, ProductionStage } from "@/domain/creative";
+import type { ShotPlanningState } from "@/domain/creative";
 
 type Mode = "loading" | "form" | "blueprint";
 
 /**
- * The creator can begin with one idea and Stroman OS returns a Creative Blueprint.
- * If the project was already developed, the blueprint loads immediately
- * (with a Re-analyze path back to the form, prefilled).
+ * The creator can begin with one idea and move through Story, Plan, and Edit.
+ * Existing project development loads immediately with an intent-update path.
  */
 export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
   const router = useRouter();
@@ -114,6 +114,9 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
             runPlanning(() =>
               updatePlanning(projectId, { correction: { statement, replacesClaimId } }),
             )
+          }
+          onShotPlanning={(shotPlanning: ShotPlanningState) =>
+            runPlanning(() => updatePlanning(projectId, { shotPlanning }))
           }
         />
       </div>
