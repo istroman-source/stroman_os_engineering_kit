@@ -190,9 +190,11 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
     const data = value.data as Record<string, unknown> | undefined;
     switch (data?.status) {
       case -1:
+        return "UPLOADING";
       case 0:
-      case 3:
         return "PROCESSING";
+      case 3:
+        return "QUEUED";
       case 1:
         return "FAILED";
       case 2:

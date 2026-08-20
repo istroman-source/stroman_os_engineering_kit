@@ -64,10 +64,14 @@ describe("KiriLocationReconstructionProvider", () => {
   it("maps provider status without exposing provider response data", async () => {
     const fetch = vi
       .fn()
+      .mockResolvedValueOnce(json({ ok: true, data: { status: -1 } }))
       .mockResolvedValueOnce(json({ ok: true, data: { status: 3 } }))
+      .mockResolvedValueOnce(json({ ok: true, data: { status: 0 } }))
       .mockResolvedValueOnce(json({ ok: true, data: { status: 2 } }));
     const provider = new KiriLocationReconstructionProvider({ apiKey: "secret", fetch });
 
+    await expect(provider.status("provider-job-1")).resolves.toBe("UPLOADING");
+    await expect(provider.status("provider-job-1")).resolves.toBe("QUEUED");
     await expect(provider.status("provider-job-1")).resolves.toBe("PROCESSING");
     await expect(provider.status("provider-job-1")).resolves.toBe("SUCCEEDED");
   });

@@ -211,7 +211,7 @@ export async function startLocationReconstruction(
       updatedAt: deps.clock.now(),
     };
     await deps.locationReconstructions.update(job);
-    return toLocationReconstructionView({ ...job, lockVersion: job.lockVersion + 1 });
+    return toLocationReconstructionView({ ...job, lockVersion: job.lockVersion + 1 }, "QUEUED");
   } catch (error) {
     const failed = {
       ...job,
@@ -260,7 +260,13 @@ export async function refreshLocationReconstruction(
     return toLocationReconstructionView({ ...failed, lockVersion: failed.lockVersion + 1 });
   }
   const providerStatus = await deps.locationReconstructionProvider.status(job.providerJobId);
-  if (providerStatus === "PROCESSING") return toLocationReconstructionView(job);
+  if (
+    providerStatus === "UPLOADING" ||
+    providerStatus === "QUEUED" ||
+    providerStatus === "PROCESSING"
+  ) {
+    return toLocationReconstructionView(job, providerStatus);
+  }
   if (providerStatus === "FAILED" || providerStatus === "EXPIRED") {
     const ended: LocationReconstructionJob = {
       ...job,

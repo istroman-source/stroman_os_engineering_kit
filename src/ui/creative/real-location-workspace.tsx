@@ -41,6 +41,23 @@ export function cameraTechnicalData(camera: LocationCameraState) {
   };
 }
 
+export function locationReconstructionProgress(
+  job: LocationReconstructionView,
+  now = Date.now(),
+): string {
+  const elapsedMinutes = Math.max(0, Math.floor((now - Date.parse(job.createdAt)) / 60_000));
+  if (job.status === "SUBMITTING" || job.phase === "UPLOADING") {
+    return `${job.photoCount} source photos are preserved. The reconstruction service is receiving the room capture.`;
+  }
+  if (job.phase === "QUEUED") {
+    return `${job.photoCount} source photos are preserved. Upload is complete and the room is waiting for reconstruction capacity.`;
+  }
+  if (elapsedMinutes >= 30) {
+    return `${job.photoCount} source photos are preserved. The room is still being reconstructed after ${elapsedMinutes} minutes, beyond the usual 20–30 minute intensive-scan window. Stroman will keep checking and activate it automatically—do not resubmit this scan.`;
+  }
+  return `${job.photoCount} source photos are preserved. The service is aligning the overlapping views and building the textured room. This can take 20–30 minutes for an intensive scan.`;
+}
+
 function pointInside(point: SpatialPoint, bounds: SpatialBounds): boolean {
   return (
     point.x >= bounds.min.x &&
@@ -174,9 +191,8 @@ export function LocationPhotoInput({
       {active ? (
         <div className="mt-4 rounded-md border border-amber-600/30 bg-amber-500/5 p-4">
           <p className="text-sm font-semibold">Building {job.name}</p>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {job.photoCount} source photos are preserved. Reconstruction continues in the
-            background; this view checks for the finished room automatically.
+          <p className="text-muted-foreground mt-1 text-sm" role="status" aria-live="polite">
+            {locationReconstructionProgress(job)}
           </p>
           <Button
             className="mt-3"

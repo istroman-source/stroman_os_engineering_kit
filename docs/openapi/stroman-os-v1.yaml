@@ -799,13 +799,17 @@ components:
     LocationReconstruction:
       type: object
       additionalProperties: false
-      required: [id, name, status, photoCount, environmentId, failureCode, createdAt, updatedAt]
+      required:
+        [id, name, status, phase, photoCount, environmentId, failureCode, createdAt, updatedAt]
       properties:
         id: { type: string }
         name: { type: string }
         status:
           type: string
           enum: [SUBMITTING, PROCESSING, SUCCEEDED, FAILED, EXPIRED]
+        phase:
+          type: [string, "null"]
+          enum: [UPLOADING, QUEUED, PROCESSING, null]
         photoCount: { type: integer, minimum: 20, maximum: 40 }
         environmentId: { type: [string, "null"] }
         failureCode: { type: [string, "null"] }

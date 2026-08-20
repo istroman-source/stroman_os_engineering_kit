@@ -150,7 +150,7 @@ describe("photo-to-space reconstruction", () => {
       name: "Actual office",
       uploadIds,
     });
-    expect(started).toMatchObject({ status: "PROCESSING", photoCount: 20 });
+    expect(started).toMatchObject({ status: "PROCESSING", phase: "QUEUED", photoCount: 20 });
 
     const completed = await refreshLocationReconstruction(deps, {
       actorId: OWNER,

@@ -1,5 +1,11 @@
 # Release Notes
 
+## Reconstruction progress recovery (2026-08-20)
+
+- Long-running photo reconstructions now expose honest upload, queue, and active-reconstruction
+  progress without exposing provider plumbing. The workspace explains the normal intensive-scan
+  window and keeps the original paid task active instead of encouraging a duplicate submission.
+
 ## Photo-to-space upload reliability fix (2026-08-20)
 
 - Replaced the single 20–40-photo multipart request that could exhaust a production container with

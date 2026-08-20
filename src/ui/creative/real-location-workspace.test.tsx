@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { LocationPhotoInput } from "./real-location-workspace";
+import { LocationPhotoInput, locationReconstructionProgress } from "./real-location-workspace";
 
 vi.mock("@/ui/auth/api-client", () => ({
   friendlyError: (error: { message?: string }) => error.message ?? "Something went wrong.",
@@ -15,6 +15,7 @@ describe("LocationPhotoInput", () => {
       id: "lrec_ROOM0001",
       name: "Actual kitchen",
       status: "PROCESSING",
+      phase: "QUEUED",
       photoCount: 20,
       environmentId: null,
       failureCode: null,
@@ -38,5 +39,26 @@ describe("LocationPhotoInput", () => {
     expect(onStart.mock.calls[0]![0]).toMatchObject({ name: "Actual kitchen", photos });
     expect(onStart.mock.calls[0]![0].onProgress).toEqual(expect.any(Function));
     expect(await screen.findByText(/building actual kitchen/i)).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent(/upload is complete.*waiting/i);
+  });
+
+  it("explains a long-running provider task without inviting a duplicate paid scan", () => {
+    const message = locationReconstructionProgress(
+      {
+        id: "lrec_ROOM0002",
+        name: "Office",
+        status: "PROCESSING",
+        phase: "PROCESSING",
+        photoCount: 29,
+        environmentId: null,
+        failureCode: null,
+        createdAt: "2026-08-20T12:00:00.000Z",
+        updatedAt: "2026-08-20T12:00:00.000Z",
+      },
+      Date.parse("2026-08-20T12:31:00.000Z"),
+    );
+
+    expect(message).toMatch(/still being reconstructed after 31 minutes/i);
+    expect(message).toMatch(/do not resubmit/i);
   });
 });

@@ -57,7 +57,8 @@ export interface LocationReconstructionPhotoUploadView {
   readonly byteSize: number;
 }
 
-export type ProviderReconstructionStatus = "PROCESSING" | "SUCCEEDED" | "FAILED" | "EXPIRED";
+export type ProviderReconstructionStatus =
+  "UPLOADING" | "QUEUED" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "EXPIRED";
 
 export interface LocationReconstructionProvider {
   readonly key: string;
@@ -94,6 +95,8 @@ export interface LocationReconstructionView {
   readonly id: string;
   readonly name: string;
   readonly status: LocationReconstructionStatus;
+  /** Ephemeral provider progress; never includes provider ids or implementation details. */
+  readonly phase: "UPLOADING" | "QUEUED" | "PROCESSING" | null;
   readonly photoCount: number;
   readonly environmentId: string | null;
   readonly failureCode: string | null;
@@ -103,11 +106,13 @@ export interface LocationReconstructionView {
 
 export function toLocationReconstructionView(
   job: LocationReconstructionJob,
+  phase: LocationReconstructionView["phase"] = null,
 ): LocationReconstructionView {
   return {
     id: job.id,
     name: job.name,
     status: job.status,
+    phase,
     photoCount: job.photos.length,
     environmentId: job.environmentId,
     failureCode: job.failureCode,
