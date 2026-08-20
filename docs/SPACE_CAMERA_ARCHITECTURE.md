@@ -159,7 +159,10 @@ On 2026-08-20 the authenticated local application was exercised against the real
 - exact 24/35/50/85 mm selection plus a continuous 14–135 mm range, with physical-gate FOV recomputation;
 - a canonical baked 540×960 PNG saved alongside the exact vertical camera state, environment version/hash and renderer version;
 - persistence and authenticated storyboard retrieval after the save;
-- 118–121 displayed fps during the available desktop renderer smoke test.
+- 118–121 displayed fps during the available desktop renderer smoke test. This was an
+  effectively empty scene produced from an object-scale fixture that the hardened importer
+  now rejects. It validates only the animation/instrumentation path and is explicitly **not**
+  evidence for either real-content desktop or mobile performance acceptance budgets.
 
 That same test correctly falsified the two locally available GLBs as graduation fixtures: both were object-scale/flat assets rather than navigable locations. The first implementation had accepted them based only on diagonal plausibility. The importer was remediated to require room-scale extent on all three axes and now rejects those files with the explicit action: check the export unit or capture more of the location. Their earlier renderer/save result remains useful only as interaction-path evidence and does **not** count as real-location evidence.
 

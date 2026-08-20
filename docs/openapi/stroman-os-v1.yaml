@@ -591,10 +591,199 @@ components:
         id: { type: string }
         statement: { type: string }
         replacesClaimId: { type: [string, "null"] }
+    LocationSpatialPoint:
+      type: object
+      additionalProperties: false
+      required: [x, y, z]
+      properties:
+        x: { type: number }
+        y: { type: number }
+        z: { type: number }
+    LocationSpatialBounds:
+      type: object
+      additionalProperties: false
+      required: [min, max]
+      properties:
+        min: { $ref: "#/components/schemas/LocationSpatialPoint" }
+        max: { $ref: "#/components/schemas/LocationSpatialPoint" }
+    SpatialGeometryAsset:
+      type: object
+      additionalProperties: false
+      required: [mediaAssetId, fileName, mediaType, byteSize, contentHash]
+      properties:
+        mediaAssetId: { type: string }
+        fileName: { type: string }
+        mediaType: { type: string, const: model/gltf-binary }
+        byteSize: { type: integer, minimum: 1 }
+        contentHash: { type: string }
+    SpatialEnvironment:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          version,
+          name,
+          sourceKind,
+          geometryAsset,
+          sourceToCanonical,
+          bounds,
+          coverage,
+          scaleMetersPerUnit,
+          scaleConfidence,
+          createdAt,
+        ]
+      properties:
+        id: { type: string }
+        version: { type: integer, minimum: 1 }
+        name: { type: string }
+        sourceKind:
+          type: string
+          enum: [PHONE_SCAN, PHOTOGRAMMETRY, ROOMPLAN, OTHER]
+        geometryAsset: { $ref: "#/components/schemas/SpatialGeometryAsset" }
+        sourceToCanonical:
+          type: array
+          minItems: 16
+          maxItems: 16
+          items: { type: number }
+        bounds: { $ref: "#/components/schemas/LocationSpatialBounds" }
+        coverage:
+          type: object
+          additionalProperties: false
+          required: [bounds, confidence]
+          properties:
+            bounds: { $ref: "#/components/schemas/LocationSpatialBounds" }
+            confidence:
+              type: string
+              enum: [OBSERVED, ESTIMATED, UNKNOWN, FILMMAKER_CONFIRMED]
+        scaleMetersPerUnit: { type: number, exclusiveMinimum: 0 }
+        scaleConfidence:
+          type: string
+          enum: [OBSERVED, ESTIMATED, UNKNOWN, FILMMAKER_CONFIRMED]
+        createdAt: { type: string, format: date-time }
+    SpatialQuaternion:
+      type: object
+      additionalProperties: false
+      required: [x, y, z, w]
+      properties:
+        x: { type: number }
+        y: { type: number }
+        z: { type: number }
+        w: { type: number }
+    LocationCameraFormat:
+      type: object
+      additionalProperties: false
+      required: [sensorWidthMm, sensorHeightMm, gateOrientation, fit]
+      properties:
+        sensorWidthMm: { type: number, exclusiveMinimum: 0 }
+        sensorHeightMm: { type: number, exclusiveMinimum: 0 }
+        gateOrientation: { type: string, enum: [LANDSCAPE, PORTRAIT] }
+        fit: { type: string, const: CONTAIN }
+    LocationCameraState:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          position,
+          target,
+          orientation,
+          format,
+          focalLengthMm,
+          aspectRatio,
+          nearMeters,
+          farMeters,
+          confidence,
+        ]
+      properties:
+        position: { $ref: "#/components/schemas/LocationSpatialPoint" }
+        target: { $ref: "#/components/schemas/LocationSpatialPoint" }
+        orientation: { $ref: "#/components/schemas/SpatialQuaternion" }
+        format: { $ref: "#/components/schemas/LocationCameraFormat" }
+        focalLengthMm: { type: number, exclusiveMinimum: 0 }
+        aspectRatio: { type: string, enum: ["16:9", "9:16"] }
+        nearMeters: { type: number, exclusiveMinimum: 0 }
+        farMeters: { type: number, exclusiveMinimum: 0 }
+        confidence:
+          type: string
+          enum: [OBSERVED, ESTIMATED, UNKNOWN, FILMMAKER_CONFIRMED]
+    StoryboardFrameRef:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          mediaAssetId,
+          contentHash,
+          width,
+          height,
+          colorSpace,
+          renderer,
+          rendererVersion,
+          capturedAt,
+        ]
+      properties:
+        mediaAssetId: { type: string }
+        contentHash: { type: string }
+        width: { type: integer, minimum: 1 }
+        height: { type: integer, minimum: 1 }
+        colorSpace: { type: string, const: srgb }
+        renderer: { type: string, const: THREE_WEBGL }
+        rendererVersion: { type: string }
+        capturedAt: { type: string, format: date-time }
+    SavedLocationShot:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          version,
+          title,
+          environmentId,
+          environmentVersion,
+          camera,
+          storyboardFrame,
+          technicalSummary,
+          shootingInstructions,
+          includesUnknownSpace,
+        ]
+      properties:
+        id: { type: string }
+        version: { type: integer, minimum: 1 }
+        title: { type: string }
+        environmentId: { type: string }
+        environmentVersion: { type: integer, minimum: 1 }
+        camera: { $ref: "#/components/schemas/LocationCameraState" }
+        storyboardFrame: { $ref: "#/components/schemas/StoryboardFrameRef" }
+        technicalSummary: { type: string }
+        shootingInstructions: { type: string }
+        includesUnknownSpace: { type: boolean }
+    LocationWorkspaceState:
+      type: object
+      additionalProperties: false
+      required: [version, environment, environments, activeAspect, compositions, savedShots]
+      properties:
+        version: { type: integer, const: 1 }
+        environment: { $ref: "#/components/schemas/SpatialEnvironment" }
+        environments:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items: { $ref: "#/components/schemas/SpatialEnvironment" }
+        activeAspect: { type: string, enum: ["16:9", "9:16"] }
+        compositions:
+          type: object
+          additionalProperties: false
+          required: [horizontal, vertical]
+          properties:
+            horizontal: { $ref: "#/components/schemas/LocationCameraState" }
+            vertical: { $ref: "#/components/schemas/LocationCameraState" }
+        savedShots:
+          type: array
+          maxItems: 100
+          items: { $ref: "#/components/schemas/SavedLocationShot" }
     CreativePlanningContext:
       type: object
       additionalProperties: false
-      required: [version, stage, production, scoutPhotos, spatialClaims, corrections]
+      required: [version, stage, production, scoutPhotos, spatialClaims, corrections, shotPlanning]
       properties:
         version: { type: integer, const: 1 }
         stage:
@@ -610,6 +799,11 @@ components:
         corrections:
           type: array
           items: { $ref: "#/components/schemas/SpatialCorrection" }
+        shotPlanning: { type: [object, "null"] }
+        locationWorkspace:
+          anyOf:
+            - { $ref: "#/components/schemas/LocationWorkspaceState" }
+            - { type: "null" }
     CreativeBrief:
       type: object
       required:
