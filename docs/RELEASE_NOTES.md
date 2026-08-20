@@ -5,6 +5,9 @@
 - Long-running photo reconstructions now expose honest upload, queue, and active-reconstruction
   progress without exposing provider plumbing. The workspace explains the normal intensive-scan
   window and keeps the original paid task active instead of encouraging a duplicate submission.
+- Visible workspaces now refresh immediately and continue polling through a stable, single-flight
+  loop without page reloads or duplicate requests from hidden tabs. **Check now** visibly enters a
+  checking state and reports the last successful status check instead of appearing inert.
 
 ## Photo-to-space upload reliability fix (2026-08-20)
 

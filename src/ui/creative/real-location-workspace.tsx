@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -50,7 +51,7 @@ export function locationReconstructionProgress(
     return `${job.photoCount} source photos are preserved. The reconstruction service is receiving the room capture.`;
   }
   if (job.phase === "QUEUED") {
-    return `${job.photoCount} source photos are preserved. Upload is complete and the room is waiting for reconstruction capacity.`;
+    return `${job.photoCount} source photos are preserved. Upload is complete and the room has been waiting ${elapsedMinutes} minute${elapsedMinutes === 1 ? "" : "s"} for reconstruction capacity. Stroman is checking automatically—no reload is needed.`;
   }
   if (elapsedMinutes >= 30) {
     return `${job.photoCount} source photos are preserved. The room is still being reconstructed after ${elapsedMinutes} minutes, beyond the usual 20–30 minute intensive-scan window. Stroman will keep checking and activate it automatically—do not resubmit this scan.`;
@@ -111,14 +112,36 @@ export function LocationPhotoInput({
   const [photos, setPhotos] = useState<readonly File[]>([]);
   const [job, setJob] = useState<LocationReconstructionView | null>(null);
   const [working, setWorking] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [lastCheckedAt, setLastCheckedAt] = useState<Date | null>(null);
   const [uploadProgress, setUploadProgress] = useState<{ uploaded: number; total: number } | null>(
     null,
   );
   const [error, setError] = useState<string | null>(null);
+  const onGetRef = useRef(onGet);
+  const onRefreshRef = useRef(onRefresh);
+  const refreshInFlightRef = useRef<Promise<LocationReconstructionView> | null>(null);
+
+  useEffect(() => {
+    onGetRef.current = onGet;
+    onRefreshRef.current = onRefresh;
+  }, [onGet, onRefresh]);
+
+  const refreshJob = useCallback(async (id: string) => {
+    if (refreshInFlightRef.current) return refreshInFlightRef.current;
+    const request = onRefreshRef.current(id);
+    refreshInFlightRef.current = request;
+    try {
+      return await request;
+    } finally {
+      if (refreshInFlightRef.current === request) refreshInFlightRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
-    void onGet()
+    void onGetRef
+      .current()
       .then((loaded) => {
         if (active) setJob(loaded);
       })
@@ -126,25 +149,65 @@ export function LocationPhotoInput({
     return () => {
       active = false;
     };
-  }, [onGet]);
+  }, []);
+
+  const pollJobId =
+    job && (job.status === "PROCESSING" || job.status === "SUBMITTING") ? job.id : null;
 
   useEffect(() => {
-    if (!job || (job.status !== "PROCESSING" && job.status !== "SUBMITTING")) return;
+    if (!pollJobId) return;
     let active = true;
+    let timer: number | null = null;
+    let refreshRunning = false;
     const refresh = async () => {
+      if (refreshRunning) return;
+      if (document.visibilityState === "hidden" || !navigator.onLine) {
+        timer = window.setTimeout(() => void refresh(), 5_000);
+        return;
+      }
+      refreshRunning = true;
       try {
-        const next = await onRefresh(job.id);
-        if (active) setJob(next);
+        const next = await refreshJob(pollJobId);
+        if (active) {
+          setJob(next);
+          setLastCheckedAt(new Date());
+          setError(null);
+        }
       } catch (caught) {
         if (active) setError(friendlyError(caught));
+      } finally {
+        refreshRunning = false;
+        if (active) timer = window.setTimeout(() => void refresh(), 8_000);
       }
     };
-    const timer = window.setInterval(() => void refresh(), 8_000);
+    const resume = () => {
+      if (document.visibilityState !== "visible" || !navigator.onLine) return;
+      if (timer !== null) window.clearTimeout(timer);
+      void refresh();
+    };
+    void refresh();
+    document.addEventListener("visibilitychange", resume);
+    window.addEventListener("online", resume);
     return () => {
       active = false;
-      window.clearInterval(timer);
+      if (timer !== null) window.clearTimeout(timer);
+      document.removeEventListener("visibilitychange", resume);
+      window.removeEventListener("online", resume);
     };
-  }, [job, onRefresh]);
+  }, [pollJobId, refreshJob]);
+
+  const checkNow = async (id: string) => {
+    setChecking(true);
+    setError(null);
+    try {
+      setJob(await refreshJob(id));
+      setLastCheckedAt(new Date());
+    } catch (caught) {
+      setError(friendlyError(caught));
+    } finally {
+      setChecking(false);
+    }
+  };
 
   const submit = async () => {
     if (!name.trim() || photos.length < 20 || photos.length > 40) return;
@@ -194,19 +257,22 @@ export function LocationPhotoInput({
           <p className="text-muted-foreground mt-1 text-sm" role="status" aria-live="polite">
             {locationReconstructionProgress(job)}
           </p>
+          <p className="text-muted-foreground mt-2 text-xs" aria-live="polite">
+            {checking
+              ? "Checking the reconstruction service now…"
+              : lastCheckedAt
+                ? `Last status check at ${lastCheckedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" })}.`
+                : "Connecting to live progress…"}
+          </p>
           <Button
             className="mt-3"
             type="button"
             size="sm"
             variant="outline"
-            disabled={working}
-            onClick={() =>
-              void onRefresh(job.id)
-                .then(setJob)
-                .catch((caught) => setError(friendlyError(caught)))
-            }
+            disabled={working || checking}
+            onClick={() => void checkNow(job.id)}
           >
-            Check now
+            {checking ? "Checking…" : "Check now"}
           </Button>
         </div>
       ) : (
