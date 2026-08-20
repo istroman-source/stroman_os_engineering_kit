@@ -384,6 +384,27 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect(frame.status).toBe(200);
     expect(frame.headers.get("content-type")).toBe("image/png");
     expect(new Uint8Array(await frame.arrayBuffer())).toEqual(png);
+
+    const staleShot = new FormData();
+    staleShot.append(
+      "frame",
+      new File([png.buffer as ArrayBuffer], "stale-frame.png", { type: "image/png" }),
+    );
+    staleShot.append("workspace", JSON.stringify(locationWorkspace));
+    staleShot.append("title", "Stale office frame");
+    staleShot.append("width", "960");
+    staleShot.append("height", "540");
+    staleShot.append("technicalSummary", "35 mm · 16:9 · stale workspace");
+    staleShot.append("shootingInstructions", "This stale save must not replace the newer shot.");
+    staleShot.append("includesUnknownSpace", "false");
+    const stale = await call(saveLocationShot, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: staleShot,
+      headers: { "content-length": "8192" },
+    });
+    expect(stale.status).toBe(409);
   });
 
   it("rejects scout input before development without retaining an orphaned import", async () => {

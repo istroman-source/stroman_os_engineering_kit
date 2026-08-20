@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { isDeepStrictEqual } from "node:util";
 import { updateCreativePlanning } from "@/application/creative";
 import { importProjectSource } from "@/application/source-import";
 import {
@@ -29,10 +30,6 @@ function cameraWithinCoverage(camera: LocationCameraState, workspace: LocationWo
     within(camera.position.y, min.y, max.y) &&
     within(camera.position.z, min.z, max.z)
   );
-}
-
-function sameJson(left: unknown, right: unknown): boolean {
-  return JSON.stringify(left) === JSON.stringify(right);
 }
 
 export const POST = apiRoute<{ projectId: string }>(async ({ req, params, requestId }) => {
@@ -103,9 +100,9 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
     persisted.environment.version !== workspace.environment.version ||
     persisted.environment.geometryAsset.contentHash !==
       workspace.environment.geometryAsset.contentHash ||
-    !sameJson(persisted.environment, workspace.environment) ||
-    !sameJson(persisted.environments, workspace.environments) ||
-    !sameJson(persisted.savedShots, workspace.savedShots)
+    !isDeepStrictEqual(persisted.environment, workspace.environment) ||
+    !isDeepStrictEqual(persisted.environments, workspace.environments) ||
+    !isDeepStrictEqual(persisted.savedShots, workspace.savedShots)
   ) {
     throw new HttpError(
       409,
