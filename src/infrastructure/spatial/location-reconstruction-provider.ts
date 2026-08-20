@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createHash, randomUUID } from "node:crypto";
 import { unzipSync } from "fflate";
 import type {
   LocationReconstructionPhotoInput,
@@ -14,6 +15,95 @@ type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<
 const MAX_RESULT_ARCHIVE_BYTES = 125 * 1024 * 1024;
 const MAX_GLB_BYTES = 100 * 1024 * 1024;
 const GLTF_TO_CANONICAL_BASIS: SpatialTransform = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+const encoder = new TextEncoder();
+
+function multipartHeader(
+  boundary: string,
+  name: string,
+  options: { readonly fileName?: string; readonly contentType?: string } = {},
+): Uint8Array {
+  const disposition = options.fileName
+    ? `Content-Disposition: form-data; name="${name}"; filename="${options.fileName}"\r\n`
+    : `Content-Disposition: form-data; name="${name}"\r\n`;
+  return encoder.encode(
+    `--${boundary}\r\n${disposition}${options.contentType ? `Content-Type: ${options.contentType}\r\n` : ""}\r\n`,
+  );
+}
+
+function streamingMultipart(
+  boundary: string,
+  photos: readonly LocationReconstructionPhotoInput[],
+): { readonly body: ReadableStream<Uint8Array>; readonly contentLength: number } {
+  const lineBreak = encoder.encode("\r\n");
+  const fileParts = photos.map((photo, index) => ({
+    photo,
+    header: multipartHeader(boundary, "imagesFiles", {
+      fileName: `capture-${index + 1}.${photo.contentType === "image/png" ? "png" : "jpg"}`,
+      contentType: photo.contentType,
+    }),
+  }));
+  const fields = [
+    ["modelQuality", "1"],
+    ["textureQuality", "1"],
+    ["fileFormat", "glb"],
+    ["isMask", "0"],
+    ["textureSmoothing", "0"],
+  ].map(([name, value]) => ({
+    header: multipartHeader(boundary, name!),
+    value: encoder.encode(value!),
+  }));
+  const closing = encoder.encode(`--${boundary}--\r\n`);
+  const contentLength =
+    fileParts.reduce(
+      (total, { header, photo }) =>
+        total + header.byteLength + photo.byteSize + lineBreak.byteLength,
+      0,
+    ) +
+    fields.reduce(
+      (total, { header, value }) =>
+        total + header.byteLength + value.byteLength + lineBreak.byteLength,
+      0,
+    ) +
+    closing.byteLength;
+
+  async function* chunks() {
+    for (const { header, photo } of fileParts) {
+      yield header;
+      const bytes = await photo.loadBytes();
+      const contentHash = `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+      if (bytes.byteLength !== photo.byteSize || contentHash !== photo.contentHash) {
+        throw unavailable("A preserved location photo failed its integrity check.");
+      }
+      yield bytes;
+      yield lineBreak;
+    }
+    for (const { header, value } of fields) {
+      yield header;
+      yield value;
+      yield lineBreak;
+    }
+    yield closing;
+  }
+
+  const iterator = chunks();
+  return {
+    contentLength,
+    body: new ReadableStream<Uint8Array>({
+      async pull(controller) {
+        try {
+          const next = await iterator.next();
+          if (next.done) controller.close();
+          else controller.enqueue(next.value);
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+      async cancel() {
+        await iterator.return?.();
+      },
+    }),
+  };
+}
 
 function unavailable(message: string, cause?: unknown): AppError {
   return new AppError("UNAVAILABLE", message, cause === undefined ? {} : { cause });
@@ -60,28 +150,21 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
     readonly name: string;
     readonly photos: readonly LocationReconstructionPhotoInput[];
   }): Promise<{ readonly providerJobId: string }> {
-    const form = new FormData();
-    for (const photo of input.photos) {
-      form.append(
-        "imagesFiles",
-        new File([photo.bytes.slice().buffer as ArrayBuffer], photo.fileName, {
-          type: photo.contentType,
-        }),
-      );
-    }
-    form.append("modelQuality", "1");
-    form.append("textureQuality", "1");
-    form.append("fileFormat", "glb");
-    form.append("isMask", "0");
-    form.append("textureSmoothing", "0");
+    const boundary = `stroman-${randomUUID()}`;
+    const multipart = streamingMultipart(boundary, input.photos);
     let response: Response;
     try {
       response = await this.fetcher(`${this.endpoint}/photo/image`, {
         method: "POST",
-        headers: this.headers(),
-        body: form,
+        headers: {
+          ...this.headers(),
+          "Content-Type": `multipart/form-data; boundary=${boundary}`,
+          "Content-Length": String(multipart.contentLength),
+        },
+        body: multipart.body,
+        duplex: "half",
         signal: AbortSignal.timeout(this.options.timeoutMs ?? 10 * 60_000),
-      });
+      } as RequestInit & { duplex: "half" });
     } catch (error) {
       throw unavailable("The location photos could not be submitted for reconstruction.", error);
     }

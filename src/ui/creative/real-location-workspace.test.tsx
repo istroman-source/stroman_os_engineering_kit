@@ -34,7 +34,9 @@ describe("LocationPhotoInput", () => {
     await user.upload(screen.getByLabelText(/20–40 overlapping photos/i), photos);
     await user.click(screen.getByRole("button", { name: /build this space/i }));
 
-    await waitFor(() => expect(onStart).toHaveBeenCalledWith({ name: "Actual kitchen", photos }));
+    await waitFor(() => expect(onStart).toHaveBeenCalledOnce());
+    expect(onStart.mock.calls[0]![0]).toMatchObject({ name: "Actual kitchen", photos });
+    expect(onStart.mock.calls[0]![0].onProgress).toEqual(expect.any(Function));
     expect(await screen.findByText(/building actual kitchen/i)).toBeVisible();
   });
 });

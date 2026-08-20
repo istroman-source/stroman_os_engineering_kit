@@ -18,6 +18,9 @@ import { AppError } from "@/lib/errors";
 import { updateCreativePlanning } from "./update-creative-planning";
 
 const MAX_ENVIRONMENT_BYTES = 500 * 1024 * 1024;
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+const MAX_TOTAL_PHOTO_BYTES = 180 * 1024 * 1024;
+const ALLOWED_PHOTO_TYPES = new Set(["image/jpeg", "image/png"]);
 const SUBMISSION_STALE_MS = 11 * 60_000;
 
 interface ReconstructionDeps {
@@ -53,13 +56,58 @@ async function requireDevelopedBrief(deps: ReconstructionDeps, projectId: Projec
   return brief;
 }
 
+export async function stageLocationReconstructionPhoto(
+  deps: ReconstructionDeps,
+  input: {
+    readonly actorId: OwnerId;
+    readonly projectId: ProjectId;
+    readonly fileName: string;
+    readonly contentType: "image/jpeg" | "image/png";
+    readonly bytes: Uint8Array;
+  },
+) {
+  await requireOwnedProject(deps, input.actorId, input.projectId);
+  await requireDevelopedBrief(deps, input.projectId);
+  if (deps.locationReconstructionProvider.key === "unavailable") {
+    fail("UNAVAILABLE", "Photo reconstruction is not configured on this deployment.");
+  }
+  if (
+    !ALLOWED_PHOTO_TYPES.has(input.contentType) ||
+    input.bytes.byteLength === 0 ||
+    input.bytes.byteLength > MAX_PHOTO_BYTES
+  ) {
+    fail("VALIDATION", "Location photos must be JPEG or PNG and no larger than 8 MB each.");
+  }
+  const contentHash = `sha256:${createHash("sha256").update(input.bytes).digest("hex")}`;
+  const imported = await importProjectSource(
+    { ...deps, imports: deps.sourceImports, storage: deps.sourceStorage },
+    {
+      actorId: input.actorId,
+      projectId: input.projectId,
+      idempotencyKey: `${input.projectId}:location-photo:${contentHash}`,
+      sourceName: input.fileName,
+      contentType: input.contentType,
+      bytes: input.bytes,
+      contentHash,
+    },
+  );
+  if (!imported.ok) throw imported.error;
+  if (!imported.value.mediaAssetId) fail("INTERNAL", "A location photo was not persisted.");
+  return {
+    uploadId: imported.value.id,
+    fileName: imported.value.sourceName,
+    contentType: imported.value.contentType as "image/jpeg" | "image/png",
+    byteSize: imported.value.byteSize,
+  };
+}
+
 export async function startLocationReconstruction(
   deps: ReconstructionDeps,
   input: {
     readonly actorId: OwnerId;
     readonly projectId: ProjectId;
     readonly name: string;
-    readonly photos: readonly LocationReconstructionPhotoInput[];
+    readonly uploadIds: readonly string[];
   },
 ): Promise<LocationReconstructionView> {
   await requireOwnedProject(deps, input.actorId, input.projectId);
@@ -87,43 +135,45 @@ export async function startLocationReconstruction(
   const name = input.name.trim();
   if (!name || name.length > 160)
     fail("VALIDATION", "Name the location in 160 characters or fewer.");
-  if (input.photos.length < 20 || input.photos.length > 40) {
+  if (input.uploadIds.length < 20 || input.uploadIds.length > 40) {
     fail("VALIDATION", "Choose between 20 and 40 overlapping room photos.");
   }
-
-  const hashedPhotos = input.photos.map((photo) => ({
-    photo,
-    contentHash: `sha256:${createHash("sha256").update(photo.bytes).digest("hex")}`,
-  }));
-  if (new Set(hashedPhotos.map(({ contentHash }) => contentHash)).size !== hashedPhotos.length) {
+  if (new Set(input.uploadIds).size !== input.uploadIds.length) {
     fail("VALIDATION", "Remove duplicate photos so every angle contributes to the room.");
   }
-
-  const sources = [];
-  for (const { photo, contentHash } of hashedPhotos) {
-    const imported = await importProjectSource(
-      { ...deps, imports: deps.sourceImports, storage: deps.sourceStorage },
-      {
-        actorId: input.actorId,
-        projectId: input.projectId,
-        idempotencyKey: `${input.projectId}:location-photo:${contentHash}`,
-        sourceName: photo.fileName,
-        contentType: photo.contentType,
-        bytes: photo.bytes,
-        contentHash,
-      },
-    );
-    if (!imported.ok) throw imported.error;
-    if (!imported.value.mediaAssetId) fail("INTERNAL", "A location photo was not persisted.");
-    sources.push({
-      mediaAssetId: imported.value.mediaAssetId,
-      fileName: photo.fileName,
-      contentType: photo.contentType,
-      byteSize: photo.bytes.byteLength,
-      contentHash,
-      storageKey: imported.value.storageKey,
-    });
+  const imports = await deps.sourceImports.listByProject(input.projectId);
+  const importsById = new Map(imports.map((receipt) => [receipt.id, receipt]));
+  const selected = input.uploadIds.map((uploadId) => importsById.get(uploadId));
+  if (
+    selected.some(
+      (receipt) =>
+        !receipt ||
+        receipt.ownerId !== input.actorId ||
+        receipt.status !== "COMPLETED" ||
+        receipt.sourceKind !== "MEDIA" ||
+        !receipt.mediaAssetId ||
+        !ALLOWED_PHOTO_TYPES.has(receipt.contentType) ||
+        receipt.byteSize <= 0 ||
+        receipt.byteSize > MAX_PHOTO_BYTES,
+    )
+  ) {
+    fail("VALIDATION", "One or more location-photo uploads are invalid or unavailable.");
   }
+  const photos = selected.map((receipt) => receipt!);
+  if (new Set(photos.map(({ contentHash }) => contentHash)).size !== photos.length) {
+    fail("VALIDATION", "Remove duplicate photos so every angle contributes to the room.");
+  }
+  if (photos.reduce((total, photo) => total + photo.byteSize, 0) > MAX_TOTAL_PHOTO_BYTES) {
+    fail("VALIDATION", "The location photo set must be no larger than 180 MB.");
+  }
+  const sources = photos.map((photo) => ({
+    mediaAssetId: photo.mediaAssetId!,
+    fileName: photo.sourceName,
+    contentType: photo.contentType as "image/jpeg" | "image/png",
+    byteSize: photo.byteSize,
+    contentHash: photo.contentHash,
+    storageKey: photo.storageKey,
+  }));
 
   const now = deps.clock.now();
   let job: LocationReconstructionJob = {
@@ -146,7 +196,13 @@ export async function startLocationReconstruction(
   try {
     const submitted = await deps.locationReconstructionProvider.start({
       name,
-      photos: input.photos,
+      photos: sources.map((photo): LocationReconstructionPhotoInput => ({
+        fileName: photo.fileName,
+        contentType: photo.contentType,
+        byteSize: photo.byteSize,
+        contentHash: photo.contentHash,
+        loadBytes: () => deps.sourceStorage.get(photo.storageKey),
+      })),
     });
     job = {
       ...job,

@@ -44,7 +44,17 @@ export interface LocationReconstructionRepository {
 export interface LocationReconstructionPhotoInput {
   readonly fileName: string;
   readonly contentType: "image/jpeg" | "image/png";
-  readonly bytes: Uint8Array;
+  readonly byteSize: number;
+  readonly contentHash: string;
+  /** Load one preserved photo only when the provider is ready to stream it. */
+  readonly loadBytes: () => Promise<Uint8Array>;
+}
+
+export interface LocationReconstructionPhotoUploadView {
+  readonly uploadId: string;
+  readonly fileName: string;
+  readonly contentType: "image/jpeg" | "image/png";
+  readonly byteSize: number;
 }
 
 export type ProviderReconstructionStatus = "PROCESSING" | "SUCCEEDED" | "FAILED" | "EXPIRED";

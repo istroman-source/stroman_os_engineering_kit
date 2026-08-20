@@ -2304,6 +2304,53 @@ paths:
               schema: { type: string, format: binary }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/location-reconstructions/photos:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: stageProjectLocationReconstructionPhoto
+      summary: Preserve one bounded room photo before a memory-safe reconstruction submission.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [photo]
+              properties:
+                photo: { type: string, format: binary }
+      responses:
+        "201":
+          description: The private photo is preserved and identified for final submission.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [upload]
+                properties:
+                  upload:
+                    type: object
+                    required: [uploadId, fileName, contentType, byteSize]
+                    properties:
+                      uploadId: { type: string }
+                      fileName: { type: string }
+                      contentType: { type: string, enum: [image/jpeg, image/png] }
+                      byteSize: { type: integer, minimum: 1, maximum: 8388608 }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "411":
+          description: Content-Length is required before the photo body is read.
+        "413":
+          description: The individual photo request exceeds its bound.
+        "415":
+          description: Request is not multipart form data.
+        "503":
+          description: No reconstruction adapter is configured.
   /api/v1/projects/{projectId}/location-reconstructions:
     parameters:
       - name: projectId
@@ -2332,21 +2379,22 @@ paths:
     post:
       tags: [Projects]
       operationId: startProjectLocationReconstruction
-      summary: Preserve 20–40 private room photos and start asynchronous photo-to-space reconstruction.
+      summary: Start reconstruction from 20–40 previously preserved private room photos.
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
-              required: [name, photos]
+              additionalProperties: false
+              required: [name, uploadIds]
               properties:
                 name: { type: string, minLength: 1, maxLength: 160 }
-                photos:
+                uploadIds:
                   type: array
                   minItems: 20
                   maxItems: 40
-                  items: { type: string, format: binary }
+                  items: { type: string }
       responses:
         "202":
           description: The photos are preserved and reconstruction is running in the background.
@@ -2361,12 +2409,10 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
-        "411":
-          description: Content-Length is required before an upload body is read.
-        "413":
-          description: A photo, the photo set, or the request exceeds its bound.
         "415":
-          description: Request is not multipart form data.
+          description: Request is not application/json.
+        "422":
+          description: The photo selection is invalid, duplicated, unavailable, or over its total bound.
         "503":
           description: No reconstruction adapter is configured or the provider is unavailable.
   /api/v1/projects/{projectId}/location-reconstructions/{reconstructionId}/refresh:

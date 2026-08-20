@@ -155,16 +155,47 @@ export async function uploadLocationEnvironment(
 
 export async function startLocationPhotoReconstruction(
   projectId: string,
-  input: { readonly name: string; readonly photos: readonly File[] },
+  input: {
+    readonly name: string;
+    readonly photos: readonly File[];
+    readonly onProgress?: (uploaded: number, total: number) => void;
+  },
 ): Promise<LocationReconstructionView> {
-  const form = new FormData();
-  form.append("name", input.name);
-  for (const photo of input.photos) form.append("photos", photo);
-  const response = await apiPostForm<{ job: LocationReconstructionView }>(
-    `/api/v1/projects/${enc(projectId)}/location-reconstructions`,
-    form,
-  );
-  return response.job;
+  const uploadIds: string[] = [];
+  for (const [index, photo] of input.photos.entries()) {
+    const form = new FormData();
+    form.append("photo", photo);
+    const response = await apiPostForm<{ upload: { uploadId: string } }>(
+      `/api/v1/projects/${enc(projectId)}/location-reconstructions/photos`,
+      form,
+    );
+    uploadIds.push(response.upload.uploadId);
+    input.onProgress?.(index + 1, input.photos.length);
+  }
+  try {
+    const { data: response } = await apiPostWithEtag<{ job: LocationReconstructionView }>(
+      `/api/v1/projects/${enc(projectId)}/location-reconstructions`,
+      { name: input.name, uploadIds },
+    );
+    return response.job;
+  } catch (error) {
+    const status = errorStatus(error);
+    if (status !== undefined && status >= 500) {
+      try {
+        const recovered = await getLatestLocationPhotoReconstruction(projectId);
+        if (
+          recovered &&
+          recovered.name === input.name &&
+          recovered.photoCount === input.photos.length
+        ) {
+          return recovered;
+        }
+      } catch {
+        // Preserve the original typed edge/provider failure below.
+      }
+    }
+    throw error;
+  }
 }
 
 export async function getLatestLocationPhotoReconstruction(

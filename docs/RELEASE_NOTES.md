@@ -1,5 +1,17 @@
 # Release Notes
 
+## Photo-to-space upload reliability fix (2026-08-20)
+
+- Replaced the single 20–40-photo multipart request that could exhaust a production container with
+  bounded, sequential, owner-scoped photo staging followed by an opaque-id job start.
+- KIRI submission now uses an integrity-checked, fixed-length multipart stream that loads one
+  preserved photo at a time instead of retaining or copying the complete photo set.
+- The filmmaker sees per-photo upload progress, while the same 8 MB-per-photo, 180 MB-set,
+  authentication, provenance, duplicate-evidence, provider-neutrality, and private-storage bounds
+  remain enforced.
+- Regression coverage exercises the maximum 40-photo browser sequence and proves the provider
+  adapter never has more than one photo loader active.
+
 ## Authoritative 3D filmmaking workspace candidate (2026-08-14)
 
 - Replaced the filmmaker-facing visual-planning hierarchy with one **Story → Plan → Edit**

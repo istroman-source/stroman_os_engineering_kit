@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { zipSync } from "fflate";
 import { describe, expect, it, vi } from "vitest";
 import { KiriLocationReconstructionProvider } from "./location-reconstruction-provider";
@@ -9,28 +10,55 @@ const json = (body: unknown) =>
   });
 
 describe("KiriLocationReconstructionProvider", () => {
-  it("submits the private photo set for direct GLB reconstruction", async () => {
-    const fetch = vi
-      .fn()
-      .mockResolvedValue(
-        json({ ok: true, code: 0, data: { serialize: "provider-job-1", calculateType: 1 } }),
-      );
+  it("streams a maximum 40-photo set without loading the batch into memory", async () => {
+    let multipart = "";
+    let multipartBytes = 0;
+    const fetch = vi.fn(async (_input: string | URL | Request, init?: RequestInit) => {
+      const reader = (init?.body as ReadableStream<Uint8Array>).getReader();
+      const chunks: Uint8Array[] = [];
+      while (true) {
+        const next = await reader.read();
+        if (next.done) break;
+        chunks.push(next.value);
+      }
+      const body = Buffer.concat(chunks);
+      multipartBytes = body.byteLength;
+      multipart = new TextDecoder("latin1").decode(body);
+      return json({ ok: true, code: 0, data: { serialize: "provider-job-1", calculateType: 1 } });
+    });
     const provider = new KiriLocationReconstructionProvider({ apiKey: "secret", fetch });
-    const photos = Array.from({ length: 20 }, (_, index) => ({
-      fileName: `angle-${index + 1}.jpg`,
-      contentType: "image/jpeg" as const,
-      bytes: new Uint8Array([0xff, 0xd8, 0xff, index]),
-    }));
+    let activeLoads = 0;
+    let maximumActiveLoads = 0;
+    const photos = Array.from({ length: 40 }, (_, index) => {
+      const bytes = new Uint8Array([0xff, 0xd8, 0xff, index]);
+      return {
+        fileName: `angle-${index + 1}.jpg`,
+        contentType: "image/jpeg" as const,
+        byteSize: bytes.byteLength,
+        contentHash: `sha256:${createHash("sha256").update(bytes).digest("hex")}`,
+        loadBytes: async () => {
+          activeLoads += 1;
+          maximumActiveLoads = Math.max(maximumActiveLoads, activeLoads);
+          await Promise.resolve();
+          activeLoads -= 1;
+          return bytes;
+        },
+      };
+    });
 
     await expect(provider.start({ name: "Office", photos })).resolves.toEqual({
       providerJobId: "provider-job-1",
     });
     const [, init] = fetch.mock.calls[0]!;
-    expect(init.headers).toEqual({ Authorization: "Bearer secret" });
-    const form = init.body as FormData;
-    expect(form.getAll("imagesFiles")).toHaveLength(20);
-    expect(form.get("fileFormat")).toBe("glb");
-    expect(form.get("isMask")).toBe("0");
+    expect(init!.headers).toMatchObject({ Authorization: "Bearer secret" });
+    expect(init!.headers).toMatchObject({ "Content-Length": expect.any(String) });
+    expect(Number((init!.headers as Record<string, string>)["Content-Length"])).toBe(
+      multipartBytes,
+    );
+    expect(multipart.match(/name="imagesFiles"/g)).toHaveLength(40);
+    expect(multipart).toContain('name="fileFormat"\r\n\r\nglb');
+    expect(multipart).toContain('name="isMask"\r\n\r\n0');
+    expect(maximumActiveLoads).toBe(1);
   });
 
   it("maps provider status without exposing provider response data", async () => {

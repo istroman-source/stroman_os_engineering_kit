@@ -86,6 +86,7 @@ export function LocationPhotoInput({
   onStart: (input: {
     readonly name: string;
     readonly photos: readonly File[];
+    readonly onProgress?: (uploaded: number, total: number) => void;
   }) => Promise<LocationReconstructionView>;
   onRefresh: (id: string) => Promise<LocationReconstructionView>;
 }) {
@@ -93,6 +94,9 @@ export function LocationPhotoInput({
   const [photos, setPhotos] = useState<readonly File[]>([]);
   const [job, setJob] = useState<LocationReconstructionView | null>(null);
   const [working, setWorking] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<{ uploaded: number; total: number } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -127,15 +131,31 @@ export function LocationPhotoInput({
 
   const submit = async () => {
     if (!name.trim() || photos.length < 20 || photos.length > 40) return;
+    if (photos.some((photo) => photo.size === 0 || photo.size > 8 * 1024 * 1024)) {
+      setError("Every location photo must be no larger than 8 MB.");
+      return;
+    }
+    if (photos.reduce((total, photo) => total + photo.size, 0) > 180 * 1024 * 1024) {
+      setError("The full location photo set must be no larger than 180 MB.");
+      return;
+    }
     setWorking(true);
+    setUploadProgress({ uploaded: 0, total: photos.length });
     setError(null);
     try {
-      setJob(await onStart({ name: name.trim(), photos }));
+      setJob(
+        await onStart({
+          name: name.trim(),
+          photos,
+          onProgress: (uploaded, total) => setUploadProgress({ uploaded, total }),
+        }),
+      );
       setPhotos([]);
     } catch (caught) {
       setError(friendlyError(caught));
     } finally {
       setWorking(false);
+      setUploadProgress(null);
     }
   };
 
@@ -218,7 +238,11 @@ export function LocationPhotoInput({
               disabled={busy || working || !name.trim() || photos.length < 20}
               onClick={() => void submit()}
             >
-              {working ? "Sending photos…" : "Build this space"}
+              {working && uploadProgress
+                ? uploadProgress.uploaded < uploadProgress.total
+                  ? `Uploading photo ${uploadProgress.uploaded + 1} of ${uploadProgress.total}…`
+                  : "Starting reconstruction…"
+                : "Build this space"}
             </Button>
             <span className="text-muted-foreground text-xs">
               Photos are preserved privately in this project and sent to Stroman&apos;s

@@ -403,6 +403,7 @@ export function BlueprintView({
   onStartLocationReconstruction?: (input: {
     readonly name: string;
     readonly photos: readonly File[];
+    readonly onProgress?: (uploaded: number, total: number) => void;
   }) => Promise<LocationReconstructionView>;
   onRefreshLocationReconstruction?: (id: string) => Promise<LocationReconstructionView>;
   onSaveLocation?: (input: {

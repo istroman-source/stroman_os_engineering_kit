@@ -19,6 +19,7 @@ import {
 } from "../../../test/adapters/in-memory-source-import";
 import {
   refreshLocationReconstruction,
+  stageLocationReconstructionPhoto,
   startLocationReconstruction,
 } from "./location-reconstruction";
 
@@ -123,16 +124,31 @@ function capturePhotos() {
   }));
 }
 
+async function stagePhotos(deps: ReturnType<typeof fixture>, photos = capturePhotos()) {
+  const uploads = [];
+  for (const photo of photos) {
+    uploads.push(
+      await stageLocationReconstructionPhoto(deps, {
+        actorId: OWNER,
+        projectId: PROJECT,
+        ...photo,
+      }),
+    );
+  }
+  return uploads.map(({ uploadId }) => uploadId);
+}
+
 describe("photo-to-space reconstruction", () => {
   it("preserves source evidence and creates an estimated-scale immutable environment", async () => {
     const deps = fixture();
     develop(deps);
+    const uploadIds = await stagePhotos(deps);
 
     const started = await startLocationReconstruction(deps, {
       actorId: OWNER,
       projectId: PROJECT,
       name: "Actual office",
-      photos: capturePhotos(),
+      uploadIds,
     });
     expect(started).toMatchObject({ status: "PROCESSING", photoCount: 20 });
 
@@ -160,22 +176,24 @@ describe("photo-to-space reconstruction", () => {
     develop(deps);
     const photos = capturePhotos();
     photos[19] = { ...photos[0]!, fileName: "duplicate.jpg" };
+    const uploadIds = await stagePhotos(deps, photos);
 
     await expect(
       startLocationReconstruction(deps, {
         actorId: OWNER,
         projectId: PROJECT,
         name: "Actual office",
-        photos,
+        uploadIds,
       }),
     ).rejects.toThrow(/duplicate photos/i);
-    expect(deps.sourceImports.receipts).toHaveProperty("size", 0);
+    expect(deps.sourceImports.receipts).toHaveProperty("size", 19);
     expect(deps.locationReconstructions.values).toHaveProperty("size", 0);
   });
 
   it("recovers a provider submission interrupted beyond its hard timeout", async () => {
     const deps = fixture();
     develop(deps);
+    const uploadIds = await stagePhotos(deps);
     const stale: LocationReconstructionJob = {
       id: "lrec_INTERRUPTED1",
       ownerId: OWNER,
@@ -199,7 +217,7 @@ describe("photo-to-space reconstruction", () => {
         actorId: OWNER,
         projectId: PROJECT,
         name: "Retry room",
-        photos: capturePhotos(),
+        uploadIds,
       }),
     ).resolves.toMatchObject({ name: "Retry room", status: "PROCESSING" });
     expect(deps.locationReconstructions.values.get(stale.id)).toMatchObject({
