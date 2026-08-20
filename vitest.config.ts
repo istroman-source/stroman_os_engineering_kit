@@ -16,7 +16,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    include: ["src/**/*.{test,spec}.{ts,tsx}", "services/**/*.{test,spec}.mjs"],
     // Integration tests require a real PostgreSQL and run via the dedicated
     // vitest.integration.config.ts (npm run test:integration).
     exclude: [

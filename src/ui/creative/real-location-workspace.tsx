@@ -47,11 +47,23 @@ export function locationReconstructionProgress(
   now = Date.now(),
 ): string {
   const elapsedMinutes = Math.max(0, Math.floor((now - Date.parse(job.createdAt)) / 60_000));
+  const completion = job.percent === null ? "" : ` ${job.percent}% complete.`;
   if (job.status === "SUBMITTING" || job.phase === "UPLOADING") {
     return `${job.photoCount} source photos are preserved. The reconstruction service is receiving the room capture.`;
   }
   if (job.phase === "QUEUED") {
     return `${job.photoCount} source photos are preserved. Upload is complete and the room has been waiting ${elapsedMinutes} minute${elapsedMinutes === 1 ? "" : "s"} for reconstruction capacity. Stroman is checking automatically—no reload is needed.`;
+  }
+  const stages: Partial<Record<NonNullable<LocationReconstructionView["phase"]>, string>> = {
+    ALIGNING: "recovering camera positions and connecting overlapping views",
+    DENSIFYING: "turning the aligned views into dense room geometry",
+    MESHING: "building and simplifying the room surface",
+    TEXTURING: "projecting the source photographs onto the room surface",
+    PACKAGING: "validating and preparing the room for the browser",
+  };
+  const stage = job.phase ? stages[job.phase] : undefined;
+  if (stage) {
+    return `${job.photoCount} source photos are preserved. Stroman is ${stage}.${completion} No reload is needed.`;
   }
   if (elapsedMinutes >= 30) {
     return `${job.photoCount} source photos are preserved. The room is still being reconstructed after ${elapsedMinutes} minutes, beyond the usual 20–30 minute intensive-scan window. Stroman will keep checking and activate it automatically—do not resubmit this scan.`;

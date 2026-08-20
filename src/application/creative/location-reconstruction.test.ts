@@ -48,7 +48,7 @@ class Provider implements LocationReconstructionProvider {
     return { providerJobId: "provider-room-1" };
   }
   async status() {
-    return "SUCCEEDED" as const;
+    return { status: "SUCCEEDED" as const, phase: null, percent: 100 };
   }
   async downloadGlb() {
     return {

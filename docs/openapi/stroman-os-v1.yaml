@@ -800,7 +800,18 @@ components:
       type: object
       additionalProperties: false
       required:
-        [id, name, status, phase, photoCount, environmentId, failureCode, createdAt, updatedAt]
+        [
+          id,
+          name,
+          status,
+          phase,
+          percent,
+          photoCount,
+          environmentId,
+          failureCode,
+          createdAt,
+          updatedAt,
+        ]
       properties:
         id: { type: string }
         name: { type: string }
@@ -809,7 +820,22 @@ components:
           enum: [SUBMITTING, PROCESSING, SUCCEEDED, FAILED, EXPIRED]
         phase:
           type: [string, "null"]
-          enum: [UPLOADING, QUEUED, PROCESSING, null]
+          enum:
+            [
+              UPLOADING,
+              QUEUED,
+              ALIGNING,
+              DENSIFYING,
+              MESHING,
+              TEXTURING,
+              PACKAGING,
+              PROCESSING,
+              null,
+            ]
+        percent:
+          type: [integer, "null"]
+          minimum: 0
+          maximum: 100
         photoCount: { type: integer, minimum: 20, maximum: 40 }
         environmentId: { type: [string, "null"] }
         failureCode: { type: [string, "null"] }

@@ -1,10 +1,12 @@
 import "server-only";
 
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, createHmac, randomUUID } from "node:crypto";
 import { unzipSync } from "fflate";
 import type {
   LocationReconstructionPhotoInput,
   LocationReconstructionProvider,
+  ProviderReconstructionPhase,
+  ProviderReconstructionProgress,
   ProviderReconstructionStatus,
   SpatialTransform,
 } from "@/domain/creative";
@@ -16,6 +18,7 @@ const MAX_RESULT_ARCHIVE_BYTES = 125 * 1024 * 1024;
 const MAX_GLB_BYTES = 100 * 1024 * 1024;
 const GLTF_TO_CANONICAL_BASIS: SpatialTransform = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const encoder = new TextEncoder();
+const EMPTY_SHA256 = createHash("sha256").update("").digest("hex");
 
 function multipartHeader(
   boundary: string,
@@ -176,7 +179,7 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
     return { providerJobId: data.serialize };
   }
 
-  async status(providerJobId: string): Promise<ProviderReconstructionStatus> {
+  async status(providerJobId: string): Promise<ProviderReconstructionProgress> {
     let response: Response;
     try {
       response = await this.fetcher(
@@ -190,17 +193,17 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
     const data = value.data as Record<string, unknown> | undefined;
     switch (data?.status) {
       case -1:
-        return "UPLOADING";
+        return { status: "UPLOADING", phase: "UPLOADING", percent: null };
       case 0:
-        return "PROCESSING";
+        return { status: "PROCESSING", phase: "PROCESSING", percent: null };
       case 3:
-        return "QUEUED";
+        return { status: "QUEUED", phase: "QUEUED", percent: null };
       case 1:
-        return "FAILED";
+        return { status: "FAILED", phase: null, percent: null };
       case 2:
-        return "SUCCEEDED";
+        return { status: "SUCCEEDED", phase: null, percent: 100 };
       case 4:
-        return "EXPIRED";
+        return { status: "EXPIRED", phase: null, percent: null };
       default:
         throw unavailable("The location reconstruction provider returned an unknown status.");
     }
@@ -274,6 +277,210 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
   }
 }
 
+const STROMAN_PHASES = new Set<ProviderReconstructionPhase>([
+  "UPLOADING",
+  "QUEUED",
+  "ALIGNING",
+  "DENSIFYING",
+  "MESHING",
+  "TEXTURING",
+  "PACKAGING",
+  "PROCESSING",
+]);
+const STROMAN_STATUSES = new Set<ProviderReconstructionStatus>([
+  "UPLOADING",
+  "QUEUED",
+  "PROCESSING",
+  "SUCCEEDED",
+  "FAILED",
+  "EXPIRED",
+]);
+
+/**
+ * Private adapter for the Stroman-owned reconstruction worker. Each preserved
+ * photo is uploaded and integrity-checked separately, so the application never
+ * creates a second in-memory copy of the entire capture.
+ */
+export class StromanLocationReconstructionProvider implements LocationReconstructionProvider {
+  readonly key = "stroman-colmap-v1";
+  private readonly endpoint: URL;
+
+  constructor(
+    private readonly options: {
+      readonly endpoint: string;
+      readonly sharedSecret: string;
+      readonly fetch?: FetchLike;
+      readonly timeoutMs?: number;
+      readonly now?: () => number;
+      readonly nonce?: () => string;
+      readonly allowInsecureLocalhost?: boolean;
+    },
+  ) {
+    this.endpoint = new URL(
+      options.endpoint.endsWith("/") ? options.endpoint : `${options.endpoint}/`,
+    );
+    const local = new Set(["127.0.0.1", "localhost", "::1"]).has(this.endpoint.hostname);
+    if (this.endpoint.protocol !== "https:" && !(local && options.allowInsecureLocalhost)) {
+      throw unavailable("The Stroman reconstruction worker must use HTTPS.");
+    }
+    if (encoder.encode(options.sharedSecret).byteLength < 32) {
+      throw unavailable("The Stroman reconstruction worker secret must be at least 32 bytes.");
+    }
+  }
+
+  private get fetcher(): FetchLike {
+    return this.options.fetch ?? fetch;
+  }
+
+  private async request(
+    method: "GET" | "POST" | "PUT",
+    path: string,
+    body?: Uint8Array,
+    headers: HeadersInit = {},
+    timeoutMs = this.options.timeoutMs ?? 30_000,
+  ): Promise<Response> {
+    const url = new URL(path.replace(/^\//, ""), this.endpoint);
+    const timestamp = String((this.options.now ?? Date.now)());
+    const nonce = (this.options.nonce ?? randomUUID)();
+    const contentSha256 = body ? createHash("sha256").update(body).digest("hex") : EMPTY_SHA256;
+    const signature = createHmac("sha256", this.options.sharedSecret)
+      .update(`${method}\n${url.pathname}\n${timestamp}\n${nonce}\n${contentSha256}`)
+      .digest("hex");
+    try {
+      return await this.fetcher(url, {
+        method,
+        headers: {
+          ...headers,
+          Authorization: `Stroman-HMAC-SHA256 ${signature}`,
+          "X-Stroman-Timestamp": timestamp,
+          "X-Stroman-Nonce": nonce,
+          "X-Content-SHA256": contentSha256,
+          ...(body ? { "Content-Length": String(body.byteLength) } : {}),
+        },
+        body: body as BodyInit | undefined,
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch (error) {
+      throw unavailable("The Stroman reconstruction worker is unavailable.", error);
+    }
+  }
+
+  private async requestJson(
+    method: "GET" | "POST" | "PUT",
+    path: string,
+    value?: unknown,
+  ): Promise<Record<string, unknown>> {
+    const body = value === undefined ? undefined : encoder.encode(JSON.stringify(value));
+    const response = await this.request(
+      method,
+      path,
+      body,
+      body ? { "Content-Type": "application/json" } : {},
+    );
+    return jsonResponse(response);
+  }
+
+  async start(input: {
+    readonly name: string;
+    readonly photos: readonly LocationReconstructionPhotoInput[];
+  }): Promise<{ readonly providerJobId: string }> {
+    const created = await this.requestJson("POST", "/v1/jobs", {
+      name: input.name,
+      photoCount: input.photos.length,
+    });
+    if (typeof created.jobId !== "string" || !created.jobId) {
+      throw unavailable("The Stroman reconstruction worker did not create a job.");
+    }
+    const providerJobId = created.jobId;
+    for (const [index, photo] of input.photos.entries()) {
+      const bytes = await photo.loadBytes();
+      const contentHash = `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+      if (bytes.byteLength !== photo.byteSize || contentHash !== photo.contentHash) {
+        throw unavailable("A preserved location photo failed its integrity check.");
+      }
+      const response = await this.request(
+        "PUT",
+        `/v1/jobs/${encodeURIComponent(providerJobId)}/photos/${index}`,
+        bytes,
+        {
+          "Content-Type": photo.contentType,
+          "X-Stroman-Photo-Hash": photo.contentHash,
+        },
+        this.options.timeoutMs ?? 2 * 60_000,
+      );
+      await jsonResponse(response);
+    }
+    const started = await this.requestJson(
+      "POST",
+      `/v1/jobs/${encodeURIComponent(providerJobId)}/start`,
+      {},
+    );
+    if (started.ok !== true) {
+      throw unavailable("The Stroman reconstruction worker did not start the job.");
+    }
+    return { providerJobId };
+  }
+
+  async status(providerJobId: string): Promise<ProviderReconstructionProgress> {
+    const value = await this.requestJson("GET", `/v1/jobs/${encodeURIComponent(providerJobId)}`);
+    if (
+      typeof value.status !== "string" ||
+      !STROMAN_STATUSES.has(value.status as ProviderReconstructionStatus)
+    ) {
+      throw unavailable("The Stroman reconstruction worker returned an unknown status.");
+    }
+    const phase =
+      typeof value.phase === "string" &&
+      STROMAN_PHASES.has(value.phase as ProviderReconstructionPhase)
+        ? (value.phase as ProviderReconstructionPhase)
+        : null;
+    const percent =
+      typeof value.percent === "number" &&
+      Number.isFinite(value.percent) &&
+      value.percent >= 0 &&
+      value.percent <= 100
+        ? Math.round(value.percent)
+        : null;
+    return { status: value.status as ProviderReconstructionStatus, phase, percent };
+  }
+
+  async downloadGlb(providerJobId: string): Promise<{
+    readonly bytes: Uint8Array;
+    readonly fileName: string;
+    readonly sourceToCanonicalBasis: SpatialTransform;
+    readonly metersPerSourceUnit: number | null;
+  }> {
+    const response = await this.request(
+      "GET",
+      `/v1/jobs/${encodeURIComponent(providerJobId)}/result`,
+      undefined,
+      {},
+      this.options.timeoutMs ?? 5 * 60_000,
+    );
+    if (!response.ok) throw unavailable("The reconstructed location could not be retrieved.");
+    const declaredBytes = Number(response.headers.get("content-length") ?? 0);
+    if (declaredBytes > MAX_GLB_BYTES) {
+      throw unavailable("The reconstructed GLB is outside the supported 100 MB limit.");
+    }
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (bytes.byteLength === 0 || bytes.byteLength > MAX_GLB_BYTES) {
+      throw unavailable("The reconstructed GLB is outside the supported 100 MB limit.");
+    }
+    const suppliedName = response.headers.get("x-stroman-file-name")?.trim();
+    const fileName = suppliedName?.toLowerCase().endsWith(".glb")
+      ? suppliedName.replace(/[^a-zA-Z0-9._-]/g, "-")
+      : "reconstructed-location.glb";
+    const suppliedScale = Number(response.headers.get("x-stroman-meters-per-source-unit"));
+    return {
+      bytes,
+      fileName,
+      sourceToCanonicalBasis: GLTF_TO_CANONICAL_BASIS,
+      metersPerSourceUnit:
+        Number.isFinite(suppliedScale) && suppliedScale > 0 ? suppliedScale : null,
+    };
+  }
+}
+
 class UnavailableLocationReconstructionProvider implements LocationReconstructionProvider {
   readonly key = "unavailable";
   async start(): Promise<never> {
@@ -291,13 +498,24 @@ export function createLocationReconstructionProvider(
   env: Readonly<Record<string, string | undefined>> = process.env,
 ): LocationReconstructionProvider {
   const selection = (env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER ?? "auto").toLowerCase();
-  if (!new Set(["auto", "kiri", "disabled"]).has(selection)) {
+  if (!new Set(["auto", "stroman", "kiri", "disabled"]).has(selection)) {
     throw new AppError(
       "VALIDATION",
-      "STROMAN_LOCATION_RECONSTRUCTION_PROVIDER must be auto, kiri, or disabled.",
+      "STROMAN_LOCATION_RECONSTRUCTION_PROVIDER must be auto, stroman, kiri, or disabled.",
     );
   }
   if (selection === "disabled") return new UnavailableLocationReconstructionProvider();
+  if (env.STROMAN_RECONSTRUCTION_WORKER_URL?.trim() && env.STROMAN_RECONSTRUCTION_WORKER_SECRET) {
+    return new StromanLocationReconstructionProvider({
+      endpoint: env.STROMAN_RECONSTRUCTION_WORKER_URL.trim(),
+      sharedSecret: env.STROMAN_RECONSTRUCTION_WORKER_SECRET,
+    });
+  }
+  if (selection === "stroman") {
+    throw unavailable(
+      "The Stroman reconstruction worker is selected but its URL or secret is not configured.",
+    );
+  }
   if (env.KIRI_API_KEY?.trim()) {
     return new KiriLocationReconstructionProvider({ apiKey: env.KIRI_API_KEY.trim() });
   }

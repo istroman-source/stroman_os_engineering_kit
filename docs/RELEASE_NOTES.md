@@ -1,5 +1,18 @@
 # Release Notes
 
+## Stroman-owned reconstruction engine foundation (2026-08-20)
+
+- Added a signed, provider-neutral adapter for a Stroman-controlled photo-reconstruction worker;
+  automatic selection prefers the owned worker while preserving KIRI as a deliberate rollback.
+- Added a persistent single-flight worker with bounded per-photo uploads, MIME/magic/hash checks,
+  timestamped nonce-protected HMAC authentication, restart recovery, safe subprocess invocation,
+  bounded results, and direct GLB delivery.
+- Added a reproducible GPU-container definition for COLMAP camera alignment, CUDA dense geometry,
+  meshing, simplification, texturing, and `gltfpack` packaging. Deployed images require reviewed
+  COLMAP digests and meshoptimizer commits rather than mutable production pins.
+- The filmmaker now receives useful owned-engine stages and bounded percentages without exposing
+  reconstruction plumbing or requiring page reloads.
+
 ## Reconstruction progress recovery (2026-08-20)
 
 - Long-running photo reconstructions now expose honest upload, queue, and active-reconstruction

@@ -60,13 +60,31 @@ export interface LocationReconstructionPhotoUploadView {
 export type ProviderReconstructionStatus =
   "UPLOADING" | "QUEUED" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "EXPIRED";
 
+export type ProviderReconstructionPhase =
+  | "UPLOADING"
+  | "QUEUED"
+  | "ALIGNING"
+  | "DENSIFYING"
+  | "MESHING"
+  | "TEXTURING"
+  | "PACKAGING"
+  | "PROCESSING";
+
+export interface ProviderReconstructionProgress {
+  readonly status: ProviderReconstructionStatus;
+  /** Optional provider-neutral detail for honest filmmaker-facing progress. */
+  readonly phase: ProviderReconstructionPhase | null;
+  /** Optional bounded completion estimate. Never treated as evidence of success. */
+  readonly percent: number | null;
+}
+
 export interface LocationReconstructionProvider {
   readonly key: string;
   start(input: {
     readonly name: string;
     readonly photos: readonly LocationReconstructionPhotoInput[];
   }): Promise<{ readonly providerJobId: string }>;
-  status(providerJobId: string): Promise<ProviderReconstructionStatus>;
+  status(providerJobId: string): Promise<ProviderReconstructionProgress>;
   downloadGlb(providerJobId: string): Promise<{
     readonly bytes: Uint8Array;
     readonly fileName: string;
@@ -96,7 +114,8 @@ export interface LocationReconstructionView {
   readonly name: string;
   readonly status: LocationReconstructionStatus;
   /** Ephemeral provider progress; never includes provider ids or implementation details. */
-  readonly phase: "UPLOADING" | "QUEUED" | "PROCESSING" | null;
+  readonly phase: ProviderReconstructionPhase | null;
+  readonly percent: number | null;
   readonly photoCount: number;
   readonly environmentId: string | null;
   readonly failureCode: string | null;
@@ -106,13 +125,17 @@ export interface LocationReconstructionView {
 
 export function toLocationReconstructionView(
   job: LocationReconstructionJob,
-  phase: LocationReconstructionView["phase"] = null,
+  progress: Pick<ProviderReconstructionProgress, "phase" | "percent"> = {
+    phase: null,
+    percent: null,
+  },
 ): LocationReconstructionView {
   return {
     id: job.id,
     name: job.name,
     status: job.status,
-    phase,
+    phase: progress.phase,
+    percent: progress.percent,
     photoCount: job.photos.length,
     environmentId: job.environmentId,
     failureCode: job.failureCode,

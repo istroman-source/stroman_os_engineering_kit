@@ -18,7 +18,9 @@ This phase implements two compatible ingest paths, with photos as the default:
 5. Manipulate one authoritative filmmaking camera and save the exact camera state and rendered frame as the shot.
 6. Keep manual textured-GLB import as a recovery path for users who already have a scan.
 
-It does not build a native mobile scanner, an in-house reconstruction farm, a CAD editor, camera-pose recovery from providers that do not expose it, or a new creative-reasoning system.
+It does not build a native mobile scanner, a CAD editor, or a new creative-reasoning system. The
+next operational phase adds one Stroman-owned GPU worker behind the existing provider boundary; it
+does not put reconstruction binaries or long-running compute inside the web process.
 
 ## Technology audit
 
@@ -26,12 +28,12 @@ It does not build a native mobile scanner, an in-house reconstruction farm, a CA
 | --- | --- | --- | --- | --- | --- |
 | [Niantic Capture / Scaniverse](https://www.nianticspatial.com/en/products/capture) | Guided iOS/Android capture; on-device meshes and Gaussian splats; standard exports including open SPZ | Meshes, scan coordinate system, pose/depth evidence where available | Existing phone capture avoids building a native scanner now | On-device path can stay private; cloud credits and commercial rights vary by plan; never make its account/API canonical | Highest-leverage first capture workflow, but only through exported files |
 | [Apple RoomPlan](https://developer.apple.com/documentation/roomplan) | LiDAR-assisted parametric walls, doors, openings, windows, furniture and dimensions; USD/USDZ output | Strong interior geometry and explicit confidence/dimensions | Excellent guided iPhone/iPad capture, Apple/LiDAR constrained | Local device processing; platform-specific | Planned geometry adapter, not required for the first browser import |
-| [COLMAP](https://github.com/colmap/colmap/blob/main/doc/tutorial.rst) | Open SfM camera recovery, sparse structure, MVS dense point cloud/mesh and texture pipeline | Strong provider-neutral reconstruction primitives; absolute scale needs an anchor | Processing is not a browser workload; suitable for later worker/local service | Open source and portable; compute/ops burden remains ours | Future photos/video reconstruction adapter, not first integrated runtime |
+| [COLMAP](https://colmap.github.io/cli.html) | Open SfM camera recovery, sparse structure, CUDA MVS, dense point cloud, meshing, simplification and texture-atlas generation | Strong provider-neutral reconstruction primitives; absolute scale needs an anchor | Runs headlessly in a dedicated GPU worker, never in the browser or Next.js request | Open source and portable; compute, capacity and dependency review remain ours | Stroman-owned default candidate after exact-fixture calibration |
 | [Nerfstudio](https://docs.nerf.studio/nerfology/methods/splat.html) | Train/export Gaussian splats; broader models can export point clouds/meshes | Splatfacto itself does not export mesh/point cloud; geometry export depends on another model/path | GPU-heavy training is not an ordinary browser/mobile operation | Open source but operationally expensive | Research/offline adapter only until the geometry and compute story is proven |
 | [SparkJS](https://github.com/sparkjsdev/spark) | Three.js-integrated WebGL2 splat renderer supporting SPZ, PLY, SOG and multiple viewpoints | Appearance renderer only; does not turn splats into trustworthy collision/measurement geometry | Lightweight web integration and mobile-oriented rendering | MIT; format/provider neutral | Optional photographic renderer behind an adapter after a real SPZ fixture passes |
 | [PlayCanvas splats](https://developer.playcanvas.com/user-manual/gaussian-splatting/formats/) | Mature PLY/SPZ/SOG web delivery, compression and large-scene streaming | Documentation explicitly requires a mesh approximation for depth-dependent behavior in relevant cases | Strong renderer, but adopting another engine would duplicate the existing Three.js-oriented plan | Open engine; runtime and architecture coupling are larger than needed | Format/performance reference, not the first Stroman renderer |
 | [Meshroom](https://alicevision.org/view/meshroom.html) | Open photogrammetry GUI/pipeline | Mesh and camera recovery | MVS expects CUDA-class hardware and macOS support is not the clean first path | Local/private but hardware constrained | Rejected for the initial workflow |
-| [KIRI Engine API](https://docs.kiriengine.app/photo-scan/image-upload/) | Server-side photo scan accepts 20–300 images and can return GLB directly | Textured mesh; absolute scale still requires inference or a future anchor | Fits the existing asynchronous web workflow without another filmmaker-facing app | Paid third-party processing and three-day provider retention; the API key and job id remain server-only | First photo-reconstruction adapter, replaceable behind the domain port |
+| [KIRI Engine API](https://docs.kiriengine.app/photo-scan/image-upload/) | Server-side photo scan accepts 20–300 images and can return GLB directly | Textured mesh; absolute scale still requires inference or a future anchor | Fits the existing asynchronous web workflow without another filmmaker-facing app | Paid third-party processing, opaque capacity and three-day provider retention | Calibrated rollback/comparison adapter; not the intended default after the owned worker graduates |
 
 ### Important technology conclusions
 
@@ -46,7 +48,14 @@ It does not build a native mobile scanner, an in-house reconstruction farm, a CA
 
 The default UI asks only for a location name and 20–40 overlapping JPEG/PNG photographs. It does not ask for dimensions, units, coordinates, or reconstruction settings. Capture guidance is embedded in Stroman: perimeter coverage, roughly 70% visual overlap, floor/ceiling/openings/corners, stable light, and an empty frame.
 
-The browser stages each source as its own bounded request through the existing owner/project-scoped immutable source boundary, then starts a dedicated reconstruction job by opaque upload ids. This prevents a maximum-size 20–40-photo set from coexisting in server memory. The provider adapter reads one preserved photo at a time into an integrity-checked, fixed-length multipart stream; it never constructs a second in-memory copy of the batch. The job owns provider key/id, status, failure code, photo receipts, timestamps and optimistic-concurrency version. Provider identifiers never enter `CreativePlanningContext` or the browser response. The first adapter uses KIRI's photo-scan API with professional texture smoothing disabled and requests GLB directly. Its result archive must arrive over HTTPS, remain below the compressed bound, contain exactly one bounded GLB, and pass the room-geometry parser before activation.
+The browser stages each source as its own bounded request through the existing owner/project-scoped immutable source boundary, then starts a dedicated reconstruction job by opaque upload ids. This prevents a maximum-size 20–40-photo set from coexisting in server memory. Every adapter reads and transmits one preserved photo at a time and verifies its stored hash before use. The job owns provider key/id, status, failure code, photo receipts, timestamps and optimistic-concurrency version. Provider identifiers never enter `CreativePlanningContext` or the browser response.
+
+The Stroman worker accepts only HTTPS, timestamped, nonce-protected, body-bound HMAC requests. It
+persists one job directory on an encrypted volume, verifies image magic bytes and hashes, and
+executes COLMAP and `gltfpack` without a command shell. It reports provider-neutral `ALIGNING`,
+`DENSIFYING`, `MESHING`, `TEXTURING`, and `PACKAGING` phases. The app preserves KIRI behind the same
+port as a deliberate rollback/comparison path until the owned engine passes the permanent office
+fixture. Both paths must produce one bounded GLB that passes the same room parser before activation.
 
 Absolute scale is never invented as observed truth. If raw GLB bounds are already room-plausible, Stroman uses the raw unit scale; otherwise it normalizes the vertical extent to a conservative 2.6 m hypothesis. Both outcomes remain `ESTIMATED`. A later metric provider, depth evidence, camera metadata, or one optional known-size anchor may upgrade confidence without changing the normal flow. Manual dimension entry is deliberately absent.
 
@@ -130,7 +139,7 @@ Persisted space is right-handed, measured in meters, with `+Y` up, `+X` right an
 
 ## Failure boundaries
 
-Likely first failures are poor photo overlap, missing surfaces, reflective/featureless rooms, provider outage or expiry, missing scale, coordinate-system mismatch, malformed/overlarge assets and slow texture upload. Each is surfaced as capture/asset evidence, not hidden with fabricated geometry. The user can retry a new set without deleting originals. Provider outage cannot invalidate an already imported environment or saved shot, and manual GLB import remains available.
+Likely first failures are poor photo overlap, missing surfaces, reflective/featureless rooms, worker capacity or hardware failure, rollback-provider outage or expiry, missing scale, coordinate-system mismatch, malformed/overlarge assets and slow texture upload. Each is surfaced as capture/asset evidence, not hidden with fabricated geometry. The user can retry a new set without deleting originals. Worker or provider failure cannot invalidate an already imported environment or saved shot, and manual GLB import remains available.
 
 ## Alternatives deliberately rejected
 

@@ -16,6 +16,7 @@ describe("LocationPhotoInput", () => {
       name: "Actual kitchen",
       status: "PROCESSING" as const,
       phase: "QUEUED" as const,
+      percent: null,
       photoCount: 20,
       environmentId: null,
       failureCode: null,
@@ -55,6 +56,7 @@ describe("LocationPhotoInput", () => {
       name: "Office",
       status: "PROCESSING" as const,
       phase: "QUEUED" as const,
+      percent: null,
       photoCount: 29,
       environmentId: null,
       failureCode: null,
@@ -96,6 +98,7 @@ describe("LocationPhotoInput", () => {
         name: "Office",
         status: "PROCESSING",
         phase: "PROCESSING",
+        percent: null,
         photoCount: 29,
         environmentId: null,
         failureCode: null,
@@ -116,6 +119,7 @@ describe("LocationPhotoInput", () => {
         name: "Office",
         status: "PROCESSING",
         phase: "QUEUED",
+        percent: null,
         photoCount: 29,
         environmentId: null,
         failureCode: null,
@@ -126,6 +130,25 @@ describe("LocationPhotoInput", () => {
     );
 
     expect(message).toMatch(/waiting 42 minutes/i);
+    expect(message).toMatch(/no reload is needed/i);
+  });
+
+  it("translates owned-worker stages into useful live progress", () => {
+    const message = locationReconstructionProgress({
+      id: "lrec_ROOM0005",
+      name: "Office",
+      status: "PROCESSING",
+      phase: "DENSIFYING",
+      percent: 55,
+      photoCount: 29,
+      environmentId: null,
+      failureCode: null,
+      createdAt: "2026-08-20T12:00:00.000Z",
+      updatedAt: "2026-08-20T12:03:00.000Z",
+    });
+
+    expect(message).toMatch(/dense room geometry/i);
+    expect(message).toMatch(/55% complete/i);
     expect(message).toMatch(/no reload is needed/i);
   });
 });
