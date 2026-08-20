@@ -23,6 +23,7 @@ import type {
   SpatialBounds,
   SpatialPoint,
 } from "@/domain/creative";
+import { prepareInteriorMaterials } from "@/infrastructure/spatial/prepare-interior-materials";
 import { Button } from "@/ui/primitives/button";
 
 const aspectSize = (aspect: "16:9" | "9:16") =>
@@ -272,6 +273,7 @@ export function RealLocationWorkspace({
         if (disposed) return;
         const transform = new THREE.Matrix4().fromArray([...environment.sourceToCanonical]);
         gltf.scene.applyMatrix4(transform);
+        prepareInteriorMaterials(gltf.scene);
         scene.add(gltf.scene);
         setLoadState("READY");
         setLoadProgress(100);
