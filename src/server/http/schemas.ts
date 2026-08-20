@@ -209,6 +209,77 @@ const ProductionRealityRequest = z
   })
   .strict();
 
+const SpatialPointRequest = z
+  .object({
+    x: z.number().finite().min(-100).max(100),
+    y: z.number().finite().min(-20).max(50),
+    z: z.number().finite().min(-100).max(100),
+  })
+  .strict();
+const SpatialShotRequest = z
+  .object({
+    id: z.string().min(1).max(100),
+    version: z.number().int().positive().max(10000),
+    title: z.string().min(1).max(200),
+    camera: z
+      .object({
+        position: SpatialPointRequest,
+        target: SpatialPointRequest,
+        focalLengthMm: z.number().finite().min(12).max(200),
+        aspectRatio: z.enum(["16:9", "9:16"]),
+        support: z.enum(["LOCKED", "HANDHELD", "GIMBAL", "DOLLY"]),
+      })
+      .strict(),
+    subject: z
+      .object({
+        id: z.string().min(1).max(100),
+        label: z.string().min(1).max(100),
+        position: SpatialPointRequest,
+        facingDegrees: z.number().finite().min(-360).max(360),
+        pose: z.enum(["SEATED", "STANDING"]),
+        endPosition: SpatialPointRequest,
+      })
+      .strict(),
+    movement: z
+      .object({
+        kind: z.enum(["LOCKED", "PUSH", "PULL", "TRACK", "ARC", "HANDHELD"]),
+        start: SpatialPointRequest,
+        end: SpatialPointRequest,
+      })
+      .strict(),
+    setPieces: z
+      .array(
+        z
+          .object({
+            id: z.string().min(1).max(100),
+            label: z.string().min(1).max(160),
+            kind: z.enum(["DESK", "TABLE", "COUNTER", "DOOR", "WINDOW", "OBJECT", "PRACTICAL"]),
+            position: SpatialPointRequest,
+            width: z.number().finite().positive().max(20),
+            height: z.number().finite().positive().max(20),
+            depth: z.number().finite().positive().max(20),
+            color: z.string().regex(/^#[0-9a-f]{6}$/i),
+          })
+          .strict(),
+      )
+      .max(40),
+    action: z.string().max(2000),
+    blocking: z.string().max(2000),
+    lightColor: z.string().regex(/^#[0-9a-f]{6}$/i),
+    light: z.string().max(2000),
+    sound: z.string().max(2000),
+    rationale: z.string().max(2000),
+    geometryConfidence: z.enum(["OBSERVED", "ESTIMATED", "FILMMAKER_CONFIRMED"]),
+  })
+  .strict();
+const ShotPlanningRequest = z
+  .object({
+    version: z.literal(1),
+    activeShot: SpatialShotRequest,
+    savedShots: z.array(SpatialShotRequest).max(100),
+  })
+  .strict();
+
 export const UpdateCreativePlanningRequest = z
   .object({
     stage: z.enum(["IDEA", "SCOUTING", "PRE_PRODUCTION", "SHOOTING", "POST"]).optional(),
@@ -220,11 +291,15 @@ export const UpdateCreativePlanningRequest = z
       })
       .strict()
       .optional(),
+    shotPlanning: ShotPlanningRequest.optional(),
   })
   .strict()
-  .refine((value) => Boolean(value.stage || value.production || value.correction), {
-    message: "At least one planning change is required.",
-  });
+  .refine(
+    (value) => Boolean(value.stage || value.production || value.correction || value.shotPlanning),
+    {
+      message: "At least one planning change is required.",
+    },
+  );
 export type UpdateCreativePlanningRequest = z.infer<typeof UpdateCreativePlanningRequest>;
 
 // ── Knowledge Acquisition request schemas ──────────────────────────────────

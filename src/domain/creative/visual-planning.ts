@@ -1,6 +1,7 @@
 import type { CreativeBrief } from "./creative-brief";
 import type { CreativeMode } from "./development-blueprint";
 import type { MeaningfulDevelopment, StoryboardGlyphKind } from "./meaningful-development";
+import { isShotPlanningState, type ShotPlanningState } from "./shot-planning";
 
 export type VisualDevelopmentSource = Omit<MeaningfulDevelopment, "storyboard"> & {
   /** Retained only as structured plan data; never rendered as provider/system plumbing. */
@@ -58,6 +59,7 @@ export interface CreativePlanningContext {
   readonly scoutPhotos: readonly ScoutPhotoRef[];
   readonly spatialClaims: readonly SpatialClaim[];
   readonly corrections: readonly SpatialCorrection[];
+  readonly shotPlanning: ShotPlanningState | null;
 }
 
 export interface PrevisFigure {
@@ -308,6 +310,7 @@ export function emptyCreativePlanningContext(): CreativePlanningContext {
     scoutPhotos: [],
     spatialClaims: [],
     corrections: [],
+    shotPlanning: null,
   };
 }
 
@@ -2004,8 +2007,18 @@ export function isCreativePlanningContext(value: unknown): value is CreativePlan
       (correction) =>
         hasStringFields(correction, ["id", "statement"]) &&
         (correction.replacesClaimId === null || typeof correction.replacesClaimId === "string"),
-    )
+    ) &&
+    (candidate.shotPlanning === null ||
+      candidate.shotPlanning === undefined ||
+      isShotPlanningState(candidate.shotPlanning))
   );
+}
+
+export function withShotPlanning(
+  context: CreativePlanningContext,
+  shotPlanning: ShotPlanningState,
+): CreativePlanningContext {
+  return { ...context, shotPlanning };
 }
 
 export function isVisualPlan(value: unknown): value is VisualPlan {

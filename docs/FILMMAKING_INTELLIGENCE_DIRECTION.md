@@ -37,18 +37,20 @@ paths, and look/color references. Default filmmaker UI shows the artifact and th
 communicates; provider names, credentials, system instructions, master prompts, and internal
 deliberation remain behind the product surface.
 
-### Cognitive economy and frame-accurate planning
+### Cognitive economy and authoritative spatial planning
 
-The visual-planning surface is an execution tool, not a report. It must preserve a filmmaker's
-attention by showing the smallest useful decision layer first:
+The product uses one obvious mental model:
 
-1. **Creative Spine** is the default at idea stage: the film, why it matters, audience effect, key
-   beats, priorities, and one next decision.
-2. **Blueprint** contains executable storyboard, blocking, lighting, look, sound, and coverage
-   views. One diagram answers one primary question; these layers must not collapse into one dense
-   control-room graphic.
-3. **Deep Room** holds alternatives, detailed craft reasoning, assumptions, and risks. It remains
-   available without competing with the active production decision.
+1. **Story** develops the film, its point of view, audience effect, scenes, alternatives, and the
+   recommendation Stroman is willing to defend.
+2. **Plan** enters the physical scene. It proposes a spatial shot that the filmmaker can directly
+   change and save as a versioned decision.
+3. **Edit** works with captured material, preserving source evidence while testing what story the
+   footage now supports.
+
+Each mode preserves cognitive economy through progressive disclosure. Detailed craft reasoning,
+alternatives, scout grounding, production reality, and crew artifacts remain available without
+competing with the active decision.
 
 The active stage—Idea, Scouting, Pre-production, Shooting, or Post—changes which decisions are
 prominent. Recommendations are ranked as must solve now, important, worth exploring, or optional.
@@ -56,19 +58,26 @@ Coverage is ranked as must get, safety, or optional exploration. Sound is a firs
 production reality—crew, camera, lenses, support, lighting, sound, time, access, talent, budget,
 and time of day—changes recommendations rather than appearing as inert metadata.
 
-Every storyboard shot has independently composed 16:9 and 9:16 frames. A crop guide is not a
-vertical plan. Each frame must place subjects and meaningful set pieces, state camera/lens/height/
-distance/movement/hold choices at an honest level of precision, and keep its execution strip to two
-short lines. Blocking directly names people, beats, movement states, and cameras. Lighting and look
-have separate diagrams so an operator never has to decode anonymous dots or mixed visual grammar.
+Camera state is authoritative across the room view, view through camera, saved storyboard, shooting
+information, and execution guidance. The filmmaker can change camera position and aim, pan/tilt via
+the target, camera height, focal length, aspect ratio, support and movement, subject start/end
+blocking, and saved position. Camera movement has editable start/path/end state distinct from
+subject movement.
+
+Every saved shot has independently composed 16:9 and 9:16 states. A crop guide is not a vertical
+plan. Each frame places subjects and meaningful set pieces, states camera/lens/height/distance/
+movement choices at an honest level of precision, and retains concise execution information.
+Blocking directly names people, beats, movement states, and cameras. Lighting and look remain
+separate artifacts so an operator never decodes anonymous dots or mixed visual grammar.
 
 Location-aware planning is optional and additive. A filmmaker may upload multiple scout/location
 photos; those files remain private and project-scoped. Spatial statements are always labeled as:
 
-- **Visible fact** — directly supported by one or more supplied photos.
-- **Inferred geometry** — a useful spatial hypothesis whose clearance or relationship is not fully
+- **Observed** — directly supported by supplied media.
+- **Estimated** — a useful spatial hypothesis whose clearance or relationship is not fully
   visible.
-- **Filmmaker-confirmed geometry** — an explicit correction or confirmation supplied by the owner.
+- **Unknown** — unavailable from current material and not safe to infer.
+- **Filmmaker-confirmed** — an explicit correction or confirmation supplied by the owner.
 
 Stroman must never invent unseen rooms, exact dimensions, operating clearances, or fixture controls.
 Photo-dependent frames identify the facts and uncertainties they use. A correction regenerates the
@@ -85,6 +94,13 @@ Starting from footage, transcripts, interviews, scripts, notes, selects, rough c
 source material, Stroman should help reveal characters, chronology, themes, emotional beats,
 turning points, contradictions, strong moments, evidence, missing coverage, alternative
 narratives, editorial structure, and edit recommendations.
+
+For video, representative frames may be extracted locally and analyzed through a provider-neutral
+vision boundary when direct video input is unavailable. Every visible observation retains the
+imported media asset as evidence and its sampling timestamp. Interpretations remain labeled as
+estimated; unverified sound, motion between frames, identity, causality, and off-screen action remain
+unknown. A successful upload or valid provider response alone is not proof of useful media
+understanding.
 
 ### The intent–evidence bridge
 

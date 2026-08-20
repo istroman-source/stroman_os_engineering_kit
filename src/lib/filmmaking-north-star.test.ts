@@ -42,7 +42,8 @@ describe("filmmaking intelligence north star", () => {
     expect(doctrine).toContain("Genericness is a product defect");
     expect(doctrine).toContain("Principled creative temperament");
     expect(doctrine).toContain("Purposeful rule-breaking");
-    expect(doctrine).toContain("Director-notebook visual language");
+    expect(doctrine).toContain("Story → Plan → Edit and spatial authorship");
+    expect(normalizedDoctrine).toContain("one authoritative state");
     expect(normalizedDoctrine).toContain("CREATIVE HYPOTHESIS");
     expect(normalizedDoctrine).toContain(
       "The filmmaker owns every consequential creative decision",

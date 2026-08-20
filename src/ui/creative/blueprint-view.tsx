@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import type { ProductionReality, ProductionStage } from "@/domain/creative";
+import {
+  instructionAtDeskShotPlanning,
+  type ProductionReality,
+  type ProductionStage,
+  type ShotPlanningState,
+  type SpatialSetPieceState,
+} from "@/domain/creative";
 import { Button } from "@/ui/primitives/button";
 import type { Analysis } from "./creative-api";
-import { ProductionRealityForm, VisualPlanView } from "./visual-plan";
+import { ProductionRealityForm, ScoutPlanningInput, VisualPlanView } from "./visual-plan";
+import { ShotPlanningSpace } from "./shot-planning-space";
 
 type Depth = "SPINE" | "BLUEPRINT" | "DEEP_ROOM";
 
@@ -17,10 +24,152 @@ const stages: ReadonlyArray<readonly [ProductionStage, string]> = [
 ];
 
 const depths: ReadonlyArray<readonly [Depth, string, string]> = [
-  ["SPINE", "Creative spine", "What matters now"],
-  ["BLUEPRINT", "Blueprint", "How to execute"],
-  ["DEEP_ROOM", "Deep room", "Reasoning and alternatives"],
+  ["SPINE", "Story", "Develop the film"],
+  ["BLUEPRINT", "Plan", "Enter and shape the shot"],
+  ["DEEP_ROOM", "Edit", "Work with captured material"],
 ];
+
+function recommendedSpatialShot(analysis: Analysis): ShotPlanningState {
+  const calibrationText = [
+    analysis.brief.title,
+    analysis.brief.context,
+    analysis.brief.creativeGoal,
+  ].join(" ");
+  if (
+    /instruction at the desk|intern.*desk|sticky note.*drawer|desk phone.*mug/i.test(
+      calibrationText,
+    )
+  )
+    return instructionAtDeskShotPlanning();
+
+  const baseline = instructionAtDeskShotPlanning().activeShot;
+  const development = analysis.blueprint.development;
+  const plan = development.visualPlan;
+  const planned = plan.shots[0];
+  const scene = development.sceneHypotheses.find((item) => item.id === planned?.sceneId);
+  if (!planned || !scene) return instructionAtDeskShotPlanning();
+
+  const toWorldX = (value: number) => (value - 50) / 10;
+  const toWorldZ = (value: number) => (50 - value) / 10;
+  const focalLength = Number(
+    planned.horizontal.executionStrip.join(" ").match(/≈?\s*(\d{2,3})mm/i)?.[1] ?? 35,
+  );
+  const blockingSubject = plan.blocking.subjects[0];
+  const subjectStart = blockingSubject?.states[0];
+  const subjectEnd = blockingSubject?.states.at(-1);
+  const cameraMark = plan.blocking.cameras[0];
+  const cameraPosition = cameraMark
+    ? { x: toWorldX(cameraMark.x), y: 1.35, z: toWorldZ(cameraMark.y) }
+    : baseline.camera.position;
+  const target = cameraMark
+    ? { x: toWorldX(cameraMark.aimX), y: 1.1, z: toWorldZ(cameraMark.aimY) }
+    : baseline.camera.target;
+  const movementText = planned.horizontal.movement.toLowerCase();
+  const movementKind = /handheld/.test(movementText)
+    ? ("HANDHELD" as const)
+    : /push/.test(movementText)
+      ? ("PUSH" as const)
+      : /pull/.test(movementText)
+        ? ("PULL" as const)
+        : /track/.test(movementText)
+          ? ("TRACK" as const)
+          : /arc/.test(movementText)
+            ? ("ARC" as const)
+            : ("LOCKED" as const);
+  const support = /handheld/.test(movementText)
+    ? ("HANDHELD" as const)
+    : /gimbal/.test(movementText)
+      ? ("GIMBAL" as const)
+      : /dolly|push|pull|track/.test(movementText)
+        ? ("DOLLY" as const)
+        : ("LOCKED" as const);
+  const kind = (value: string): SpatialSetPieceState["kind"] => {
+    if (value === "TABLE") return "TABLE";
+    if (value === "COUNTER" || value === "ISLAND" || value === "SINK") return "COUNTER";
+    if (value === "DOOR") return "DOOR";
+    if (value === "WINDOW") return "WINDOW";
+    if (value === "PRACTICAL") return "PRACTICAL";
+    return "OBJECT";
+  };
+  const colorFor = (value: SpatialSetPieceState["kind"]) =>
+    value === "WINDOW"
+      ? "#8faeb8"
+      : value === "DOOR"
+        ? "#73685e"
+        : value === "PRACTICAL"
+          ? "#c49a57"
+          : value === "COUNTER" || value === "TABLE"
+            ? "#82796f"
+            : "#596164";
+  const setPieces: SpatialSetPieceState[] = planned.horizontal.setPieces.map((piece) => {
+    const spatialKind = kind(piece.kind);
+    const pieceHeight = Math.max(0.15, (piece.height / 100) * 2.5);
+    return {
+      id: piece.label
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, ""),
+      label: piece.label,
+      kind: spatialKind,
+      position: {
+        x: toWorldX(piece.x + piece.width / 2),
+        y: pieceHeight,
+        z: piece.plane === "FOREGROUND" ? 1.3 : piece.plane === "BACKGROUND" ? -1.5 : 0,
+      },
+      width: Math.max(0.25, piece.width / 12),
+      height: pieceHeight,
+      depth: Math.max(0.2, piece.width / 35),
+      color: colorFor(spatialKind),
+    };
+  });
+  const lightTone = planned.horizontal.light[0]?.tone;
+  const subjectPosition = subjectStart
+    ? { x: toWorldX(subjectStart.x), y: 0, z: toWorldZ(subjectStart.y) }
+    : baseline.subject.position;
+  const subjectEndPosition = subjectEnd
+    ? { x: toWorldX(subjectEnd.x), y: 0, z: toWorldZ(subjectEnd.y) }
+    : subjectPosition;
+  return {
+    version: 1,
+    activeShot: {
+      ...baseline,
+      id: planned.id,
+      title: planned.title,
+      camera: {
+        position: cameraPosition,
+        target,
+        focalLengthMm: focalLength,
+        aspectRatio: "16:9",
+        support,
+      },
+      subject: {
+        ...baseline.subject,
+        id: blockingSubject?.id ?? "primary-subject",
+        label: blockingSubject?.label ?? planned.horizontal.figures[0]?.label ?? "Subject",
+        position: subjectPosition,
+        endPosition: subjectEndPosition,
+        pose: /sit|seated/i.test(`${scene.action} ${scene.craft.blocking}`) ? "SEATED" : "STANDING",
+      },
+      movement: {
+        kind: movementKind,
+        start: cameraPosition,
+        end:
+          movementKind === "LOCKED"
+            ? cameraPosition
+            : { ...cameraPosition, z: cameraPosition.z - 1.2 },
+      },
+      setPieces,
+      action: scene.action,
+      blocking: scene.craft.blocking,
+      lightColor: lightTone === "COOL" ? "#a8bdc4" : lightTone === "WARM" ? "#d1a56d" : "#c8c5bb",
+      light: scene.craft.light,
+      sound: scene.craft.sound,
+      rationale: `${planned.purpose} ${planned.horizontal.constraint}`,
+      geometryConfidence: "ESTIMATED",
+    },
+    savedShots: [],
+  };
+}
 
 function PriorityLabel({ value }: { value: string }) {
   const labels: Record<string, string> = {
@@ -224,6 +373,7 @@ export function BlueprintView({
   onProduction,
   onUploadScoutPhotos,
   onCorrection,
+  onShotPlanning,
 }: {
   analysis: Analysis;
   busy: boolean;
@@ -233,6 +383,7 @@ export function BlueprintView({
   onProduction: (production: Partial<ProductionReality>) => Promise<void>;
   onUploadScoutPhotos: (files: readonly File[]) => Promise<void>;
   onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
+  onShotPlanning: (state: ShotPlanningState) => Promise<void>;
 }) {
   const plan = analysis.blueprint.development.visualPlan;
   const defaultDepth: Depth = plan.stage === "IDEA" ? "SPINE" : "BLUEPRINT";
@@ -246,7 +397,7 @@ export function BlueprintView({
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-muted-foreground text-xs tracking-wide uppercase">
-            Develop &amp; Plan
+            Filmmaking workspace
           </p>
           <h1 className="text-2xl font-semibold tracking-tight">{analysis.brief.title}</h1>
           <p className="text-muted-foreground text-sm">
@@ -279,7 +430,7 @@ export function BlueprintView({
         </div>
       </section>
 
-      <nav className="grid gap-2 sm:grid-cols-3" aria-label="Creative plan depth">
+      <nav className="grid gap-2 sm:grid-cols-3" aria-label="Story, plan, and edit workspace">
         {depths.map(([value, label, note]) => (
           <button
             key={value}
@@ -305,13 +456,60 @@ export function BlueprintView({
       {depth === "SPINE" ? <Spine analysis={analysis} /> : null}
       {depth === "BLUEPRINT" ? (
         <div className="space-y-5">
-          <VisualPlanView
+          <section className="bg-card rounded-lg border p-5" aria-labelledby="planning-inputs">
+            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+              Start with what you have
+            </p>
+            <h2 id="planning-inputs" className="mt-1 font-semibold">
+              Your idea is enough. Ground the room when the location matters.
+            </h2>
+            <div className="mt-3 grid gap-2 text-sm sm:grid-cols-4">
+              <span className="rounded-md border border-emerald-700/30 bg-emerald-700/5 p-3">
+                <strong>Idea</strong>
+                <span className="text-muted-foreground block text-xs">In use</span>
+              </span>
+              <span className="rounded-md border p-3">
+                <strong>Location photos</strong>
+                <span className="text-muted-foreground block text-xs">Optional below</span>
+              </span>
+              <span className="rounded-md border p-3">
+                <strong>Footage / transcript</strong>
+                <span className="text-muted-foreground block text-xs">Bring into Edit</span>
+              </span>
+              <span className="rounded-md border p-3">
+                <strong>Nothing else</strong>
+                <span className="text-muted-foreground block text-xs">Keep planning</span>
+              </span>
+            </div>
+          </section>
+          <ScoutPlanningInput
             plan={plan}
             projectId={analysis.brief.projectId}
             busy={busy}
             onUpload={onUploadScoutPhotos}
             onCorrection={onCorrection}
           />
+          <ShotPlanningSpace
+            initial={analysis.brief.planningContext.shotPlanning}
+            proposal={recommendedSpatialShot(analysis)}
+            busy={busy}
+            onSave={onShotPlanning}
+          />
+          <details className="border-border bg-card rounded-lg border p-4">
+            <summary className="cursor-pointer text-sm font-semibold">
+              Scout grounding, lighting, sound, and coverage
+            </summary>
+            <div className="mt-4">
+              <VisualPlanView
+                plan={plan}
+                projectId={analysis.brief.projectId}
+                busy={busy}
+                onUpload={onUploadScoutPhotos}
+                onCorrection={onCorrection}
+                includeScout={false}
+              />
+            </div>
+          </details>
           <details className="border-border bg-card rounded-lg border p-4">
             <summary className="cursor-pointer text-sm font-semibold">
               Production reality · add only what changes the plan
@@ -326,7 +524,18 @@ export function BlueprintView({
           </details>
         </div>
       ) : null}
-      {depth === "DEEP_ROOM" ? <DeepRoom analysis={analysis} /> : null}
+      {depth === "DEEP_ROOM" ? (
+        <div className="space-y-4">
+          <section className="bg-card rounded-lg border p-5">
+            <h2 className="font-semibold">Captured material</h2>
+            <p className="text-muted-foreground mt-2 text-sm">
+              Import footage or transcripts below. Stroman keeps source evidence, edit
+              recommendations, and the current story together there.
+            </p>
+          </section>
+          <DeepRoom analysis={analysis} />
+        </div>
+      ) : null}
     </div>
   );
 }

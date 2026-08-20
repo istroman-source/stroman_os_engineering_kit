@@ -1,5 +1,34 @@
 # Release Notes
 
+## Authoritative 3D filmmaking workspace candidate (2026-08-14)
+
+- Replaced the filmmaker-facing visual-planning hierarchy with one **Story → Plan → Edit**
+  workspace. Internal Blueprint terminology is no longer primary navigation.
+- Added a provider-neutral, persistent spatial shot state containing room/set pieces, uncertainty,
+  camera position and target, height, focal length, aspect ratio, support, editable camera path,
+  subject blocking, lighting/look/sound intent, and versioned saved shots.
+- Plan now opens an interactive oblique 3D room and a real view through the selected camera. Dragging
+  or keyboard-nudging the camera, target, subject, subject end, or movement end and changing
+  lens/height/ratio updates the same state used by the visible frame, shooting information, and
+  saved storyboard. Direct spatial edits are explicitly persisted as filmmaker-confirmed geometry.
+- The permanent “Instruction at the Desk” fixture begins at a 35mm, desk-height, slightly off-axis
+  locked medium-wide with phone, yellow reminder, drawer, keyboard, mug, green fluorescent light,
+  and dry sound. Browser acceptance also saved physically distinct 48mm vertical dolly versions,
+  including a keyboard-directed, filmmaker-confirmed version 3 whose state survived reload; the
+  9:16 result is not a crop of the horizontal frame.
+- Added real video understanding. The browser samples bounded representative frames from an
+  imported video, the server sends them to the configured hosted vision provider, and the resulting
+  **OBSERVED / ESTIMATED / UNKNOWN** claims persist against the original media asset. The truthful
+  deterministic fallback never pretends byte metadata is visual understanding.
+- The signed-in local application completed the full intent → hosted Story → interactive Plan →
+  saved horizontal/vertical shots → transcript import/analysis → video import/hosted visual
+  analysis → Edit workflow. Review evidence is recorded in
+  `evaluations/artifacts/shot-planning-3d/REVIEW_EVIDENCE.md`.
+
+Deployment remains paused. This candidate is not **READY FOR 3D SHOT-PLANNING HUMAN TEST** until
+full verification, exact-head CI, independent product-meaning review, merge safeguards, and
+post-merge main verification pass.
+
 ## Private web deployment candidate (2026-08-13)
 
 - Closed the release-gate CI gap: GitHub Actions now runs format and OpenAPI validation,

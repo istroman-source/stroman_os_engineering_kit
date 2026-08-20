@@ -15,6 +15,7 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
     projectId,
     stage: body.stage,
     production: body.production,
+    shotPlanning: body.shotPlanning,
     correction: body.correction
       ? {
           statement: body.correction.statement,

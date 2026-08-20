@@ -893,7 +893,7 @@ function Claim({ claim }: { claim: SpatialClaim }) {
   );
 }
 
-function ScoutPanel({
+export function ScoutPlanningInput({
   plan,
   projectId,
   busy,
@@ -1096,12 +1096,14 @@ export function VisualPlanView({
   busy,
   onUpload,
   onCorrection,
+  includeScout = true,
 }: {
   plan: VisualPlan;
   projectId: string;
   busy: boolean;
   onUpload: (files: readonly File[]) => Promise<void>;
   onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
+  includeScout?: boolean;
 }) {
   const stagePanel: BlueprintPanel =
     plan.stage === "SCOUTING"
@@ -1116,13 +1118,15 @@ export function VisualPlanView({
   const panel = panelChoice.stage === plan.stage ? panelChoice.value : stagePanel;
   return (
     <div className="space-y-5">
-      <ScoutPanel
-        plan={plan}
-        projectId={projectId}
-        busy={busy}
-        onUpload={onUpload}
-        onCorrection={onCorrection}
-      />
+      {includeScout ? (
+        <ScoutPlanningInput
+          plan={plan}
+          projectId={projectId}
+          busy={busy}
+          onUpload={onUpload}
+          onCorrection={onCorrection}
+        />
+      ) : null}
       {plan.delta.changed.length ? (
         <section className="rounded-lg border border-[#87a29a] bg-[#eef4f1] p-4 text-[#243b33]">
           <p className="text-xs font-semibold tracking-wide text-[#345448] uppercase">

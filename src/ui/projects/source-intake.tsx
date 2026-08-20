@@ -2,6 +2,7 @@
 
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { Button } from "@/ui/primitives/button";
+import { extractVideoFrames } from "./video-frame-extractor";
 
 interface ImportItem {
   id: string;
@@ -15,6 +16,8 @@ export function SourceIntake({ projectId }: { projectId: string }) {
   const [items, setItems] = useState<ImportItem[]>([]);
   const [busy, setBusy] = useState<"Media" | "Transcript" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [activity, setActivity] = useState<string | null>(null);
+  const [mediaInsight, setMediaInsight] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const response = await fetch(`/api/v1/projects/${projectId}/imports`, {
@@ -59,6 +62,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
     }
     setBusy(kind);
     setError(null);
+    setMediaInsight(null);
     const temporary: ImportItem = {
       id: `pending-${kind}`,
       status: "PROCESSING",
@@ -68,6 +72,8 @@ export function SourceIntake({ projectId }: { projectId: string }) {
     };
     setItems((current) => [...current, temporary]);
     try {
+      const frames = kind === "Media" ? await extractVideoFrames(file) : [];
+      setActivity(frames.length ? "Importing media…" : null);
       const response = await fetch(`/api/v1/projects/${projectId}/imports`, {
         method: "POST",
         body: form,
@@ -79,13 +85,48 @@ export function SourceIntake({ projectId }: { projectId: string }) {
         } | null;
         throw new Error(body?.error?.message ?? "Import failed.");
       }
-      formElement.reset();
+      const receipt = (await response.json()) as { mediaId?: string | null };
       await refresh();
+      if (frames.length) {
+        if (!receipt.mediaId)
+          throw new Error("Media imported, but its evidence record is missing.");
+        setActivity("Reading visible material from sampled frames…");
+        const visualForm = new FormData();
+        visualForm.set("mediaId", receipt.mediaId);
+        visualForm.set(
+          "frameMetadata",
+          JSON.stringify(
+            frames.map((frame) => ({ index: frame.index, timestampMs: frame.timestampMs })),
+          ),
+        );
+        for (const frame of frames) {
+          visualForm.append("frame", frame.blob, `frame-${frame.index}.jpg`);
+        }
+        const visualResponse = await fetch(`/api/v1/projects/${projectId}/media-visual-analysis`, {
+          method: "POST",
+          body: visualForm,
+          credentials: "same-origin",
+        });
+        if (!visualResponse.ok) {
+          const body = (await visualResponse.json().catch(() => null)) as {
+            error?: { message?: string };
+          } | null;
+          throw new Error(
+            body?.error?.message ?? "Media imported, but visual analysis could not be completed.",
+          );
+        }
+        setMediaInsight(
+          "Visible material analyzed from representative frames and linked to the imported video.",
+        );
+        window.dispatchEvent(new Event("stroman:analysis-completed"));
+      }
+      formElement.reset();
     } catch (caught) {
       setItems((current) => current.filter((item) => item.id !== temporary.id));
       setError(caught instanceof Error ? caught.message : "Import failed.");
     } finally {
       setBusy(null);
+      setActivity(null);
     }
   }
 
@@ -95,7 +136,8 @@ export function SourceIntake({ projectId }: { projectId: string }) {
         Source material
       </h2>
       <p className="text-muted-foreground mt-1 text-sm">
-        Add media and transcripts to this project. Completed transcripts are ready for analysis.
+        Add media and transcripts to this project. Video imports are sampled for visible evidence;
+        transcripts remain available for source-grounded story analysis.
       </p>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <form onSubmit={(event) => upload(event, "Media")} className="flex flex-col gap-2">
@@ -104,7 +146,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
           </label>
           <input id="media-file" name="file" type="file" accept="video/*,audio/*" required />
           <Button type="submit" disabled={busy !== null}>
-            {busy === "Media" ? "Importing…" : "Import media"}
+            {busy === "Media" ? (activity ?? "Preparing media…") : "Import media"}
           </Button>
         </form>
         <form onSubmit={(event) => upload(event, "Transcript")} className="flex flex-col gap-2">
@@ -126,6 +168,11 @@ export function SourceIntake({ projectId }: { projectId: string }) {
       {error ? (
         <p role="alert" className="text-destructive mt-3 text-sm">
           {error}
+        </p>
+      ) : null}
+      {mediaInsight ? (
+        <p role="status" className="text-muted-foreground mt-3 text-sm">
+          {mediaInsight}
         </p>
       ) : null}
       {items.length ? (

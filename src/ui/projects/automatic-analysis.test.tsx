@@ -64,4 +64,52 @@ describe("AutomaticAnalysis", () => {
     expect(screen.getByText(/never automatic creative decisions/i)).toBeInTheDocument();
     expect(screen.queryByText(/Source-backed moment:/i)).not.toBeInTheDocument();
   });
+
+  it("renders timestamped video observations in playback order", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          ({
+            ok: true,
+            status: 200,
+            json: async () => ({
+              run: { id: "run-video", version: 4, status: "COMPLETED" },
+              outputs: [
+                {
+                  id: "out-late",
+                  kind: "OBSERVATION",
+                  content: "[OBSERVED @ 00:03.8] The hand reaches the mug.",
+                  confidence: 0.9,
+                  evidenceReferenceIds: ["media-evidence"],
+                },
+                {
+                  id: "out-first",
+                  kind: "OBSERVATION",
+                  content: "[OBSERVED @ 00:00.2] The desk geography is visible.",
+                  confidence: 0.9,
+                  evidenceReferenceIds: ["media-evidence"],
+                },
+                {
+                  id: "out-middle",
+                  kind: "OBSERVATION",
+                  content: "[OBSERVED @ 00:02.0] The hand overlaps the yellow note.",
+                  confidence: 0.9,
+                  evidenceReferenceIds: ["media-evidence"],
+                },
+              ],
+              recommendations: [],
+            }),
+          }) as Response,
+      ),
+    );
+
+    render(<AutomaticAnalysis projectId="proj_video" />);
+    await screen.findByText(/desk geography is visible/i);
+    expect(screen.getAllByText(/^\[OBSERVED @/).map((element) => element.textContent)).toEqual([
+      "[OBSERVED @ 00:00.2] The desk geography is visible.",
+      "[OBSERVED @ 00:02.0] The hand overlaps the yellow note.",
+      "[OBSERVED @ 00:03.8] The hand reaches the mug.",
+    ]);
+  });
 });

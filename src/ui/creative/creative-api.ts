@@ -12,6 +12,7 @@ import type {
   CreativePlanningContext,
   ProductionReality,
   ProductionStage,
+  ShotPlanningState,
 } from "@/domain/creative";
 
 export type Blueprint = DomainBlueprint;
@@ -137,6 +138,7 @@ export async function updatePlanning(
     readonly stage?: ProductionStage;
     readonly production?: Partial<ProductionReality>;
     readonly correction?: { readonly statement: string; readonly replacesClaimId?: string | null };
+    readonly shotPlanning?: ShotPlanningState;
   },
 ): Promise<Analysis> {
   const { data } = await apiPostWithEtag<Analysis>(

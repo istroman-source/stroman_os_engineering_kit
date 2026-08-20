@@ -10,9 +10,11 @@ import {
   type ProductionReality,
   type ProductionStage,
   type ScoutPhotoRef,
+  type ShotPlanningState,
   withPlanningSettings,
   withScoutPhotos,
   withSpatialCorrection,
+  withShotPlanning,
 } from "@/domain/creative";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
 import { InvalidValueError, type DomainError } from "@/domain/shared";
@@ -38,6 +40,7 @@ export interface UpdateCreativePlanningInput {
     readonly replacesClaimId?: string | null;
   };
   readonly scoutPhotos?: readonly ScoutPhotoRef[];
+  readonly shotPlanning?: ShotPlanningState;
 }
 
 export type UpdateCreativePlanningResult = Result<
@@ -75,6 +78,7 @@ export async function updateCreativePlanning(
     );
   }
   if (input.scoutPhotos?.length) planning = withScoutPhotos(planning, input.scoutPhotos);
+  if (input.shotPlanning) planning = withShotPlanning(planning, input.shotPlanning);
   if (input.correction) {
     const statement = input.correction.statement.trim();
     if (!statement) {

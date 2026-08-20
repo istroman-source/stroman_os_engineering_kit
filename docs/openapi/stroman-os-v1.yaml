@@ -1850,6 +1850,52 @@ paths:
           description: Content-Length is required before an upload body is read.
         "413":
           description: Upload request exceeds the bounded in-memory request limit.
+  /api/v1/projects/{projectId}/media-visual-analysis:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: analyzeProjectVideoFrames
+      summary: Analyze representative frames from an imported project video.
+      description: >
+        Persists timestamped visible observations, explicitly estimated
+        interpretations, unknowns, and advisory tests against the original media
+        evidence. Frame bytes are bounded and are not returned to the browser.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [mediaId, frameMetadata, frame]
+              properties:
+                mediaId: { type: string }
+                frameMetadata:
+                  type: string
+                  description: JSON array pairing each frame index with its sampling timestampMs.
+                frame:
+                  type: array
+                  minItems: 2
+                  maxItems: 6
+                  items: { type: string, format: binary }
+      responses:
+        "201":
+          description: Completed media-evidence analysis.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AutomaticAnalysisResult" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "411":
+          description: Content-Length is required before an upload body is read.
+        "413":
+          description: Upload request exceeds the bounded sampled-frame request limit.
+        "415":
+          description: Expected multipart sampled video frames.
   /api/v1/projects/{projectId}/automatic-analysis:
     parameters:
       - name: projectId

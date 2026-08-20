@@ -30,6 +30,7 @@ import type {
   SourceDocumentRepository,
 } from "@/domain/knowledge-acquisition";
 import type { MediaAssetRepository, TranscriptDocumentRepository } from "@/domain/media-transcript";
+import type { VisualMediaAnalyzer } from "@/domain/media-analysis";
 import type {
   EntityRepository,
   InsightRepository,
@@ -79,6 +80,7 @@ import {
 import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
 import { DeterministicGroundedAnalyzer } from "@/infrastructure/analysis";
 import { createCreativeReasoningProvider } from "@/infrastructure/creative";
+import { createVisualMediaAnalyzer } from "@/infrastructure/media-analysis";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
 import { isCookieSecure } from "@/server/auth/config";
 import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
@@ -124,6 +126,7 @@ export interface ApiContext {
   readonly sourceStorage: SourceStorage;
   readonly evidenceReferences: EvidenceReferenceRepository;
   readonly analyzer: GroundedEditorialAnalyzer;
+  readonly visualMediaAnalyzer: VisualMediaAnalyzer;
   readonly clock: Clock;
   readonly ids: IdGenerator;
 }
@@ -165,6 +168,7 @@ export function createApiContext(): ApiContext {
     ),
     evidenceReferences: new PrismaEvidenceReferenceRepository(prisma),
     analyzer: new DeterministicGroundedAnalyzer(),
+    visualMediaAnalyzer: createVisualMediaAnalyzer(),
     clock: systemClock,
     ids: createIdGenerator(),
   };

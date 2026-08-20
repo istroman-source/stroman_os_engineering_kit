@@ -15,6 +15,7 @@ import {
   createCreativeBrief,
   generateBlueprint,
   generateDevelopmentBlueprint,
+  instructionAtDeskShotPlanning,
 } from "@/domain/creative";
 
 const OWNER = OwnerId.unsafe("usr_OWNER001");
@@ -230,6 +231,28 @@ describe("updateCreativePlanning", () => {
       )?.use,
     ).toMatch(/rejected/i);
     expect(corrected.value.brief.title).toBe(fields().title);
+  });
+
+  it("persists a versioned spatial shot without changing the creative recommendation", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    const shotPlanning = instructionAtDeskShotPlanning();
+    const result = await updateCreativePlanning(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      shotPlanning,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+
+    expect(result.value.brief.planningContext.shotPlanning).toEqual(shotPlanning);
+    expect(result.value.blueprint.development.directionDecision.title).toBe("The first quiet bite");
+    const persisted = await d.creativeBriefs.findByProject(PROJECT);
+    expect(persisted?.planningContext.shotPlanning?.activeShot).toMatchObject({
+      title: "Instruction at the Desk",
+      camera: { focalLengthMm: 35, aspectRatio: "16:9" },
+      geometryConfidence: "ESTIMATED",
+    });
   });
 
   it("denies another owner from changing a plan", async () => {
