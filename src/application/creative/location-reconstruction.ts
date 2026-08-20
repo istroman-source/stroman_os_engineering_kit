@@ -243,7 +243,10 @@ export async function refreshLocationReconstruction(
   const result = await deps.locationReconstructionProvider.downloadGlb(job.providerJobId);
   let inferred;
   try {
-    inferred = deps.locationGeometryInspector.inferRoomScale(result.bytes);
+    inferred = deps.locationGeometryInspector.inferRoomScale(result.bytes, {
+      sourceToCanonicalBasis: result.sourceToCanonicalBasis,
+      metersPerSourceUnit: result.metersPerSourceUnit,
+    });
   } catch (error) {
     if (error instanceof AppError && error.code === "VALIDATION") {
       const failed: LocationReconstructionJob = {
@@ -304,6 +307,7 @@ export async function refreshLocationReconstruction(
       },
       bounds: inferred.bounds,
       scaleMetersPerUnit: inferred.scaleMetersPerUnit,
+      sourceToCanonical: inferred.sourceToCanonical,
       scaleConfidence: "ESTIMATED",
       createdAt: deps.clock.now().toISOString(),
     },

@@ -56,6 +56,8 @@ describe("KiriLocationReconstructionProvider", () => {
     await expect(provider.downloadGlb("provider-job-1")).resolves.toEqual({
       bytes: glb,
       fileName: "office.glb",
+      sourceToCanonicalBasis: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      metersPerSourceUnit: null,
     });
   });
 

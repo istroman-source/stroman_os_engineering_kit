@@ -1,5 +1,5 @@
 import type { OwnerId, ProjectId } from "@/domain/project";
-import type { SpatialBounds } from "./location-workspace";
+import type { SpatialBounds, SpatialTransform } from "./location-workspace";
 
 export type LocationReconstructionStatus =
   "SUBMITTING" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "EXPIRED";
@@ -59,12 +59,23 @@ export interface LocationReconstructionProvider {
   downloadGlb(providerJobId: string): Promise<{
     readonly bytes: Uint8Array;
     readonly fileName: string;
+    /** Axis-only transform; scale is resolved separately and composed by Stroman. */
+    readonly sourceToCanonicalBasis: SpatialTransform;
+    /** Null when photogrammetry did not recover trustworthy absolute scale. */
+    readonly metersPerSourceUnit: number | null;
   }>;
 }
 
 export interface LocationGeometryInspector {
-  inferRoomScale(bytes: Uint8Array): {
+  inferRoomScale(
+    bytes: Uint8Array,
+    source: {
+      readonly sourceToCanonicalBasis: SpatialTransform;
+      readonly metersPerSourceUnit: number | null;
+    },
+  ): {
     readonly scaleMetersPerUnit: number;
+    readonly sourceToCanonical: SpatialTransform;
     readonly bounds: SpatialBounds;
   };
 }

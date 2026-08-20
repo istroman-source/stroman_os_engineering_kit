@@ -1,10 +1,11 @@
-import type { LocationGeometryInspector, SpatialBounds } from "@/domain/creative";
+import type { LocationGeometryInspector, SpatialBounds, SpatialTransform } from "@/domain/creative";
 import { AppError } from "@/lib/errors";
 
 export class InvalidGlbError extends Error {}
 
 type Matrix4 = readonly number[];
 const IDENTITY: Matrix4 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+const IDENTITY_TRANSFORM: SpatialTransform = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 function multiply(left: Matrix4, right: Matrix4): number[] {
   const result = new Array<number>(16).fill(0);
@@ -151,6 +152,48 @@ function scaledBounds(bounds: SpatialBounds, scale: number): SpatialBounds {
   };
 }
 
+function transformedBounds(bounds: SpatialBounds, matrix: Matrix4): SpatialBounds {
+  const output = {
+    min: { x: Number.POSITIVE_INFINITY, y: Number.POSITIVE_INFINITY, z: Number.POSITIVE_INFINITY },
+    max: { x: Number.NEGATIVE_INFINITY, y: Number.NEGATIVE_INFINITY, z: Number.NEGATIVE_INFINITY },
+  };
+  expand(
+    output,
+    matrix,
+    [bounds.min.x, bounds.min.y, bounds.min.z],
+    [bounds.max.x, bounds.max.y, bounds.max.z],
+  );
+  return output;
+}
+
+function uniformScale(scale: number): SpatialTransform {
+  return [scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, scale, 0, 0, 0, 0, 1];
+}
+
+function spatialTransform(value: Matrix4): SpatialTransform {
+  if (value.length !== 16 || !value.every(Number.isFinite)) {
+    throw new InvalidGlbError("The source coordinate transform is invalid.");
+  }
+  return [
+    value[0]!,
+    value[1]!,
+    value[2]!,
+    value[3]!,
+    value[4]!,
+    value[5]!,
+    value[6]!,
+    value[7]!,
+    value[8]!,
+    value[9]!,
+    value[10]!,
+    value[11]!,
+    value[12]!,
+    value[13]!,
+    value[14]!,
+    value[15]!,
+  ];
+}
+
 function validateLocationBounds(bounds: SpatialBounds): SpatialBounds {
   const diagonal = Math.hypot(
     bounds.max.x - bounds.min.x,
@@ -211,17 +254,29 @@ export function readGlbBounds(bytes: Uint8Array, scale: number): SpatialBounds {
  * the room's vertical extent to a conservative 2.6 m only when the provider's
  * raw units are not already plausible. The result remains explicitly ESTIMATED.
  */
-export function inferRoomScale(bytes: Uint8Array): {
+export function inferRoomScale(
+  bytes: Uint8Array,
+  source: {
+    readonly sourceToCanonicalBasis: SpatialTransform;
+    readonly metersPerSourceUnit: number | null;
+  } = {
+    sourceToCanonicalBasis: IDENTITY_TRANSFORM,
+    metersPerSourceUnit: null,
+  },
+): {
   readonly scaleMetersPerUnit: number;
+  readonly sourceToCanonical: SpatialTransform;
   readonly bounds: SpatialBounds;
 } {
   const raw = rawBoundsFromGltfDocument(readGlbDocument(bytes));
-  const height = raw.max.y - raw.min.y;
+  const basis = spatialTransform(source.sourceToCanonicalBasis);
+  const canonicalRaw = transformedBounds(raw, basis);
+  const height = canonicalRaw.max.y - canonicalRaw.min.y;
   if (!Number.isFinite(height) || height <= 1e-8) {
     throw new InvalidGlbError("The reconstructed room has no usable vertical extent.");
   }
-  const rawWidth = raw.max.x - raw.min.x;
-  const rawDepth = raw.max.z - raw.min.z;
+  const rawWidth = canonicalRaw.max.x - canonicalRaw.min.x;
+  const rawDepth = canonicalRaw.max.z - canonicalRaw.min.z;
   const alreadyPlausible =
     rawWidth >= 1 &&
     rawWidth < 200 &&
@@ -229,17 +284,26 @@ export function inferRoomScale(bytes: Uint8Array): {
     height < 12 &&
     rawDepth >= 1 &&
     rawDepth < 200;
-  const scaleMetersPerUnit = alreadyPlausible ? 1 : 2.6 / height;
+  const suppliedScale = source.metersPerSourceUnit;
+  if (suppliedScale !== null && (!Number.isFinite(suppliedScale) || suppliedScale <= 0)) {
+    throw new InvalidGlbError("The source unit scale is invalid.");
+  }
+  const scaleMetersPerUnit = suppliedScale ?? (alreadyPlausible ? 1 : 2.6 / height);
+  const sourceToCanonical = spatialTransform(multiply(uniformScale(scaleMetersPerUnit), basis));
   return {
     scaleMetersPerUnit,
-    bounds: validateLocationBounds(scaledBounds(raw, scaleMetersPerUnit)),
+    sourceToCanonical,
+    bounds: validateLocationBounds(transformedBounds(raw, sourceToCanonical)),
   };
 }
 
 export class GlbLocationGeometryInspector implements LocationGeometryInspector {
-  inferRoomScale(bytes: Uint8Array): ReturnType<LocationGeometryInspector["inferRoomScale"]> {
+  inferRoomScale(
+    bytes: Uint8Array,
+    source: Parameters<LocationGeometryInspector["inferRoomScale"]>[1],
+  ): ReturnType<LocationGeometryInspector["inferRoomScale"]> {
     try {
-      return inferRoomScale(bytes);
+      return inferRoomScale(bytes, source);
     } catch (error) {
       if (error instanceof InvalidGlbError) {
         throw new AppError("VALIDATION", error.message, { cause: error });

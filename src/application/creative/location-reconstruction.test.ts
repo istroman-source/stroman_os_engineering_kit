@@ -50,7 +50,12 @@ class Provider implements LocationReconstructionProvider {
     return "SUCCEEDED" as const;
   }
   async downloadGlb() {
-    return { bytes: new Uint8Array([1, 2, 3, 4]), fileName: "room.glb" };
+    return {
+      bytes: new Uint8Array([1, 2, 3, 4]),
+      fileName: "room.glb",
+      sourceToCanonicalBasis: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as const,
+      metersPerSourceUnit: null,
+    };
   }
 }
 
@@ -74,6 +79,7 @@ function fixture() {
     locationGeometryInspector: {
       inferRoomScale: () => ({
         scaleMetersPerUnit: 0.026,
+        sourceToCanonical: [0.026, 0, 0, 0, 0, 0.026, 0, 0, 0, 0, 0.026, 0, 0, 0, 0, 1] as const,
         bounds: { min: { x: -4, y: 0, z: -5 }, max: { x: 4, y: 2.6, z: 5 } },
       }),
     },

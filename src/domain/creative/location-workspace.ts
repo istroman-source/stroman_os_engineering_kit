@@ -10,6 +10,26 @@ export interface SpatialBounds {
   readonly max: SpatialPoint;
 }
 
+/** Column-major source-to-canonical transform consumed directly by Three.js. */
+export type SpatialTransform = readonly [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+];
+
 export interface SpatialEnvironment {
   readonly id: string;
   readonly version: number;
@@ -31,24 +51,7 @@ export interface SpatialEnvironment {
     readonly contentHash: string;
   };
   /** Canonical Stroman coordinates are right-handed meters, +Y up, camera forward -Z. */
-  readonly sourceToCanonical: readonly [
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-    number,
-  ];
+  readonly sourceToCanonical: SpatialTransform;
   readonly bounds: SpatialBounds;
   readonly coverage: {
     readonly bounds: SpatialBounds;
@@ -352,14 +355,16 @@ export function isLocationWorkspaceState(value: unknown): value is LocationWorks
 }
 
 export function createLocationWorkspace(
-  environment: Omit<SpatialEnvironment, "sourceToCanonical" | "coverage">,
+  environment: Omit<SpatialEnvironment, "sourceToCanonical" | "coverage"> & {
+    readonly sourceToCanonical?: SpatialTransform;
+  },
   previous?: LocationWorkspaceState | null,
 ): LocationWorkspaceState {
   const xInset = Math.min(0.2, (environment.bounds.max.x - environment.bounds.min.x) * 0.05);
   const zInset = Math.min(0.2, (environment.bounds.max.z - environment.bounds.min.z) * 0.05);
   const normalized: SpatialEnvironment = {
     ...environment,
-    sourceToCanonical: [
+    sourceToCanonical: environment.sourceToCanonical ?? [
       environment.scaleMetersPerUnit,
       0,
       0,

@@ -5,6 +5,7 @@ import type {
   LocationReconstructionPhotoInput,
   LocationReconstructionProvider,
   ProviderReconstructionStatus,
+  SpatialTransform,
 } from "@/domain/creative";
 import { AppError } from "@/lib/errors";
 
@@ -12,6 +13,7 @@ type FetchLike = (input: string | URL | Request, init?: RequestInit) => Promise<
 
 const MAX_RESULT_ARCHIVE_BYTES = 125 * 1024 * 1024;
 const MAX_GLB_BYTES = 100 * 1024 * 1024;
+const GLTF_TO_CANONICAL_BASIS: SpatialTransform = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 function unavailable(message: string, cause?: unknown): AppError {
   return new AppError("UNAVAILABLE", message, cause === undefined ? {} : { cause });
@@ -122,6 +124,8 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
   async downloadGlb(providerJobId: string): Promise<{
     readonly bytes: Uint8Array;
     readonly fileName: string;
+    readonly sourceToCanonicalBasis: SpatialTransform;
+    readonly metersPerSourceUnit: number | null;
   }> {
     const linkResponse = await this.fetcher(
       `${this.endpoint}/model/getModelZip?serialize=${encodeURIComponent(providerJobId)}`,
@@ -176,7 +180,12 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
     if (bytes.byteLength === 0 || bytes.byteLength > MAX_GLB_BYTES) {
       throw unavailable("The reconstructed GLB is outside the supported 100 MB limit.");
     }
-    return { bytes, fileName: fileName.split("/").pop() ?? "reconstructed-location.glb" };
+    return {
+      bytes,
+      fileName: fileName.split("/").pop() ?? "reconstructed-location.glb",
+      sourceToCanonicalBasis: GLTF_TO_CANONICAL_BASIS,
+      metersPerSourceUnit: null,
+    };
   }
 }
 
