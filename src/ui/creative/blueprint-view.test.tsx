@@ -64,6 +64,9 @@ describe("BlueprintView", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/instruction at the desk/i)).not.toBeInTheDocument();
+    const cameraMark = screen.getByRole("button", { name: /camera position.*arrow keys/i });
+    fireEvent.keyDown(cameraMark, { key: "ArrowRight" });
+    expect(screen.getByText("Filmmaker-confirmed geometry")).toBeInTheDocument();
     fireEvent.change(screen.getByRole("slider", { name: "Focal length" }), {
       target: { value: "52" },
     });
@@ -74,6 +77,8 @@ describe("BlueprintView", () => {
     expect(onShotPlanning).toHaveBeenCalledOnce();
     const saved = onShotPlanning.mock.calls[0]![0];
     expect(saved.activeShot.camera).toMatchObject({ focalLengthMm: 52, aspectRatio: "9:16" });
+    expect(saved.activeShot.camera.position.x).toBe(saved.activeShot.movement.start.x);
+    expect(saved.activeShot.geometryConfidence).toBe("FILMMAKER_CONFIRMED");
     expect(saved.activeShot.movement.kind).toBe("PUSH");
     expect(saved.activeShot.camera.support).toBe("DOLLY");
     expect(saved.activeShot.setPieces.length).toBeGreaterThan(0);

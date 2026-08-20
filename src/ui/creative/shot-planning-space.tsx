@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type PointerEvent } from "react";
+import { useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import {
   type SpatialSetPieceState,
   type ShotPlanningState,
@@ -56,7 +56,6 @@ function IsoSetPiece({ setPiece }: { setPiece: SpatialSetPieceState }) {
       z: setPiece.position.z + halfDepth,
     }),
   ];
-  const label = isoPoint({ ...setPiece.position, y: setPiece.position.y + 0.08 });
   return (
     <g>
       <polygon
@@ -70,11 +69,6 @@ function IsoSetPiece({ setPiece }: { setPiece: SpatialSetPieceState }) {
         opacity=".56"
       />
       <polygon points={points(top)} fill={setPiece.color} stroke="#34383a" strokeWidth=".35" />
-      {setPiece.width >= 1.2 ? (
-        <text x={label.x} y={label.y} textAnchor="middle" fontSize="2.5" fill="#f8faf8">
-          {setPiece.label.slice(0, 14).toUpperCase()}
-        </text>
-      ) : null}
     </g>
   );
 }
@@ -220,86 +214,115 @@ export function ShotPlanningSpace({
   const [savedMessage, setSavedMessage] = useState("");
   const shot = state.activeShot;
   const update = (patch: Partial<SpatialShotState>) =>
-    setState((current) => ({ ...current, activeShot: { ...current.activeShot, ...patch } }));
+    setState((current) => ({
+      ...current,
+      activeShot: {
+        ...current.activeShot,
+        ...patch,
+        geometryConfidence: "FILMMAKER_CONFIRMED",
+      },
+    }));
   const updateCamera = (patch: Partial<SpatialShotState["camera"]>) =>
     update({ camera: { ...shot.camera, ...patch } });
-  const drag =
-    (kind: "camera" | "target" | "subject" | "subjectEnd" | "movementEnd") =>
-    (event: PointerEvent<SVGCircleElement>) => {
-      const svg = event.currentTarget.ownerSVGElement;
-      if (!svg) return;
-      event.currentTarget.setPointerCapture(event.pointerId);
-      const move = (clientX: number, clientY: number) => {
-        const rect = svg.getBoundingClientRect();
-        const screenX = ((clientX - rect.left) / rect.width) * 100;
-        const screenY = ((clientY - rect.top) / rect.height) * 100;
-        const height =
-          kind === "camera" || kind === "movementEnd"
-            ? shot.camera.position.y
-            : kind === "target"
-              ? shot.camera.target.y
-              : 0;
-        const ground = groundPoint(screenX, screenY, height);
-        const x = clamp(ground.x, -5, 5);
-        const z = clamp(ground.z, -4, 4);
-        setState((current) => {
-          const active = current.activeShot;
-          if (kind === "subject" || kind === "subjectEnd") {
-            const field = kind === "subject" ? "position" : "endPosition";
-            return {
-              ...current,
-              activeShot: {
-                ...active,
-                subject: {
-                  ...active.subject,
-                  [field]: replacePoint(active.subject[field], { x, z }),
-                },
-              },
-            };
-          }
-          if (kind === "movementEnd")
-            return {
-              ...current,
-              activeShot: {
-                ...active,
-                movement: {
-                  ...active.movement,
-                  end: replacePoint(active.movement.end, { x, z }),
-                },
-              },
-            };
-          const field = kind === "camera" ? "position" : "target";
-          const nextPosition = replacePoint(active.camera[field], { x, z });
-          const movement =
-            kind === "camera"
-              ? {
-                  ...active.movement,
-                  start: nextPosition,
-                  end: active.movement.kind === "LOCKED" ? nextPosition : active.movement.end,
-                }
-              : active.movement;
-          return {
-            ...current,
-            activeShot: {
-              ...active,
-              camera: { ...active.camera, [field]: nextPosition },
-              movement,
+  type SpatialMark = "camera" | "target" | "subject" | "subjectEnd" | "movementEnd";
+  const moveMark = (kind: SpatialMark, nextX: number, nextZ: number) => {
+    const x = clamp(nextX, -5, 5);
+    const z = clamp(nextZ, -4, 4);
+    setState((current) => {
+      const active = current.activeShot;
+      if (kind === "subject" || kind === "subjectEnd") {
+        const field = kind === "subject" ? "position" : "endPosition";
+        return {
+          ...current,
+          activeShot: {
+            ...active,
+            geometryConfidence: "FILMMAKER_CONFIRMED",
+            subject: {
+              ...active.subject,
+              [field]: replacePoint(active.subject[field], { x, z }),
             },
-          };
-        });
+          },
+        };
+      }
+      if (kind === "movementEnd")
+        return {
+          ...current,
+          activeShot: {
+            ...active,
+            geometryConfidence: "FILMMAKER_CONFIRMED",
+            movement: {
+              ...active.movement,
+              end: replacePoint(active.movement.end, { x, z }),
+            },
+          },
+        };
+      const field = kind === "camera" ? "position" : "target";
+      const nextPosition = replacePoint(active.camera[field], { x, z });
+      const movement =
+        kind === "camera"
+          ? {
+              ...active.movement,
+              start: nextPosition,
+              end: active.movement.kind === "LOCKED" ? nextPosition : active.movement.end,
+            }
+          : active.movement;
+      return {
+        ...current,
+        activeShot: {
+          ...active,
+          geometryConfidence: "FILMMAKER_CONFIRMED",
+          camera: { ...active.camera, [field]: nextPosition },
+          movement,
+        },
       };
-      move(event.clientX, event.clientY);
-      const onMove = (next: globalThis.PointerEvent) => move(next.clientX, next.clientY);
-      const done = () => {
-        window.removeEventListener("pointermove", onMove);
-        window.removeEventListener("pointerup", done);
-      };
-      window.addEventListener("pointermove", onMove);
-      window.addEventListener("pointerup", done);
+    });
+  };
+  const drag = (kind: SpatialMark) => (event: PointerEvent<SVGCircleElement>) => {
+    const svg = event.currentTarget.ownerSVGElement;
+    if (!svg) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const move = (clientX: number, clientY: number) => {
+      const rect = svg.getBoundingClientRect();
+      const screenX = ((clientX - rect.left) / rect.width) * 100;
+      const screenY = ((clientY - rect.top) / rect.height) * 100;
+      const height =
+        kind === "camera" || kind === "movementEnd"
+          ? shot.camera.position.y
+          : kind === "target"
+            ? shot.camera.target.y
+            : 0;
+      const ground = groundPoint(screenX, screenY, height);
+      moveMark(kind, ground.x, ground.z);
+    };
+    move(event.clientX, event.clientY);
+    const onMove = (next: globalThis.PointerEvent) => move(next.clientX, next.clientY);
+    const done = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", done);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", done);
+  };
+  const nudge =
+    (kind: SpatialMark, point: SpatialPoint) => (event: KeyboardEvent<SVGCircleElement>) => {
+      const step = event.shiftKey ? 0.5 : 0.15;
+      const delta =
+        event.key === "ArrowLeft"
+          ? { x: -step, z: 0 }
+          : event.key === "ArrowRight"
+            ? { x: step, z: 0 }
+            : event.key === "ArrowUp"
+              ? { x: 0, z: -step }
+              : event.key === "ArrowDown"
+                ? { x: 0, z: step }
+                : null;
+      if (!delta) return;
+      event.preventDefault();
+      moveMark(kind, point.x + delta.x, point.z + delta.z);
     };
   const save = async () => {
     const version = (state.savedShots.at(-1)?.version ?? 0) + 1;
-    const snapshot = { ...shot, version };
+    const snapshot = { ...shot, version, geometryConfidence: "FILMMAKER_CONFIRMED" as const };
     const next = { ...state, activeShot: snapshot, savedShots: [...state.savedShots, snapshot] };
     setState(next);
     await onSave(next);
@@ -344,8 +367,8 @@ export function ShotPlanningSpace({
           {shot.title}: {shot.camera.focalLengthMm}mm {shot.camera.support.toLowerCase()} setup.
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          Drag the camera, target, subject, or path marks in the room. The frame and shooting
-          information remain one decision.
+          Drag the camera, target, subject, or path marks in the room—or focus a mark and use the
+          arrow keys. The frame and shooting information remain one decision.
         </p>
       </div>
       <div className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">
@@ -477,7 +500,11 @@ export function ShotPlanningSpace({
               cy={cameraScreen.y}
               r="4.2"
               fill="#315d73"
+              role="button"
+              tabIndex={0}
+              aria-label="Camera position. Use arrow keys to move it across the room."
               onPointerDown={drag("camera")}
+              onKeyDown={nudge("camera", shot.camera.position)}
             />
             <text
               x={cameraScreen.x}
@@ -494,12 +521,16 @@ export function ShotPlanningSpace({
               cy={targetScreen.y}
               r="3"
               fill="#cf7654"
+              role="button"
+              tabIndex={0}
+              aria-label="Camera target. Use arrow keys to move the aim point across the room."
               onPointerDown={drag("target")}
+              onKeyDown={nudge("target", shot.camera.target)}
             />
             <text
-              x={targetScreen.x + 4}
+              x={targetScreen.x - 4}
               y={targetScreen.y - 4}
-              textAnchor="start"
+              textAnchor="end"
               fontSize="2.7"
               fill="#26343a"
               pointerEvents="none"
@@ -511,12 +542,16 @@ export function ShotPlanningSpace({
               cy={subjectScreen.y}
               r="3.6"
               fill="#546b56"
+              role="button"
+              tabIndex={0}
+              aria-label={`${shot.subject.label} start position. Use arrow keys to change blocking.`}
               onPointerDown={drag("subject")}
+              onKeyDown={nudge("subject", shot.subject.position)}
             />
             <circle cx={subjectHead.x} cy={subjectHead.y} r="2.6" fill="#b98468" stroke="#35483a" />
             <text
               x={subjectHead.x + 4}
-              y={subjectHead.y - 3}
+              y={subjectHead.y + 5}
               textAnchor="start"
               fontSize="2.7"
               fill="#243328"
@@ -530,7 +565,11 @@ export function ShotPlanningSpace({
               r="2.8"
               fill="#829b84"
               stroke="#354838"
+              role="button"
+              tabIndex={0}
+              aria-label={`${shot.subject.label} end position. Use arrow keys to change blocking.`}
               onPointerDown={drag("subjectEnd")}
+              onKeyDown={nudge("subjectEnd", shot.subject.endPosition)}
             />
             <text
               x={subjectEndScreen.x - 4}
@@ -549,7 +588,11 @@ export function ShotPlanningSpace({
                 r="2.8"
                 fill="#d8935f"
                 stroke="#704125"
+                role="button"
+                tabIndex={0}
+                aria-label="Camera movement end. Use arrow keys to change the camera path."
                 onPointerDown={drag("movementEnd")}
+                onKeyDown={nudge("movementEnd", shot.movement.end)}
               />
             ) : null}
           </svg>

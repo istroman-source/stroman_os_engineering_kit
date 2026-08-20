@@ -7,13 +7,15 @@
 - Added a provider-neutral, persistent spatial shot state containing room/set pieces, uncertainty,
   camera position and target, height, focal length, aspect ratio, support, editable camera path,
   subject blocking, lighting/look/sound intent, and versioned saved shots.
-- Plan now opens an interactive top-down room and a real view through the selected camera. Dragging
-  the camera, target, subject, subject end, or movement end and changing lens/height/ratio updates the
-  same state used by the visible frame, shooting information, and saved storyboard.
+- Plan now opens an interactive oblique 3D room and a real view through the selected camera. Dragging
+  or keyboard-nudging the camera, target, subject, subject end, or movement end and changing
+  lens/height/ratio updates the same state used by the visible frame, shooting information, and
+  saved storyboard. Direct spatial edits are explicitly persisted as filmmaker-confirmed geometry.
 - The permanent “Instruction at the Desk” fixture begins at a 35mm, desk-height, slightly off-axis
   locked medium-wide with phone, yellow reminder, drawer, keyboard, mug, green fluorescent light,
-  and dry sound. Browser acceptance also saved a physically distinct 48mm vertical dolly version;
-  the 9:16 result is not a crop of the horizontal frame.
+  and dry sound. Browser acceptance also saved physically distinct 48mm vertical dolly versions,
+  including a keyboard-directed, filmmaker-confirmed version 3 whose state survived reload; the
+  9:16 result is not a crop of the horizontal frame.
 - Added real video understanding. The browser samples bounded representative frames from an
   imported video, the server sends them to the configured hosted vision provider, and the resulting
   **OBSERVED / ESTIMATED / UNKNOWN** claims persist against the original media asset. The truthful

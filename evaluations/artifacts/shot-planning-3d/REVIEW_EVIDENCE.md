@@ -31,14 +31,15 @@ paraphrasing the supplied nouns.
 - Recommended/saved version 1: 35mm, 16:9, locked, desk height, medium-wide.
 - Filmmaker-modified/saved version 2: 48mm, 9:16, dolly/push, 1.3m camera height, 1.4m target,
   standing subject state, and independently dragged camera/subject/path geometry.
-- Reload proved both saved versions and the active vertical camera state persisted.
+- Remediation acceptance used the focusable camera, target, and subject marks with arrow keys,
+  separated the oblique projection's blocking, and saved version 3. Reload proved all three saved
+  versions, the active vertical camera state, and `FILMMAKER_CONFIRMED` geometry persisted.
 - The current oblique 3D room gives set pieces visible volume and height, and names CAM, TARGET,
   INTERN, SUBJECT END, Desk, Monitor, Desk phone, Yellow reminder, and Drawer · keyboard · mug. No
   anonymous red-dot legend is used.
-- [Rendered Plan viewport](./hosted-desk-3d-plan.png). This signed-in capture records the persisted
-  version-2 shot and authoritative camera view immediately before the room projection was hardened
-  from overhead to oblique 3D; the exact-head component acceptance test covers the replacement room
-  and its shared state path.
+- [Rendered exact-head 3D Plan viewport](./hosted-desk-3d-plan.png). This signed-in capture records
+  the remediated oblique room after keyboard direction and filmmaker confirmation; the exact-head
+  component acceptance test separately covers the keyboard update and shared camera/save state.
 
 ## Actual video fixture and hosted visual result
 
