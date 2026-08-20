@@ -13,6 +13,7 @@ import type {
   ProductionReality,
   ProductionStage,
   ShotPlanningState,
+  LocationWorkspaceState,
 } from "@/domain/creative";
 
 export type Blueprint = DomainBlueprint;
@@ -130,6 +131,50 @@ export async function uploadScoutPhotos(
   const form = new FormData();
   for (const file of files) form.append("files", file);
   return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/scout-photos`, form);
+}
+
+export async function uploadLocationEnvironment(
+  projectId: string,
+  input: {
+    readonly file: File;
+    readonly name: string;
+    readonly sourceKind: "PHONE_SCAN" | "PHOTOGRAMMETRY" | "ROOMPLAN" | "OTHER";
+    readonly unit: "METERS" | "CENTIMETERS" | "MILLIMETERS";
+    readonly metricScale: boolean;
+  },
+): Promise<Analysis> {
+  const form = new FormData();
+  form.append("file", input.file);
+  form.append("name", input.name);
+  form.append("sourceKind", input.sourceKind);
+  form.append("unit", input.unit);
+  form.append("metricScale", String(input.metricScale));
+  return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/location-environments`, form);
+}
+
+export async function saveLocationShot(
+  projectId: string,
+  input: {
+    readonly workspace: LocationWorkspaceState;
+    readonly frame: Blob;
+    readonly width: number;
+    readonly height: number;
+    readonly title: string;
+    readonly technicalSummary: string;
+    readonly shootingInstructions: string;
+    readonly includesUnknownSpace: boolean;
+  },
+): Promise<Analysis> {
+  const form = new FormData();
+  form.append("workspace", JSON.stringify(input.workspace));
+  form.append("frame", input.frame, "camera-frame.png");
+  form.append("width", String(input.width));
+  form.append("height", String(input.height));
+  form.append("title", input.title);
+  form.append("technicalSummary", input.technicalSummary);
+  form.append("shootingInstructions", input.shootingInstructions);
+  form.append("includesUnknownSpace", String(input.includesUnknownSpace));
+  return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/location-shots`, form);
 }
 
 export async function updatePlanning(

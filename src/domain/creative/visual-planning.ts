@@ -2,6 +2,7 @@ import type { CreativeBrief } from "./creative-brief";
 import type { CreativeMode } from "./development-blueprint";
 import type { MeaningfulDevelopment, StoryboardGlyphKind } from "./meaningful-development";
 import { isShotPlanningState, type ShotPlanningState } from "./shot-planning";
+import { isLocationWorkspaceState, type LocationWorkspaceState } from "./location-workspace";
 
 export type VisualDevelopmentSource = Omit<MeaningfulDevelopment, "storyboard"> & {
   /** Retained only as structured plan data; never rendered as provider/system plumbing. */
@@ -60,6 +61,7 @@ export interface CreativePlanningContext {
   readonly spatialClaims: readonly SpatialClaim[];
   readonly corrections: readonly SpatialCorrection[];
   readonly shotPlanning: ShotPlanningState | null;
+  readonly locationWorkspace?: LocationWorkspaceState | null;
 }
 
 export interface PrevisFigure {
@@ -311,6 +313,7 @@ export function emptyCreativePlanningContext(): CreativePlanningContext {
     spatialClaims: [],
     corrections: [],
     shotPlanning: null,
+    locationWorkspace: null,
   };
 }
 
@@ -2010,7 +2013,10 @@ export function isCreativePlanningContext(value: unknown): value is CreativePlan
     ) &&
     (candidate.shotPlanning === null ||
       candidate.shotPlanning === undefined ||
-      isShotPlanningState(candidate.shotPlanning))
+      isShotPlanningState(candidate.shotPlanning)) &&
+    (candidate.locationWorkspace === null ||
+      candidate.locationWorkspace === undefined ||
+      isLocationWorkspaceState(candidate.locationWorkspace))
   );
 }
 
@@ -2019,6 +2025,13 @@ export function withShotPlanning(
   shotPlanning: ShotPlanningState,
 ): CreativePlanningContext {
   return { ...context, shotPlanning };
+}
+
+export function withLocationWorkspace(
+  context: CreativePlanningContext,
+  locationWorkspace: LocationWorkspaceState,
+): CreativePlanningContext {
+  return { ...context, locationWorkspace };
 }
 
 export function isVisualPlan(value: unknown): value is VisualPlan {

@@ -11,6 +11,10 @@ import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectI
 import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
 import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
 import { GET as getScoutPhoto } from "./projects/[projectId]/scout-photos/[mediaAssetId]/route";
+import { POST as uploadLocation } from "./projects/[projectId]/location-environments/route";
+import { GET as getLocationGeometry } from "./projects/[projectId]/location-environments/[environmentId]/geometry/route";
+import { POST as saveLocationShot } from "./projects/[projectId]/location-shots/route";
+import { GET as getLocationShot } from "./projects/[projectId]/location-shots/[mediaAssetId]/route";
 import { instructionAtDeskShotPlanning } from "@/domain/creative";
 
 const ACTOR = "subject-owner-a";
@@ -46,6 +50,28 @@ const brief = {
   context:
     "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
 };
+
+function testLocationGlb(): Uint8Array {
+  const document = JSON.stringify({
+    asset: { version: "2.0" },
+    scene: 0,
+    scenes: [{ nodes: [0] }],
+    nodes: [{ mesh: 0 }],
+    meshes: [{ primitives: [{ attributes: { POSITION: 0 } }] }],
+    accessors: [{ type: "VEC3", min: [-3, 0, -4], max: [3, 2.8, 4] }],
+  });
+  const padding = (4 - (new TextEncoder().encode(document).byteLength % 4)) % 4;
+  const json = new TextEncoder().encode(document + " ".repeat(padding));
+  const bytes = new Uint8Array(20 + json.byteLength);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(0, 0x46546c67, true);
+  view.setUint32(4, 2, true);
+  view.setUint32(8, bytes.byteLength, true);
+  view.setUint32(12, json.byteLength, true);
+  view.setUint32(16, 0x4e4f534a, true);
+  bytes.set(json, 20);
+  return bytes;
+}
 
 describe("Analyze Project (real HTTP + PostgreSQL)", () => {
   it("404 before analysis; analyzes into a blueprint; then GET returns it", async () => {
@@ -258,6 +284,106 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       },
     });
     expect(JSON.stringify(uploaded.body)).not.toMatch(/window over sink|reverse camera lane/i);
+  });
+
+  it("persists, privately serves, and exactly saves a real-location camera frame", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const glb = testLocationGlb();
+    const upload = new FormData();
+    upload.append(
+      "file",
+      new File([glb.buffer as ArrayBuffer], "office.glb", { type: "model/gltf-binary" }),
+    );
+    upload.append("name", "Observed office");
+    upload.append("sourceKind", "PHONE_SCAN");
+    upload.append("unit", "METERS");
+    upload.append("metricScale", "true");
+    const imported = await call(uploadLocation, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: upload,
+      headers: { "content-length": String(glb.byteLength + 4096) },
+    });
+    expect(imported.status).toBe(200);
+    const locationWorkspace = (
+      imported.body as {
+        brief: { planningContext: { locationWorkspace: Record<string, unknown> } };
+      }
+    ).brief.planningContext.locationWorkspace as {
+      environment: { id: string; scaleConfidence: string };
+      compositions: { horizontal: { orientation: { x: number; y: number; z: number; w: number } } };
+    };
+    expect(locationWorkspace.environment.scaleConfidence).toBe("OBSERVED");
+    expect(locationWorkspace.compositions.horizontal.orientation).not.toEqual({
+      x: 0,
+      y: 0,
+      z: 0,
+      w: 1,
+    });
+
+    const geometry = await getLocationGeometry(
+      new Request("http://localhost/api", { headers: { "x-test-principal": ACTOR } }),
+      { params: Promise.resolve({ projectId, environmentId: locationWorkspace.environment.id }) },
+    );
+    expect(geometry.status).toBe(200);
+    expect(geometry.headers.get("content-type")).toBe("model/gltf-binary");
+    expect(new Uint8Array(await geometry.arrayBuffer())).toEqual(glb);
+    const geometryDenied = await getLocationGeometry(
+      new Request("http://localhost/api", { headers: { "x-test-principal": OTHER } }),
+      { params: Promise.resolve({ projectId, environmentId: locationWorkspace.environment.id }) },
+    );
+    expect(geometryDenied.status).toBe(404);
+
+    const png = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3]);
+    const shot = new FormData();
+    shot.append(
+      "frame",
+      new File([png.buffer as ArrayBuffer], "exact-frame.png", { type: "image/png" }),
+    );
+    shot.append("workspace", JSON.stringify(locationWorkspace));
+    shot.append("title", "Exact office frame");
+    shot.append("width", "960");
+    shot.append("height", "540");
+    shot.append("technicalSummary", "35 mm · 16:9 · observed office");
+    shot.append("shootingInstructions", "Camera at the saved mark, aimed at the desk.");
+    shot.append("includesUnknownSpace", "false");
+    const saved = await call(saveLocationShot, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: shot,
+      headers: { "content-length": "8192" },
+    });
+    expect(saved.status).toBe(200);
+    const savedWorkspace = (
+      saved.body as {
+        brief: {
+          planningContext: {
+            locationWorkspace: {
+              savedShots: { storyboardFrame: { mediaAssetId: string; width: number } }[];
+            };
+          };
+        };
+      }
+    ).brief.planningContext.locationWorkspace;
+    expect(savedWorkspace.savedShots[0]).toMatchObject({
+      storyboardFrame: { width: 960 },
+    });
+    const mediaAssetId = savedWorkspace.savedShots[0]!.storyboardFrame.mediaAssetId;
+    const frame = await getLocationShot(
+      new Request("http://localhost/api", { headers: { "x-test-principal": ACTOR } }),
+      { params: Promise.resolve({ projectId, mediaAssetId }) },
+    );
+    expect(frame.status).toBe(200);
+    expect(frame.headers.get("content-type")).toBe("image/png");
+    expect(new Uint8Array(await frame.arrayBuffer())).toEqual(png);
   });
 
   it("rejects scout input before development without retaining an orphaned import", async () => {

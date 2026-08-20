@@ -6,12 +6,14 @@ import {
   type ProductionReality,
   type ProductionStage,
   type ShotPlanningState,
+  type LocationWorkspaceState,
   type SpatialSetPieceState,
 } from "@/domain/creative";
 import { Button } from "@/ui/primitives/button";
 import type { Analysis } from "./creative-api";
 import { ProductionRealityForm, ScoutPlanningInput, VisualPlanView } from "./visual-plan";
 import { ShotPlanningSpace } from "./shot-planning-space";
+import { RealLocationWorkspace } from "./real-location-workspace";
 
 type Depth = "SPINE" | "BLUEPRINT" | "DEEP_ROOM";
 
@@ -374,6 +376,8 @@ export function BlueprintView({
   onUploadScoutPhotos,
   onCorrection,
   onShotPlanning,
+  onUploadLocation,
+  onSaveLocation,
 }: {
   analysis: Analysis;
   busy: boolean;
@@ -384,6 +388,23 @@ export function BlueprintView({
   onUploadScoutPhotos: (files: readonly File[]) => Promise<void>;
   onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
   onShotPlanning: (state: ShotPlanningState) => Promise<void>;
+  onUploadLocation?: (input: {
+    file: File;
+    name: string;
+    sourceKind: "PHONE_SCAN" | "PHOTOGRAMMETRY" | "ROOMPLAN" | "OTHER";
+    unit: "METERS" | "CENTIMETERS" | "MILLIMETERS";
+    metricScale: boolean;
+  }) => Promise<void>;
+  onSaveLocation?: (input: {
+    workspace: LocationWorkspaceState;
+    frame: Blob;
+    width: number;
+    height: number;
+    title: string;
+    technicalSummary: string;
+    shootingInstructions: string;
+    includesUnknownSpace: boolean;
+  }) => Promise<void>;
 }) {
   const plan = analysis.blueprint.development.visualPlan;
   const defaultDepth: Depth = plan.stage === "IDEA" ? "SPINE" : "BLUEPRINT";
@@ -489,12 +510,30 @@ export function BlueprintView({
             onUpload={onUploadScoutPhotos}
             onCorrection={onCorrection}
           />
-          <ShotPlanningSpace
-            initial={analysis.brief.planningContext.shotPlanning}
-            proposal={recommendedSpatialShot(analysis)}
+          <RealLocationWorkspace
+            key={`${analysis.brief.planningContext.locationWorkspace?.environment.id ?? "no-location"}:${analysis.brief.planningContext.locationWorkspace?.environment.version ?? 0}:${analysis.brief.planningContext.locationWorkspace?.savedShots.length ?? 0}`}
+            projectId={analysis.brief.projectId}
+            initial={analysis.brief.planningContext.locationWorkspace ?? null}
             busy={busy}
-            onSave={onShotPlanning}
+            shootingInstructions={recommendedSpatialShot(analysis).activeShot.action}
+            onUpload={onUploadLocation ?? (async () => undefined)}
+            onSave={onSaveLocation ?? (async () => undefined)}
           />
+          {!analysis.brief.planningContext.locationWorkspace ? (
+            <details className="border-border bg-card rounded-lg border p-4">
+              <summary className="cursor-pointer text-sm font-semibold">
+                Continue with an estimated shot before the scan is ready
+              </summary>
+              <div className="mt-4">
+                <ShotPlanningSpace
+                  initial={analysis.brief.planningContext.shotPlanning}
+                  proposal={recommendedSpatialShot(analysis)}
+                  busy={busy}
+                  onSave={onShotPlanning}
+                />
+              </div>
+            </details>
+          ) : null}
           <details className="border-border bg-card rounded-lg border p-4">
             <summary className="cursor-pointer text-sm font-semibold">
               Scout grounding, lighting, sound, and coverage

@@ -2079,6 +2079,137 @@ paths:
               schema: { type: string, format: binary }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/location-environments:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: uploadProjectLocationEnvironment
+      summary: Import one private textured GLB as an immutable real-location environment version.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, name, sourceKind, unit, metricScale]
+              properties:
+                file: { type: string, format: binary }
+                name: { type: string, minLength: 1, maxLength: 160 }
+                sourceKind:
+                  type: string
+                  enum: [PHONE_SCAN, PHOTOGRAMMETRY, ROOMPLAN, OTHER]
+                unit:
+                  type: string
+                  enum: [METERS, CENTIMETERS, MILLIMETERS]
+                metricScale: { type: boolean }
+      responses:
+        "200":
+          description: Analysis containing the new canonical location workspace.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Analysis" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "411":
+          description: Content-Length is required before an upload body is read.
+        "413":
+          description: Upload request or project spatial storage exceeds its bound.
+        "415":
+          description: Request is not multipart form data.
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/location-environments/{environmentId}/geometry:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: environmentId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectLocationGeometry
+      summary: Read the owner-scoped GLB for one referenced location environment.
+      responses:
+        "200":
+          description: Private, non-cacheable binary glTF bytes.
+          content:
+            model/gltf-binary:
+              schema: { type: string, format: binary }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/location-shots:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: saveProjectLocationShot
+      summary: Persist exact camera state and its canonical baked storyboard frame.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [workspace, frame, width, height, title]
+              properties:
+                workspace: { type: string, description: JSON-encoded canonical location workspace }
+                frame: { type: string, format: binary }
+                width: { type: integer, minimum: 360, maximum: 4096 }
+                height: { type: integer, minimum: 360, maximum: 4096 }
+                title: { type: string, minLength: 1, maxLength: 160 }
+                technicalSummary: { type: string, maxLength: 1000 }
+                shootingInstructions: { type: string, maxLength: 2000 }
+                includesUnknownSpace: { type: boolean }
+      responses:
+        "200":
+          description: Analysis containing the saved camera state and storyboard asset reference.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Analysis" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "411":
+          description: Content-Length is required before an upload body is read.
+        "413":
+          description: Saved-frame upload exceeds the bounded request limit.
+        "415":
+          description: Request is not multipart form data.
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/location-shots/{mediaAssetId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: mediaAssetId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectLocationShotFrame
+      summary: Read one owner-scoped canonical saved camera frame.
+      responses:
+        "200":
+          description: Private, non-cacheable PNG storyboard pixels.
+          content:
+            image/png:
+              schema: { type: string, format: binary }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/prompt-handoff:
     parameters:
       - name: projectId

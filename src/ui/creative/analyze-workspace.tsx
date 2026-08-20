@@ -7,9 +7,14 @@ import { errorStatus, friendlyError } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
 import { BlueprintView } from "./blueprint-view";
 import { type Analysis, type AnalyzeFields, analyzeProject, getAnalysis } from "./creative-api";
-import { updatePlanning, uploadScoutPhotos } from "./creative-api";
+import {
+  saveLocationShot,
+  updatePlanning,
+  uploadLocationEnvironment,
+  uploadScoutPhotos,
+} from "./creative-api";
 import type { ProductionReality, ProductionStage } from "@/domain/creative";
-import type { ShotPlanningState } from "@/domain/creative";
+import type { LocationWorkspaceState, ShotPlanningState } from "@/domain/creative";
 
 type Mode = "loading" | "form" | "blueprint";
 
@@ -76,7 +81,12 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
         router.replace("/login");
         return;
       }
-      setError(friendlyError(caught));
+      const validationMessage = caught as { code?: string; message?: string } | null;
+      setError(
+        validationMessage?.code === "VALIDATION_FAILED" && validationMessage.message
+          ? validationMessage.message
+          : friendlyError(caught),
+      );
     } finally {
       setBusy(false);
     }
@@ -118,6 +128,19 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
           onShotPlanning={(shotPlanning: ShotPlanningState) =>
             runPlanning(() => updatePlanning(projectId, { shotPlanning }))
           }
+          onUploadLocation={(input) =>
+            runPlanning(() => uploadLocationEnvironment(projectId, input))
+          }
+          onSaveLocation={(input: {
+            workspace: LocationWorkspaceState;
+            frame: Blob;
+            width: number;
+            height: number;
+            title: string;
+            technicalSummary: string;
+            shootingInstructions: string;
+            includesUnknownSpace: boolean;
+          }) => runPlanning(() => saveLocationShot(projectId, input))}
         />
       </div>
     );
