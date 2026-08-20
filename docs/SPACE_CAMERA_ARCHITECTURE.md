@@ -5,19 +5,20 @@ Date: 2026-08-20
 
 ## Decision in one sentence
 
-Stroman will own a provider-neutral, metric filmmaking model and render a trusted textured-geometry layer in Three.js; the first honest capture path will import a project-scoped textured GLB produced by a phone scan, while reconstruction providers remain adapters rather than product state. Gaussian splats are deliberately outside the first proof until a co-registered mesh/splat fixture and alignment gate exist.
+Stroman owns a provider-neutral filmmaking model and renders a trusted textured-geometry layer in Three.js; the default capture path now accepts ordinary overlapping room photos inside Stroman, reconstructs them through a replaceable server adapter, estimates scale without asking for dimensions, and preserves both source evidence and the resulting GLB as immutable project assets. Gaussian splats remain outside this proof until a co-registered mesh/splat fixture and alignment gate exist.
 
 ## Product boundary
 
-This phase implements one path:
+This phase implements two compatible ingest paths, with photos as the default:
 
-1. Capture a real location with a phone scanning workflow.
-2. Import the resulting location assets into the project.
-3. Enter and navigate the recognizable location in a browser.
-4. Manipulate one authoritative filmmaking camera.
-5. Save the exact camera state and rendered frame as the shot.
+1. Photograph a real location from 20–40 overlapping angles directly from the Stroman workflow.
+2. Preserve every original project-scoped photo, submit the set asynchronously, and import the bounded GLB result when it is ready.
+3. Infer a conservative room scale automatically and label it `ESTIMATED`; the normal path never asks for dimensions.
+4. Enter and navigate the recognizable location in a browser, with source-photo presence visible beside the model.
+5. Manipulate one authoritative filmmaking camera and save the exact camera state and rendered frame as the shot.
+6. Keep manual textured-GLB import as a recovery path for users who already have a scan.
 
-It does not build a native mobile scanner, a cloud reconstruction farm, a CAD editor, production deployment, or a new creative-reasoning system.
+It does not build a native mobile scanner, an in-house reconstruction farm, a CAD editor, camera-pose recovery from providers that do not expose it, or a new creative-reasoning system.
 
 ## Technology audit
 
@@ -30,6 +31,7 @@ It does not build a native mobile scanner, a cloud reconstruction farm, a CAD ed
 | [SparkJS](https://github.com/sparkjsdev/spark) | Three.js-integrated WebGL2 splat renderer supporting SPZ, PLY, SOG and multiple viewpoints | Appearance renderer only; does not turn splats into trustworthy collision/measurement geometry | Lightweight web integration and mobile-oriented rendering | MIT; format/provider neutral | Optional photographic renderer behind an adapter after a real SPZ fixture passes |
 | [PlayCanvas splats](https://developer.playcanvas.com/user-manual/gaussian-splatting/formats/) | Mature PLY/SPZ/SOG web delivery, compression and large-scene streaming | Documentation explicitly requires a mesh approximation for depth-dependent behavior in relevant cases | Strong renderer, but adopting another engine would duplicate the existing Three.js-oriented plan | Open engine; runtime and architecture coupling are larger than needed | Format/performance reference, not the first Stroman renderer |
 | [Meshroom](https://alicevision.org/view/meshroom.html) | Open photogrammetry GUI/pipeline | Mesh and camera recovery | MVS expects CUDA-class hardware and macOS support is not the clean first path | Local/private but hardware constrained | Rejected for the initial workflow |
+| [KIRI Engine API](https://docs.kiriengine.app/photo-scan/image-upload/) | Server-side photo scan accepts 20–300 images and can return GLB directly | Textured mesh; absolute scale still requires inference or a future anchor | Fits the existing asynchronous web workflow without another filmmaker-facing app | Paid third-party processing and three-day provider retention; the API key and job id remain server-only | First photo-reconstruction adapter, replaceable behind the domain port |
 
 ### Important technology conclusions
 
@@ -38,8 +40,19 @@ It does not build a native mobile scanner, a cloud reconstruction farm, a CAD ed
 - SPZ is an open, compact interchange format. It is useful for delivery, but it is not Stroman's domain model.
 - Unscaled SfM output is not metric truth. It remains `ESTIMATED` until a scale anchor or a metric capture source exists.
 - Raw inputs and generated outputs remain project-scoped and are never silently overwritten.
+- Source photos sent through a configured cloud reconstruction adapter are disclosed as externally processed; Stroman retains its own immutable project copies and imports the result before the provider's retention window ends.
 
-## First location-bundle contract
+## Photo-to-room contract
+
+The default UI asks only for a location name and 20–40 overlapping JPEG/PNG photographs. It does not ask for dimensions, units, coordinates, or reconstruction settings. Capture guidance is embedded in Stroman: perimeter coverage, roughly 70% visual overlap, floor/ceiling/openings/corners, stable light, and an empty frame.
+
+The server stores each source through the existing owner/project-scoped immutable source boundary, then creates a dedicated reconstruction job before contacting the configured adapter. The job owns provider key/id, status, failure code, photo receipts, timestamps and optimistic-concurrency version. Provider identifiers never enter `CreativePlanningContext` or the browser response. The first adapter uses KIRI's photo-scan API with professional texture smoothing disabled and requests GLB directly. Its result archive must arrive over HTTPS, remain below the compressed bound, contain exactly one bounded GLB, and pass the room-geometry parser before activation.
+
+Absolute scale is never invented as observed truth. If raw GLB bounds are already room-plausible, Stroman uses the raw unit scale; otherwise it normalizes the vertical extent to a conservative 2.6 m hypothesis. Both outcomes remain `ESTIMATED`. A later metric provider, depth evidence, camera metadata, or one optional known-size anchor may upgrade confidence without changing the normal flow. Manual dimension entry is deliberately absent.
+
+On success, Stroman imports the GLB through the same immutable source boundary, creates a `PHOTOGRAMMETRY` environment carrying only the Stroman reconstruction id and source-photo references, and updates planning with the existing visual-quality gate. The UI then enters the actual room automatically. Six source photographs remain visible as a photographic-presence strip; full pose-registered portals are deferred until an adapter supplies trustworthy camera poses.
+
+## Manual location-bundle recovery contract
 
 The user imports one required geometry asset and optional supporting assets:
 
@@ -48,7 +61,7 @@ The user imports one required geometry asset and optional supporting assets:
 - required metadata collected in Stroman: location name, scale provenance, coordinate convention, and capture source;
 - generated Stroman manifest: asset hashes, bounds, environment version, evidence classifications, known coverage volume, and explicit unknown regions.
 
-The first UI can accept the files individually and generate the manifest server-side. A portable archive format can follow without changing the domain. First-milestone uploads are capped at one 100 MB GLB and six 8 MB scout images per environment, with a 500 MB project spatial-asset ceiling. Inputs over the ceiling fail before parsing with a clear optimization/export action.
+The recovery UI accepts a textured GLB and generates the manifest server-side. A portable archive format can follow without changing the domain. First-milestone uploads are capped at one 100 MB GLB; photo reconstruction accepts 20–40 JPEG/PNG inputs up to 8 MB each and 180 MB total; the existing 500 MB project spatial-asset ceiling remains authoritative for imported environments. Inputs over a ceiling fail before expensive parsing with a clear recovery action.
 
 ## Engine-independent domain
 
@@ -60,7 +73,7 @@ The renderer consumes, but does not define, these concepts:
 - the existing subject, blocking and camera-movement state where the shot already needs it;
 - `SavedShot`: immutable environment version plus exact camera/blocking state, derived technical data, renderer identity/version, baked storyboard image asset reference and shooting instructions.
 
-Renderer objects, Three.js classes, provider job IDs and reconstruction SDK types never enter persisted filmmaking state.
+Renderer objects, Three.js classes, provider job IDs and reconstruction SDK types never enter persisted filmmaking state. Provider orchestration persists separately because asynchronous lifecycle, expiry, retry and exact status queries are now real requirements; the creative aggregate retains only a Stroman-owned reconstruction provenance id.
 
 ## Rendering architecture
 
@@ -100,11 +113,12 @@ Persisted space is right-handed, measured in meters, with `+Y` up, `+X` right an
 
 ## Storage and security
 
-- Reuse the authenticated, owner/project-scoped source storage boundary.
+- Reuse the authenticated, owner/project-scoped source storage boundary for every original photo and imported GLB.
 - Add strict MIME/extension/magic-byte checks, bounded counts and bounded byte sizes for spatial assets.
 - Store hashes and immutable environment versions; never replace original scout or capture files. The first milestone retains at most three environment versions within the project ceiling. Older originals are not automatically deleted. Because archive/delete lifecycle is deliberately outside this milestone, a fourth version requires a new project rather than an unavailable or destructive action.
 - Serve assets only after owner/project authorization with `private, no-store` and `nosniff` headers.
-- Persist asset references in planning context for the first milestone; avoid a database migration until lifecycle/query requirements prove one necessary. Move environments/shots to dedicated tables before any of these occur: collaboration or concurrent edits, more than 10 environments, more than 100 saved shots, planning JSON above 750 KB, server-side shot queries, or independent retention policies.
+- Keep provider credentials in server environment only. Download links must be HTTPS, provider responses are never returned to the browser, archives are bounded before and during extraction, and UI/API errors never expose credentials or provider payloads.
+- Persist immutable environment/photo references in planning context. Reconstruction jobs now use a dedicated table because asynchronous lifecycle, provider expiry and compare-and-swap status transitions meet the previously defined migration trigger. Move environments/shots to dedicated tables before any of these occur: collaboration or concurrent edits, more than 10 environments, more than 100 saved shots, planning JSON above 750 KB, server-side shot queries, or independent retention policies.
 
 ## Performance gates
 
@@ -116,7 +130,7 @@ Persisted space is right-handed, measured in meters, with `+Y` up, `+X` right an
 
 ## Failure boundaries
 
-Likely first failures are poor scan coverage, missing scale, coordinate-system mismatch, malformed/overlarge mobile assets and slow texture upload. Each is surfaced as capture/asset evidence, not hidden with fabricated geometry. Provider outage cannot invalidate an already imported environment or saved shot.
+Likely first failures are poor photo overlap, missing surfaces, reflective/featureless rooms, provider outage or expiry, missing scale, coordinate-system mismatch, malformed/overlarge assets and slow texture upload. Each is surfaced as capture/asset evidence, not hidden with fabricated geometry. The user can retry a new set without deleting originals. Provider outage cannot invalidate an already imported environment or saved shot, and manual GLB import remains available.
 
 ## Alternatives deliberately rejected
 
@@ -126,7 +140,7 @@ Likely first failures are poor scan coverage, missing scale, coordinate-system m
 - Combining independently reconstructed mesh and splat assets without a measured alignment gate.
 - Persisting Three.js objects or provider-specific schemas.
 - Adding Unity, Unreal, Blender-like editor modes or manual room construction.
-- Committing to a paid reconstruction API before real product evidence and an owner licensing decision.
+- Making one paid reconstruction provider part of the domain or persisted creative contract. The first KIRI adapter is a replaceable operational choice and still requires an owner-supplied developer credential plus live cost/licensing acceptance before production activation.
 
 ## Graduation evidence required
 

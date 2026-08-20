@@ -15,6 +15,14 @@ export interface SpatialEnvironment {
   readonly version: number;
   readonly name: string;
   readonly sourceKind: "PHONE_SCAN" | "PHOTOGRAMMETRY" | "ROOMPLAN" | "OTHER";
+  /** Stroman-owned reconstruction provenance; never a provider job id. */
+  readonly reconstructionId?: string | null;
+  readonly sourcePhotos?: readonly {
+    readonly mediaAssetId: string;
+    readonly fileName: string;
+    readonly contentType: "image/jpeg" | "image/png";
+    readonly contentHash: string;
+  }[];
   readonly geometryAsset: {
     readonly mediaAssetId: string;
     readonly fileName: string;
@@ -230,6 +238,20 @@ const validEnvironment = (value: unknown): value is SpatialEnvironment => {
     ["PHONE_SCAN", "PHOTOGRAMMETRY", "ROOMPLAN", "OTHER"].includes(
       String(environment.sourceKind),
     ) &&
+    (environment.reconstructionId === null ||
+      environment.reconstructionId === undefined ||
+      typeof environment.reconstructionId === "string") &&
+    (environment.sourcePhotos === undefined ||
+      (Array.isArray(environment.sourcePhotos) &&
+        environment.sourcePhotos.length <= 300 &&
+        environment.sourcePhotos.every(
+          (photo) =>
+            Boolean(photo) &&
+            typeof photo.mediaAssetId === "string" &&
+            typeof photo.fileName === "string" &&
+            (photo.contentType === "image/jpeg" || photo.contentType === "image/png") &&
+            typeof photo.contentHash === "string",
+        ))) &&
     Boolean(
       geometry &&
       typeof geometry.mediaAssetId === "string" &&

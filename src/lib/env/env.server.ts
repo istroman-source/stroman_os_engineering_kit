@@ -48,8 +48,18 @@ export const serverEnvSchema = clientEnvSchema
       .default("auto"),
     STROMAN_CREATIVE_MODEL: z.string().min(1).default("gpt-5.4"),
     OPENAI_API_KEY: z.string().min(1).optional(),
+    /** Private asynchronous photo-to-space reconstruction adapter. */
+    STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: z.enum(["auto", "kiri", "disabled"]).default("auto"),
+    KIRI_API_KEY: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
+    if (env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "kiri" && !env.KIRI_API_KEY) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["KIRI_API_KEY"],
+        message: "KIRI_API_KEY is required when KIRI reconstruction is selected.",
+      });
+    }
     // Fail closed at startup if production is missing required auth configuration,
     // rather than silently accepting requests with no way to verify identity.
     if (env.NODE_ENV !== "production") return;

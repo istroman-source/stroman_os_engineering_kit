@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   instructionAtDeskShotPlanning,
+  type LocationReconstructionView,
   type ProductionReality,
   type ProductionStage,
   type ShotPlanningState,
@@ -377,6 +378,9 @@ export function BlueprintView({
   onCorrection,
   onShotPlanning,
   onUploadLocation,
+  onGetLocationReconstruction,
+  onStartLocationReconstruction,
+  onRefreshLocationReconstruction,
   onSaveLocation,
 }: {
   analysis: Analysis;
@@ -395,6 +399,12 @@ export function BlueprintView({
     unit: "METERS" | "CENTIMETERS" | "MILLIMETERS";
     metricScale: boolean;
   }) => Promise<void>;
+  onGetLocationReconstruction?: () => Promise<LocationReconstructionView | null>;
+  onStartLocationReconstruction?: (input: {
+    readonly name: string;
+    readonly photos: readonly File[];
+  }) => Promise<LocationReconstructionView>;
+  onRefreshLocationReconstruction?: (id: string) => Promise<LocationReconstructionView>;
   onSaveLocation?: (input: {
     workspace: LocationWorkspaceState;
     frame: Blob;
@@ -517,6 +527,19 @@ export function BlueprintView({
             busy={busy}
             shootingInstructions={recommendedSpatialShot(analysis).activeShot.action}
             onUpload={onUploadLocation ?? (async () => undefined)}
+            onGetReconstruction={onGetLocationReconstruction ?? (async () => null)}
+            onStartReconstruction={
+              onStartLocationReconstruction ??
+              (async () => {
+                throw new Error("Photo reconstruction is unavailable.");
+              })
+            }
+            onRefreshReconstruction={
+              onRefreshLocationReconstruction ??
+              (async () => {
+                throw new Error("Photo reconstruction is unavailable.");
+              })
+            }
             onSave={onSaveLocation ?? (async () => undefined)}
           />
           {!analysis.brief.planningContext.locationWorkspace ? (

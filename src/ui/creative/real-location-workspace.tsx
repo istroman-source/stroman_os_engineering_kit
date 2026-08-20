@@ -19,11 +19,13 @@ import {
 } from "@/domain/creative";
 import type {
   LocationCameraState,
+  LocationReconstructionView,
   LocationWorkspaceState,
   SpatialBounds,
   SpatialPoint,
 } from "@/domain/creative";
 import { prepareInteriorMaterials } from "@/infrastructure/spatial/prepare-interior-materials";
+import { friendlyError } from "@/ui/auth/api-client";
 import { Button } from "@/ui/primitives/button";
 
 const aspectSize = (aspect: "16:9" | "9:16") =>
@@ -71,6 +73,174 @@ function replaceCamera(
   return workspace.activeAspect === "16:9"
     ? { ...workspace, compositions: { ...workspace.compositions, horizontal: camera } }
     : { ...workspace, compositions: { ...workspace.compositions, vertical: camera } };
+}
+
+export function LocationPhotoInput({
+  busy,
+  onGet,
+  onStart,
+  onRefresh,
+}: {
+  busy: boolean;
+  onGet: () => Promise<LocationReconstructionView | null>;
+  onStart: (input: {
+    readonly name: string;
+    readonly photos: readonly File[];
+  }) => Promise<LocationReconstructionView>;
+  onRefresh: (id: string) => Promise<LocationReconstructionView>;
+}) {
+  const [name, setName] = useState("");
+  const [photos, setPhotos] = useState<readonly File[]>([]);
+  const [job, setJob] = useState<LocationReconstructionView | null>(null);
+  const [working, setWorking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void onGet()
+      .then((loaded) => {
+        if (active) setJob(loaded);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [onGet]);
+
+  useEffect(() => {
+    if (!job || (job.status !== "PROCESSING" && job.status !== "SUBMITTING")) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const next = await onRefresh(job.id);
+        if (active) setJob(next);
+      } catch (caught) {
+        if (active) setError(friendlyError(caught));
+      }
+    };
+    const timer = window.setInterval(() => void refresh(), 8_000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [job, onRefresh]);
+
+  const submit = async () => {
+    if (!name.trim() || photos.length < 20 || photos.length > 40) return;
+    setWorking(true);
+    setError(null);
+    try {
+      setJob(await onStart({ name: name.trim(), photos }));
+      setPhotos([]);
+    } catch (caught) {
+      setError(friendlyError(caught));
+    } finally {
+      setWorking(false);
+    }
+  };
+
+  const active = job?.status === "SUBMITTING" || job?.status === "PROCESSING";
+  return (
+    <section className="bg-card rounded-lg border p-5" aria-labelledby="build-space-heading">
+      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">Space</p>
+      <h2 id="build-space-heading" className="mt-1 text-lg font-semibold">
+        Build the actual room from photos
+      </h2>
+      <p className="text-muted-foreground mt-1 max-w-3xl text-sm">
+        Photograph the room from overlapping angles. Stroman connects them into a textured space and
+        estimates scale automatically—no dimensions or separate scanning software.
+      </p>
+
+      {active ? (
+        <div className="mt-4 rounded-md border border-amber-600/30 bg-amber-500/5 p-4">
+          <p className="text-sm font-semibold">Building {job.name}</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {job.photoCount} source photos are preserved. Reconstruction continues in the
+            background; this view checks for the finished room automatically.
+          </p>
+          <Button
+            className="mt-3"
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={working}
+            onClick={() =>
+              void onRefresh(job.id)
+                .then(setJob)
+                .catch((caught) => setError(friendlyError(caught)))
+            }
+          >
+            Check now
+          </Button>
+        </div>
+      ) : (
+        <>
+          <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+            <label className="text-sm">
+              <span className="mb-1 block font-medium">Location name</span>
+              <input
+                className="border-input bg-background w-full rounded-md border px-3 py-2"
+                value={name}
+                maxLength={160}
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Office / kitchen"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block font-medium">20–40 overlapping photos</span>
+              <input
+                type="file"
+                multiple
+                accept="image/jpeg,image/png"
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setPhotos(Array.from(event.target.files ?? []).slice(0, 40))
+                }
+              />
+              <span className="text-muted-foreground mt-1 block text-xs">
+                {photos.length}/40 selected · JPEG or PNG · 8 MB each
+              </span>
+            </label>
+          </div>
+          <div className="text-muted-foreground mt-4 grid gap-2 text-xs sm:grid-cols-3">
+            <span className="rounded-md border p-3">
+              Walk the perimeter with roughly 70% overlap.
+            </span>
+            <span className="rounded-md border p-3">
+              Include floor, ceiling, doors, and every corner.
+            </span>
+            <span className="rounded-md border p-3">
+              Keep lighting steady and people out of frame.
+            </span>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              disabled={busy || working || !name.trim() || photos.length < 20}
+              onClick={() => void submit()}
+            >
+              {working ? "Sending photos…" : "Build this space"}
+            </Button>
+            <span className="text-muted-foreground text-xs">
+              Photos are preserved privately in this project and sent to Stroman&apos;s
+              reconstruction service. Exact measurements activate only when capture evidence
+              supports them; otherwise scale stays clearly estimated.
+            </span>
+          </div>
+        </>
+      )}
+      {job && !active && job.status !== "SUCCEEDED" ? (
+        <p role="status" className="text-destructive mt-3 text-sm">
+          This reconstruction did not produce a trustworthy room. Retake the missing angles and try
+          again; the original photos remain preserved.
+        </p>
+      ) : null}
+      {error ? (
+        <p role="alert" className="text-destructive mt-3 text-sm">
+          {error}
+        </p>
+      ) : null}
+    </section>
+  );
 }
 
 export function LocationScanInput({
@@ -194,6 +364,9 @@ export function RealLocationWorkspace({
   busy,
   shootingInstructions,
   onUpload,
+  onGetReconstruction,
+  onStartReconstruction,
+  onRefreshReconstruction,
   onSave,
 }: {
   projectId: string;
@@ -201,6 +374,9 @@ export function RealLocationWorkspace({
   busy: boolean;
   shootingInstructions: string;
   onUpload: Parameters<typeof LocationScanInput>[0]["onUpload"];
+  onGetReconstruction: () => Promise<LocationReconstructionView | null>;
+  onStartReconstruction: Parameters<typeof LocationPhotoInput>[0]["onStart"];
+  onRefreshReconstruction: Parameters<typeof LocationPhotoInput>[0]["onRefresh"];
   onSave: (input: {
     workspace: LocationWorkspaceState;
     frame: Blob;
@@ -342,7 +518,25 @@ export function RealLocationWorkspace({
     if (boundaryRef.current) boundaryRef.current.visible = edge < 0.5 || targetUnknown;
   }, [activeCamera, targetUnknown, workspace]);
 
-  if (!workspace) return <LocationScanInput busy={busy} onUpload={onUpload} />;
+  if (!workspace)
+    return (
+      <div className="space-y-3">
+        <LocationPhotoInput
+          busy={busy}
+          onGet={onGetReconstruction}
+          onStart={onStartReconstruction}
+          onRefresh={onRefreshReconstruction}
+        />
+        <details className="border-border bg-card rounded-lg border p-4">
+          <summary className="cursor-pointer text-sm font-semibold">
+            Already have a textured 3D scan?
+          </summary>
+          <div className="mt-3">
+            <LocationScanInput compact busy={busy} onUpload={onUpload} />
+          </div>
+        </details>
+      </div>
+    );
 
   const updateCamera = (next: LocationCameraState) => {
     setWorkspace((current) =>
@@ -650,6 +844,37 @@ export function RealLocationWorkspace({
           ) : null}
         </aside>
       </div>
+
+      {workspace.environment.sourcePhotos?.length ? (
+        <div className="mt-5 border-t pt-4">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h3 className="font-semibold">Photo presence · actual location</h3>
+              <p className="text-muted-foreground text-xs">
+                Source evidence preserves the room&apos;s real light, texture, color, and
+                atmosphere.
+              </p>
+            </div>
+            <span className="text-muted-foreground text-xs">
+              {workspace.environment.sourcePhotos.length} photos
+            </span>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {workspace.environment.sourcePhotos.slice(0, 6).map((photo, index) => (
+              <figure key={photo.mediaAssetId} className="overflow-hidden rounded-md border">
+                <Image
+                  unoptimized
+                  width={320}
+                  height={240}
+                  src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-environments/${encodeURIComponent(workspace.environment.id)}/photos/${encodeURIComponent(photo.mediaAssetId)}`}
+                  alt={`Actual location source angle ${index + 1}`}
+                  className="aspect-[4/3] w-full object-cover"
+                />
+              </figure>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {workspace.savedShots.length ? (
         <div className="mt-5 border-t pt-4">

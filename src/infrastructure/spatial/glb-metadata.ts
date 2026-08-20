@@ -1,4 +1,5 @@
-import type { SpatialBounds } from "@/domain/creative";
+import type { LocationGeometryInspector, SpatialBounds } from "@/domain/creative";
+import { AppError } from "@/lib/errors";
 
 export class InvalidGlbError extends Error {}
 
@@ -81,10 +82,7 @@ function expand(
   }
 }
 
-export function boundsFromGltfDocument(
-  document: Record<string, unknown>,
-  scale: number,
-): SpatialBounds {
+function rawBoundsFromGltfDocument(document: Record<string, unknown>): SpatialBounds {
   const nodes = Array.isArray(document.nodes) ? (document.nodes as Record<string, unknown>[]) : [];
   const meshes = Array.isArray(document.meshes)
     ? (document.meshes as Record<string, unknown>[])
@@ -143,10 +141,17 @@ export function boundsFromGltfDocument(
   ) {
     throw new InvalidGlbError("GLB has no readable position bounds.");
   }
-  const bounds = {
-    min: { x: output.min.x * scale, y: output.min.y * scale, z: output.min.z * scale },
-    max: { x: output.max.x * scale, y: output.max.y * scale, z: output.max.z * scale },
+  return output;
+}
+
+function scaledBounds(bounds: SpatialBounds, scale: number): SpatialBounds {
+  return {
+    min: { x: bounds.min.x * scale, y: bounds.min.y * scale, z: bounds.min.z * scale },
+    max: { x: bounds.max.x * scale, y: bounds.max.y * scale, z: bounds.max.z * scale },
   };
+}
+
+function validateLocationBounds(bounds: SpatialBounds): SpatialBounds {
   const diagonal = Math.hypot(
     bounds.max.x - bounds.min.x,
     bounds.max.y - bounds.min.y,
@@ -166,7 +171,14 @@ export function boundsFromGltfDocument(
   return bounds;
 }
 
-export function readGlbBounds(bytes: Uint8Array, scale: number): SpatialBounds {
+export function boundsFromGltfDocument(
+  document: Record<string, unknown>,
+  scale: number,
+): SpatialBounds {
+  return validateLocationBounds(scaledBounds(rawBoundsFromGltfDocument(document), scale));
+}
+
+function readGlbDocument(bytes: Uint8Array): Record<string, unknown> {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   if (
     bytes.byteLength < 20 ||
@@ -187,5 +199,52 @@ export function readGlbBounds(bytes: Uint8Array, scale: number): SpatialBounds {
   } catch {
     throw new InvalidGlbError("The GLB metadata is not valid JSON.");
   }
-  return boundsFromGltfDocument(document, scale);
+  return document;
+}
+
+export function readGlbBounds(bytes: Uint8Array, scale: number): SpatialBounds {
+  return boundsFromGltfDocument(readGlbDocument(bytes), scale);
+}
+
+/**
+ * Photogrammetry recovers shape but may not recover absolute scale. Normalize
+ * the room's vertical extent to a conservative 2.6 m only when the provider's
+ * raw units are not already plausible. The result remains explicitly ESTIMATED.
+ */
+export function inferRoomScale(bytes: Uint8Array): {
+  readonly scaleMetersPerUnit: number;
+  readonly bounds: SpatialBounds;
+} {
+  const raw = rawBoundsFromGltfDocument(readGlbDocument(bytes));
+  const height = raw.max.y - raw.min.y;
+  if (!Number.isFinite(height) || height <= 1e-8) {
+    throw new InvalidGlbError("The reconstructed room has no usable vertical extent.");
+  }
+  const rawWidth = raw.max.x - raw.min.x;
+  const rawDepth = raw.max.z - raw.min.z;
+  const alreadyPlausible =
+    rawWidth >= 1 &&
+    rawWidth < 200 &&
+    height >= 1.8 &&
+    height < 12 &&
+    rawDepth >= 1 &&
+    rawDepth < 200;
+  const scaleMetersPerUnit = alreadyPlausible ? 1 : 2.6 / height;
+  return {
+    scaleMetersPerUnit,
+    bounds: validateLocationBounds(scaledBounds(raw, scaleMetersPerUnit)),
+  };
+}
+
+export class GlbLocationGeometryInspector implements LocationGeometryInspector {
+  inferRoomScale(bytes: Uint8Array): ReturnType<LocationGeometryInspector["inferRoomScale"]> {
+    try {
+      return inferRoomScale(bytes);
+    } catch (error) {
+      if (error instanceof InvalidGlbError) {
+        throw new AppError("VALIDATION", error.message, { cause: error });
+      }
+      throw error;
+    }
+  }
 }

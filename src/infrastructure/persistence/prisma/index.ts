@@ -38,3 +38,4 @@ export { PrismaSourceImportRepository } from "./repositories/prisma-source-impor
 export { PrismaEvidenceReferenceRepository } from "./repositories/prisma-evidence-repository";
 export { PrismaAnalysisRepository } from "./repositories/prisma-analysis-repository";
 export { PrismaAuditIntegrationRepository } from "./repositories/prisma-audit-integration-repository";
+export { PrismaLocationReconstructionRepository } from "./repositories/prisma-location-reconstruction-repository";

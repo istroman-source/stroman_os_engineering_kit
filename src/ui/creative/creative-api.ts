@@ -14,6 +14,7 @@ import type {
   ProductionStage,
   ShotPlanningState,
   LocationWorkspaceState,
+  LocationReconstructionView,
 } from "@/domain/creative";
 
 export type Blueprint = DomainBlueprint;
@@ -150,6 +151,40 @@ export async function uploadLocationEnvironment(
   form.append("unit", input.unit);
   form.append("metricScale", String(input.metricScale));
   return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/location-environments`, form);
+}
+
+export async function startLocationPhotoReconstruction(
+  projectId: string,
+  input: { readonly name: string; readonly photos: readonly File[] },
+): Promise<LocationReconstructionView> {
+  const form = new FormData();
+  form.append("name", input.name);
+  for (const photo of input.photos) form.append("photos", photo);
+  const response = await apiPostForm<{ job: LocationReconstructionView }>(
+    `/api/v1/projects/${enc(projectId)}/location-reconstructions`,
+    form,
+  );
+  return response.job;
+}
+
+export async function getLatestLocationPhotoReconstruction(
+  projectId: string,
+): Promise<LocationReconstructionView | null> {
+  const { data } = await apiGetWithEtag<{ job: LocationReconstructionView | null }>(
+    `/api/v1/projects/${enc(projectId)}/location-reconstructions`,
+  );
+  return data.job;
+}
+
+export async function refreshLocationPhotoReconstruction(
+  projectId: string,
+  reconstructionId: string,
+): Promise<LocationReconstructionView> {
+  const { data } = await apiPostWithEtag<{ job: LocationReconstructionView }>(
+    `/api/v1/projects/${enc(projectId)}/location-reconstructions/${enc(reconstructionId)}/refresh`,
+    {},
+  );
+  return data.job;
 }
 
 export async function saveLocationShot(

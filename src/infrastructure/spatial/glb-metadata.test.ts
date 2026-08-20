@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { boundsFromGltfDocument, InvalidGlbError } from "./glb-metadata";
+import { boundsFromGltfDocument, inferRoomScale, InvalidGlbError } from "./glb-metadata";
 
 describe("GLB spatial metadata", () => {
   it("unions mesh instances after node transforms and unit conversion", () => {
@@ -33,5 +33,30 @@ describe("GLB spatial metadata", () => {
         1,
       ),
     ).toThrow(InvalidGlbError);
+  });
+
+  it("automatically normalizes an unscaled photogrammetry room without claiming observed scale", () => {
+    const json = JSON.stringify({
+      asset: { version: "2.0" },
+      scene: 0,
+      scenes: [{ nodes: [0] }],
+      nodes: [{ mesh: 0 }],
+      meshes: [{ primitives: [{ attributes: { POSITION: 0 } }] }],
+      accessors: [{ type: "VEC3", min: [-200, 0, -300], max: [200, 100, 300] }],
+    });
+    const padded = `${json}${" ".repeat((4 - (json.length % 4)) % 4)}`;
+    const bytes = new Uint8Array(20 + padded.length);
+    const view = new DataView(bytes.buffer);
+    view.setUint32(0, 0x46546c67, true);
+    view.setUint32(4, 2, true);
+    view.setUint32(8, bytes.byteLength, true);
+    view.setUint32(12, padded.length, true);
+    view.setUint32(16, 0x4e4f534a, true);
+    bytes.set(new TextEncoder().encode(padded), 20);
+
+    const inferred = inferRoomScale(bytes);
+    expect(inferred.scaleMetersPerUnit).toBeCloseTo(0.026);
+    expect(inferred.bounds.max.y - inferred.bounds.min.y).toBeCloseTo(2.6);
+    expect(inferred.bounds.max.x - inferred.bounds.min.x).toBeCloseTo(10.4);
   });
 });

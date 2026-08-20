@@ -9,6 +9,9 @@ import { BlueprintView } from "./blueprint-view";
 import { type Analysis, type AnalyzeFields, analyzeProject, getAnalysis } from "./creative-api";
 import {
   saveLocationShot,
+  getLatestLocationPhotoReconstruction,
+  refreshLocationPhotoReconstruction,
+  startLocationPhotoReconstruction,
   updatePlanning,
   uploadLocationEnvironment,
   uploadScoutPhotos,
@@ -131,6 +134,15 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
           onUploadLocation={(input) =>
             runPlanning(() => uploadLocationEnvironment(projectId, input))
           }
+          onGetLocationReconstruction={() => getLatestLocationPhotoReconstruction(projectId)}
+          onStartLocationReconstruction={(input) =>
+            startLocationPhotoReconstruction(projectId, input)
+          }
+          onRefreshLocationReconstruction={async (id) => {
+            const job = await refreshLocationPhotoReconstruction(projectId, id);
+            if (job.status === "SUCCEEDED") setAnalysis(await getAnalysis(projectId));
+            return job;
+          }}
           onSaveLocation={(input: {
             workspace: LocationWorkspaceState;
             frame: Blob;
