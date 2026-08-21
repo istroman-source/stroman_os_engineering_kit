@@ -159,7 +159,8 @@ export function createApiContext(): ApiContext {
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),
     creativeReasoning: createCreativeReasoningProvider(),
     locationReconstructions: new PrismaLocationReconstructionRepository(prisma),
-    locationReconstructionProvider: createLocationReconstructionProvider(),
+    locationReconstructionProvider:
+      locationReconstructionProviderOverride ?? createLocationReconstructionProvider(),
     locationGeometryInspector: new GlbLocationGeometryInspector(),
     entities: new PrismaEntityRepository(prisma),
     sources: new PrismaSourceRepository(prisma),
@@ -225,6 +226,7 @@ let gatewayOverride: AuthGateway | undefined;
 let cachedGateway: AuthGateway | undefined;
 let privateBetaAuthorizerOverride: PrivateBetaAccessAuthorizer | undefined;
 let cachedPrivateBetaAuthorizer: PrivateBetaAccessAuthorizer | undefined;
+let locationReconstructionProviderOverride: LocationReconstructionProvider | undefined;
 
 const allowAllPrivateBetaForTests: PrivateBetaAccessAuthorizer = {
   authorize: async () => "TESTER",
@@ -280,10 +282,19 @@ export function setAuthGatewayForTests(gateway: AuthGateway): void {
   gatewayOverride = gateway;
 }
 
+/** Test-only: inject a reconstruction provider without making an external submission. */
+export function setLocationReconstructionProviderForTests(
+  provider: LocationReconstructionProvider,
+): void {
+  assertNotProduction("A test reconstruction provider");
+  locationReconstructionProviderOverride = provider;
+}
+
 /** Test-only: clear injected auth doubles. Throws in production. */
 export function resetAuthForTests(): void {
   assertNotProduction("Auth overrides");
   authenticatorOverride = undefined;
   gatewayOverride = undefined;
   privateBetaAuthorizerOverride = undefined;
+  locationReconstructionProviderOverride = undefined;
 }

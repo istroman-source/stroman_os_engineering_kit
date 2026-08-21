@@ -529,6 +529,14 @@ export function RealLocationWorkspace({
     activeCamera &&
     !pointInside(activeCamera.target, workspace.environment.coverage.bounds),
   );
+  const reconstructionInput = (
+    <LocationPhotoInput
+      busy={busy}
+      onGet={onGetReconstruction}
+      onStart={onStartReconstruction}
+      onRefresh={onRefreshReconstruction}
+    />
+  );
 
   useEffect(() => {
     if (!environment || !canvasRef.current) return;
@@ -639,12 +647,7 @@ export function RealLocationWorkspace({
   if (!workspace)
     return (
       <div className="space-y-3">
-        <LocationPhotoInput
-          busy={busy}
-          onGet={onGetReconstruction}
-          onStart={onStartReconstruction}
-          onRefresh={onRefreshReconstruction}
-        />
+        {reconstructionInput}
         <details className="border-border bg-card rounded-lg border p-4">
           <summary className="cursor-pointer text-sm font-semibold">
             Already have a textured 3D scan?
@@ -788,242 +791,249 @@ export function RealLocationWorkspace({
   };
 
   return (
-    <section className="bg-card rounded-lg border p-4" aria-labelledby="real-location-space">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-            Space · Camera view · Shot
-          </p>
-          <h2 id="real-location-space" className="mt-1 text-lg font-semibold">
-            {workspace.environment.name}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            This view is the actual perspective camera. Click-drag to look; WASD or arrows move; Q/E
-            lowers or raises.
-          </p>
+    <div className="space-y-3">
+      {reconstructionInput}
+      <section className="bg-card rounded-lg border p-4" aria-labelledby="real-location-space">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+              Space · Camera view · Shot
+            </p>
+            <h2 id="real-location-space" className="mt-1 text-lg font-semibold">
+              {workspace.environment.name}
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              This view is the actual perspective camera. Click-drag to look; WASD or arrows move;
+              Q/E lowers or raises.
+            </p>
+          </div>
+          <div className="text-right text-xs">
+            <p className="font-semibold">
+              {workspace.environment.scaleConfidence === "OBSERVED"
+                ? "Metric scan"
+                : "Scale estimated"}
+            </p>
+            <p className="text-muted-foreground">
+              Environment v{workspace.environment.version} · {fps ? `${fps} fps` : "measuring"}
+            </p>
+          </div>
         </div>
-        <div className="text-right text-xs">
-          <p className="font-semibold">
-            {workspace.environment.scaleConfidence === "OBSERVED"
-              ? "Metric scan"
-              : "Scale estimated"}
-          </p>
-          <p className="text-muted-foreground">
-            Environment v{workspace.environment.version} · {fps ? `${fps} fps` : "measuring"}
-          </p>
-        </div>
-      </div>
 
-      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_17rem]">
-        <div>
-          <div
-            className={`relative mx-auto overflow-hidden rounded-lg border-2 border-slate-700 bg-[#171a1b] ${workspace.activeAspect === "16:9" ? "aspect-video" : "aspect-[9/16] max-h-[44rem] max-w-[25rem]"}`}
-          >
-            <canvas
-              ref={canvasRef}
-              tabIndex={0}
-              aria-label={`Actual ${workspace.activeAspect} camera view inside ${workspace.environment.name}`}
-              className="h-full w-full cursor-crosshair outline-none focus:ring-2 focus:ring-amber-500"
-              onKeyDown={onKeyDown}
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={() => (dragRef.current = null)}
-              onPointerCancel={() => (dragRef.current = null)}
-            />
-            {loadState !== "READY" ? (
-              <div className="absolute inset-0 grid place-items-center bg-black/75 p-6 text-center text-sm text-white">
-                {loadState === "FAILED"
-                  ? "This scan could not be rendered. Re-export it as a textured GLB."
-                  : `Entering location… ${loadProgress}%`}
+        <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_17rem]">
+          <div>
+            <div
+              className={`relative mx-auto overflow-hidden rounded-lg border-2 border-slate-700 bg-[#171a1b] ${workspace.activeAspect === "16:9" ? "aspect-video" : "aspect-[9/16] max-h-[44rem] max-w-[25rem]"}`}
+            >
+              <canvas
+                ref={canvasRef}
+                tabIndex={0}
+                aria-label={`Actual ${workspace.activeAspect} camera view inside ${workspace.environment.name}`}
+                className="h-full w-full cursor-crosshair outline-none focus:ring-2 focus:ring-amber-500"
+                onKeyDown={onKeyDown}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={() => (dragRef.current = null)}
+                onPointerCancel={() => (dragRef.current = null)}
+              />
+              {loadState !== "READY" ? (
+                <div className="absolute inset-0 grid place-items-center bg-black/75 p-6 text-center text-sm text-white">
+                  {loadState === "FAILED"
+                    ? "This scan could not be rendered. Re-export it as a textured GLB."
+                    : `Entering location… ${loadProgress}%`}
+                </div>
+              ) : null}
+              <div className="pointer-events-none absolute inset-0 grid place-items-center">
+                <span className="h-4 w-4 border-t border-l border-white/80" />
+                <span className="absolute h-4 w-4 rotate-180 border-t border-l border-white/80" />
+              </div>
+              {targetUnknown ? (
+                <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(135deg,transparent,transparent_12px,rgba(229,169,79,.12)_12px,rgba(229,169,79,.12)_24px)]" />
+              ) : null}
+              <div className="absolute right-2 bottom-2 rounded bg-black/65 px-2 py-1 text-[0.68rem] text-white">
+                {LOCATION_RENDERER_VERSION} · baked pixels on save
+              </div>
+            </div>
+            {boundaryMessage || targetUnknown ? (
+              <div className="mt-2 rounded-md border border-amber-600/40 bg-amber-600/10 p-3 text-sm">
+                <strong>I don&apos;t have this side of the room yet.</strong>
+                <span className="text-muted-foreground ml-2">
+                  Add another scan angle; Stroman will not invent it.
+                </span>
               </div>
             ) : null}
-            <div className="pointer-events-none absolute inset-0 grid place-items-center">
-              <span className="h-4 w-4 border-t border-l border-white/80" />
-              <span className="absolute h-4 w-4 rotate-180 border-t border-l border-white/80" />
-            </div>
-            {targetUnknown ? (
-              <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(135deg,transparent,transparent_12px,rgba(229,169,79,.12)_12px,rgba(229,169,79,.12)_24px)]" />
-            ) : null}
-            <div className="absolute right-2 bottom-2 rounded bg-black/65 px-2 py-1 text-[0.68rem] text-white">
-              {LOCATION_RENDERER_VERSION} · baked pixels on save
-            </div>
           </div>
-          {boundaryMessage || targetUnknown ? (
-            <div className="mt-2 rounded-md border border-amber-600/40 bg-amber-600/10 p-3 text-sm">
-              <strong>I don&apos;t have this side of the room yet.</strong>
-              <span className="text-muted-foreground ml-2">
-                Add another scan angle; Stroman will not invent it.
-              </span>
-            </div>
-          ) : null}
-        </div>
 
-        <aside className="space-y-4">
-          <div>
-            <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-wide uppercase">
-              Composition
-            </p>
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              {(["16:9", "9:16"] as const).map((aspect) => (
+          <aside className="space-y-4">
+            <div>
+              <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-wide uppercase">
+                Composition
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {(["16:9", "9:16"] as const).map((aspect) => (
+                  <button
+                    type="button"
+                    key={aspect}
+                    aria-pressed={workspace.activeAspect === aspect}
+                    onClick={() => setAspect(aspect)}
+                    className={`rounded-md border px-3 py-2 text-sm font-semibold ${workspace.activeAspect === aspect ? "border-foreground bg-foreground text-background" : "border-border"}`}
+                  >
+                    {aspect}
+                  </button>
+                ))}
+              </div>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Each format keeps its own camera position and aim.
+              </p>
+            </div>
+            <label className="block text-sm">
+              <span className="flex justify-between font-medium">
+                <span>Lens</span>
+                <span>{activeCamera!.focalLengthMm}mm</span>
+              </span>
+              <input
+                className="mt-2 w-full"
+                type="range"
+                min="14"
+                max="135"
+                step="1"
+                value={activeCamera!.focalLengthMm}
+                onChange={(event) =>
+                  updateCamera({ ...activeCamera!, focalLengthMm: Number(event.target.value) })
+                }
+              />
+            </label>
+            <div className="grid grid-cols-4 gap-1" aria-label="Lens presets">
+              {[24, 35, 50, 85].map((focalLengthMm) => (
                 <button
                   type="button"
-                  key={aspect}
-                  aria-pressed={workspace.activeAspect === aspect}
-                  onClick={() => setAspect(aspect)}
-                  className={`rounded-md border px-3 py-2 text-sm font-semibold ${workspace.activeAspect === aspect ? "border-foreground bg-foreground text-background" : "border-border"}`}
+                  key={focalLengthMm}
+                  aria-label={`Set lens to ${focalLengthMm}mm`}
+                  aria-pressed={activeCamera!.focalLengthMm === focalLengthMm}
+                  onClick={() => updateCamera({ ...activeCamera!, focalLengthMm })}
+                  className={`rounded border px-2 py-1 text-xs ${activeCamera!.focalLengthMm === focalLengthMm ? "border-foreground bg-foreground text-background" : "border-border"}`}
                 >
-                  {aspect}
+                  {focalLengthMm}
                 </button>
               ))}
             </div>
-            <p className="text-muted-foreground mt-1 text-xs">
-              Each format keeps its own camera position and aim.
-            </p>
-          </div>
-          <label className="block text-sm">
-            <span className="flex justify-between font-medium">
-              <span>Lens</span>
-              <span>{activeCamera!.focalLengthMm}mm</span>
-            </span>
-            <input
-              className="mt-2 w-full"
-              type="range"
-              min="14"
-              max="135"
-              step="1"
-              value={activeCamera!.focalLengthMm}
-              onChange={(event) =>
-                updateCamera({ ...activeCamera!, focalLengthMm: Number(event.target.value) })
-              }
-            />
-          </label>
-          <div className="grid grid-cols-4 gap-1" aria-label="Lens presets">
-            {[24, 35, 50, 85].map((focalLengthMm) => (
-              <button
-                type="button"
-                key={focalLengthMm}
-                aria-label={`Set lens to ${focalLengthMm}mm`}
-                aria-pressed={activeCamera!.focalLengthMm === focalLengthMm}
-                onClick={() => updateCamera({ ...activeCamera!, focalLengthMm })}
-                className={`rounded border px-2 py-1 text-xs ${activeCamera!.focalLengthMm === focalLengthMm ? "border-foreground bg-foreground text-background" : "border-border"}`}
-              >
-                {focalLengthMm}
-              </button>
-            ))}
-          </div>
-          <div className="rounded-md border p-3 text-sm">
-            <p className="font-semibold">Camera truth</p>
-            <dl className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
-              <dt className="text-muted-foreground">Filmback</dt>
-              <dd>36 × 24mm</dd>
-              <dt className="text-muted-foreground">FOV</dt>
-              <dd>
-                {technical!.horizontalFov.toFixed(1)}° × {technical!.verticalFov.toFixed(1)}°
-              </dd>
-              <dt className="text-muted-foreground">Height</dt>
-              <dd>{activeCamera!.position.y.toFixed(2)}m</dd>
-              <dt className="text-muted-foreground">Target</dt>
-              <dd>{technical!.distance.toFixed(2)}m</dd>
-              <dt className="text-muted-foreground">Framing</dt>
-              <dd>
-                {activeCamera!.confidence === "FILMMAKER_CONFIRMED" ? "You confirmed" : "Proposed"}
-              </dd>
-            </dl>
-          </div>
-          <div className="rounded-md border p-3 text-xs">
-            <p className="font-semibold">Shooting instruction</p>
-            <p className="text-muted-foreground mt-1 leading-relaxed">{shootingInstructions}</p>
-          </div>
-          {targetUnknown ? (
-            <label className="flex items-start gap-2 text-xs">
-              <input
-                type="checkbox"
-                checked={unknownAcknowledged}
-                onChange={(event) => setUnknownAcknowledged(event.target.checked)}
-              />
-              <span>
-                Save with the visible unknown-area warning. The room will not be completed or
-                guessed.
-              </span>
-            </label>
-          ) : null}
-          <Button
-            type="button"
-            className="w-full"
-            disabled={busy || loadState !== "READY" || (targetUnknown && !unknownAcknowledged)}
-            onClick={() => void save()}
-          >
-            {busy ? "Saving exact frame…" : "Save this exact shot"}
-          </Button>
-          {saveMessage ? (
-            <p role="status" className="text-xs font-medium text-emerald-700">
-              {saveMessage}
-            </p>
-          ) : null}
-        </aside>
-      </div>
-
-      {workspace.environment.sourcePhotos?.length ? (
-        <div className="mt-5 border-t pt-4">
-          <div className="flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <h3 className="font-semibold">Photo presence · actual location</h3>
-              <p className="text-muted-foreground text-xs">
-                Source evidence preserves the room&apos;s real light, texture, color, and
-                atmosphere.
-              </p>
+            <div className="rounded-md border p-3 text-sm">
+              <p className="font-semibold">Camera truth</p>
+              <dl className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                <dt className="text-muted-foreground">Filmback</dt>
+                <dd>36 × 24mm</dd>
+                <dt className="text-muted-foreground">FOV</dt>
+                <dd>
+                  {technical!.horizontalFov.toFixed(1)}° × {technical!.verticalFov.toFixed(1)}°
+                </dd>
+                <dt className="text-muted-foreground">Height</dt>
+                <dd>{activeCamera!.position.y.toFixed(2)}m</dd>
+                <dt className="text-muted-foreground">Target</dt>
+                <dd>{technical!.distance.toFixed(2)}m</dd>
+                <dt className="text-muted-foreground">Framing</dt>
+                <dd>
+                  {activeCamera!.confidence === "FILMMAKER_CONFIRMED"
+                    ? "You confirmed"
+                    : "Proposed"}
+                </dd>
+              </dl>
             </div>
-            <span className="text-muted-foreground text-xs">
-              {workspace.environment.sourcePhotos.length} photos
-            </span>
-          </div>
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-            {workspace.environment.sourcePhotos.slice(0, 6).map((photo, index) => (
-              <figure key={photo.mediaAssetId} className="overflow-hidden rounded-md border">
-                <Image
-                  unoptimized
-                  width={320}
-                  height={240}
-                  src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-environments/${encodeURIComponent(workspace.environment.id)}/photos/${encodeURIComponent(photo.mediaAssetId)}`}
-                  alt={`Actual location source angle ${index + 1}`}
-                  className="aspect-[4/3] w-full object-cover"
+            <div className="rounded-md border p-3 text-xs">
+              <p className="font-semibold">Shooting instruction</p>
+              <p className="text-muted-foreground mt-1 leading-relaxed">{shootingInstructions}</p>
+            </div>
+            {targetUnknown ? (
+              <label className="flex items-start gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={unknownAcknowledged}
+                  onChange={(event) => setUnknownAcknowledged(event.target.checked)}
                 />
-              </figure>
-            ))}
-          </div>
+                <span>
+                  Save with the visible unknown-area warning. The room will not be completed or
+                  guessed.
+                </span>
+              </label>
+            ) : null}
+            <Button
+              type="button"
+              className="w-full"
+              disabled={busy || loadState !== "READY" || (targetUnknown && !unknownAcknowledged)}
+              onClick={() => void save()}
+            >
+              {busy ? "Saving exact frame…" : "Save this exact shot"}
+            </Button>
+            {saveMessage ? (
+              <p role="status" className="text-xs font-medium text-emerald-700">
+                {saveMessage}
+              </p>
+            ) : null}
+          </aside>
         </div>
-      ) : null}
 
-      {workspace.savedShots.length ? (
-        <div className="mt-5 border-t pt-4">
-          <h3 className="font-semibold">Storyboard · saved camera views</h3>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {workspace.savedShots.map((shot) => (
-              <figure key={shot.id} className="overflow-hidden rounded-md border">
-                <Image
-                  unoptimized
-                  width={shot.storyboardFrame.width}
-                  height={shot.storyboardFrame.height}
-                  src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-shots/${encodeURIComponent(shot.storyboardFrame.mediaAssetId)}`}
-                  alt={`${shot.title}, exact saved camera frame`}
-                  className="aspect-video w-full bg-black object-contain"
-                />
-                <figcaption className="p-3 text-xs">
-                  <strong>{shot.title}</strong>
-                  <span className="text-muted-foreground mt-1 block">{shot.technicalSummary}</span>
-                </figcaption>
-              </figure>
-            ))}
+        {workspace.environment.sourcePhotos?.length ? (
+          <div className="mt-5 border-t pt-4">
+            <div className="flex flex-wrap items-end justify-between gap-2">
+              <div>
+                <h3 className="font-semibold">Photo presence · actual location</h3>
+                <p className="text-muted-foreground text-xs">
+                  Source evidence preserves the room&apos;s real light, texture, color, and
+                  atmosphere.
+                </p>
+              </div>
+              <span className="text-muted-foreground text-xs">
+                {workspace.environment.sourcePhotos.length} photos
+              </span>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+              {workspace.environment.sourcePhotos.slice(0, 6).map((photo, index) => (
+                <figure key={photo.mediaAssetId} className="overflow-hidden rounded-md border">
+                  <Image
+                    unoptimized
+                    width={320}
+                    height={240}
+                    src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-environments/${encodeURIComponent(workspace.environment.id)}/photos/${encodeURIComponent(photo.mediaAssetId)}`}
+                    alt={`Actual location source angle ${index + 1}`}
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+                </figure>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      <details className="mt-5 border-t pt-4">
-        <summary className="cursor-pointer text-sm font-semibold">Add a new scan version</summary>
-        <div className="mt-3">
-          <LocationScanInput compact busy={busy} onUpload={onUpload} />
-        </div>
-      </details>
-    </section>
+        {workspace.savedShots.length ? (
+          <div className="mt-5 border-t pt-4">
+            <h3 className="font-semibold">Storyboard · saved camera views</h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {workspace.savedShots.map((shot) => (
+                <figure key={shot.id} className="overflow-hidden rounded-md border">
+                  <Image
+                    unoptimized
+                    width={shot.storyboardFrame.width}
+                    height={shot.storyboardFrame.height}
+                    src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-shots/${encodeURIComponent(shot.storyboardFrame.mediaAssetId)}`}
+                    alt={`${shot.title}, exact saved camera frame`}
+                    className="aspect-video w-full bg-black object-contain"
+                  />
+                  <figcaption className="p-3 text-xs">
+                    <strong>{shot.title}</strong>
+                    <span className="text-muted-foreground mt-1 block">
+                      {shot.technicalSummary}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <details className="mt-5 border-t pt-4">
+          <summary className="cursor-pointer text-sm font-semibold">Add a new scan version</summary>
+          <div className="mt-3">
+            <LocationScanInput compact busy={busy} onUpload={onUpload} />
+          </div>
+        </details>
+      </section>
+    </div>
   );
 }

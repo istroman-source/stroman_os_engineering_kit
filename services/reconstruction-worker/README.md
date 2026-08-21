@@ -1,10 +1,35 @@
 # Stroman reconstruction worker
 
 This private service owns the photo-to-room compute path. The filmmaker continues to work only in
-Stroman OS; the worker accepts integrity-checked source photos, runs a bounded COLMAP CUDA pipeline,
-and returns one browser-ready GLB through the existing application boundary.
+Stroman OS; the worker accepts integrity-checked source photos, runs either Apple's native local
+photogrammetry engine or the bounded COLMAP CUDA pipeline, and returns one browser-ready GLB through
+the same application boundary.
 
-## Runtime
+## Free local Mac mode
+
+On a supported Apple silicon Mac, start the complete local workflow with:
+
+```sh
+npm run dev:reconstruct:mac
+```
+
+This command verifies native support, compiles the checked-in Swift executable, generates an
+ephemeral signing secret without printing it, starts the worker on loopback, and starts Stroman OS
+at `http://localhost:3200`. The filmmaker still uploads and enters the reconstructed room entirely
+inside Stroman. Source photos and job attempts remain under the gitignored `.data/` runtime path.
+
+The Apple engine uses sequential high-sensitivity matching with masking disabled and the automatic
+object bounding box ignored so it can recover the complete photographed scene. It rejects sets with
+fewer than 20 source photos or fewer than 60% usable samples, requests a reduced textured OBJ from
+RealityKit, and packages that result as the same bounded GLB used by every other provider. This is the
+lowest-cost first-pass setting; set `STROMAN_APPLE_RECONSTRUCTION_DETAIL=medium` only after a viable
+capture needs more detail.
+
+This path has no reconstruction fee, but the Mac must remain awake while processing. It is the
+private-test default, not a claim that a user's localhost is production infrastructure. Remote web
+activation still requires a reachable owned worker or a future outbound local-agent queue.
+
+## Remote CUDA runtime
 
 - Linux host with an NVIDIA GPU, current driver, Docker, and NVIDIA Container Toolkit.
 - A persistent encrypted volume mounted at `/var/lib/stroman-reconstruction`.

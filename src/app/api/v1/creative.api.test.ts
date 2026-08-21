@@ -2,29 +2,47 @@ import type { PrismaClient } from "@prisma/client";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { resetAuthForTests, setRequestAuthenticatorForTests } from "@/server/composition";
+import {
+  resetAuthForTests,
+  setLocationReconstructionProviderForTests,
+  setRequestAuthenticatorForTests,
+} from "@/server/composition";
 import { createTestPrisma, resetDatabase } from "@test/db/integration-helpers";
 import { TestAuthenticator } from "@test/adapters/test-auth";
-import { call } from "@test/http/call";
+import { call, TEST_ORIGIN } from "@test/http/call";
 import { POST as createProject } from "./projects/route";
 import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectId]/analysis/route";
 import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
 import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
 import { GET as getScoutPhoto } from "./projects/[projectId]/scout-photos/[mediaAssetId]/route";
 import { POST as uploadLocation } from "./projects/[projectId]/location-environments/route";
+import { POST as stageLocationPhoto } from "./projects/[projectId]/location-reconstructions/photos/route";
 import { GET as getLocationGeometry } from "./projects/[projectId]/location-environments/[environmentId]/geometry/route";
 import { POST as saveLocationShot } from "./projects/[projectId]/location-shots/route";
 import { GET as getLocationShot } from "./projects/[projectId]/location-shots/[mediaAssetId]/route";
-import { instructionAtDeskShotPlanning } from "@/domain/creative";
+import {
+  instructionAtDeskShotPlanning,
+  type LocationReconstructionProvider,
+} from "@/domain/creative";
 
 const ACTOR = "subject-owner-a";
 const OTHER = "subject-owner-b";
 
 let prisma: PrismaClient;
 
+const testReconstructionProvider: LocationReconstructionProvider = {
+  key: "test-reconstruction",
+  start: async () => ({ providerJobId: "provider_test" }),
+  status: async () => ({ status: "PROCESSING", phase: "PROCESSING", percent: null }),
+  downloadGlb: async () => {
+    throw new Error("The staging test must not download a model.");
+  },
+};
+
 beforeAll(() => {
   prisma = createTestPrisma();
   setRequestAuthenticatorForTests(new TestAuthenticator());
+  setLocationReconstructionProviderForTests(testReconstructionProvider);
 });
 afterAll(async () => {
   resetAuthForTests();
@@ -284,6 +302,34 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       },
     });
     expect(JSON.stringify(uploaded.body)).not.toMatch(/window over sink|reverse camera lane/i);
+  });
+
+  it("accepts a cookie-authenticated local-origin room photo before reconstruction starts", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const bytes = new Uint8Array([0xff, 0xd8, 0xff, 0xd9]);
+    const form = new FormData();
+    form.append("photo", new File([bytes], "synthetic-room.jpg", { type: "image/jpeg" }));
+
+    const staged = await call(stageLocationPhoto, {
+      method: "POST",
+      principal: ACTOR,
+      via: "cookie",
+      origin: TEST_ORIGIN,
+      params: { projectId },
+      body: form,
+      headers: { "content-length": String(bytes.byteLength + 4096) },
+    });
+
+    expect(staged.status, JSON.stringify(staged.body)).toBe(201);
+    expect(staged.body).toMatchObject({
+      upload: { fileName: "synthetic-room.jpg", contentType: "image/jpeg" },
+    });
   });
 
   it("persists, privately serves, and exactly saves a real-location camera frame", async () => {

@@ -175,17 +175,7 @@ function runCommand(stage, { timeoutMs = MAX_STAGE_MS, log }) {
   });
 }
 
-export async function runColmapPipeline(
-  workspace,
-  { imagesPath, onProgress, runStage = runCommand, timeoutMs = MAX_STAGE_MS, log } = {},
-) {
-  await mkdir(path.join(workspace, "sparse"), { recursive: true });
-  await mkdir(path.join(workspace, "dense"), { recursive: true });
-  for (const stage of buildColmapStages(workspace, { imagesPath })) {
-    await onProgress?.({ phase: stage.phase, percent: stage.percent });
-    await runStage(stage, { timeoutMs, log });
-  }
-  const resultPath = path.join(workspace, "result.glb");
+export async function validateGlbResult(resultPath) {
   const resultStat = await stat(resultPath);
   if (resultStat.size <= 0 || resultStat.size > MAX_RESULT_BYTES) {
     throw new Error("Reconstruction result is outside the supported 100 MB limit.");
@@ -200,6 +190,20 @@ export async function runColmapPipeline(
   if (header.toString("ascii") !== "glTF") {
     throw new Error("Reconstruction result is not a binary glTF asset.");
   }
+}
+
+export async function runColmapPipeline(
+  workspace,
+  { imagesPath, onProgress, runStage = runCommand, timeoutMs = MAX_STAGE_MS, log } = {},
+) {
+  await mkdir(path.join(workspace, "sparse"), { recursive: true });
+  await mkdir(path.join(workspace, "dense"), { recursive: true });
+  for (const stage of buildColmapStages(workspace, { imagesPath })) {
+    await onProgress?.({ phase: stage.phase, percent: stage.percent });
+    await runStage(stage, { timeoutMs, log });
+  }
+  const resultPath = path.join(workspace, "result.glb");
+  await validateGlbResult(resultPath);
   await onProgress?.({ phase: "PACKAGING", percent: 100 });
   return resultPath;
 }
