@@ -52,21 +52,12 @@ export const serverEnvSchema = clientEnvSchema
     STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: z
       .enum(["auto", "stroman", "kiri", "disabled"])
       .default("auto"),
+    /** Legacy direct-worker URL. Pull workers do not need an inbound URL. */
     STROMAN_RECONSTRUCTION_WORKER_URL: z.string().url().optional(),
     STROMAN_RECONSTRUCTION_WORKER_SECRET: z.string().min(32).optional(),
     KIRI_API_KEY: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
-    if (
-      Boolean(env.STROMAN_RECONSTRUCTION_WORKER_URL) !==
-      Boolean(env.STROMAN_RECONSTRUCTION_WORKER_SECRET)
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["STROMAN_RECONSTRUCTION_WORKER_URL"],
-        message: "The Stroman reconstruction worker URL and secret must be configured together.",
-      });
-    }
     if (
       env.STROMAN_RECONSTRUCTION_WORKER_URL &&
       env.NODE_ENV === "production" &&
@@ -80,16 +71,6 @@ export const serverEnvSchema = clientEnvSchema
     }
     if (
       env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "stroman" &&
-      !env.STROMAN_RECONSTRUCTION_WORKER_URL
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["STROMAN_RECONSTRUCTION_WORKER_URL"],
-        message: "STROMAN_RECONSTRUCTION_WORKER_URL is required for the Stroman worker.",
-      });
-    }
-    if (
-      env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "stroman" &&
       !env.STROMAN_RECONSTRUCTION_WORKER_SECRET
     ) {
       ctx.addIssue({
@@ -98,11 +79,11 @@ export const serverEnvSchema = clientEnvSchema
         message: "STROMAN_RECONSTRUCTION_WORKER_SECRET is required for the Stroman worker.",
       });
     }
-    if (env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "kiri" && !env.KIRI_API_KEY) {
+    if (env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "kiri") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["KIRI_API_KEY"],
-        message: "KIRI_API_KEY is required when KIRI reconstruction is selected.",
+        path: ["STROMAN_LOCATION_RECONSTRUCTION_PROVIDER"],
+        message: "KIRI reconstruction is retired; use the outbound Mac worker.",
       });
     }
     // Fail closed at startup if production is missing required auth configuration,

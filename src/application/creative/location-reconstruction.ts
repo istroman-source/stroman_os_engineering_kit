@@ -187,6 +187,8 @@ export async function startLocationReconstruction(
     photos: sources,
     environmentId: null,
     failureCode: null,
+    workerLeaseId: null,
+    workerLeaseExpiresAt: null,
     createdAt: now,
     updatedAt: now,
     completedAt: null,
@@ -221,6 +223,8 @@ export async function startLocationReconstruction(
       ...job,
       status: "FAILED" as const,
       failureCode: "PROVIDER_SUBMISSION_FAILED",
+      workerLeaseId: null,
+      workerLeaseExpiresAt: null,
       updatedAt: deps.clock.now(),
       completedAt: deps.clock.now(),
     };
@@ -274,6 +278,8 @@ export async function retryLocationReconstruction(
     providerJobId: null,
     status: "SUBMITTING",
     failureCode: null,
+    workerLeaseId: null,
+    workerLeaseExpiresAt: null,
     updatedAt: now,
     completedAt: null,
   };
@@ -309,6 +315,8 @@ export async function retryLocationReconstruction(
       ...retrying,
       status: "FAILED",
       failureCode: "PROVIDER_SUBMISSION_FAILED",
+      workerLeaseId: null,
+      workerLeaseExpiresAt: null,
       updatedAt: deps.clock.now(),
       completedAt: deps.clock.now(),
     };
@@ -351,7 +359,9 @@ export async function refreshLocationReconstruction(
       providerKey: deps.locationReconstructionProvider.key,
       providerJobId: null,
       status: "SUBMITTING",
-      failureCode: null,
+        failureCode: null,
+        workerLeaseId: null,
+        workerLeaseExpiresAt: null,
       updatedAt: deps.clock.now(),
       completedAt: null,
     };
@@ -385,6 +395,8 @@ export async function refreshLocationReconstruction(
         ...reserved,
         status: "FAILED",
         failureCode: "PROVIDER_SUBMISSION_FAILED",
+        workerLeaseId: null,
+        workerLeaseExpiresAt: null,
         updatedAt: deps.clock.now(),
         completedAt: deps.clock.now(),
       };
@@ -450,11 +462,48 @@ export async function refreshLocationReconstruction(
     );
   }
   const result = await deps.locationReconstructionProvider.downloadGlb(job.providerJobId);
+  return finalizeLocationReconstruction(deps, { job, bytes: result.bytes, fileName: result.fileName, sourceToCanonicalBasis: result.sourceToCanonicalBasis, metersPerSourceUnit: result.metersPerSourceUnit });
+}
+
+/** Persist a worker-produced GLB into the filmmaker's project and planning state.
+ * This is shared by pull-worker completion and legacy provider refreshes. */
+export async function finalizeLocationReconstruction(
+  deps: ReconstructionDeps,
+  input: {
+    readonly job: LocationReconstructionJob;
+    readonly bytes: Uint8Array;
+    readonly fileName: string;
+    readonly sourceToCanonicalBasis: import("@/domain/creative").SpatialTransform;
+    readonly metersPerSourceUnit: number | null;
+  },
+): Promise<LocationReconstructionView> {
+  const job = input.job;
+  const brief = await requireDevelopedBrief(deps, job.projectId);
+  const existing = brief.planningContext.locationWorkspace;
+  const alreadyImported = existing?.environments.find(
+    (environment) => environment.reconstructionId === job.id,
+  );
+  if (alreadyImported) {
+    const recovered: LocationReconstructionJob = {
+      ...job,
+      status: "SUCCEEDED",
+      environmentId: alreadyImported.id,
+      workerLeaseId: null,
+      workerLeaseExpiresAt: null,
+      updatedAt: deps.clock.now(),
+      completedAt: deps.clock.now(),
+    };
+    await deps.locationReconstructions.update(recovered);
+    return toLocationReconstructionView({ ...recovered, lockVersion: recovered.lockVersion + 1 });
+  }
+  if (existing && existing.environments.length >= 3) {
+    fail("CONFLICT", "This project already has three location versions; Stroman will not delete an original automatically.");
+  }
   let inferred;
   try {
-    inferred = deps.locationGeometryInspector.inferRoomScale(result.bytes, {
-      sourceToCanonicalBasis: result.sourceToCanonicalBasis,
-      metersPerSourceUnit: result.metersPerSourceUnit,
+    inferred = deps.locationGeometryInspector.inferRoomScale(input.bytes, {
+      sourceToCanonicalBasis: input.sourceToCanonicalBasis,
+      metersPerSourceUnit: input.metersPerSourceUnit,
     });
   } catch (error) {
     if (error instanceof AppError && error.code === "VALIDATION") {
@@ -462,6 +511,8 @@ export async function refreshLocationReconstruction(
         ...job,
         status: "FAILED",
         failureCode: "RESULT_NOT_ROOM_SCALE",
+        workerLeaseId: null,
+        workerLeaseExpiresAt: null,
         updatedAt: deps.clock.now(),
         completedAt: deps.clock.now(),
       };
@@ -475,19 +526,19 @@ export async function refreshLocationReconstruction(
       (total, environment) => total + environment.geometryAsset.byteSize,
       0,
     ) ?? 0;
-  if (previousBytes + result.bytes.byteLength > MAX_ENVIRONMENT_BYTES) {
+  if (previousBytes + input.bytes.byteLength > MAX_ENVIRONMENT_BYTES) {
     fail("VALIDATION", "Project spatial assets cannot exceed 500 MB.");
   }
-  const contentHash = `sha256:${createHash("sha256").update(result.bytes).digest("hex")}`;
+  const contentHash = `sha256:${createHash("sha256").update(input.bytes).digest("hex")}`;
   const imported = await importProjectSource(
     { ...deps, imports: deps.sourceImports, storage: deps.sourceStorage },
     {
-      actorId: input.actorId,
-      projectId: input.projectId,
-      idempotencyKey: `${input.projectId}:location-reconstruction:${job.id}:${contentHash}`,
-      sourceName: result.fileName,
+      actorId: job.ownerId,
+      projectId: job.projectId,
+      idempotencyKey: `${job.projectId}:location-reconstruction:${job.id}:${contentHash}`,
+      sourceName: input.fileName,
       contentType: "model/gltf-binary",
-      bytes: result.bytes,
+      bytes: input.bytes,
       contentHash,
     },
   );
@@ -509,9 +560,9 @@ export async function refreshLocationReconstruction(
       })),
       geometryAsset: {
         mediaAssetId: imported.value.mediaAssetId,
-        fileName: result.fileName,
+        fileName: input.fileName,
         mediaType: "model/gltf-binary",
-        byteSize: result.bytes.byteLength,
+        byteSize: input.bytes.byteLength,
         contentHash,
       },
       bounds: inferred.bounds,
@@ -523,8 +574,8 @@ export async function refreshLocationReconstruction(
     existing,
   );
   const planning = await updateCreativePlanning(deps, {
-    actorId: input.actorId,
-    projectId: input.projectId,
+    actorId: job.ownerId,
+    projectId: job.projectId,
     stage: "SCOUTING",
     locationWorkspace: workspace,
   });
@@ -534,6 +585,8 @@ export async function refreshLocationReconstruction(
     status: "SUCCEEDED",
     environmentId,
     failureCode: null,
+    workerLeaseId: null,
+    workerLeaseExpiresAt: null,
     updatedAt: deps.clock.now(),
     completedAt: deps.clock.now(),
   };

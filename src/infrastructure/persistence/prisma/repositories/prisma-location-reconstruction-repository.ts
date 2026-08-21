@@ -29,6 +29,8 @@ const JobRow = z.object({
   photos: z.array(PhotoRow).min(20).max(300),
   environmentId: z.string().nullable(),
   failureCode: z.string().nullable(),
+  workerLeaseId: z.string().nullable(),
+  workerLeaseExpiresAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
   completedAt: z.date().nullable(),
@@ -62,6 +64,8 @@ function data(
     photos: job.photos as unknown as Prisma.InputJsonValue,
     environmentId: job.environmentId,
     failureCode: job.failureCode,
+    workerLeaseId: job.workerLeaseId ?? null,
+    workerLeaseExpiresAt: job.workerLeaseExpiresAt ?? null,
     createdAt: job.createdAt,
     updatedAt: job.updatedAt,
     completedAt: job.completedAt,
@@ -111,6 +115,8 @@ export class PrismaLocationReconstructionRepository implements LocationReconstru
           status: job.status,
           environmentId: job.environmentId,
           failureCode: job.failureCode,
+          workerLeaseId: job.workerLeaseId ?? null,
+          workerLeaseExpiresAt: job.workerLeaseExpiresAt ?? null,
           updatedAt: job.updatedAt,
           completedAt: job.completedAt,
           lockVersion: { increment: 1 },
@@ -121,6 +127,56 @@ export class PrismaLocationReconstructionRepository implements LocationReconstru
       }
     } catch (error) {
       if (error instanceof OptimisticConcurrencyError) throw error;
+      throw translatePrismaError(error);
+    }
+  }
+
+  async claimNextForWorker(input: {
+    readonly providerKey: string;
+    readonly leaseId: string;
+    readonly now: Date;
+    readonly leaseExpiresAt: Date;
+  }): Promise<LocationReconstructionJob | null> {
+    try {
+      // The candidate is re-checked with its optimistic version. A second Mac
+      // can observe the row, but cannot acquire the same lease.
+      const candidate = await this.db.locationReconstructionJob.findFirst({
+        where: {
+          providerKey: input.providerKey,
+          status: "PROCESSING",
+          OR: [
+            { workerLeaseExpiresAt: null },
+            { workerLeaseExpiresAt: { lt: input.now } },
+          ],
+        },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      });
+      if (!candidate) return null;
+      const claimed = await this.db.locationReconstructionJob.updateMany({
+        where: {
+          id: candidate.id,
+          lockVersion: candidate.lockVersion,
+          OR: [
+            { workerLeaseExpiresAt: null },
+            { workerLeaseExpiresAt: { lt: input.now } },
+          ],
+        },
+        data: {
+          workerLeaseId: input.leaseId,
+          workerLeaseExpiresAt: input.leaseExpiresAt,
+          updatedAt: input.now,
+          lockVersion: { increment: 1 },
+        },
+      });
+      if (claimed.count !== 1) return null;
+      return toJob({
+        ...candidate,
+        workerLeaseId: input.leaseId,
+        workerLeaseExpiresAt: input.leaseExpiresAt,
+        updatedAt: input.now,
+        lockVersion: candidate.lockVersion + 1,
+      });
+    } catch (error) {
       throw translatePrismaError(error);
     }
   }

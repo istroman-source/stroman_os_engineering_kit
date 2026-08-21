@@ -46,6 +46,9 @@ class Jobs implements LocationReconstructionRepository {
     }
     this.values.set(job.id, { ...job, lockVersion: job.lockVersion + 1 });
   }
+  async claimNextForWorker() {
+    return null;
+  }
 }
 
 class Provider implements LocationReconstructionProvider {

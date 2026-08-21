@@ -28,6 +28,9 @@ export interface LocationReconstructionJob {
   readonly photos: readonly LocationCapturePhoto[];
   readonly environmentId: string | null;
   readonly failureCode: string | null;
+  /** A short, server-side lease held by an outbound reconstruction worker. */
+  readonly workerLeaseId?: string | null;
+  readonly workerLeaseExpiresAt?: Date | null;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly completedAt: Date | null;
@@ -39,6 +42,13 @@ export interface LocationReconstructionRepository {
   findLatestByProject(projectId: ProjectId): Promise<LocationReconstructionJob | null>;
   insert(job: LocationReconstructionJob): Promise<void>;
   update(job: LocationReconstructionJob): Promise<void>;
+  /** Atomically assign one recoverable Stroman-owned job to an outbound worker. */
+  claimNextForWorker(input: {
+    readonly providerKey: string;
+    readonly leaseId: string;
+    readonly now: Date;
+    readonly leaseExpiresAt: Date;
+  }): Promise<LocationReconstructionJob | null>;
 }
 
 export interface LocationReconstructionPhotoInput {
