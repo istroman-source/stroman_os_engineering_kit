@@ -11,6 +11,7 @@ import {
   listProjects,
   type ProjectItem,
 } from "@/ui/auth/api-client";
+import { LocationsView } from "@/ui/locations/locations-view";
 
 const inputClass =
   "flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -73,6 +74,7 @@ export function ProjectsView() {
 
   return (
     <div className="flex flex-col gap-6">
+      <LocationsView />
       <form onSubmit={onCreate} className="flex flex-col gap-3" aria-label="Start a story">
         <div>
           <h2 className="text-sm font-semibold">Start with the concept</h2>
