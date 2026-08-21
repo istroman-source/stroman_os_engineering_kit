@@ -10,6 +10,7 @@ import {
   type LocationReconstructionRepository,
 } from "@/domain/creative";
 import { createProject, makeProjectName, OwnerId, ProjectId } from "@/domain/project";
+import { OptimisticConcurrencyError } from "@/lib/errors";
 import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes";
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
 import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repositories";
@@ -19,6 +20,7 @@ import {
 } from "../../../test/adapters/in-memory-source-import";
 import {
   refreshLocationReconstruction,
+  retryLocationReconstruction,
   stageLocationReconstructionPhoto,
   startLocationReconstruction,
 } from "./location-reconstruction";
@@ -38,6 +40,10 @@ class Jobs implements LocationReconstructionRepository {
     this.values.set(job.id, job);
   }
   async update(job: LocationReconstructionJob) {
+    const stored = this.values.get(job.id);
+    if (!stored || stored.lockVersion !== job.lockVersion) {
+      throw new OptimisticConcurrencyError();
+    }
     this.values.set(job.id, { ...job, lockVersion: job.lockVersion + 1 });
   }
 }
@@ -281,5 +287,91 @@ describe("photo-to-space reconstruction", () => {
       status: "PROCESSING",
     });
     expect(deps.sourceImports.receipts).toHaveProperty("size", 20);
+  });
+
+  it("atomically retries a failed job from preserved source evidence without another browser upload", async () => {
+    const deps = fixture();
+    develop(deps);
+    await stagePhotos(deps);
+    const receipts = await deps.sourceImports.listByProject(PROJECT);
+    const failed: LocationReconstructionJob = {
+      id: "lrec_FAILEDROOM1",
+      ownerId: OWNER,
+      projectId: PROJECT,
+      name: "Existing office",
+      providerKey: "stroman-owned-v1",
+      providerJobId: "failed-worker-job",
+      status: "FAILED",
+      photos: receipts.map((receipt) => ({
+        mediaAssetId: receipt.mediaAssetId!,
+        fileName: receipt.sourceName,
+        contentType: receipt.contentType as "image/jpeg",
+        byteSize: receipt.byteSize,
+        contentHash: receipt.contentHash,
+        storageKey: receipt.storageKey,
+      })),
+      environmentId: null,
+      failureCode: "RECONSTRUCTION_FAILED",
+      createdAt: new Date("2026-08-20T11:00:00.000Z"),
+      updatedAt: new Date("2026-08-20T11:20:00.000Z"),
+      completedAt: new Date("2026-08-20T11:20:00.000Z"),
+      lockVersion: 1,
+    };
+    deps.locationReconstructions.values.set(failed.id, failed);
+
+    const results = await Promise.allSettled([
+      retryLocationReconstruction(deps, { actorId: OWNER, projectId: PROJECT, jobId: failed.id }),
+      retryLocationReconstruction(deps, { actorId: OWNER, projectId: PROJECT, jobId: failed.id }),
+    ]);
+
+    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+    expect(deps.locationReconstructionProvider.starts).toHaveLength(1);
+    expect(deps.locationReconstructionProvider.starts[0]).toMatchObject({
+      name: "Existing office",
+      idempotencyKey: "retry-location:lrec_FAILEDROOM1:2",
+    });
+    expect(deps.locationReconstructions.values.get(failed.id)).toMatchObject({
+      status: "PROCESSING",
+      providerJobId: "provider-room-1",
+    });
+    expect(deps.sourceImports.receipts).toHaveProperty("size", 20);
+  });
+
+  it("rejects non-terminal and incomplete retry requests before starting the worker", async () => {
+    const deps = fixture();
+    develop(deps);
+    const base: LocationReconstructionJob = {
+      id: "lrec_NONRETRY01",
+      ownerId: OWNER,
+      projectId: PROJECT,
+      name: "Office",
+      providerKey: "stroman-owned-v1",
+      providerJobId: "provider-job",
+      status: "SUCCEEDED",
+      photos: [],
+      environmentId: "env_ROOM000001",
+      failureCode: null,
+      createdAt: new Date("2026-08-20T11:00:00.000Z"),
+      updatedAt: new Date("2026-08-20T11:20:00.000Z"),
+      completedAt: new Date("2026-08-20T11:20:00.000Z"),
+      lockVersion: 1,
+    };
+    deps.locationReconstructions.values.set(base.id, base);
+
+    await expect(
+      retryLocationReconstruction(deps, { actorId: OWNER, projectId: PROJECT, jobId: base.id }),
+    ).rejects.toThrow(/only a failed/i);
+
+    deps.locationReconstructions.values.set(base.id, {
+      ...base,
+      status: "FAILED",
+      environmentId: null,
+      failureCode: "RECONSTRUCTION_FAILED",
+    });
+    await expect(
+      retryLocationReconstruction(deps, { actorId: OWNER, projectId: PROJECT, jobId: base.id }),
+    ).rejects.toThrow(/no longer complete enough/i);
+    expect(deps.locationReconstructionProvider.starts).toHaveLength(0);
   });
 });

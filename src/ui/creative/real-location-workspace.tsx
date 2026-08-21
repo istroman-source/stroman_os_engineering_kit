@@ -110,6 +110,7 @@ export function LocationPhotoInput({
   onGet,
   onStart,
   onRefresh,
+  onRetry,
 }: {
   busy: boolean;
   onGet: () => Promise<LocationReconstructionView | null>;
@@ -119,12 +120,14 @@ export function LocationPhotoInput({
     readonly onProgress?: (uploaded: number, total: number) => void;
   }) => Promise<LocationReconstructionView>;
   onRefresh: (id: string) => Promise<LocationReconstructionView>;
+  onRetry: (id: string) => Promise<LocationReconstructionView>;
 }) {
   const [name, setName] = useState("");
   const [photos, setPhotos] = useState<readonly File[]>([]);
   const [job, setJob] = useState<LocationReconstructionView | null>(null);
   const [working, setWorking] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [lastCheckedAt, setLastCheckedAt] = useState<Date | null>(null);
   const [uploadProgress, setUploadProgress] = useState<{ uploaded: number; total: number } | null>(
     null,
@@ -218,6 +221,19 @@ export function LocationPhotoInput({
       setError(friendlyError(caught));
     } finally {
       setChecking(false);
+    }
+  };
+
+  const retry = async (id: string) => {
+    setRetrying(true);
+    setError(null);
+    try {
+      setJob(await onRetry(id));
+      setLastCheckedAt(new Date());
+    } catch (caught) {
+      setError(friendlyError(caught));
+    } finally {
+      setRetrying(false);
     }
   };
 
@@ -347,10 +363,24 @@ export function LocationPhotoInput({
         </>
       )}
       {job && !active && job.status !== "SUCCEEDED" ? (
-        <p role="status" className="text-destructive mt-3 text-sm">
-          This reconstruction did not produce a trustworthy room. Retake the missing angles and try
-          again; the original photos remain preserved.
-        </p>
+        <div className="border-destructive/30 mt-3 rounded-md border p-3 text-sm">
+          <p role="status" className="text-destructive">
+            This reconstruction did not complete. Your original photos remain preserved in this
+            project.
+          </p>
+          {job.status === "FAILED" && job.photoCount >= 20 && job.photoCount <= 40 ? (
+            <Button
+              className="mt-3"
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={busy || working || checking || retrying}
+              onClick={() => void retry(job.id)}
+            >
+              {retrying ? "Retrying preserved photos…" : "Retry using preserved photos"}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
       {error ? (
         <p role="alert" className="text-destructive mt-3 text-sm">
@@ -485,6 +515,7 @@ export function RealLocationWorkspace({
   onGetReconstruction,
   onStartReconstruction,
   onRefreshReconstruction,
+  onRetryReconstruction,
   onSave,
 }: {
   projectId: string;
@@ -495,6 +526,7 @@ export function RealLocationWorkspace({
   onGetReconstruction: () => Promise<LocationReconstructionView | null>;
   onStartReconstruction: Parameters<typeof LocationPhotoInput>[0]["onStart"];
   onRefreshReconstruction: Parameters<typeof LocationPhotoInput>[0]["onRefresh"];
+  onRetryReconstruction: Parameters<typeof LocationPhotoInput>[0]["onRetry"];
   onSave: (input: {
     workspace: LocationWorkspaceState;
     frame: Blob;
@@ -535,6 +567,7 @@ export function RealLocationWorkspace({
       onGet={onGetReconstruction}
       onStart={onStartReconstruction}
       onRefresh={onRefreshReconstruction}
+      onRetry={onRetryReconstruction}
     />
   );
 
