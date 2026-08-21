@@ -106,6 +106,7 @@ export class PrismaLocationReconstructionRepository implements LocationReconstru
       const updated = await this.db.locationReconstructionJob.updateMany({
         where: { id: job.id, lockVersion: job.lockVersion },
         data: {
+          providerKey: job.providerKey,
           providerJobId: job.providerJobId,
           status: job.status,
           environmentId: job.environmentId,

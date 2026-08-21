@@ -73,9 +73,19 @@ describe("Stroman reconstruction worker", () => {
       });
     };
 
-    const createdResponse = await call("POST", "/v1/jobs", { name: "Office", photoCount: 20 });
+    const createdResponse = await call("POST", "/v1/jobs", {
+      name: "Office",
+      photoCount: 20,
+      idempotencyKey: "location:lrec_workertest",
+    });
     expect(createdResponse.status).toBe(201);
     const { jobId } = await createdResponse.json();
+    const repeated = await call("POST", "/v1/jobs", {
+      name: "Office",
+      photoCount: 20,
+      idempotencyKey: "location:lrec_workertest",
+    });
+    await expect(repeated.json()).resolves.toEqual({ jobId });
     for (let index = 0; index < 20; index += 1) {
       const photo = Buffer.from([0xff, 0xd8, 0xff, index]);
       const hash = `sha256:${createHash("sha256").update(photo).digest("hex")}`;

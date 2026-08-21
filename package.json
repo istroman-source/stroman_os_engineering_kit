@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "dev:reconstruct:mac": "node scripts/start-local-reconstruction.mjs",
+    "worker:reconstruct:mac": "node scripts/start-apple-reconstruction-worker.mjs",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",

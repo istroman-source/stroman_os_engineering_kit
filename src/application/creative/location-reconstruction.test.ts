@@ -43,11 +43,15 @@ class Jobs implements LocationReconstructionRepository {
 }
 
 class Provider implements LocationReconstructionProvider {
-  readonly key = "test-photo-provider";
-  async start() {
+  key = "test-photo-provider";
+  readonly starts: Parameters<LocationReconstructionProvider["start"]>[0][] = [];
+  statusCalls = 0;
+  async start(input: Parameters<LocationReconstructionProvider["start"]>[0]) {
+    this.starts.push(input);
     return { providerJobId: "provider-room-1" };
   }
   async status() {
+    this.statusCalls += 1;
     return { status: "SUCCEEDED" as const, phase: null, percent: 100 };
   }
   async downloadGlb() {
@@ -224,5 +228,58 @@ describe("photo-to-space reconstruction", () => {
       status: "FAILED",
       failureCode: "SUBMISSION_INTERRUPTED",
     });
+  });
+
+  it("hands a legacy provider job to the owned worker exactly once without another upload", async () => {
+    const deps = fixture();
+    develop(deps);
+    await stagePhotos(deps);
+    const receipts = await deps.sourceImports.listByProject(PROJECT);
+    const legacy: LocationReconstructionJob = {
+      id: "lrec_LEGACYROOM1",
+      ownerId: OWNER,
+      projectId: PROJECT,
+      name: "Existing office",
+      providerKey: "kiri-photo-v1",
+      providerJobId: "retired-provider-job",
+      status: "PROCESSING",
+      photos: receipts.map((receipt) => ({
+        mediaAssetId: receipt.mediaAssetId!,
+        fileName: receipt.sourceName,
+        contentType: receipt.contentType as "image/jpeg",
+        byteSize: receipt.byteSize,
+        contentHash: receipt.contentHash,
+        storageKey: receipt.storageKey,
+      })),
+      environmentId: null,
+      failureCode: null,
+      createdAt: new Date("2026-08-20T11:00:00.000Z"),
+      updatedAt: new Date("2026-08-20T11:00:00.000Z"),
+      completedAt: null,
+      lockVersion: 1,
+    };
+    deps.locationReconstructions.values.set(legacy.id, legacy);
+    deps.locationReconstructionProvider.key = "stroman-owned-v1";
+
+    await expect(
+      refreshLocationReconstruction(deps, {
+        actorId: OWNER,
+        projectId: PROJECT,
+        jobId: legacy.id,
+      }),
+    ).resolves.toMatchObject({ status: "PROCESSING", phase: "QUEUED", photoCount: 20 });
+
+    expect(deps.locationReconstructionProvider.statusCalls).toBe(0);
+    expect(deps.locationReconstructionProvider.starts).toHaveLength(1);
+    expect(deps.locationReconstructionProvider.starts[0]).toMatchObject({
+      name: "Existing office",
+      idempotencyKey: "legacy-location:lrec_LEGACYROOM1",
+    });
+    expect(deps.locationReconstructions.values.get(legacy.id)).toMatchObject({
+      providerKey: "stroman-owned-v1",
+      providerJobId: "provider-room-1",
+      status: "PROCESSING",
+    });
+    expect(deps.sourceImports.receipts).toHaveProperty("size", 20);
   });
 });

@@ -152,6 +152,7 @@ export class KiriLocationReconstructionProvider implements LocationReconstructio
   async start(input: {
     readonly name: string;
     readonly photos: readonly LocationReconstructionPhotoInput[];
+    readonly idempotencyKey?: string;
   }): Promise<{ readonly providerJobId: string }> {
     const boundary = `stroman-${randomUUID()}`;
     const multipart = streamingMultipart(boundary, input.photos);
@@ -383,10 +384,12 @@ export class StromanLocationReconstructionProvider implements LocationReconstruc
   async start(input: {
     readonly name: string;
     readonly photos: readonly LocationReconstructionPhotoInput[];
+    readonly idempotencyKey?: string;
   }): Promise<{ readonly providerJobId: string }> {
     const created = await this.requestJson("POST", "/v1/jobs", {
       name: input.name,
       photoCount: input.photos.length,
+      ...(input.idempotencyKey ? { idempotencyKey: input.idempotencyKey } : {}),
     });
     if (typeof created.jobId !== "string" || !created.jobId) {
       throw unavailable("The Stroman reconstruction worker did not create a job.");
