@@ -18,9 +18,10 @@ This phase implements two compatible ingest paths, with photos as the default:
 5. Manipulate one authoritative filmmaking camera and save the exact camera state and rendered frame as the shot.
 6. Keep manual textured-GLB import as a recovery path for users who already have a scan.
 
-It does not build a native mobile scanner, a CAD editor, or a new creative-reasoning system. The
-next operational phase adds one Stroman-owned GPU worker behind the existing provider boundary; it
-does not put reconstruction binaries or long-running compute inside the web process.
+It does not build a native mobile scanner, a CAD editor, or a new creative-reasoning system.
+Private testing runs Apple's native photogrammetry engine on the owner's supported Mac behind the
+existing worker boundary at no reconstruction fee. A dedicated remote GPU worker remains the
+production-scale path; neither engine runs inside a Next.js request.
 
 ## Technology audit
 
@@ -28,6 +29,7 @@ does not put reconstruction binaries or long-running compute inside the web proc
 | --- | --- | --- | --- | --- | --- |
 | [Niantic Capture / Scaniverse](https://www.nianticspatial.com/en/products/capture) | Guided iOS/Android capture; on-device meshes and Gaussian splats; standard exports including open SPZ | Meshes, scan coordinate system, pose/depth evidence where available | Existing phone capture avoids building a native scanner now | On-device path can stay private; cloud credits and commercial rights vary by plan; never make its account/API canonical | Highest-leverage first capture workflow, but only through exported files |
 | [Apple RoomPlan](https://developer.apple.com/documentation/roomplan) | LiDAR-assisted parametric walls, doors, openings, windows, furniture and dimensions; USD/USDZ output | Strong interior geometry and explicit confidence/dimensions | Excellent guided iPhone/iPad capture, Apple/LiDAR constrained | Local device processing; platform-specific | Planned geometry adapter, not required for the first browser import |
+| [Apple RealityKit Object Capture](https://developer.apple.com/documentation/realitykit/creating-3d-objects-from-photographs) | Native photo alignment, poses, textured OBJ/USD output and live progress | Textured photogrammetry mesh; scene mode requires unmasked full-geometry configuration and real-room calibration | Supported on the owner's Mac and runs locally without another filmmaker-facing application | No per-scan fee; Apple-platform constrained and the Mac must remain awake | Default private-test engine behind the Stroman-owned worker contract |
 | [COLMAP](https://colmap.github.io/cli.html) | Open SfM camera recovery, sparse structure, CUDA MVS, dense point cloud, meshing, simplification and texture-atlas generation | Strong provider-neutral reconstruction primitives; absolute scale needs an anchor | Runs headlessly in a dedicated GPU worker, never in the browser or Next.js request | Open source and portable; compute, capacity and dependency review remain ours | Stroman-owned default candidate after exact-fixture calibration |
 | [Nerfstudio](https://docs.nerf.studio/nerfology/methods/splat.html) | Train/export Gaussian splats; broader models can export point clouds/meshes | Splatfacto itself does not export mesh/point cloud; geometry export depends on another model/path | GPU-heavy training is not an ordinary browser/mobile operation | Open source but operationally expensive | Research/offline adapter only until the geometry and compute story is proven |
 | [SparkJS](https://github.com/sparkjsdev/spark) | Three.js-integrated WebGL2 splat renderer supporting SPZ, PLY, SOG and multiple viewpoints | Appearance renderer only; does not turn splats into trustworthy collision/measurement geometry | Lightweight web integration and mobile-oriented rendering | MIT; format/provider neutral | Optional photographic renderer behind an adapter after a real SPZ fixture passes |
@@ -50,12 +52,18 @@ The default UI asks only for a location name and 20–40 overlapping JPEG/PNG ph
 
 The browser stages each source as its own bounded request through the existing owner/project-scoped immutable source boundary, then starts a dedicated reconstruction job by opaque upload ids. This prevents a maximum-size 20–40-photo set from coexisting in server memory. Every adapter reads and transmits one preserved photo at a time and verifies its stored hash before use. The job owns provider key/id, status, failure code, photo receipts, timestamps and optimistic-concurrency version. Provider identifiers never enter `CreativePlanningContext` or the browser response.
 
-The Stroman worker accepts only HTTPS, timestamped, nonce-protected, body-bound HMAC requests. It
-persists one job directory on an encrypted volume, verifies image magic bytes and hashes, and
-executes COLMAP and `gltfpack` without a command shell. It reports provider-neutral `ALIGNING`,
+The Stroman worker accepts timestamped, nonce-protected, body-bound HMAC requests. Production
+workers require HTTPS; the free Mac development mode permits authenticated HTTP only on loopback.
+It persists one job directory, verifies image magic bytes and hashes, and executes child processes
+without a command shell. The Mac engine uses RealityKit Object Capture with masking disabled and
+the bounding box ignored to recover all possible scene geometry, rejects sets with fewer than 60%
+usable samples, defaults to a reduced textured OBJ first pass, and packages it through the pinned
+`gltfpack` dependency. A filmmaker may request medium detail only after a viable first pass proves
+that the capture supports it.
+The remote engine retains the COLMAP CUDA path. Both report provider-neutral `ALIGNING`,
 `DENSIFYING`, `MESHING`, `TEXTURING`, and `PACKAGING` phases. The app preserves KIRI behind the same
-port as a deliberate rollback/comparison path until the owned engine passes the permanent office
-fixture. Both paths must produce one bounded GLB that passes the same room parser before activation.
+port as a deliberate rollback/comparison path until an owned engine passes the permanent office
+fixture. Every path must produce one bounded GLB that passes the same room parser before activation.
 
 Absolute scale is never invented as observed truth. If raw GLB bounds are already room-plausible, Stroman uses the raw unit scale; otherwise it normalizes the vertical extent to a conservative 2.6 m hypothesis. Both outcomes remain `ESTIMATED`. A later metric provider, depth evidence, camera metadata, or one optional known-size anchor may upgrade confidence without changing the normal flow. Manual dimension entry is deliberately absent.
 

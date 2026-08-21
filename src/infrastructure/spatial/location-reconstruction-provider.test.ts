@@ -243,4 +243,23 @@ describe("StromanLocationReconstructionProvider", () => {
       }),
     ).toBeInstanceOf(KiriLocationReconstructionProvider);
   });
+
+  it("allows the authenticated owned worker on localhost only outside production", () => {
+    const local = createLocationReconstructionProvider({
+      NODE_ENV: "development",
+      STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "stroman",
+      STROMAN_RECONSTRUCTION_WORKER_URL: "http://127.0.0.1:3211",
+      STROMAN_RECONSTRUCTION_WORKER_SECRET: secret,
+    });
+    expect(local).toBeInstanceOf(StromanLocationReconstructionProvider);
+    expect(local.key).toBe("stroman-owned-v1");
+    expect(() =>
+      createLocationReconstructionProvider({
+        NODE_ENV: "production",
+        STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "stroman",
+        STROMAN_RECONSTRUCTION_WORKER_URL: "http://127.0.0.1:3211",
+        STROMAN_RECONSTRUCTION_WORKER_SECRET: secret,
+      }),
+    ).toThrow(/HTTPS/i);
+  });
 });

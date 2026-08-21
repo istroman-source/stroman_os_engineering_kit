@@ -302,7 +302,7 @@ const STROMAN_STATUSES = new Set<ProviderReconstructionStatus>([
  * creates a second in-memory copy of the entire capture.
  */
 export class StromanLocationReconstructionProvider implements LocationReconstructionProvider {
-  readonly key = "stroman-colmap-v1";
+  readonly key = "stroman-owned-v1";
   private readonly endpoint: URL;
 
   constructor(
@@ -509,6 +509,7 @@ export function createLocationReconstructionProvider(
     return new StromanLocationReconstructionProvider({
       endpoint: env.STROMAN_RECONSTRUCTION_WORKER_URL.trim(),
       sharedSecret: env.STROMAN_RECONSTRUCTION_WORKER_SECRET,
+      allowInsecureLocalhost: env.NODE_ENV !== "production",
     });
   }
   if (selection === "stroman") {

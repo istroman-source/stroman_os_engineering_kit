@@ -4,6 +4,7 @@ import { copyFile, mkdir, readFile, readdir, rename, stat, writeFile } from "nod
 import http from "node:http";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { runApplePipeline } from "./apple-pipeline.mjs";
 import { runColmapPipeline } from "./pipeline.mjs";
 
 const MAX_JSON_BYTES = 64 * 1024;
@@ -89,6 +90,7 @@ export function createReconstructionWorker({
   dataPath,
   sharedSecret,
   runPipeline = runColmapPipeline,
+  engineName = "stroman-colmap-v1",
   now = Date.now,
   logger = console,
 }) {
@@ -241,7 +243,7 @@ export function createReconstructionWorker({
   async function handler(request, response) {
     const url = new URL(request.url ?? "/", "http://worker.local");
     if (request.method === "GET" && url.pathname === "/health/ready") {
-      return json(response, 200, { status: "ready", engine: "stroman-colmap-v1" });
+      return json(response, 200, { status: "ready", engine: engineName });
     }
     const isPhoto = request.method === "PUT" && /\/photos\/\d+$/.test(url.pathname);
     let body;
@@ -389,14 +391,20 @@ export function createReconstructionWorker({
 }
 
 async function main() {
+  const engine = process.env.STROMAN_RECONSTRUCTION_ENGINE ?? "colmap";
+  if (!new Set(["apple", "colmap"]).has(engine)) {
+    throw new Error("STROMAN_RECONSTRUCTION_ENGINE must be apple or colmap.");
+  }
   const worker = createReconstructionWorker({
     dataPath: process.env.STROMAN_RECONSTRUCTION_DATA_PATH,
     sharedSecret: process.env.STROMAN_RECONSTRUCTION_WORKER_SECRET,
+    runPipeline: engine === "apple" ? runApplePipeline : runColmapPipeline,
+    engineName: engine === "apple" ? "stroman-apple-v1" : "stroman-colmap-v1",
   });
   await worker.initialize();
   const port = Number(process.env.PORT ?? 8080);
   worker.server.listen(port, "0.0.0.0", () =>
-    console.log(`Stroman reconstruction worker on ${port}`),
+    console.log(`Stroman reconstruction worker (${engine}) on ${port}`),
   );
 }
 

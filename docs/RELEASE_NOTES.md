@@ -1,5 +1,19 @@
 # Release Notes
 
+## Zero-fee Apple reconstruction path (2026-08-20)
+
+- Added an Apple RealityKit photogrammetry engine for supported Macs, verified on the owner's exact
+  machine with `PhotogrammetrySession.isSupported == true`.
+- Added a one-command private-test mode that compiles the native engine, creates an ephemeral HMAC
+  secret without exposing it, starts the loopback-only worker, and launches Stroman OS on port 3200.
+- Apple progress maps into the existing no-reload phases; insufficient source coverage fails closed,
+  and the one textured OBJ result is packaged through locked `gltfpack` into the existing bounded
+  GLB ingest path.
+- Local capture defaults to RealityKit's reduced detail tier so the first real room test uses the
+  least practical compute; medium is an explicit follow-up option after the visual gate.
+- The free mode does not turn localhost into production infrastructure. COLMAP remains the remote
+  owned-engine path and KIRI remains an explicit comparison/rollback adapter.
+
 ## Stroman-owned reconstruction engine foundation (2026-08-20)
 
 - Added a signed, provider-neutral adapter for a Stroman-controlled photo-reconstruction worker;
