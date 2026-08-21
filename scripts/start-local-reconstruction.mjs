@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { appleReconstructionWorkerEnvironment } from "./apple-reconstruction-worker-config.mjs";
 import { localReconstructionEnvironment } from "./local-reconstruction-config.mjs";
 
 const root = process.cwd();
@@ -92,11 +93,12 @@ const sharedEnvironment = localReconstructionEnvironment(process.env, {
   secret,
 });
 start(process.execPath, ["services/reconstruction-worker/server.mjs"], {
-  ...sharedEnvironment,
-  PORT: String(workerPort),
-  STROMAN_RECONSTRUCTION_ENGINE: "apple",
-  STROMAN_GLTFPACK_BIN: path.join(root, "node_modules", ".bin", "gltfpack"),
-  STROMAN_RECONSTRUCTION_DATA_PATH: path.join(runtimePath, "jobs"),
+  ...appleReconstructionWorkerEnvironment(sharedEnvironment, {
+    root,
+    port: workerPort,
+    binary,
+    runtimePath,
+  }),
 });
 
 try {

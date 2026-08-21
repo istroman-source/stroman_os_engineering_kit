@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { appleReconstructionWorkerEnvironment } from "./apple-reconstruction-worker-config.mjs";
 
 const root = process.cwd();
 const runtimePath = path.join(root, ".data", "apple-reconstruction-worker");
@@ -41,14 +42,7 @@ await run(binary, ["--check"]);
 
 const worker = spawn(process.execPath, ["services/reconstruction-worker/server.mjs"], {
   cwd: root,
-  env: {
-    ...process.env,
-    PORT: port,
-    STROMAN_RECONSTRUCTION_ENGINE: "apple",
-    STROMAN_GLTFPACK_BIN: path.join(root, "node_modules", ".bin", "gltfpack"),
-    STROMAN_RECONSTRUCTION_DATA_PATH:
-      process.env.STROMAN_RECONSTRUCTION_DATA_PATH ?? path.join(runtimePath, "jobs"),
-  },
+  env: appleReconstructionWorkerEnvironment(process.env, { root, port, binary, runtimePath }),
   shell: false,
   stdio: "inherit",
 });
