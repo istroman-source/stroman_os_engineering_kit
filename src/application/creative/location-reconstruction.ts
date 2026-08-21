@@ -196,6 +196,7 @@ export async function startLocationReconstruction(
   try {
     const submitted = await deps.locationReconstructionProvider.start({
       name,
+      idempotencyKey: job.id,
       photos: sources.map((photo): LocationReconstructionPhotoInput => ({
         fileName: photo.fileName,
         contentType: photo.contentType,
@@ -248,6 +249,60 @@ export async function refreshLocationReconstruction(
   }
   if (job.status === "SUCCEEDED" || job.status === "FAILED" || job.status === "EXPIRED") {
     return toLocationReconstructionView(job);
+  }
+  if (
+    job.providerKey !== deps.locationReconstructionProvider.key &&
+    deps.locationReconstructionProvider.key === "stroman-owned-v1"
+  ) {
+    // A completed upload from a retired provider is still Stroman-owned source
+    // evidence. Claim it atomically before talking to the worker, then use the
+    // same deterministic key for every transport retry. This avoids another
+    // browser upload and avoids creating duplicate reconstruction jobs.
+    const claimed: LocationReconstructionJob = {
+      ...job,
+      providerKey: deps.locationReconstructionProvider.key,
+      providerJobId: null,
+      status: "SUBMITTING",
+      failureCode: null,
+      updatedAt: deps.clock.now(),
+      completedAt: null,
+    };
+    await deps.locationReconstructions.update(claimed);
+    const reserved = { ...claimed, lockVersion: claimed.lockVersion + 1 };
+    try {
+      const submitted = await deps.locationReconstructionProvider.start({
+        name: reserved.name,
+        idempotencyKey: `legacy-location:${reserved.id}`,
+        photos: reserved.photos.map((photo): LocationReconstructionPhotoInput => ({
+          fileName: photo.fileName,
+          contentType: photo.contentType,
+          byteSize: photo.byteSize,
+          contentHash: photo.contentHash,
+          loadBytes: () => deps.sourceStorage.get(photo.storageKey),
+        })),
+      });
+      const processing: LocationReconstructionJob = {
+        ...reserved,
+        providerJobId: submitted.providerJobId,
+        status: "PROCESSING",
+        updatedAt: deps.clock.now(),
+      };
+      await deps.locationReconstructions.update(processing);
+      return toLocationReconstructionView(
+        { ...processing, lockVersion: processing.lockVersion + 1 },
+        { phase: "QUEUED", percent: 0 },
+      );
+    } catch (error) {
+      const failed: LocationReconstructionJob = {
+        ...reserved,
+        status: "FAILED",
+        failureCode: "PROVIDER_SUBMISSION_FAILED",
+        updatedAt: deps.clock.now(),
+        completedAt: deps.clock.now(),
+      };
+      await deps.locationReconstructions.update(failed).catch(() => undefined);
+      throw error;
+    }
   }
   if (!job.providerJobId) {
     const interrupted = deps.clock.now().getTime() - job.updatedAt.getTime() > SUBMISSION_STALE_MS;

@@ -265,11 +265,23 @@ export function createReconstructionWorker({
           input.name.trim().length > 160 ||
           !Number.isInteger(input.photoCount) ||
           input.photoCount < 20 ||
-          input.photoCount > 40
+          input.photoCount > 40 ||
+          (input.idempotencyKey !== undefined &&
+            (typeof input.idempotencyKey !== "string" ||
+              !/^[a-zA-Z0-9:_-]{8,160}$/.test(input.idempotencyKey)))
         ) {
           return json(response, 400, { error: "INVALID_JOB" });
         }
-        const id = `rjob_${randomUUID().replaceAll("-", "")}`;
+        const id = input.idempotencyKey
+          ? `rjob_${createHash("sha256").update(input.idempotencyKey).digest("hex").slice(0, 32)}`
+          : `rjob_${randomUUID().replaceAll("-", "")}`;
+        const existing = jobs.get(id);
+        if (existing) {
+          if (existing.name !== input.name.trim() || existing.photoCount !== input.photoCount) {
+            return json(response, 409, { error: "IDEMPOTENCY_CONFLICT" });
+          }
+          return json(response, 201, { jobId: id });
+        }
         await mkdir(path.join(jobDirectory(id), "images"), { recursive: true, mode: 0o700 });
         const createdAt = new Date(now()).toISOString();
         await persist({

@@ -59,11 +59,13 @@ describe("PrismaLocationReconstructionRepository", () => {
 
     await repository.update({
       ...original,
+      providerKey: "stroman-owned-v1",
       providerJobId: "provider-room-1",
       status: "PROCESSING",
       updatedAt: new Date("2026-08-20T12:01:00.000Z"),
     });
     await expect(repository.findById(original.id)).resolves.toMatchObject({
+      providerKey: "stroman-owned-v1",
       providerJobId: "provider-room-1",
       status: "PROCESSING",
       lockVersion: 2,

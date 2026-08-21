@@ -83,6 +83,8 @@ export interface LocationReconstructionProvider {
   start(input: {
     readonly name: string;
     readonly photos: readonly LocationReconstructionPhotoInput[];
+    /** Stable per-job key so a transport retry cannot create a second capture. */
+    readonly idempotencyKey?: string;
   }): Promise<{ readonly providerJobId: string }>;
   status(providerJobId: string): Promise<ProviderReconstructionProgress>;
   downloadGlb(providerJobId: string): Promise<{

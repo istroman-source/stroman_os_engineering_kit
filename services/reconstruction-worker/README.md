@@ -29,6 +29,20 @@ This path has no reconstruction fee, but the Mac must remain awake while process
 private-test default, not a claim that a user's localhost is production infrastructure. Remote web
 activation still requires a reachable owned worker or a future outbound local-agent queue.
 
+## Mac companion worker for the hosted app
+
+The hosted Railway app can use this same Apple engine through an HTTPS tunnel while keeping the
+compute and source-photo processing on the Mac. Start only the worker with a persistent secret:
+
+```sh
+STROMAN_RECONSTRUCTION_WORKER_SECRET='<generated secret>' npm run worker:reconstruct:mac
+```
+
+Expose loopback port `3211` through an HTTPS tunnel, then configure the hosted app with
+`STROMAN_LOCATION_RECONSTRUCTION_PROVIDER=stroman`, the tunnel URL, and the same secret. The worker
+authenticates every request with a body-bound, timestamped, nonce-protected HMAC. Never expose it
+without the secret.
+
 ## Remote CUDA runtime
 
 - Linux host with an NVIDIA GPU, current driver, Docker, and NVIDIA Container Toolkit.
