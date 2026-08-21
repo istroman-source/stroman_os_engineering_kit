@@ -218,6 +218,17 @@ export async function refreshLocationPhotoReconstruction(
   return data.job;
 }
 
+export async function retryLocationPhotoReconstruction(
+  projectId: string,
+  reconstructionId: string,
+): Promise<LocationReconstructionView> {
+  const { data } = await apiPostWithEtag<{ job: LocationReconstructionView }>(
+    `/api/v1/projects/${enc(projectId)}/location-reconstructions/${enc(reconstructionId)}/retry`,
+    {},
+  );
+  return data.job;
+}
+
 export async function saveLocationShot(
   projectId: string,
   input: {

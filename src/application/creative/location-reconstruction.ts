@@ -229,6 +229,94 @@ export async function startLocationReconstruction(
   }
 }
 
+/**
+ * Resubmit the already-preserved evidence from a terminal provider failure.
+ * This deliberately creates a fresh provider job: a provider can retain its
+ * own terminal state, while the original photos remain immutable source
+ * evidence and must never require a browser re-upload to recover.
+ */
+export async function retryLocationReconstruction(
+  deps: ReconstructionDeps,
+  input: { readonly actorId: OwnerId; readonly projectId: ProjectId; readonly jobId: string },
+): Promise<LocationReconstructionView> {
+  await requireOwnedProject(deps, input.actorId, input.projectId);
+  await requireDevelopedBrief(deps, input.projectId);
+  if (deps.locationReconstructionProvider.key === "unavailable") {
+    fail("UNAVAILABLE", "Photo reconstruction is not configured on this deployment.");
+  }
+  const failed = await deps.locationReconstructions.findById(input.jobId);
+  if (!failed || failed.projectId !== input.projectId || failed.ownerId !== input.actorId) {
+    fail("NOT_FOUND", "Location reconstruction not found.");
+  }
+  if (failed.status !== "FAILED") {
+    fail("CONFLICT", "Only a failed location reconstruction can be retried.");
+  }
+  const latest = await deps.locationReconstructions.findLatestByProject(input.projectId);
+  if (
+    latest &&
+    latest.id !== failed.id &&
+    (latest.status === "SUBMITTING" || latest.status === "PROCESSING")
+  ) {
+    fail("CONFLICT", "A location is already being built from photos for this project.");
+  }
+  if (failed.photos.length < 20 || failed.photos.length > 40) {
+    fail("VALIDATION", "The preserved room-photo set is no longer complete enough to retry.");
+  }
+
+  // Claim the existing terminal job with its optimistic version before the
+  // provider is contacted. That makes a retry a single-owner transition even
+  // when two tabs submit it at the same time; the losing writer never starts a
+  // duplicate worker job.
+  const now = deps.clock.now();
+  const claimed: LocationReconstructionJob = {
+    ...failed,
+    providerKey: deps.locationReconstructionProvider.key,
+    providerJobId: null,
+    status: "SUBMITTING",
+    failureCode: null,
+    updatedAt: now,
+    completedAt: null,
+  };
+  await deps.locationReconstructions.update(claimed);
+  let retrying: LocationReconstructionJob = { ...claimed, lockVersion: claimed.lockVersion + 1 };
+  try {
+    const submitted = await deps.locationReconstructionProvider.start({
+      name: retrying.name,
+      // The provider may retain the first terminal job's idempotency key. The
+      // claimed version yields a new, deterministic retry identity instead.
+      idempotencyKey: `retry-location:${retrying.id}:${retrying.lockVersion}`,
+      photos: retrying.photos.map((photo): LocationReconstructionPhotoInput => ({
+        fileName: photo.fileName,
+        contentType: photo.contentType,
+        byteSize: photo.byteSize,
+        contentHash: photo.contentHash,
+        loadBytes: () => deps.sourceStorage.get(photo.storageKey),
+      })),
+    });
+    retrying = {
+      ...retrying,
+      providerJobId: submitted.providerJobId,
+      status: "PROCESSING",
+      updatedAt: deps.clock.now(),
+    };
+    await deps.locationReconstructions.update(retrying);
+    return toLocationReconstructionView(
+      { ...retrying, lockVersion: retrying.lockVersion + 1 },
+      { phase: "QUEUED", percent: 0 },
+    );
+  } catch (error) {
+    const submissionFailed: LocationReconstructionJob = {
+      ...retrying,
+      status: "FAILED",
+      failureCode: "PROVIDER_SUBMISSION_FAILED",
+      updatedAt: deps.clock.now(),
+      completedAt: deps.clock.now(),
+    };
+    await deps.locationReconstructions.update(submissionFailed).catch(() => undefined);
+    throw error;
+  }
+}
+
 export async function getLatestLocationReconstruction(
   deps: ReconstructionDeps,
   input: { readonly actorId: OwnerId; readonly projectId: ProjectId },

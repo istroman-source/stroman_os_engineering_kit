@@ -381,6 +381,7 @@ export function BlueprintView({
   onGetLocationReconstruction,
   onStartLocationReconstruction,
   onRefreshLocationReconstruction,
+  onRetryLocationReconstruction,
   onSaveLocation,
 }: {
   analysis: Analysis;
@@ -406,6 +407,7 @@ export function BlueprintView({
     readonly onProgress?: (uploaded: number, total: number) => void;
   }) => Promise<LocationReconstructionView>;
   onRefreshLocationReconstruction?: (id: string) => Promise<LocationReconstructionView>;
+  onRetryLocationReconstruction?: (id: string) => Promise<LocationReconstructionView>;
   onSaveLocation?: (input: {
     workspace: LocationWorkspaceState;
     frame: Blob;
@@ -537,6 +539,12 @@ export function BlueprintView({
             }
             onRefreshReconstruction={
               onRefreshLocationReconstruction ??
+              (async () => {
+                throw new Error("Photo reconstruction is unavailable.");
+              })
+            }
+            onRetryReconstruction={
+              onRetryLocationReconstruction ??
               (async () => {
                 throw new Error("Photo reconstruction is unavailable.");
               })

@@ -11,6 +11,7 @@ import {
   saveLocationShot,
   getLatestLocationPhotoReconstruction,
   refreshLocationPhotoReconstruction,
+  retryLocationPhotoReconstruction,
   startLocationPhotoReconstruction,
   updatePlanning,
   uploadLocationEnvironment,
@@ -141,6 +142,10 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
           onRefreshLocationReconstruction={async (id) => {
             const job = await refreshLocationPhotoReconstruction(projectId, id);
             if (job.status === "SUCCEEDED") setAnalysis(await getAnalysis(projectId));
+            return job;
+          }}
+          onRetryLocationReconstruction={async (id) => {
+            const job = await retryLocationPhotoReconstruction(projectId, id);
             return job;
           }}
           onSaveLocation={(input: {

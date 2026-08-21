@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   analyzeProject,
+  retryLocationPhotoReconstruction,
   startLocationPhotoReconstruction,
   type Analysis,
   type AnalyzeFields,
@@ -130,6 +131,34 @@ describe("analyzeProject edge recovery", () => {
 });
 
 describe("location reconstruction upload memory boundary", () => {
+  it("retries a failed reconstruction through the preserved-photo endpoint", async () => {
+    const fetch = vi.fn().mockResolvedValue(
+      response(202, {
+        job: {
+          id: "lrec_retry",
+          name: "Office",
+          status: "PROCESSING",
+          phase: "QUEUED",
+          photoCount: 29,
+          environmentId: null,
+          failureCode: null,
+          createdAt: "2026-08-20T12:00:00.000Z",
+          updatedAt: "2026-08-20T12:00:00.000Z",
+        },
+      }),
+    );
+    vi.stubGlobal("fetch", fetch);
+
+    await expect(retryLocationPhotoReconstruction("proj_1", "lrec_failed")).resolves.toMatchObject({
+      id: "lrec_retry",
+      status: "PROCESSING",
+    });
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/v1/projects/proj_1/location-reconstructions/lrec_failed/retry",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
   it("stages a 40-photo set as bounded single-photo requests before starting the job", async () => {
     const photos = Array.from(
       { length: 40 },

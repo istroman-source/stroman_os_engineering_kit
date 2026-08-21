@@ -27,7 +27,13 @@ describe("LocationPhotoInput", () => {
     const onRefresh = vi.fn().mockResolvedValue(job);
 
     render(
-      <LocationPhotoInput busy={false} onGet={onGet} onStart={onStart} onRefresh={onRefresh} />,
+      <LocationPhotoInput
+        busy={false}
+        onGet={onGet}
+        onStart={onStart}
+        onRefresh={onRefresh}
+        onRetry={vi.fn()}
+      />,
     );
 
     expect(await screen.findByText(/no dimensions or separate scanning software/i)).toBeVisible();
@@ -76,6 +82,7 @@ describe("LocationPhotoInput", () => {
         onGet={vi.fn().mockResolvedValue(queued)}
         onStart={vi.fn()}
         onRefresh={onRefresh}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -110,6 +117,45 @@ describe("LocationPhotoInput", () => {
 
     expect(message).toMatch(/still being reconstructed after 31 minutes/i);
     expect(message).toMatch(/do not resubmit/i);
+  });
+
+  it("retries a failed job using its preserved photos without asking for another upload", async () => {
+    const user = userEvent.setup();
+    const failed = {
+      id: "lrec_FAILED0001",
+      name: "Office",
+      status: "FAILED" as const,
+      phase: null,
+      percent: null,
+      photoCount: 29,
+      environmentId: null,
+      failureCode: "RECONSTRUCTION_FAILED",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const retried = {
+      ...failed,
+      id: "lrec_RETRY0001",
+      status: "PROCESSING" as const,
+      phase: "QUEUED" as const,
+    };
+    const onRetry = vi.fn().mockResolvedValue(retried);
+    const onStart = vi.fn();
+    render(
+      <LocationPhotoInput
+        busy={false}
+        onGet={vi.fn().mockResolvedValue(failed)}
+        onStart={onStart}
+        onRefresh={vi.fn().mockResolvedValue(retried)}
+        onRetry={onRetry}
+      />,
+    );
+
+    await screen.findByText(/original photos remain preserved/i);
+    await user.click(screen.getByRole("button", { name: /retry using preserved photos/i }));
+    await waitFor(() => expect(onRetry).toHaveBeenCalledWith(failed.id));
+    expect(onStart).not.toHaveBeenCalled();
+    expect(await screen.findByText(/building office/i)).toBeVisible();
   });
 
   it("shows queue age and confirms that reloading is unnecessary", () => {

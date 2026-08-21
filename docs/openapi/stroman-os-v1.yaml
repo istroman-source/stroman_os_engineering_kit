@@ -2481,6 +2481,44 @@ paths:
         "409": { $ref: "#/components/responses/Conflict" }
         "503":
           description: The configured reconstruction provider is unavailable.
+  /api/v1/projects/{projectId}/location-reconstructions/{reconstructionId}/retry:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: reconstructionId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: retryProjectLocationReconstruction
+      summary: Retry a failed reconstruction from its already preserved private photos.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        "202":
+          description: A fresh provider job is running from the preserved source evidence.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [job]
+                properties:
+                  job: { $ref: "#/components/schemas/LocationReconstruction" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422":
+          description: The failed job does not retain a complete retryable photo set.
+        "503":
+          description: The configured reconstruction provider is unavailable.
   /api/v1/projects/{projectId}/location-environments:
     parameters:
       - name: projectId
