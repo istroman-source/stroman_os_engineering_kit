@@ -13,6 +13,10 @@ class Locations implements PreparedLocationRepository {
     const index = this.values.findIndex((item) => item.id === location.id);
     if (index >= 0) this.values[index] = location;
   }
+  async addInput(_preparedLocationId: string, input: PreparedLocation["inputs"][number]) {
+    const index = this.values.findIndex((item) => item.id === _preparedLocationId);
+    if (index >= 0) this.values[index] = { ...this.values[index]!, inputs: [...this.values[index]!.inputs, input] };
+  }
 }
 
 describe("prepared location application", () => {
@@ -22,6 +26,8 @@ describe("prepared location application", () => {
       preparedLocations,
       ids: new SequentialIdGenerator(),
       clock: new FixedClock(new Date("2026-08-21T13:00:00.000Z")),
+      sourceStorage: { put: async () => ({ leaseId: "lease" }), get: async () => new Uint8Array(), retain: async () => undefined, discard: async () => undefined },
+      locationGeometryInspector: { inferRoomScale: () => ({ scaleMetersPerUnit: 1, sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as const, bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } } }) },
     };
     const owner = OwnerId.unsafe("usr_LOCATION001");
     const location = await createPreparedLocationForOwner(deps, { actorId: owner, name: "Studio A", inputKind: "GLB" });

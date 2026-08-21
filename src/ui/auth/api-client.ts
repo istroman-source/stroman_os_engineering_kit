@@ -182,6 +182,11 @@ export function createPreparedLocation(input: { name: string; inputKind: "GLB" |
   return postJson<{ location: PreparedLocationItem }>("/api/v1/locations", input).then((body) => body.location);
 }
 
+export function uploadPreparedLocationGlb(locationId: string, file: File): Promise<PreparedLocationItem> {
+  const form = new FormData(); form.set("file", file);
+  return apiPostForm<{ location: PreparedLocationItem }>(`/api/v1/locations/${encodeURIComponent(locationId)}/glb`, form).then((body) => body.location);
+}
+
 /** Fetch a single project (owner-scoped) for the workspace header. */
 export function getProject(projectId: string): Promise<ProjectItem> {
   return request<ProjectItem>(`/api/v1/projects/${encodeURIComponent(projectId)}`, {

@@ -8,6 +8,7 @@ import {
   errorStatus,
   friendlyError,
   listPreparedLocations,
+  uploadPreparedLocationGlb,
   type PreparedLocationItem,
 } from "@/ui/auth/api-client";
 
@@ -54,6 +55,15 @@ export function LocationsView() {
     } finally { setBusy(false); }
   }
 
+  async function onGlb(location: PreparedLocationItem, file: File | undefined) {
+    if (!file) return;
+    setBusy(true); setError(null);
+    try {
+      const updated = await uploadPreparedLocationGlb(location.id, file);
+      setLocations((current) => (current ?? []).map((item) => item.id === updated.id ? updated : item));
+    } catch (err) { setError(friendlyError(err)); } finally { setBusy(false); }
+  }
+
   return <section className="border-border bg-card flex flex-col gap-4 rounded-lg border p-5" aria-label="Locations">
     <div>
       <h2 className="text-sm font-semibold">Locations</h2>
@@ -69,9 +79,9 @@ export function LocationsView() {
     </form>
     {error ? <p role="alert" className="text-destructive text-sm">{error}</p> : null}
     {locations === null ? <p className="text-muted-foreground text-sm">Loading locations…</p> : locations.length === 0 ? <p className="text-muted-foreground text-sm">No rooms prepared yet. Add one when you are ready.</p> : <ul className="flex flex-col gap-2">
-      {locations.map((location) => <li key={location.id} className="border-border flex items-center justify-between rounded-md border px-3 py-3">
+      {locations.map((location) => <li key={location.id} className="border-border flex items-center justify-between gap-3 rounded-md border px-3 py-3">
         <span><span className="block text-sm font-medium">{location.name}</span><span className="text-muted-foreground text-xs">{location.inputKind === "GLB" ? "3D scan" : "Photos"}</span></span>
-        <span className="text-muted-foreground text-xs">{statusLabel(location)}</span>
+        {location.inputKind === "GLB" && location.status === "DRAFT" ? <label className="text-sm"><span className="sr-only">Upload GLB for {location.name}</span><input type="file" accept=".glb,model/gltf-binary" disabled={busy} onChange={(event) => void onGlb(location, event.target.files?.[0])} /></label> : <span className="text-muted-foreground text-xs">{statusLabel(location)}</span>}
       </li>)}
     </ul>}
   </section>;

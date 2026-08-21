@@ -107,4 +107,14 @@ export class PrismaPreparedLocationRepository implements PreparedLocationReposit
       throw translatePrismaError(error);
     }
   }
+
+  async addInput(preparedLocationId: string, input: PreparedLocationInput): Promise<void> {
+    try {
+      await this.db.preparedLocationInput.create({ data: {
+        id: input.id, preparedLocationId, kind: input.kind,
+        fileName: input.fileName, contentType: input.contentType, byteSize: input.byteSize,
+        contentHash: input.contentHash, storageKey: input.storageKey, createdAt: input.createdAt,
+      } });
+    } catch (error) { throw translatePrismaError(error); }
+  }
 }

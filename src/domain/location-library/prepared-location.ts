@@ -43,6 +43,7 @@ export interface PreparedLocationRepository {
   listByOwner(ownerId: OwnerId): Promise<readonly PreparedLocation[]>;
   insert(location: PreparedLocation): Promise<void>;
   update(location: PreparedLocation): Promise<void>;
+  addInput(preparedLocationId: string, input: PreparedLocationInput): Promise<void>;
 }
 
 export function createPreparedLocation(input: {
