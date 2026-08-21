@@ -13,6 +13,8 @@ import type {
   ProductionReality,
   ProductionStage,
   ShotPlanningState,
+  LocationWorkspaceState,
+  LocationReconstructionView,
 } from "@/domain/creative";
 
 export type Blueprint = DomainBlueprint;
@@ -130,6 +132,115 @@ export async function uploadScoutPhotos(
   const form = new FormData();
   for (const file of files) form.append("files", file);
   return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/scout-photos`, form);
+}
+
+export async function uploadLocationEnvironment(
+  projectId: string,
+  input: {
+    readonly file: File;
+    readonly name: string;
+    readonly sourceKind: "PHONE_SCAN" | "PHOTOGRAMMETRY" | "ROOMPLAN" | "OTHER";
+    readonly unit: "METERS" | "CENTIMETERS" | "MILLIMETERS";
+    readonly metricScale: boolean;
+  },
+): Promise<Analysis> {
+  const form = new FormData();
+  form.append("file", input.file);
+  form.append("name", input.name);
+  form.append("sourceKind", input.sourceKind);
+  form.append("unit", input.unit);
+  form.append("metricScale", String(input.metricScale));
+  return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/location-environments`, form);
+}
+
+export async function startLocationPhotoReconstruction(
+  projectId: string,
+  input: {
+    readonly name: string;
+    readonly photos: readonly File[];
+    readonly onProgress?: (uploaded: number, total: number) => void;
+  },
+): Promise<LocationReconstructionView> {
+  const uploadIds: string[] = [];
+  for (const [index, photo] of input.photos.entries()) {
+    const form = new FormData();
+    form.append("photo", photo);
+    const response = await apiPostForm<{ upload: { uploadId: string } }>(
+      `/api/v1/projects/${enc(projectId)}/location-reconstructions/photos`,
+      form,
+    );
+    uploadIds.push(response.upload.uploadId);
+    input.onProgress?.(index + 1, input.photos.length);
+  }
+  try {
+    const { data: response } = await apiPostWithEtag<{ job: LocationReconstructionView }>(
+      `/api/v1/projects/${enc(projectId)}/location-reconstructions`,
+      { name: input.name, uploadIds },
+    );
+    return response.job;
+  } catch (error) {
+    const status = errorStatus(error);
+    if (status !== undefined && status >= 500) {
+      try {
+        const recovered = await getLatestLocationPhotoReconstruction(projectId);
+        if (
+          recovered &&
+          recovered.name === input.name &&
+          recovered.photoCount === input.photos.length
+        ) {
+          return recovered;
+        }
+      } catch {
+        // Preserve the original typed edge/provider failure below.
+      }
+    }
+    throw error;
+  }
+}
+
+export async function getLatestLocationPhotoReconstruction(
+  projectId: string,
+): Promise<LocationReconstructionView | null> {
+  const { data } = await apiGetWithEtag<{ job: LocationReconstructionView | null }>(
+    `/api/v1/projects/${enc(projectId)}/location-reconstructions`,
+  );
+  return data.job;
+}
+
+export async function refreshLocationPhotoReconstruction(
+  projectId: string,
+  reconstructionId: string,
+): Promise<LocationReconstructionView> {
+  const { data } = await apiPostWithEtag<{ job: LocationReconstructionView }>(
+    `/api/v1/projects/${enc(projectId)}/location-reconstructions/${enc(reconstructionId)}/refresh`,
+    {},
+  );
+  return data.job;
+}
+
+export async function saveLocationShot(
+  projectId: string,
+  input: {
+    readonly workspace: LocationWorkspaceState;
+    readonly frame: Blob;
+    readonly width: number;
+    readonly height: number;
+    readonly title: string;
+    readonly technicalSummary: string;
+    readonly shootingInstructions: string;
+    readonly includesUnknownSpace: boolean;
+  },
+): Promise<Analysis> {
+  const form = new FormData();
+  form.append("workspace", JSON.stringify(input.workspace));
+  form.append("frame", input.frame, "camera-frame.png");
+  form.append("width", String(input.width));
+  form.append("height", String(input.height));
+  form.append("title", input.title);
+  form.append("technicalSummary", input.technicalSummary);
+  form.append("shootingInstructions", input.shootingInstructions);
+  form.append("includesUnknownSpace", String(input.includesUnknownSpace));
+  return apiPostForm<Analysis>(`/api/v1/projects/${enc(projectId)}/location-shots`, form);
 }
 
 export async function updatePlanning(

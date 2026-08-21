@@ -1,5 +1,39 @@
 # Release Notes
 
+## Stroman-owned reconstruction engine foundation (2026-08-20)
+
+- Added a signed, provider-neutral adapter for a Stroman-controlled photo-reconstruction worker;
+  automatic selection prefers the owned worker while preserving KIRI as a deliberate rollback.
+- Added a persistent single-flight worker with bounded per-photo uploads, MIME/magic/hash checks,
+  timestamped nonce-protected HMAC authentication, restart recovery, safe subprocess invocation,
+  bounded results, and direct GLB delivery.
+- Added a reproducible GPU-container definition for COLMAP camera alignment, CUDA dense geometry,
+  meshing, simplification, texturing, and `gltfpack` packaging. Deployed images require reviewed
+  COLMAP digests and meshoptimizer commits rather than mutable production pins.
+- The filmmaker now receives useful owned-engine stages and bounded percentages without exposing
+  reconstruction plumbing or requiring page reloads.
+
+## Reconstruction progress recovery (2026-08-20)
+
+- Long-running photo reconstructions now expose honest upload, queue, and active-reconstruction
+  progress without exposing provider plumbing. The workspace explains the normal intensive-scan
+  window and keeps the original paid task active instead of encouraging a duplicate submission.
+- Visible workspaces now refresh immediately and continue polling through a stable, single-flight
+  loop without page reloads or duplicate requests from hidden tabs. **Check now** visibly enters a
+  checking state and reports the last successful status check instead of appearing inert.
+
+## Photo-to-space upload reliability fix (2026-08-20)
+
+- Replaced the single 20–40-photo multipart request that could exhaust a production container with
+  bounded, sequential, owner-scoped photo staging followed by an opaque-id job start.
+- KIRI submission now uses an integrity-checked, fixed-length multipart stream that loads one
+  preserved photo at a time instead of retaining or copying the complete photo set.
+- The filmmaker sees per-photo upload progress, while the same 8 MB-per-photo, 180 MB-set,
+  authentication, provenance, duplicate-evidence, provider-neutrality, and private-storage bounds
+  remain enforced.
+- Regression coverage exercises the maximum 40-photo browser sequence and proves the provider
+  adapter never has more than one photo loader active.
+
 ## Authoritative 3D filmmaking workspace candidate (2026-08-14)
 
 - Replaced the filmmaker-facing visual-planning hierarchy with one **Story → Plan → Edit**

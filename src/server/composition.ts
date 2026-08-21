@@ -14,7 +14,13 @@ import type { AuditIntegrationRepository } from "@/domain/audit-integration";
 import type { AnalysisRepository, GroundedEditorialAnalyzer } from "@/domain/analysis";
 import type { DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceRepository } from "@/domain/evidence";
-import type { CreativeBriefRepository, CreativeReasoningProvider } from "@/domain/creative";
+import type {
+  CreativeBriefRepository,
+  CreativeReasoningProvider,
+  LocationReconstructionProvider,
+  LocationReconstructionRepository,
+  LocationGeometryInspector,
+} from "@/domain/creative";
 import type {
   EvaluationRepository,
   ReviewRunRepository,
@@ -75,12 +81,15 @@ import {
   PrismaAnalysisRepository,
   PrismaSourceImportRepository,
   PrismaAuditIntegrationRepository,
+  PrismaLocationReconstructionRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
 import { DeterministicGroundedAnalyzer } from "@/infrastructure/analysis";
 import { createCreativeReasoningProvider } from "@/infrastructure/creative";
 import { createVisualMediaAnalyzer } from "@/infrastructure/media-analysis";
+import { createLocationReconstructionProvider } from "@/infrastructure/spatial/location-reconstruction-provider";
+import { GlbLocationGeometryInspector } from "@/infrastructure/spatial/glb-metadata";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
 import { isCookieSecure } from "@/server/auth/config";
 import type { AuthGateway, RequestAuthenticator } from "@/server/auth/types";
@@ -106,6 +115,9 @@ export interface ApiContext {
   readonly privateBetaAccess: PrivateBetaAccessRepository;
   readonly creativeBriefs: CreativeBriefRepository;
   readonly creativeReasoning: CreativeReasoningProvider;
+  readonly locationReconstructions: LocationReconstructionRepository;
+  readonly locationReconstructionProvider: LocationReconstructionProvider;
+  readonly locationGeometryInspector: LocationGeometryInspector;
   readonly entities: EntityRepository;
   readonly sources: SourceRepository;
   readonly memories: MemoryRepository;
@@ -146,6 +158,9 @@ export function createApiContext(): ApiContext {
     privateBetaAccess: new PrismaPrivateBetaAccessRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),
     creativeReasoning: createCreativeReasoningProvider(),
+    locationReconstructions: new PrismaLocationReconstructionRepository(prisma),
+    locationReconstructionProvider: createLocationReconstructionProvider(),
+    locationGeometryInspector: new GlbLocationGeometryInspector(),
     entities: new PrismaEntityRepository(prisma),
     sources: new PrismaSourceRepository(prisma),
     memories: new PrismaMemoryRepository(prisma),

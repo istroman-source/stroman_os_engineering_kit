@@ -7,3 +7,6 @@ export * from "./creative-reasoning-provider";
 export * from "./creative-quality";
 export * from "./visual-planning";
 export * from "./shot-planning";
+export * from "./location-workspace";
+export * from "./location-reconstruction";
+export * from "./camera-projection";

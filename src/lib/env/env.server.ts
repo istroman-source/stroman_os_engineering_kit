@@ -48,8 +48,63 @@ export const serverEnvSchema = clientEnvSchema
       .default("auto"),
     STROMAN_CREATIVE_MODEL: z.string().min(1).default("gpt-5.4"),
     OPENAI_API_KEY: z.string().min(1).optional(),
+    /** Private asynchronous photo-to-space reconstruction adapter. */
+    STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: z
+      .enum(["auto", "stroman", "kiri", "disabled"])
+      .default("auto"),
+    STROMAN_RECONSTRUCTION_WORKER_URL: z.string().url().optional(),
+    STROMAN_RECONSTRUCTION_WORKER_SECRET: z.string().min(32).optional(),
+    KIRI_API_KEY: z.string().min(1).optional(),
   })
   .superRefine((env, ctx) => {
+    if (
+      Boolean(env.STROMAN_RECONSTRUCTION_WORKER_URL) !==
+      Boolean(env.STROMAN_RECONSTRUCTION_WORKER_SECRET)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["STROMAN_RECONSTRUCTION_WORKER_URL"],
+        message: "The Stroman reconstruction worker URL and secret must be configured together.",
+      });
+    }
+    if (
+      env.STROMAN_RECONSTRUCTION_WORKER_URL &&
+      env.NODE_ENV === "production" &&
+      !env.STROMAN_RECONSTRUCTION_WORKER_URL.startsWith("https://")
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["STROMAN_RECONSTRUCTION_WORKER_URL"],
+        message: "The production Stroman reconstruction worker must use HTTPS.",
+      });
+    }
+    if (
+      env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "stroman" &&
+      !env.STROMAN_RECONSTRUCTION_WORKER_URL
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["STROMAN_RECONSTRUCTION_WORKER_URL"],
+        message: "STROMAN_RECONSTRUCTION_WORKER_URL is required for the Stroman worker.",
+      });
+    }
+    if (
+      env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "stroman" &&
+      !env.STROMAN_RECONSTRUCTION_WORKER_SECRET
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["STROMAN_RECONSTRUCTION_WORKER_SECRET"],
+        message: "STROMAN_RECONSTRUCTION_WORKER_SECRET is required for the Stroman worker.",
+      });
+    }
+    if (env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER === "kiri" && !env.KIRI_API_KEY) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["KIRI_API_KEY"],
+        message: "KIRI_API_KEY is required when KIRI reconstruction is selected.",
+      });
+    }
     // Fail closed at startup if production is missing required auth configuration,
     // rather than silently accepting requests with no way to verify identity.
     if (env.NODE_ENV !== "production") return;

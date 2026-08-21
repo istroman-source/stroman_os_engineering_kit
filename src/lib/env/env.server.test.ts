@@ -12,6 +12,7 @@ describe("parseServerEnv", () => {
     expect(env.LOG_LEVEL).toBe("info");
     expect(env.FEATURE_FLAGS).toBe("");
     expect(env.DATABASE_URL).toBeUndefined();
+    expect(env.STROMAN_LOCATION_RECONSTRUCTION_PROVIDER).toBe("auto");
   });
 
   it("includes both public and server values", () => {
@@ -57,6 +58,45 @@ describe("parseServerEnv", () => {
   it("does NOT require Supabase auth configuration in development/test", () => {
     expect(() => parseServerEnv({ NODE_ENV: "development" })).not.toThrow();
     expect(() => parseServerEnv({ NODE_ENV: "test" })).not.toThrow();
+  });
+
+  it("requires a server-side KIRI key only when that reconstruction adapter is explicit", () => {
+    expect(() =>
+      parseServerEnv({
+        NODE_ENV: "development",
+        STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "kiri",
+      }),
+    ).toThrow(EnvironmentValidationError);
+    expect(() =>
+      parseServerEnv({
+        NODE_ENV: "development",
+        STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "auto",
+      }),
+    ).not.toThrow();
+  });
+
+  it("requires a complete private Stroman worker configuration when selected", () => {
+    expect(() =>
+      parseServerEnv({
+        NODE_ENV: "development",
+        STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "stroman",
+      }),
+    ).toThrow(EnvironmentValidationError);
+    expect(() =>
+      parseServerEnv({
+        NODE_ENV: "development",
+        STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "stroman",
+        STROMAN_RECONSTRUCTION_WORKER_URL: "https://reconstruct.example.com",
+        STROMAN_RECONSTRUCTION_WORKER_SECRET: "s".repeat(32),
+      }),
+    ).not.toThrow();
+    expect(() =>
+      parseServerEnv({
+        NODE_ENV: "development",
+        STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "auto",
+        STROMAN_RECONSTRUCTION_WORKER_URL: "https://reconstruct.example.com",
+      }),
+    ).toThrow(EnvironmentValidationError);
   });
 
   it("throws a descriptive error for invalid values", () => {
