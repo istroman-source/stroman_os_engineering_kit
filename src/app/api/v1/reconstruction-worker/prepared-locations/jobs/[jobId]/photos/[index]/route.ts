@@ -4,7 +4,10 @@ import { getApiContext } from "@/server/composition";
 import { authenticateReconstructionWorker } from "@/server/reconstruction-worker-auth";
 import { apiRoute } from "@/server/http/respond";
 
-const Params = z.object({ jobId: z.string().min(1), index: z.coerce.number().int().nonnegative() });
+const Params = z.object({
+  jobId: z.string().min(1),
+  index: z.coerce.number().int().min(0).max(39),
+});
 
 export const GET = apiRoute<{ jobId: string; index: string }>(async ({ req, params }) => {
   const parsed = Params.parse(params);

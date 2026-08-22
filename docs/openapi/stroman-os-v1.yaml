@@ -1740,6 +1740,15 @@ paths:
       operationId: completePreparedLocationReconstruction
       summary: Persist a signed-lease GLB result for a pre-project room.
       responses: { "200": { description: Room completed. } }
+  /api/v1/reconstruction-worker/prepared-locations/jobs/{jobId}/failure:
+    parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [Projects]
+      operationId: failPreparedLocationReconstruction
+      summary: Record a terminal Mac-worker room failure while retaining original photos for retry.
+      responses:
+        "200": { description: Room marked retryable. }
+        "403": { $ref: "#/components/responses/Forbidden" }
   /api/v1/projects/{projectId}:
     parameters:
       - name: projectId

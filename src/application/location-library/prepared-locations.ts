@@ -182,6 +182,40 @@ export async function completePreparedLocationReconstruction(
   return (await deps.preparedLocations.findById(location.id)) ?? location;
 }
 
+/**
+ * A terminal result from the Mac is durable orchestration state, not a reason
+ * to keep reclaiming the same room forever. Source photos deliberately remain
+ * attached to the location so a filmmaker can retry without uploading again.
+ */
+export async function failPreparedLocationReconstruction(
+  deps: Deps,
+  input: {
+    readonly job: PreparedLocationReconstructionJob;
+    readonly failureCode: "LOCAL_RECONSTRUCTION_FAILED" | "EVIDENCE_INTEGRITY_FAILED";
+  },
+) {
+  const location = await deps.preparedLocations.findById(input.job.preparedLocationId);
+  if (!location || location.ownerId !== input.job.ownerId)
+    throw new AppError("NOT_FOUND", "Prepared room no longer exists.");
+  const now = deps.clock.now();
+  await deps.preparedLocationReconstructions.update({
+    ...input.job,
+    status: "FAILED",
+    failureCode: input.failureCode,
+    workerLeaseId: null,
+    workerLeaseExpiresAt: null,
+    completedAt: now,
+    updatedAt: now,
+  });
+  await deps.preparedLocations.update({
+    ...location,
+    status: "FAILED",
+    failureCode: input.failureCode,
+    updatedAt: now,
+  });
+  return (await deps.preparedLocations.findById(location.id)) ?? location;
+}
+
 export async function uploadPreparedLocationGlb(
   deps: Deps,
   input: {
@@ -268,7 +302,7 @@ export async function uploadPreparedLocationPhotos(
   if (location.inputs.length > 0)
     throw new AppError(
       "CONFLICT",
-      "This room already has preserved photos. Replace them from Room details if needed.",
+      "This room already has preserved photos. Build it again from this room, or create a new location to use different photos.",
     );
   const preparedFiles = input.files.map((file) => {
     if (

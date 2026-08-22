@@ -108,6 +108,23 @@ export function LocationsView() {
     }
   }
 
+  async function onRetry(location: PreparedLocationItem) {
+    setBusy(true);
+    setError(null);
+    try {
+      await startPreparedLocationReconstruction(location.id);
+      setLocations((current) =>
+        (current ?? []).map((item) =>
+          item.id === location.id ? { ...item, status: "PROCESSING", failureCode: null } : item,
+        ),
+      );
+    } catch (err) {
+      setError(friendlyError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <section
       className="border-border bg-card flex flex-col gap-4 rounded-lg border p-5"
@@ -195,6 +212,15 @@ export function LocationsView() {
                     }
                   />
                 </label>
+              ) : location.status === "FAILED" || location.status === "NEEDS_ATTENTION" ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={busy}
+                  onClick={() => void onRetry(location)}
+                >
+                  Retry build
+                </Button>
               ) : (
                 <span className="text-muted-foreground text-xs">{statusLabel(location)}</span>
               )}

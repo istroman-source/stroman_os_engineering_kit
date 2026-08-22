@@ -46,6 +46,7 @@ export const POST = apiRoute(async ({ req, requestId }) => {
         leaseId,
         leaseExpiresAt: job.workerLeaseExpiresAt!.toISOString(),
         resultPath: `/api/v1/reconstruction-worker/prepared-locations/jobs/${encodeURIComponent(job.id)}/result`,
+        failurePath: `/api/v1/reconstruction-worker/prepared-locations/jobs/${encodeURIComponent(job.id)}/failure`,
         photos: photos.map((photo, index) => ({
           index,
           fileName: photo.fileName,
