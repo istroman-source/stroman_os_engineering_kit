@@ -40,3 +40,4 @@ export { PrismaAnalysisRepository } from "./repositories/prisma-analysis-reposit
 export { PrismaAuditIntegrationRepository } from "./repositories/prisma-audit-integration-repository";
 export { PrismaLocationReconstructionRepository } from "./repositories/prisma-location-reconstruction-repository";
 export { PrismaPreparedLocationRepository } from "./repositories/prisma-prepared-location-repository";
+export { PrismaPreparedLocationReconstructionRepository } from "./repositories/prisma-prepared-location-reconstruction-repository";

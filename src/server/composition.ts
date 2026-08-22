@@ -82,6 +82,7 @@ import {
   PrismaSourceImportRepository,
   PrismaAuditIntegrationRepository,
   PrismaLocationReconstructionRepository,
+  PrismaPreparedLocationReconstructionRepository,
   prisma,
 } from "@/infrastructure/persistence/prisma";
 import { FileSystemSourceStorage } from "@/infrastructure/storage/file-system-source-storage";
@@ -89,7 +90,10 @@ import { DeterministicGroundedAnalyzer } from "@/infrastructure/analysis";
 import { createCreativeReasoningProvider } from "@/infrastructure/creative";
 import { createVisualMediaAnalyzer } from "@/infrastructure/media-analysis";
 import { createLocationReconstructionProvider } from "@/infrastructure/spatial/location-reconstruction-provider";
-import type { PreparedLocationRepository } from "@/domain/location-library";
+import type {
+  PreparedLocationReconstructionRepository,
+  PreparedLocationRepository,
+} from "@/domain/location-library";
 import { PrismaPreparedLocationRepository } from "@/infrastructure/persistence/prisma";
 import { GlbLocationGeometryInspector } from "@/infrastructure/spatial/glb-metadata";
 import { createProductionAuthGateway, createProductionAuthenticator } from "@/server/auth/factory";
@@ -119,6 +123,7 @@ export interface ApiContext {
   readonly creativeReasoning: CreativeReasoningProvider;
   readonly locationReconstructions: LocationReconstructionRepository;
   readonly preparedLocations: PreparedLocationRepository;
+  readonly preparedLocationReconstructions: PreparedLocationReconstructionRepository;
   readonly locationReconstructionProvider: LocationReconstructionProvider;
   readonly locationGeometryInspector: LocationGeometryInspector;
   readonly entities: EntityRepository;
@@ -163,6 +168,7 @@ export function createApiContext(): ApiContext {
     creativeReasoning: createCreativeReasoningProvider(),
     locationReconstructions: new PrismaLocationReconstructionRepository(prisma),
     preparedLocations: new PrismaPreparedLocationRepository(prisma),
+    preparedLocationReconstructions: new PrismaPreparedLocationReconstructionRepository(prisma),
     locationReconstructionProvider:
       locationReconstructionProviderOverride ?? createLocationReconstructionProvider(),
     locationGeometryInspector: new GlbLocationGeometryInspector(),

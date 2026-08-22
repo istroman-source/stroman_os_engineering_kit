@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProjectsView } from "./projects-view";
-import { createProject, listProjects } from "@/ui/auth/api-client";
+import { createProject, listPreparedLocations, listProjects } from "@/ui/auth/api-client";
 
 const { pushMock, replaceMock, routerMock } = vi.hoisted(() => {
   const replaceMock = vi.fn();
@@ -17,6 +17,7 @@ vi.mock("next/navigation", () => ({ useRouter: () => routerMock }));
 vi.mock("@/ui/auth/api-client", () => ({
   listProjects: vi.fn(),
   createProject: vi.fn(),
+  listPreparedLocations: vi.fn(),
   errorStatus: (err: { status?: number }) => err?.status,
   friendlyError: (err: { message?: string }) => err?.message ?? "error",
 }));
@@ -30,6 +31,8 @@ beforeEach(() => {
   pushMock.mockReset();
   vi.mocked(listProjects).mockReset();
   vi.mocked(createProject).mockReset();
+  vi.mocked(listPreparedLocations).mockReset();
+  vi.mocked(listPreparedLocations).mockResolvedValue([]);
 });
 
 describe("ProjectsView", () => {

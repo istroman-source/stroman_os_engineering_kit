@@ -1624,6 +1624,122 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/ProjectList" }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/locations:
+    get:
+      tags: [Projects]
+      operationId: listPreparedLocations
+      summary: List the authenticated filmmaker's pre-project locations.
+      responses:
+        "200": { description: Prepared locations. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+    post:
+      tags: [Projects]
+      operationId: createPreparedLocation
+      summary: Create a durable pre-project room record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, inputKind]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 160 }
+                inputKind: { type: string, enum: [GLB, PHOTOS] }
+      responses:
+        "201": { description: Prepared location created. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/locations/{locationId}/glb:
+    parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [Projects]
+      operationId: uploadPreparedLocationGlb
+      summary: Preserve and inspect one textured GLB room scan.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              {
+                type: object,
+                required: [file],
+                properties: { file: { type: string, format: binary } },
+              }
+      responses:
+        "200": { description: Ready prepared location. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/locations/{locationId}/photos:
+    parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [Projects]
+      operationId: uploadPreparedLocationPhotos
+      summary: Preserve 20–40 overlapping room photos before reconstruction.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              {
+                type: object,
+                required: [files],
+                properties: { files: { type: array, items: { type: string, format: binary } } },
+              }
+      responses:
+        "202": { description: Private evidence preserved. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/locations/{locationId}/reconstruct:
+    parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [Projects]
+      operationId: startPreparedLocationReconstruction
+      summary: Queue preserved room photos for the connected Mac worker.
+      responses:
+        "202": { description: Reconstruction queued. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/reconstruction-worker/lease:
+    post:
+      tags: [Projects]
+      operationId: leaseProjectRoomReconstruction
+      summary: Signed Mac-worker claim for a project-scoped room build.
+      responses: { "200": { description: Lease or null job. } }
+  /api/v1/reconstruction-worker/jobs/{jobId}/photos/{index}:
+    parameters:
+      - { name: jobId, in: path, required: true, schema: { type: string } }
+      - { name: index, in: path, required: true, schema: { type: integer } }
+    get:
+      tags: [Projects]
+      operationId: downloadProjectRoomPhotoForWorker
+      summary: Stream one signed-lease photo to the Mac worker.
+      responses: { "200": { description: Photo bytes. } }
+  /api/v1/reconstruction-worker/jobs/{jobId}/result:
+    parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+    put:
+      tags: [Projects]
+      operationId: completeProjectRoomReconstruction
+      summary: Persist a signed-lease GLB result for a project room.
+      responses: { "200": { description: Room completed. } }
+  /api/v1/reconstruction-worker/prepared-locations/lease:
+    post:
+      tags: [Projects]
+      operationId: leasePreparedLocationReconstruction
+      summary: Signed Mac-worker claim for a pre-project room build.
+      responses: { "200": { description: Lease or null job. } }
+  /api/v1/reconstruction-worker/prepared-locations/jobs/{jobId}/photos/{index}:
+    parameters:
+      - { name: jobId, in: path, required: true, schema: { type: string } }
+      - { name: index, in: path, required: true, schema: { type: integer } }
+    get:
+      tags: [Projects]
+      operationId: downloadPreparedLocationPhotoForWorker
+      summary: Stream one signed-lease pre-project photo to the Mac worker.
+      responses: { "200": { description: Photo bytes. } }
+  /api/v1/reconstruction-worker/prepared-locations/jobs/{jobId}/result:
+    parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+    put:
+      tags: [Projects]
+      operationId: completePreparedLocationReconstruction
+      summary: Persist a signed-lease GLB result for a pre-project room.
+      responses: { "200": { description: Room completed. } }
   /api/v1/projects/{projectId}:
     parameters:
       - name: projectId

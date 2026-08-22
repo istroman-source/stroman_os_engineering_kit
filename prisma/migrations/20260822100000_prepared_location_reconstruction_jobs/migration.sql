@@ -16,3 +16,6 @@ CREATE TABLE "prepared_location_reconstruction_jobs" (
 );
 CREATE INDEX "prepared_location_reconstruction_jobs_owner_id_created_at_idx" ON "prepared_location_reconstruction_jobs"("owner_id", "created_at");
 CREATE INDEX "prepared_location_reconstruction_jobs_provider_key_status_worker_lease_expires_at_idx" ON "prepared_location_reconstruction_jobs"("provider_key", "status", "worker_lease_expires_at");
+-- One room can have only one live build. The partial index makes concurrent
+-- browser submissions an honest conflict instead of two competing Mac jobs.
+CREATE UNIQUE INDEX "prepared_location_reconstruction_jobs_one_active_per_location" ON "prepared_location_reconstruction_jobs"("prepared_location_id") WHERE "status" IN ('SUBMITTING', 'PROCESSING');

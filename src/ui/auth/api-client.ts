@@ -174,22 +174,52 @@ export function createProject(name: string): Promise<ProjectItem> {
 }
 
 export async function listPreparedLocations(): Promise<PreparedLocationItem[]> {
-  const body = await request<{ items: PreparedLocationItem[] }>("/api/v1/locations", { method: "GET" });
+  const body = await request<{ items: PreparedLocationItem[] }>("/api/v1/locations", {
+    method: "GET",
+  });
   return body.items ?? [];
 }
 
-export function createPreparedLocation(input: { name: string; inputKind: "GLB" | "PHOTOS" }): Promise<PreparedLocationItem> {
-  return postJson<{ location: PreparedLocationItem }>("/api/v1/locations", input).then((body) => body.location);
+export function createPreparedLocation(input: {
+  name: string;
+  inputKind: "GLB" | "PHOTOS";
+}): Promise<PreparedLocationItem> {
+  return postJson<{ location: PreparedLocationItem }>("/api/v1/locations", input).then(
+    (body) => body.location,
+  );
 }
 
-export function uploadPreparedLocationGlb(locationId: string, file: File): Promise<PreparedLocationItem> {
-  const form = new FormData(); form.set("file", file);
-  return apiPostForm<{ location: PreparedLocationItem }>(`/api/v1/locations/${encodeURIComponent(locationId)}/glb`, form).then((body) => body.location);
+export function uploadPreparedLocationGlb(
+  locationId: string,
+  file: File,
+): Promise<PreparedLocationItem> {
+  const form = new FormData();
+  form.set("file", file);
+  return apiPostForm<{ location: PreparedLocationItem }>(
+    `/api/v1/locations/${encodeURIComponent(locationId)}/glb`,
+    form,
+  ).then((body) => body.location);
 }
 
-export function uploadPreparedLocationPhotos(locationId: string, files: File[]): Promise<PreparedLocationItem> {
-  const form = new FormData(); files.forEach((file) => form.append("files", file));
-  return apiPostForm<{ location: PreparedLocationItem }>(`/api/v1/locations/${encodeURIComponent(locationId)}/photos`, form).then((body) => body.location);
+export function uploadPreparedLocationPhotos(
+  locationId: string,
+  files: File[],
+): Promise<PreparedLocationItem> {
+  const form = new FormData();
+  files.forEach((file) => form.append("files", file));
+  return apiPostForm<{ location: PreparedLocationItem }>(
+    `/api/v1/locations/${encodeURIComponent(locationId)}/photos`,
+    form,
+  ).then((body) => body.location);
+}
+
+export function startPreparedLocationReconstruction(
+  locationId: string,
+): Promise<{ id: string; status: string }> {
+  return apiPostForm<{ reconstruction: { id: string; status: string } }>(
+    `/api/v1/locations/${encodeURIComponent(locationId)}/reconstruct`,
+    new FormData(),
+  ).then((body) => body.reconstruction);
 }
 
 /** Fetch a single project (owner-scoped) for the workspace header. */
