@@ -268,11 +268,35 @@ model PreparedLocation {
   updatedAt   DateTime                  @map("updated_at") @db.Timestamptz(3)
   lockVersion Int                       @default(1) @map("lock_version")
 
-  owner  User                    @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  inputs PreparedLocationInput[]
+  owner              User                                @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  inputs             PreparedLocationInput[]
+  reconstructionJobs PreparedLocationReconstructionJob[]
 
   @@index([ownerId, status, updatedAt])
   @@map("prepared_locations")
+}
+
+/// Durable pre-project photo reconstruction orchestration. It has no project
+/// foreign key so a filmmaker can prepare spaces before starting a story.
+model PreparedLocationReconstructionJob {
+  id                   String                       @id
+  ownerId              String                       @map("owner_id")
+  preparedLocationId   String                       @map("prepared_location_id")
+  providerKey          String                       @map("provider_key")
+  status               LocationReconstructionStatus
+  failureCode          String?                      @map("failure_code")
+  workerLeaseId        String?                      @map("worker_lease_id")
+  workerLeaseExpiresAt DateTime?                    @map("worker_lease_expires_at") @db.Timestamptz(3)
+  createdAt            DateTime                     @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                     @map("updated_at") @db.Timestamptz(3)
+  completedAt          DateTime?                    @map("completed_at") @db.Timestamptz(3)
+  lockVersion          Int                          @default(1) @map("lock_version")
+
+  preparedLocation PreparedLocation @relation(fields: [preparedLocationId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId, createdAt])
+  @@index([providerKey, status, workerLeaseExpiresAt])
+  @@map("prepared_location_reconstruction_jobs")
 }
 
 /// Immutable original evidence for a prepared location. Storage keys are never
