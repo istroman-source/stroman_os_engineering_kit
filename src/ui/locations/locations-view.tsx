@@ -9,6 +9,7 @@ import {
   friendlyError,
   listPreparedLocations,
   uploadPreparedLocationGlb,
+  uploadPreparedLocationPhotos,
   type PreparedLocationItem,
 } from "@/ui/auth/api-client";
 
@@ -63,6 +64,12 @@ export function LocationsView() {
       setLocations((current) => (current ?? []).map((item) => item.id === updated.id ? updated : item));
     } catch (err) { setError(friendlyError(err)); } finally { setBusy(false); }
   }
+  async function onPhotos(location: PreparedLocationItem, files: File[]) {
+    if (!files.length) return;
+    setBusy(true); setError(null);
+    try { const updated = await uploadPreparedLocationPhotos(location.id, files); setLocations((current) => (current ?? []).map((item) => item.id === updated.id ? updated : item)); }
+    catch (err) { setError(friendlyError(err)); } finally { setBusy(false); }
+  }
 
   return <section className="border-border bg-card flex flex-col gap-4 rounded-lg border p-5" aria-label="Locations">
     <div>
@@ -81,7 +88,7 @@ export function LocationsView() {
     {locations === null ? <p className="text-muted-foreground text-sm">Loading locations…</p> : locations.length === 0 ? <p className="text-muted-foreground text-sm">No rooms prepared yet. Add one when you are ready.</p> : <ul className="flex flex-col gap-2">
       {locations.map((location) => <li key={location.id} className="border-border flex items-center justify-between gap-3 rounded-md border px-3 py-3">
         <span><span className="block text-sm font-medium">{location.name}</span><span className="text-muted-foreground text-xs">{location.inputKind === "GLB" ? "3D scan" : "Photos"}</span></span>
-        {location.inputKind === "GLB" && location.status === "DRAFT" ? <label className="text-sm"><span className="sr-only">Upload GLB for {location.name}</span><input type="file" accept=".glb,model/gltf-binary" disabled={busy} onChange={(event) => void onGlb(location, event.target.files?.[0])} /></label> : <span className="text-muted-foreground text-xs">{statusLabel(location)}</span>}
+        {location.status === "DRAFT" && location.inputKind === "GLB" ? <label className="text-sm"><span className="sr-only">Upload GLB for {location.name}</span><input type="file" accept=".glb,model/gltf-binary" disabled={busy} onChange={(event) => void onGlb(location, event.target.files?.[0])} /></label> : location.status === "DRAFT" ? <label className="text-sm"><span className="sr-only">Upload room photos for {location.name}</span><input type="file" accept="image/jpeg,image/png" multiple disabled={busy} onChange={(event) => void onPhotos(location, Array.from(event.target.files ?? []))} /></label> : <span className="text-muted-foreground text-xs">{statusLabel(location)}</span>}
       </li>)}
     </ul>}
   </section>;

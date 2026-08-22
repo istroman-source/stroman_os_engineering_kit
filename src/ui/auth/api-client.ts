@@ -187,6 +187,11 @@ export function uploadPreparedLocationGlb(locationId: string, file: File): Promi
   return apiPostForm<{ location: PreparedLocationItem }>(`/api/v1/locations/${encodeURIComponent(locationId)}/glb`, form).then((body) => body.location);
 }
 
+export function uploadPreparedLocationPhotos(locationId: string, files: File[]): Promise<PreparedLocationItem> {
+  const form = new FormData(); files.forEach((file) => form.append("files", file));
+  return apiPostForm<{ location: PreparedLocationItem }>(`/api/v1/locations/${encodeURIComponent(locationId)}/photos`, form).then((body) => body.location);
+}
+
 /** Fetch a single project (owner-scoped) for the workspace header. */
 export function getProject(projectId: string): Promise<ProjectItem> {
   return request<ProjectItem>(`/api/v1/projects/${encodeURIComponent(projectId)}`, {

@@ -59,6 +59,31 @@ export async function uploadPreparedLocationGlb(deps: Deps, input: {
   }
 }
 
+export async function uploadPreparedLocationPhotos(deps: Deps, input: {
+  readonly actorId: OwnerId; readonly locationId: string;
+  readonly files: readonly { fileName: string; contentType: string; bytes: Uint8Array }[];
+}) {
+  const location = await deps.preparedLocations.findById(input.locationId);
+  if (!location) throw new AppError("NOT_FOUND", "Location not found.");
+  if (location.ownerId !== input.actorId) throw new AppError("FORBIDDEN", "You cannot change this location.");
+  if (location.inputKind !== "PHOTOS") throw new AppError("CONFLICT", "This location uses a 3D scan.");
+  if (input.files.length < 20 || input.files.length > 40) throw new AppError("VALIDATION", "Choose 20 to 40 overlapping JPEG or PNG room photos.");
+  if (location.inputs.length > 0) throw new AppError("CONFLICT", "This room already has preserved photos. Replace them from Room details if needed.");
+  for (const file of input.files) {
+    if (!new Set(["image/jpeg", "image/png"]).has(file.contentType) || !file.bytes.byteLength || file.bytes.byteLength > 8 * 1024 * 1024) throw new AppError("VALIDATION", "Each room photo must be JPEG or PNG and no larger than 8 MB.");
+    const contentHash = `sha256:${createHash("sha256").update(file.bytes).digest("hex")}`;
+    const storageKey = `${input.actorId}/locations/${location.id}/${contentHash}`;
+    const lease = await deps.sourceStorage.put(storageKey, file.bytes);
+    try {
+      await deps.preparedLocations.addInput(location.id, { id: deps.ids.generate("locin"), kind: "PHOTO", fileName: file.fileName, contentType: file.contentType, byteSize: file.bytes.byteLength, contentHash, storageKey, createdAt: deps.clock.now() });
+      await deps.sourceStorage.retain(storageKey, lease.leaseId);
+    } catch (error) { await deps.sourceStorage.discard(storageKey, lease.leaseId).catch(() => undefined); throw error; }
+  }
+  const updated = { ...location, status: "NEEDS_ATTENTION" as const, failureCode: null, updatedAt: deps.clock.now() };
+  await deps.preparedLocations.update(updated);
+  return updated;
+}
+
 export async function createPreparedLocationForOwner(
   deps: Deps,
   input: { readonly actorId: OwnerId; readonly name: string; readonly inputKind: "GLB" | "PHOTOS" },
