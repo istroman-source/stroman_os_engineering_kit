@@ -144,10 +144,7 @@ export class PrismaLocationReconstructionRepository implements LocationReconstru
         where: {
           providerKey: input.providerKey,
           status: "PROCESSING",
-          OR: [
-            { workerLeaseExpiresAt: null },
-            { workerLeaseExpiresAt: { lt: input.now } },
-          ],
+          OR: [{ workerLeaseExpiresAt: null }, { workerLeaseExpiresAt: { lt: input.now } }],
         },
         orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       });
@@ -156,10 +153,7 @@ export class PrismaLocationReconstructionRepository implements LocationReconstru
         where: {
           id: candidate.id,
           lockVersion: candidate.lockVersion,
-          OR: [
-            { workerLeaseExpiresAt: null },
-            { workerLeaseExpiresAt: { lt: input.now } },
-          ],
+          OR: [{ workerLeaseExpiresAt: null }, { workerLeaseExpiresAt: { lt: input.now } }],
         },
         data: {
           workerLeaseId: input.leaseId,

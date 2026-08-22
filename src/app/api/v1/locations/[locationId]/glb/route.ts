@@ -10,7 +10,10 @@ export const POST = apiRoute<{ locationId: string }>(async ({ req, params, reque
   const file = form.get("file");
   if (!(file instanceof File)) throw new AppError("VALIDATION", "Choose one GLB room file.");
   const location = await uploadPreparedLocationGlb(getApiContext(), {
-    actorId, locationId: params.locationId, fileName: file.name, bytes: new Uint8Array(await file.arrayBuffer()),
+    actorId,
+    locationId: params.locationId,
+    fileName: file.name,
+    bytes: new Uint8Array(await file.arrayBuffer()),
   });
   return json({ location: preparedLocationView(location) }, { requestId, status: 202 });
 });

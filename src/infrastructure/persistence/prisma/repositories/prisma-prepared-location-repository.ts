@@ -35,7 +35,8 @@ const Row = z.object({
 
 function toLocation(row: unknown): PreparedLocation {
   const parsed = Row.safeParse(row);
-  if (!parsed.success) throw new PersistenceMappingError("Prepared location row violated its contract");
+  if (!parsed.success)
+    throw new PersistenceMappingError("Prepared location row violated its contract");
   return {
     ...parsed.data,
     environment: parsed.data.environment ?? null,
@@ -51,7 +52,10 @@ function data(location: PreparedLocation): Prisma.PreparedLocationUncheckedCreat
     name: location.name,
     inputKind: location.inputKind,
     status: location.status,
-    environment: location.environment === null ? Prisma.DbNull : location.environment as Prisma.InputJsonValue,
+    environment:
+      location.environment === null
+        ? Prisma.DbNull
+        : (location.environment as Prisma.InputJsonValue),
     failureCode: location.failureCode,
     createdAt: location.createdAt,
     updatedAt: location.updatedAt,
@@ -80,28 +84,50 @@ export class PrismaPreparedLocationRepository implements PreparedLocationReposit
     try {
       const row = await this.db.preparedLocation.findUnique({ where: { id }, include });
       return row ? toLocation(row) : null;
-    } catch (error) { throw translatePrismaError(error); }
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
   }
 
   async listByOwner(ownerId: OwnerId): Promise<readonly PreparedLocation[]> {
     try {
-      const rows = await this.db.preparedLocation.findMany({ where: { ownerId }, include, orderBy: [{ updatedAt: "desc" }, { id: "desc" }] });
+      const rows = await this.db.preparedLocation.findMany({
+        where: { ownerId },
+        include,
+        orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+      });
       return rows.map(toLocation);
-    } catch (error) { throw translatePrismaError(error); }
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
   }
 
   async insert(location: PreparedLocation): Promise<void> {
-    try { await this.db.preparedLocation.create({ data: data(location) }); }
-    catch (error) { throw translatePrismaError(error); }
+    try {
+      await this.db.preparedLocation.create({ data: data(location) });
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
   }
 
   async update(location: PreparedLocation): Promise<void> {
     try {
       const updated = await this.db.preparedLocation.updateMany({
         where: { id: location.id, ownerId: location.ownerId, lockVersion: location.lockVersion },
-        data: { name: location.name, status: location.status, environment: location.environment === null ? Prisma.DbNull : location.environment as Prisma.InputJsonValue, failureCode: location.failureCode, updatedAt: location.updatedAt, lockVersion: { increment: 1 } },
+        data: {
+          name: location.name,
+          status: location.status,
+          environment:
+            location.environment === null
+              ? Prisma.DbNull
+              : (location.environment as Prisma.InputJsonValue),
+          failureCode: location.failureCode,
+          updatedAt: location.updatedAt,
+          lockVersion: { increment: 1 },
+        },
       });
-      if (updated.count !== 1) throw new OptimisticConcurrencyError("Prepared location changed concurrently.");
+      if (updated.count !== 1)
+        throw new OptimisticConcurrencyError("Prepared location changed concurrently.");
     } catch (error) {
       if (error instanceof OptimisticConcurrencyError) throw error;
       throw translatePrismaError(error);
@@ -110,11 +136,21 @@ export class PrismaPreparedLocationRepository implements PreparedLocationReposit
 
   async addInput(preparedLocationId: string, input: PreparedLocationInput): Promise<void> {
     try {
-      await this.db.preparedLocationInput.create({ data: {
-        id: input.id, preparedLocationId, kind: input.kind,
-        fileName: input.fileName, contentType: input.contentType, byteSize: input.byteSize,
-        contentHash: input.contentHash, storageKey: input.storageKey, createdAt: input.createdAt,
-      } });
-    } catch (error) { throw translatePrismaError(error); }
+      await this.db.preparedLocationInput.create({
+        data: {
+          id: input.id,
+          preparedLocationId,
+          kind: input.kind,
+          fileName: input.fileName,
+          contentType: input.contentType,
+          byteSize: input.byteSize,
+          contentHash: input.contentHash,
+          storageKey: input.storageKey,
+          createdAt: input.createdAt,
+        },
+      });
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
   }
 }

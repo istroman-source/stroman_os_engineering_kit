@@ -1,13 +1,19 @@
 import { z } from "zod";
-import { createPreparedLocationForOwner, listPreparedLocationsForOwner, preparedLocationView } from "@/application/location-library";
+import {
+  createPreparedLocationForOwner,
+  listPreparedLocationsForOwner,
+  preparedLocationView,
+} from "@/application/location-library";
 import { authenticateRequest } from "@/server/auth";
 import { getApiContext } from "@/server/composition";
 import { apiRoute, json, parseJson } from "@/server/http/respond";
 
-const CreateLocationRequest = z.object({
-  name: z.string().trim().min(1).max(160),
-  inputKind: z.enum(["GLB", "PHOTOS"]),
-}).strict();
+const CreateLocationRequest = z
+  .object({
+    name: z.string().trim().min(1).max(160),
+    inputKind: z.enum(["GLB", "PHOTOS"]),
+  })
+  .strict();
 
 export const GET = apiRoute(async ({ req, requestId }) => {
   const actorId = (await authenticateRequest(req)).ownerId;

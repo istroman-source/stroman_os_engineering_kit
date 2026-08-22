@@ -359,9 +359,9 @@ export async function refreshLocationReconstruction(
       providerKey: deps.locationReconstructionProvider.key,
       providerJobId: null,
       status: "SUBMITTING",
-        failureCode: null,
-        workerLeaseId: null,
-        workerLeaseExpiresAt: null,
+      failureCode: null,
+      workerLeaseId: null,
+      workerLeaseExpiresAt: null,
       updatedAt: deps.clock.now(),
       completedAt: null,
     };
@@ -462,7 +462,13 @@ export async function refreshLocationReconstruction(
     );
   }
   const result = await deps.locationReconstructionProvider.downloadGlb(job.providerJobId);
-  return finalizeLocationReconstruction(deps, { job, bytes: result.bytes, fileName: result.fileName, sourceToCanonicalBasis: result.sourceToCanonicalBasis, metersPerSourceUnit: result.metersPerSourceUnit });
+  return finalizeLocationReconstruction(deps, {
+    job,
+    bytes: result.bytes,
+    fileName: result.fileName,
+    sourceToCanonicalBasis: result.sourceToCanonicalBasis,
+    metersPerSourceUnit: result.metersPerSourceUnit,
+  });
 }
 
 /** Persist a worker-produced GLB into the filmmaker's project and planning state.
@@ -497,7 +503,10 @@ export async function finalizeLocationReconstruction(
     return toLocationReconstructionView({ ...recovered, lockVersion: recovered.lockVersion + 1 });
   }
   if (existing && existing.environments.length >= 3) {
-    fail("CONFLICT", "This project already has three location versions; Stroman will not delete an original automatically.");
+    fail(
+      "CONFLICT",
+      "This project already has three location versions; Stroman will not delete an original automatically.",
+    );
   }
   let inferred;
   try {

@@ -538,14 +538,17 @@ export function createLocationReconstructionProvider(
     );
   }
   if (selection === "disabled") return new UnavailableLocationReconstructionProvider();
-  if (env.STROMAN_RECONSTRUCTION_WORKER_SECRET) return new StromanPullLocationReconstructionProvider();
+  if (env.STROMAN_RECONSTRUCTION_WORKER_SECRET)
+    return new StromanPullLocationReconstructionProvider();
   if (selection === "stroman") {
     throw unavailable(
       "The Stroman reconstruction worker is selected but its shared secret is not configured.",
     );
   }
   if (selection === "kiri") {
-    throw unavailable("KIRI reconstruction is retired for this Stroman release; connect the Mac worker.");
+    throw unavailable(
+      "KIRI reconstruction is retired for this Stroman release; connect the Mac worker.",
+    );
   }
   return new UnavailableLocationReconstructionProvider();
 }

@@ -14,14 +14,24 @@ function same(left: string, right: string): boolean {
 }
 
 /** Authenticate the Mac's outbound worker without accepting browser identity. */
-export function authenticateReconstructionWorker(req: Request, pathname: string, body: Uint8Array): void {
+export function authenticateReconstructionWorker(
+  req: Request,
+  pathname: string,
+  body: Uint8Array,
+): void {
   const secret = getServerEnv().STROMAN_RECONSTRUCTION_WORKER_SECRET;
-  if (!secret) throw new AppError("UNAVAILABLE", "The Mac reconstruction worker is not configured.");
+  if (!secret)
+    throw new AppError("UNAVAILABLE", "The Mac reconstruction worker is not configured.");
   const authorization = req.headers.get("authorization") ?? "";
   const timestamp = req.headers.get("x-stroman-timestamp") ?? "";
   const nonce = req.headers.get("x-stroman-nonce") ?? "";
   const claimedHash = req.headers.get("x-content-sha256") ?? "";
-  if (!authorization.startsWith("Stroman-HMAC-SHA256 ") || !/^\d{10,14}$/.test(timestamp) || !/^[A-Za-z0-9-]{8,100}$/.test(nonce) || !/^[a-f0-9]{64}$/.test(claimedHash)) {
+  if (
+    !authorization.startsWith("Stroman-HMAC-SHA256 ") ||
+    !/^\d{10,14}$/.test(timestamp) ||
+    !/^[A-Za-z0-9-]{8,100}$/.test(nonce) ||
+    !/^[a-f0-9]{64}$/.test(claimedHash)
+  ) {
     throw new AppError("UNAUTHORIZED", "The reconstruction worker request is not authenticated.");
   }
   const now = Date.now();
@@ -30,9 +40,11 @@ export function authenticateReconstructionWorker(req: Request, pathname: string,
     throw new AppError("UNAUTHORIZED", "The reconstruction worker request has expired.");
   }
   for (const [value, expiresAt] of seenNonces) if (expiresAt <= now) seenNonces.delete(value);
-  if (seenNonces.has(nonce)) throw new AppError("UNAUTHORIZED", "The reconstruction worker request was replayed.");
+  if (seenNonces.has(nonce))
+    throw new AppError("UNAUTHORIZED", "The reconstruction worker request was replayed.");
   const actualHash = createHash("sha256").update(body).digest("hex");
-  if (!same(actualHash, claimedHash)) throw new AppError("UNAUTHORIZED", "The reconstruction worker body changed in transit.");
+  if (!same(actualHash, claimedHash))
+    throw new AppError("UNAUTHORIZED", "The reconstruction worker body changed in transit.");
   const expected = createHmac("sha256", secret)
     .update(`${req.method}\n${pathname}\n${timestamp}\n${nonce}\n${actualHash}`)
     .digest("hex");

@@ -48,7 +48,9 @@ const worker = spawn(process.execPath, ["services/reconstruction-worker/server.m
 });
 
 if (!process.env.STROMAN_RECONSTRUCTION_APP_URL) {
-  throw new Error("STROMAN_RECONSTRUCTION_APP_URL must point to the HTTPS Stroman app for outbound worker mode.");
+  throw new Error(
+    "STROMAN_RECONSTRUCTION_APP_URL must point to the HTTPS Stroman app for outbound worker mode.",
+  );
 }
 const pullClient = spawn(process.execPath, ["scripts/pull-apple-reconstruction-worker.mjs"], {
   cwd: root,
