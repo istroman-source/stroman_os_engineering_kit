@@ -43,4 +43,21 @@ describe("Apple reconstruction toolchain configuration", () => {
       "worker",
     ]);
   });
+
+  it("leaves out the SDK flag when the default toolchain is compatible", () => {
+    expect(
+      appleSwiftCompileArguments({
+        source: "worker.swift",
+        binary: "worker",
+        moduleCachePath: ".data/module-cache",
+      }),
+    ).toEqual([
+      "-parse-as-library",
+      "-module-cache-path",
+      ".data/module-cache",
+      "worker.swift",
+      "-o",
+      "worker",
+    ]);
+  });
 });
