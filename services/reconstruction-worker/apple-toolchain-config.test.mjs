@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { appleSwiftCompileArguments, compatibleAppleSdkPath } from "../../scripts/apple-toolchain-config.mjs";
+import {
+  appleSwiftCompileArguments,
+  compatibleAppleSdkPath,
+} from "../../scripts/apple-toolchain-config.mjs";
 
 describe("Apple reconstruction toolchain configuration", () => {
   it("uses an explicit SDK path in preference to the local compatibility fallback", () => {
