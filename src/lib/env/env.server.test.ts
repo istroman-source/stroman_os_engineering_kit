@@ -75,7 +75,7 @@ describe("parseServerEnv", () => {
     ).not.toThrow();
   });
 
-  it("requires a complete private Stroman worker configuration when selected", () => {
+  it("requires the outbound worker secret when the private Stroman worker is selected", () => {
     expect(() =>
       parseServerEnv({
         NODE_ENV: "development",
@@ -86,7 +86,6 @@ describe("parseServerEnv", () => {
       parseServerEnv({
         NODE_ENV: "development",
         STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "stroman",
-        STROMAN_RECONSTRUCTION_WORKER_URL: "https://reconstruct.example.com",
         STROMAN_RECONSTRUCTION_WORKER_SECRET: "s".repeat(32),
       }),
     ).not.toThrow();
@@ -94,9 +93,9 @@ describe("parseServerEnv", () => {
       parseServerEnv({
         NODE_ENV: "development",
         STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "auto",
-        STROMAN_RECONSTRUCTION_WORKER_URL: "https://reconstruct.example.com",
+        STROMAN_RECONSTRUCTION_WORKER_SECRET: "s".repeat(32),
       }),
-    ).toThrow(EnvironmentValidationError);
+    ).not.toThrow();
   });
 
   it("throws a descriptive error for invalid values", () => {

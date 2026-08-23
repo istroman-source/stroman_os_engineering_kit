@@ -47,12 +47,26 @@ const worker = spawn(process.execPath, ["services/reconstruction-worker/server.m
   stdio: "inherit",
 });
 
+if (!process.env.STROMAN_RECONSTRUCTION_APP_URL) {
+  throw new Error(
+    "STROMAN_RECONSTRUCTION_APP_URL must point to the HTTPS Stroman app for outbound worker mode.",
+  );
+}
+const pullClient = spawn(process.execPath, ["scripts/pull-apple-reconstruction-worker.mjs"], {
+  cwd: root,
+  env: { ...process.env, STROMAN_LOCAL_RECONSTRUCTION_URL: `http://127.0.0.1:${port}` },
+  shell: false,
+  stdio: "inherit",
+});
+
 function stop(signal) {
   if (!worker.killed) worker.kill(signal);
+  if (!pullClient.killed) pullClient.kill(signal);
 }
 
 process.once("SIGINT", () => stop("SIGINT"));
 process.once("SIGTERM", () => stop("SIGTERM"));
 worker.once("exit", (code, signal) => {
+  if (!pullClient.killed) pullClient.kill("SIGTERM");
   process.exitCode = code ?? (signal ? 1 : 0);
 });

@@ -484,6 +484,36 @@ export class StromanLocationReconstructionProvider implements LocationReconstruc
   }
 }
 
+/**
+ * The production-safe Stroman adapter.  It never dials a machine on the
+ * internet: a signed Mac worker leases persisted work from the application.
+ * Completion is written by that worker directly into the application, so this
+ * provider deliberately reports a non-terminal state until the durable job
+ * record is marked complete.
+ */
+export class StromanPullLocationReconstructionProvider implements LocationReconstructionProvider {
+  readonly key = "stroman-pull-v1";
+
+  async start(input: {
+    readonly name: string;
+    readonly photos: readonly LocationReconstructionPhotoInput[];
+    readonly idempotencyKey?: string;
+  }): Promise<{ readonly providerJobId: string }> {
+    if (!input.idempotencyKey) {
+      throw unavailable("A durable Stroman reconstruction job id is required.");
+    }
+    return { providerJobId: input.idempotencyKey };
+  }
+
+  async status(): Promise<ProviderReconstructionProgress> {
+    return { status: "QUEUED", phase: "QUEUED", percent: null };
+  }
+
+  async downloadGlb(): Promise<never> {
+    throw unavailable("The Stroman worker completes reconstruction inside the application.");
+  }
+}
+
 class UnavailableLocationReconstructionProvider implements LocationReconstructionProvider {
   readonly key = "unavailable";
   async start(): Promise<never> {
@@ -508,23 +538,17 @@ export function createLocationReconstructionProvider(
     );
   }
   if (selection === "disabled") return new UnavailableLocationReconstructionProvider();
-  if (env.STROMAN_RECONSTRUCTION_WORKER_URL?.trim() && env.STROMAN_RECONSTRUCTION_WORKER_SECRET) {
-    return new StromanLocationReconstructionProvider({
-      endpoint: env.STROMAN_RECONSTRUCTION_WORKER_URL.trim(),
-      sharedSecret: env.STROMAN_RECONSTRUCTION_WORKER_SECRET,
-      allowInsecureLocalhost: env.NODE_ENV !== "production",
-    });
-  }
+  if (env.STROMAN_RECONSTRUCTION_WORKER_SECRET)
+    return new StromanPullLocationReconstructionProvider();
   if (selection === "stroman") {
     throw unavailable(
-      "The Stroman reconstruction worker is selected but its URL or secret is not configured.",
+      "The Stroman reconstruction worker is selected but its shared secret is not configured.",
     );
   }
-  if (env.KIRI_API_KEY?.trim()) {
-    return new KiriLocationReconstructionProvider({ apiKey: env.KIRI_API_KEY.trim() });
-  }
   if (selection === "kiri") {
-    throw unavailable("KIRI reconstruction is selected but KIRI_API_KEY is not configured.");
+    throw unavailable(
+      "KIRI reconstruction is retired for this Stroman release; connect the Mac worker.",
+    );
   }
   return new UnavailableLocationReconstructionProvider();
 }

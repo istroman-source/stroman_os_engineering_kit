@@ -121,6 +121,21 @@ enum LocationReconstructionStatus {
   EXPIRED
 }
 
+/// A durable owner-level location is prepared before it is attached to a story.
+enum PreparedLocationStatus {
+  DRAFT
+  UPLOADING
+  PROCESSING
+  READY
+  NEEDS_ATTENTION
+  FAILED
+}
+
+enum PreparedLocationInputKind {
+  GLB
+  PHOTOS
+}
+
 enum IntegrationSyncStatus {
   SUCCEEDED
   FAILED
@@ -234,8 +249,74 @@ model User {
 
   identities        UserIdentity[]
   privateBetaAccess PrivateBetaAccess?
+  preparedLocations PreparedLocation[]
 
   @@map("users")
+}
+
+/// Owner-scoped, project-independent room record. Project planning stores only
+/// a reference to a READY location, never a copied scan or provider state.
+model PreparedLocation {
+  id          String                    @id
+  ownerId     String                    @map("owner_id")
+  name        String
+  inputKind   PreparedLocationInputKind @map("input_kind")
+  status      PreparedLocationStatus
+  environment Json?                     @map("environment")
+  failureCode String?                   @map("failure_code")
+  createdAt   DateTime                  @map("created_at") @db.Timestamptz(3)
+  updatedAt   DateTime                  @map("updated_at") @db.Timestamptz(3)
+  lockVersion Int                       @default(1) @map("lock_version")
+
+  owner              User                                @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  inputs             PreparedLocationInput[]
+  reconstructionJobs PreparedLocationReconstructionJob[]
+
+  @@index([ownerId, status, updatedAt])
+  @@map("prepared_locations")
+}
+
+/// Durable pre-project photo reconstruction orchestration. It has no project
+/// foreign key so a filmmaker can prepare spaces before starting a story.
+model PreparedLocationReconstructionJob {
+  id                   String                       @id
+  ownerId              String                       @map("owner_id")
+  preparedLocationId   String                       @map("prepared_location_id")
+  providerKey          String                       @map("provider_key")
+  status               LocationReconstructionStatus
+  failureCode          String?                      @map("failure_code")
+  workerLeaseId        String?                      @map("worker_lease_id")
+  workerLeaseExpiresAt DateTime?                    @map("worker_lease_expires_at") @db.Timestamptz(3)
+  createdAt            DateTime                     @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                     @map("updated_at") @db.Timestamptz(3)
+  completedAt          DateTime?                    @map("completed_at") @db.Timestamptz(3)
+  lockVersion          Int                          @default(1) @map("lock_version")
+
+  preparedLocation PreparedLocation @relation(fields: [preparedLocationId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId, createdAt])
+  @@index([providerKey, status, workerLeaseExpiresAt])
+  @@map("prepared_location_reconstruction_jobs")
+}
+
+/// Immutable original evidence for a prepared location. Storage keys are never
+/// returned to the browser; the app serves them only through owner authorization.
+model PreparedLocationInput {
+  id                 String   @id
+  preparedLocationId String   @map("prepared_location_id")
+  kind               String
+  fileName           String   @map("file_name")
+  contentType        String   @map("content_type")
+  byteSize           Int      @map("byte_size")
+  contentHash        String   @map("content_hash")
+  storageKey         String   @map("storage_key")
+  createdAt          DateTime @map("created_at") @db.Timestamptz(3)
+
+  preparedLocation PreparedLocation @relation(fields: [preparedLocationId], references: [id], onDelete: Restrict)
+
+  @@unique([preparedLocationId, contentHash])
+  @@index([preparedLocationId, createdAt])
+  @@map("prepared_location_inputs")
 }
 
 /// Server-enforced access to the private beta, keyed only by the stable internal
@@ -401,26 +482,29 @@ model SourceImport {
 /// Server-side orchestration for an asynchronous photo-to-space reconstruction.
 /// Provider identifiers stay out of the filmmaker-owned creative planning JSON.
 model LocationReconstructionJob {
-  id            String                       @id
-  ownerId       String                       @map("owner_id")
-  projectId     String                       @map("project_id")
-  name          String
-  providerKey   String                       @map("provider_key")
-  providerJobId String?                      @map("provider_job_id")
-  status        LocationReconstructionStatus
-  photos        Json
-  environmentId String?                      @map("environment_id")
-  failureCode   String?                      @map("failure_code")
-  createdAt     DateTime                     @map("created_at") @db.Timestamptz(3)
-  updatedAt     DateTime                     @map("updated_at") @db.Timestamptz(3)
-  completedAt   DateTime?                    @map("completed_at") @db.Timestamptz(3)
-  lockVersion   Int                          @default(1) @map("lock_version")
+  id                   String                       @id
+  ownerId              String                       @map("owner_id")
+  projectId            String                       @map("project_id")
+  name                 String
+  providerKey          String                       @map("provider_key")
+  providerJobId        String?                      @map("provider_job_id")
+  status               LocationReconstructionStatus
+  photos               Json
+  environmentId        String?                      @map("environment_id")
+  failureCode          String?                      @map("failure_code")
+  workerLeaseId        String?                      @map("worker_lease_id")
+  workerLeaseExpiresAt DateTime?                    @map("worker_lease_expires_at") @db.Timestamptz(3)
+  createdAt            DateTime                     @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                     @map("updated_at") @db.Timestamptz(3)
+  completedAt          DateTime?                    @map("completed_at") @db.Timestamptz(3)
+  lockVersion          Int                          @default(1) @map("lock_version")
 
   project Project @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
 
   @@unique([id, ownerId, projectId])
   @@unique([providerKey, providerJobId])
   @@index([projectId, createdAt])
+  @@index([providerKey, status, workerLeaseExpiresAt])
   @@map("location_reconstruction_jobs")
 }
 

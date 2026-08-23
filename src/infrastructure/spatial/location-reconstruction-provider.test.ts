@@ -3,6 +3,7 @@ import { zipSync } from "fflate";
 import { describe, expect, it, vi } from "vitest";
 import {
   KiriLocationReconstructionProvider,
+  StromanPullLocationReconstructionProvider,
   StromanLocationReconstructionProvider,
   createLocationReconstructionProvider,
 } from "./location-reconstruction-provider";
@@ -227,7 +228,7 @@ describe("StromanLocationReconstructionProvider", () => {
     ).toThrow(/32 bytes/i);
   });
 
-  it("prefers the owned worker in auto mode while preserving KIRI as rollback", () => {
+  it("prefers the outbound Stroman worker and never silently spends on KIRI", () => {
     expect(
       createLocationReconstructionProvider({
         STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "auto",
@@ -235,13 +236,13 @@ describe("StromanLocationReconstructionProvider", () => {
         STROMAN_RECONSTRUCTION_WORKER_SECRET: secret,
         KIRI_API_KEY: "rollback-key",
       }),
-    ).toBeInstanceOf(StromanLocationReconstructionProvider);
+    ).toBeInstanceOf(StromanPullLocationReconstructionProvider);
     expect(
       createLocationReconstructionProvider({
         STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "auto",
         KIRI_API_KEY: "rollback-key",
-      }),
-    ).toBeInstanceOf(KiriLocationReconstructionProvider);
+      }).key,
+    ).toBe("unavailable");
   });
 
   it("allows the authenticated owned worker on localhost only outside production", () => {
@@ -251,15 +252,15 @@ describe("StromanLocationReconstructionProvider", () => {
       STROMAN_RECONSTRUCTION_WORKER_URL: "http://127.0.0.1:3211",
       STROMAN_RECONSTRUCTION_WORKER_SECRET: secret,
     });
-    expect(local).toBeInstanceOf(StromanLocationReconstructionProvider);
-    expect(local.key).toBe("stroman-owned-v1");
-    expect(() =>
+    expect(local).toBeInstanceOf(StromanPullLocationReconstructionProvider);
+    expect(local.key).toBe("stroman-pull-v1");
+    expect(
       createLocationReconstructionProvider({
         NODE_ENV: "production",
         STROMAN_LOCATION_RECONSTRUCTION_PROVIDER: "stroman",
         STROMAN_RECONSTRUCTION_WORKER_URL: "http://127.0.0.1:3211",
         STROMAN_RECONSTRUCTION_WORKER_SECRET: secret,
       }),
-    ).toThrow(/HTTPS/i);
+    ).toBeInstanceOf(StromanPullLocationReconstructionProvider);
   });
 });
