@@ -3,11 +3,13 @@ import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { appleReconstructionWorkerEnvironment } from "./apple-reconstruction-worker-config.mjs";
+import { appleSwiftCompileArguments, compatibleAppleSdkPath } from "./apple-toolchain-config.mjs";
 import { localReconstructionEnvironment } from "./local-reconstruction-config.mjs";
 
 const root = process.cwd();
 const runtimePath = path.join(root, ".data", "apple-reconstruction-runtime");
 const binary = path.join(runtimePath, "stroman-apple-photogrammetry");
+const moduleCachePath = path.join(runtimePath, "swift-module-cache");
 const source = path.join(root, "services", "reconstruction-worker", "apple-photogrammetry.swift");
 const workerPort = 3211;
 const appPort = 3200;
@@ -83,8 +85,14 @@ if (!new Set(["reduced", "medium"]).has(detail)) {
 }
 
 await mkdir(runtimePath, { recursive: true, mode: 0o700 });
+await mkdir(moduleCachePath, { recursive: true, mode: 0o700 });
 console.log("Preparing Stroman's local Apple reconstruction engine...");
-await run("swiftc", ["-parse-as-library", source, "-o", binary]);
+const compatibleSdk = compatibleAppleSdkPath();
+if (compatibleSdk) console.log(`Using compatible Apple SDK: ${compatibleSdk}`);
+await run(
+  "swiftc",
+  appleSwiftCompileArguments({ source, binary, moduleCachePath, sdkPath: compatibleSdk }),
+);
 await run(binary, ["--check"]);
 
 const sharedEnvironment = localReconstructionEnvironment(process.env, {
