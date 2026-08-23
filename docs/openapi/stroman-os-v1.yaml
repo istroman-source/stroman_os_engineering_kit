@@ -1718,6 +1718,15 @@ paths:
       operationId: completeProjectRoomReconstruction
       summary: Persist a signed-lease GLB result for a project room.
       responses: { "200": { description: Room completed. } }
+  /api/v1/reconstruction-worker/jobs/{jobId}/failure:
+    parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+    post:
+      tags: [Projects]
+      operationId: failProjectRoomReconstruction
+      summary: Record a terminal connected-Mac room failure so the project can retry.
+      responses:
+        "200": { description: Room marked retryable. }
+        "403": { $ref: "#/components/responses/Forbidden" }
   /api/v1/reconstruction-worker/prepared-locations/lease:
     post:
       tags: [Projects]

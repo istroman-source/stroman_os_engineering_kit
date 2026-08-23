@@ -62,8 +62,12 @@ async function waitForLocalWorker() {
 }
 
 async function reportTerminalFailure(job, code) {
-  if (!job.failurePath) throw new Error("Prepared room job is missing its failure path.");
-  const response = await signedFetch(appOrigin, job.failurePath, {
+  const failurePath =
+    job.failurePath ??
+    (job.resultPath
+      ? job.resultPath.replace(/\/result$/, "/failure")
+      : `/api/v1/reconstruction-worker/jobs/${encodeURIComponent(job.id)}/failure`);
+  const response = await signedFetch(appOrigin, failurePath, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Stroman-Worker-Lease": job.leaseId },
     body: JSON.stringify({ code }),

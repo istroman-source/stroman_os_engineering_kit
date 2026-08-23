@@ -602,3 +602,24 @@ export async function finalizeLocationReconstruction(
   await deps.locationReconstructions.update(completed);
   return toLocationReconstructionView({ ...completed, lockVersion: completed.lockVersion + 1 });
 }
+
+/** Records a terminal result from the connected Mac so the normal project retry flow stays reachable. */
+export async function failLocationReconstruction(
+  deps: ReconstructionDeps,
+  input: {
+    readonly job: LocationReconstructionJob;
+    readonly failureCode: "LOCAL_RECONSTRUCTION_FAILED" | "EVIDENCE_INTEGRITY_FAILED";
+  },
+): Promise<LocationReconstructionView> {
+  const failed: LocationReconstructionJob = {
+    ...input.job,
+    status: "FAILED",
+    failureCode: input.failureCode,
+    workerLeaseId: null,
+    workerLeaseExpiresAt: null,
+    updatedAt: deps.clock.now(),
+    completedAt: deps.clock.now(),
+  };
+  await deps.locationReconstructions.update(failed);
+  return toLocationReconstructionView({ ...failed, lockVersion: failed.lockVersion + 1 });
+}

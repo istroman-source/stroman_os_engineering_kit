@@ -19,6 +19,7 @@ import {
   InMemorySourceStorage,
 } from "../../../test/adapters/in-memory-source-import";
 import {
+  failLocationReconstruction,
   refreshLocationReconstruction,
   retryLocationReconstruction,
   stageLocationReconstructionPhoto,
@@ -376,5 +377,39 @@ describe("photo-to-space reconstruction", () => {
       retryLocationReconstruction(deps, { actorId: OWNER, projectId: PROJECT, jobId: base.id }),
     ).rejects.toThrow(/no longer complete enough/i);
     expect(deps.locationReconstructionProvider.starts).toHaveLength(0);
+  });
+
+  it("records a terminal connected-Mac failure so the existing project retry remains available", async () => {
+    const deps = fixture();
+    develop(deps);
+    const job: LocationReconstructionJob = {
+      id: "lrec_MACFAIL001",
+      ownerId: OWNER,
+      projectId: PROJECT,
+      name: "Kitchen",
+      providerKey: "stroman-pull-v1",
+      providerJobId: "local-pull-job",
+      status: "PROCESSING",
+      photos: [],
+      environmentId: null,
+      failureCode: null,
+      workerLeaseId: "lease-1",
+      workerLeaseExpiresAt: new Date("2026-08-20T12:15:00.000Z"),
+      createdAt: new Date("2026-08-20T12:00:00.000Z"),
+      updatedAt: new Date("2026-08-20T12:00:00.000Z"),
+      completedAt: null,
+      lockVersion: 1,
+    };
+    deps.locationReconstructions.values.set(job.id, job);
+    const view = await failLocationReconstruction(deps, {
+      job,
+      failureCode: "LOCAL_RECONSTRUCTION_FAILED",
+    });
+    expect(view).toMatchObject({ status: "FAILED", failureCode: "LOCAL_RECONSTRUCTION_FAILED" });
+    expect(deps.locationReconstructions.values.get(job.id)).toMatchObject({
+      status: "FAILED",
+      workerLeaseId: null,
+      workerLeaseExpiresAt: null,
+    });
   });
 });
