@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { appleReconstructionWorkerEnvironment } from "./apple-reconstruction-worker-config.mjs";
+import { appleReconstructionWorkerLaunchConfig } from "./apple-reconstruction-worker-launch-config.mjs";
 import { appleSwiftCompileArguments, compatibleAppleSdkPath } from "./apple-toolchain-config.mjs";
 
 const root = process.cwd();
@@ -11,7 +12,6 @@ const moduleCachePath = path.join(runtimePath, "swift-module-cache");
 const source = path.join(root, "services", "reconstruction-worker", "apple-photogrammetry.swift");
 const port = process.env.PORT ?? "3211";
 const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "reduced";
-const secret = process.env.STROMAN_RECONSTRUCTION_WORKER_SECRET;
 
 function run(command, args) {
   return new Promise((resolve, reject) => {
@@ -30,12 +30,12 @@ function run(command, args) {
 }
 
 if (process.platform !== "darwin") throw new Error("Apple reconstruction workers require macOS.");
-if (!secret || Buffer.byteLength(secret) < 32) {
-  throw new Error("STROMAN_RECONSTRUCTION_WORKER_SECRET must be set to at least 32 bytes.");
-}
 if (!new Set(["reduced", "medium"]).has(detail)) {
   throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced or medium.");
 }
+
+const { secret } = await appleReconstructionWorkerLaunchConfig(process.env);
+process.env.STROMAN_RECONSTRUCTION_WORKER_SECRET = secret;
 
 await mkdir(runtimePath, { recursive: true, mode: 0o700 });
 await mkdir(moduleCachePath, { recursive: true, mode: 0o700 });
@@ -55,11 +55,6 @@ const worker = spawn(process.execPath, ["services/reconstruction-worker/server.m
   stdio: "inherit",
 });
 
-if (!process.env.STROMAN_RECONSTRUCTION_APP_URL) {
-  throw new Error(
-    "STROMAN_RECONSTRUCTION_APP_URL must point to the HTTPS Stroman app for outbound worker mode.",
-  );
-}
 const pullClient = spawn(process.execPath, ["scripts/pull-apple-reconstruction-worker.mjs"], {
   cwd: root,
   env: { ...process.env, STROMAN_LOCAL_RECONSTRUCTION_URL: `http://127.0.0.1:${port}` },
