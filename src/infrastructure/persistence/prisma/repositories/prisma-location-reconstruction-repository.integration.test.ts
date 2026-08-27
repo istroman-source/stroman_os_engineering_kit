@@ -20,6 +20,8 @@ function job(): LocationReconstructionJob {
     name: "Actual kitchen",
     providerKey: "kiri-photo-v1",
     providerJobId: null,
+    workerLeaseId: null,
+    workerLeaseExpiresAt: null,
     status: "SUBMITTING",
     photos: Array.from({ length: 20 }, (_, index) => ({
       mediaAssetId: `mast_RECON${String(index).padStart(4, "0")}`,
