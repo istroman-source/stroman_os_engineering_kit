@@ -31,17 +31,19 @@ activation still requires a reachable owned worker or a future outbound local-ag
 
 ## Mac companion worker for the hosted app
 
-The hosted Railway app can use this same Apple engine through an HTTPS tunnel while keeping the
-compute and source-photo processing on the Mac. Start only the worker with a persistent secret:
+The hosted Railway app uses an **outbound** Mac-worker lease protocol. The Mac polls the app over
+HTTPS for work, so no tunnel and no inbound port exposure are required. Keep the worker terminal
+open while reconstructions run:
 
 ```sh
-STROMAN_RECONSTRUCTION_WORKER_SECRET='<generated secret>' npm run worker:reconstruct:mac
+export STROMAN_RECONSTRUCTION_APP_URL="https://<your-stroman-app>"
+npm run worker:reconstruct:mac
 ```
 
-Expose loopback port `3211` through an HTTPS tunnel, then configure the hosted app with
-`STROMAN_LOCATION_RECONSTRUCTION_PROVIDER=stroman`, the tunnel URL, and the same secret. The worker
-authenticates every request with a body-bound, timestamped, nonce-protected HMAC. Never expose it
-without the secret.
+When the shared worker secret is not already exported, the launcher prompts for it without echoing,
+adding it to shell history, or writing it to disk. Copy the existing server-side
+`STROMAN_RECONSTRUCTION_WORKER_SECRET` only into that private terminal prompt. The worker
+authenticates every lease and completion with a body-bound, timestamped, nonce-protected HMAC.
 
 ## Remote CUDA runtime
 
