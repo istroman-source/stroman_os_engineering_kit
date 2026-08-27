@@ -67,19 +67,19 @@ export async function readHiddenSecret({ stdin = process.stdin, stdout = process
 }
 
 export async function appleReconstructionWorkerLaunchConfig(environment, io) {
+  const appUrl = environment.STROMAN_RECONSTRUCTION_APP_URL;
+  if (!validHttpsUrl(appUrl)) {
+    throw new Error(
+      "STROMAN_RECONSTRUCTION_APP_URL must be an HTTPS Stroman app URL for outbound worker mode.",
+    );
+  }
+
   const secret = validSecret(environment.STROMAN_RECONSTRUCTION_WORKER_SECRET)
     ? environment.STROMAN_RECONSTRUCTION_WORKER_SECRET
     : await readHiddenSecret(io);
 
   if (!validSecret(secret)) {
     throw new Error("STROMAN_RECONSTRUCTION_WORKER_SECRET must be set to at least 32 bytes.");
-  }
-
-  const appUrl = environment.STROMAN_RECONSTRUCTION_APP_URL;
-  if (!validHttpsUrl(appUrl)) {
-    throw new Error(
-      "STROMAN_RECONSTRUCTION_APP_URL must be an HTTPS Stroman app URL for outbound worker mode.",
-    );
   }
 
   return { appUrl, secret };

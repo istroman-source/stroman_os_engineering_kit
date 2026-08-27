@@ -41,10 +41,10 @@ describe("Apple reconstruction worker launch configuration", () => {
   });
 
   it("fails early when the app URL is absent", async () => {
-    await expect(
-      appleReconstructionWorkerLaunchConfig({
-        STROMAN_RECONSTRUCTION_WORKER_SECRET: "s".repeat(32),
-      }),
-    ).rejects.toThrow("STROMAN_RECONSTRUCTION_APP_URL must be an HTTPS Stroman app URL");
+    const io = terminal();
+    await expect(appleReconstructionWorkerLaunchConfig({}, io)).rejects.toThrow(
+      "STROMAN_RECONSTRUCTION_APP_URL must be an HTTPS Stroman app URL",
+    );
+    expect(io.output).toEqual([]);
   });
 });
