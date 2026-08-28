@@ -69,17 +69,13 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
     <div className="flex flex-col gap-6">
       <header className="flex items-baseline justify-between gap-4">
         <div>
-          <Link
-            className="text-muted-foreground text-xs underline-offset-4 hover:underline"
-            href={`/projects/${projectId}`}
-          >
-            ← Blueprint
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">{project.name}</h1>
-          <p className="text-muted-foreground text-sm">Decision log</p>
+          <h2 className="text-2xl font-semibold tracking-tight">Creative decisions</h2>
+          <p className="text-muted-foreground text-sm">
+            Keep consequential choices and their tradeoffs visible to the team.
+          </p>
         </div>
         <span className="text-muted-foreground text-xs tracking-wide uppercase">
-          {project.status}
+          {project.status === "DRAFT" ? "Draft" : project.status.toLowerCase()}
         </span>
       </header>
 

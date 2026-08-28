@@ -51,7 +51,7 @@ describe("AutomaticAnalysis", () => {
     render(<AutomaticAnalysis projectId="proj_1" />);
 
     expect(
-      await screen.findByRole("heading", { name: "Source-backed moments" }),
+      await screen.findByRole("heading", { name: "Quotes and source moments" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Source-backed")).toBeInTheDocument();
     expect(

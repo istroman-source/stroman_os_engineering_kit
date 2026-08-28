@@ -8,7 +8,7 @@ import { TopNav } from "./top-nav";
  */
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="grid min-h-svh grid-cols-1 md:grid-cols-[16rem_1fr]">
+    <div className="grid min-h-svh grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
       {/* Keyboard users can jump straight to content (WCAG 2.4.1). */}
       <a
         href="#main-content"
@@ -19,7 +19,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-col">
         <TopNav />
-        <main id="main-content" tabIndex={-1} className="flex-1 p-6">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-[96rem] flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10"
+        >
           {children}
         </main>
       </div>

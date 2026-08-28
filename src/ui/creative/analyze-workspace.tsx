@@ -26,7 +26,13 @@ type Mode = "loading" | "form" | "blueprint";
  * The creator can begin with one idea and move through Story, Plan, and Edit.
  * Existing project development loads immediately with an intent-update path.
  */
-export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
+export function AnalyzeWorkspace({
+  projectId,
+  focus,
+}: {
+  projectId: string;
+  focus?: "story" | "storyboard";
+}) {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("loading");
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
@@ -100,10 +106,10 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
     return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
 
-  const nav = (
+  const nav = focus ? null : (
     <nav className="text-muted-foreground flex gap-4 text-xs" aria-label="Story workspace">
       <Link className="underline-offset-4 hover:underline" href="/projects">
-        ← Story Studio
+        ← Projects
       </Link>
     </nav>
   );
@@ -116,6 +122,7 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
           analysis={analysis}
           busy={busy}
           error={error}
+          focus={focus}
           onReanalyze={() => setMode("form")}
           onStage={(stage: ProductionStage) =>
             runPlanning(() => updatePlanning(projectId, { stage }))
@@ -167,7 +174,7 @@ export function AnalyzeWorkspace({ projectId }: { projectId: string }) {
     <div className="flex flex-col gap-6">
       {nav}
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Develop the idea</h1>
+        <h2 className="text-2xl font-semibold tracking-tight">Develop the idea</h2>
         <p className="text-muted-foreground text-sm">
           Begin with a concept. Stroman will recommend a direction, challenge it, search distinct
           alternatives, expose the decisions that matter, and sketch a shootable director blueprint.

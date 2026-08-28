@@ -32,6 +32,25 @@ import { Button } from "@/ui/primitives/button";
 const aspectSize = (aspect: "16:9" | "9:16") =>
   aspect === "16:9" ? { width: 960, height: 540 } : { width: 540, height: 960 };
 
+function disposeThreeScene(scene: THREE.Object3D) {
+  const geometries = new Set<THREE.BufferGeometry>();
+  const materials = new Set<THREE.Material>();
+  const textures = new Set<THREE.Texture>();
+  scene.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    geometries.add(object.geometry);
+    (Array.isArray(object.material) ? object.material : [object.material]).forEach((material) => {
+      materials.add(material);
+      Object.values(material as unknown as Record<string, unknown>).forEach((value) => {
+        if (value instanceof THREE.Texture) textures.add(value);
+      });
+    });
+  });
+  textures.forEach((texture) => texture.dispose());
+  materials.forEach((material) => material.dispose());
+  geometries.forEach((geometry) => geometry.dispose());
+}
+
 export function cameraTechnicalData(camera: LocationCameraState) {
   const projection = cameraProjectionData(camera);
   return {
@@ -49,10 +68,10 @@ export function locationReconstructionProgress(
   const elapsedMinutes = Math.max(0, Math.floor((now - Date.parse(job.createdAt)) / 60_000));
   const completion = job.percent === null ? "" : ` ${job.percent}% complete.`;
   if (job.status === "SUBMITTING" || job.phase === "UPLOADING") {
-    return `${job.photoCount} source photos are preserved. The reconstruction service is receiving the room capture.`;
+    return `${job.photoCount} source photos are preserved. Stroman is receiving the room capture.`;
   }
   if (job.phase === "QUEUED") {
-    return `${job.photoCount} source photos are preserved. Upload is complete and the room has been waiting ${elapsedMinutes} minute${elapsedMinutes === 1 ? "" : "s"} for reconstruction capacity. Stroman is checking automatically—no reload is needed.`;
+    return `${job.photoCount} source photos are preserved. Upload is complete and the room has been waiting ${elapsedMinutes} minute${elapsedMinutes === 1 ? "" : "s"} for the connected Mac. Stroman is checking automatically—no reload is needed.`;
   }
   const stages: Partial<Record<NonNullable<LocationReconstructionView["phase"]>, string>> = {
     ALIGNING: "recovering camera positions and connecting overlapping views",
@@ -287,7 +306,7 @@ export function LocationPhotoInput({
           </p>
           <p className="text-muted-foreground mt-2 text-xs" aria-live="polite">
             {checking
-              ? "Checking the reconstruction service now…"
+              ? "Checking the room build now…"
               : lastCheckedAt
                 ? `Last status check at ${lastCheckedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" })}.`
                 : "Connecting to live progress…"}
@@ -351,13 +370,13 @@ export function LocationPhotoInput({
               {working && uploadProgress
                 ? uploadProgress.uploaded < uploadProgress.total
                   ? `Uploading photo ${uploadProgress.uploaded + 1} of ${uploadProgress.total}…`
-                  : "Starting reconstruction…"
+                  : "Starting room build…"
                 : "Build this space"}
             </Button>
             <span className="text-muted-foreground text-xs">
-              Photos are preserved privately in this project and sent to Stroman&apos;s
-              reconstruction service. Exact measurements activate only when capture evidence
-              supports them; otherwise scale stays clearly estimated.
+              Photos are preserved privately in this project and used only to build this room. Exact
+              measurements activate only when capture evidence supports them; otherwise scale stays
+              clearly estimated.
             </span>
           </div>
         </>
@@ -365,8 +384,7 @@ export function LocationPhotoInput({
       {job && !active && job.status !== "SUCCEEDED" ? (
         <div className="border-destructive/30 mt-3 rounded-md border p-3 text-sm">
           <p role="status" className="text-destructive">
-            This reconstruction did not complete. Your original photos remain preserved in this
-            project.
+            This room build did not complete. Your original photos remain preserved in this project.
           </p>
           {job.status === "FAILED" && job.photoCount >= 20 && job.photoCount <= 40 ? (
             <Button
@@ -605,7 +623,10 @@ export function RealLocationWorkspace({
     new GLTFLoader().load(
       `/api/v1/projects/${encodeURIComponent(projectId)}/location-environments/${encodeURIComponent(environment.id)}/geometry`,
       (gltf) => {
-        if (disposed) return;
+        if (disposed) {
+          disposeThreeScene(gltf.scene);
+          return;
+        }
         const transform = new THREE.Matrix4().fromArray([...environment.sourceToCanonical]);
         gltf.scene.applyMatrix4(transform);
         prepareInteriorMaterials(gltf.scene);
@@ -638,13 +659,7 @@ export function RealLocationWorkspace({
     return () => {
       disposed = true;
       cancelAnimationFrame(animation);
-      scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-          object.geometry.dispose();
-          const materials = Array.isArray(object.material) ? object.material : [object.material];
-          for (const material of materials) material.dispose();
-        }
-      });
+      disposeThreeScene(scene);
       renderer.dispose();
       rendererRef.current = null;
       cameraRef.current = null;
@@ -741,6 +756,26 @@ export function RealLocationWorkspace({
     });
   };
 
+  const turn = (yawDelta: number, pitchDelta = 0) => {
+    const camera = currentCamera(workspace);
+    const dx = camera.target.x - camera.position.x;
+    const dy = camera.target.y - camera.position.y;
+    const dz = camera.target.z - camera.position.z;
+    const yaw = Math.atan2(dx, -dz) + yawDelta;
+    const pitch = Math.max(-1.35, Math.min(1.35, Math.atan2(dy, Math.hypot(dx, dz)) + pitchDelta));
+    const distance = Math.max(2, cameraTechnicalData(camera).distance);
+    const target = {
+      x: camera.position.x + Math.sin(yaw) * Math.cos(pitch) * distance,
+      y: camera.position.y + Math.sin(pitch) * distance,
+      z: camera.position.z - Math.cos(yaw) * Math.cos(pitch) * distance,
+    };
+    updateCamera({
+      ...camera,
+      target,
+      orientation: lookAtQuaternion(camera.position, target) ?? camera.orientation,
+    });
+  };
+
   const onKeyDown = (event: KeyboardEvent<HTMLCanvasElement>) => {
     const amount = event.shiftKey ? 0.5 : 0.18;
     const moves: Record<string, [number, number, number]> = {
@@ -752,13 +787,23 @@ export function RealLocationWorkspace({
       ArrowLeft: [0, -amount, 0],
       d: [0, amount, 0],
       ArrowRight: [0, amount, 0],
-      q: [0, 0, -amount],
-      e: [0, 0, amount],
     };
     const delta = moves[event.key];
-    if (!delta) return;
+    if (delta) {
+      event.preventDefault();
+      move(...delta);
+      return;
+    }
+    const looks: Record<string, [number, number]> = {
+      q: [-0.14, 0],
+      e: [0.14, 0],
+      r: [0, 0.1],
+      f: [0, -0.1],
+    };
+    const lookDelta = looks[event.key.toLowerCase()];
+    if (!lookDelta) return;
     event.preventDefault();
-    move(...delta);
+    turn(...lookDelta);
   };
 
   const onPointerDown = (event: PointerEvent<HTMLCanvasElement>) => {
@@ -825,7 +870,6 @@ export function RealLocationWorkspace({
 
   return (
     <div className="space-y-3">
-      {reconstructionInput}
       <section className="bg-card rounded-lg border p-4" aria-labelledby="real-location-space">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -837,7 +881,7 @@ export function RealLocationWorkspace({
             </h2>
             <p className="text-muted-foreground text-sm">
               This view is the actual perspective camera. Click-drag to look; WASD or arrows move;
-              Q/E lowers or raises.
+              Q/E/R/F aim the camera with a keyboard.
             </p>
           </div>
           <div className="text-right text-xs">
@@ -845,9 +889,6 @@ export function RealLocationWorkspace({
               {workspace.environment.scaleConfidence === "OBSERVED"
                 ? "Metric scan"
                 : "Scale estimated"}
-            </p>
-            <p className="text-muted-foreground">
-              Environment v{workspace.environment.version} · {fps ? `${fps} fps` : "measuring"}
             </p>
           </div>
         </div>
@@ -861,7 +902,8 @@ export function RealLocationWorkspace({
                 ref={canvasRef}
                 tabIndex={0}
                 aria-label={`Actual ${workspace.activeAspect} camera view inside ${workspace.environment.name}`}
-                className="h-full w-full cursor-crosshair outline-none focus:ring-2 focus:ring-amber-500"
+                aria-describedby="project-room-camera-help"
+                className="h-full w-full cursor-crosshair touch-none outline-none focus:ring-2 focus:ring-amber-500"
                 onKeyDown={onKeyDown}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
@@ -882,10 +924,11 @@ export function RealLocationWorkspace({
               {targetUnknown ? (
                 <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(135deg,transparent,transparent_12px,rgba(229,169,79,.12)_12px,rgba(229,169,79,.12)_24px)]" />
               ) : null}
-              <div className="absolute right-2 bottom-2 rounded bg-black/65 px-2 py-1 text-[0.68rem] text-white">
-                {LOCATION_RENDERER_VERSION} · baked pixels on save
-              </div>
             </div>
+            <p id="project-room-camera-help" className="sr-only">
+              Use W A S D or arrow keys to move. Use Q and E to turn, and R and F to look up or
+              down.
+            </p>
             {boundaryMessage || targetUnknown ? (
               <div className="mt-2 rounded-md border border-amber-600/40 bg-amber-600/10 p-3 text-sm">
                 <strong>I don&apos;t have this side of the room yet.</strong>
@@ -897,6 +940,97 @@ export function RealLocationWorkspace({
           </div>
 
           <aside className="space-y-4">
+            <div>
+              <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-wide uppercase">
+                Move through the room
+              </p>
+              <div className="mt-2 grid grid-cols-3 gap-2" aria-label="Camera movement controls">
+                <span />
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  aria-label="Move camera forward"
+                  onClick={() => move(0.25, 0, 0)}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  aria-label="Raise camera"
+                  onClick={() => move(0, 0, 0.2)}
+                >
+                  Up
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  aria-label="Move camera left"
+                  onClick={() => move(0, -0.25, 0)}
+                >
+                  ←
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  aria-label="Move camera backward"
+                  onClick={() => move(-0.25, 0, 0)}
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  aria-label="Move camera right"
+                  onClick={() => move(0, 0.25, 0)}
+                >
+                  →
+                </button>
+              </div>
+              <button
+                type="button"
+                className="border-border mt-2 min-h-11 w-full rounded-md border text-sm font-semibold"
+                aria-label="Lower camera"
+                onClick={() => move(0, 0, -0.2)}
+              >
+                Lower camera
+              </button>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-wide uppercase">
+                Aim camera
+              </p>
+              <div className="mt-2 grid grid-cols-2 gap-2" aria-label="Camera aim controls">
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  onClick={() => turn(-0.2)}
+                >
+                  Turn left
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  onClick={() => turn(0.2)}
+                >
+                  Turn right
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  onClick={() => turn(0, 0.14)}
+                >
+                  Look up
+                </button>
+                <button
+                  type="button"
+                  className="border-border min-h-11 rounded-md border text-sm font-semibold"
+                  onClick={() => turn(0, -0.14)}
+                >
+                  Look down
+                </button>
+              </div>
+            </div>
             <div>
               <p className="text-muted-foreground text-[0.68rem] font-semibold tracking-wide uppercase">
                 Composition
@@ -949,8 +1083,8 @@ export function RealLocationWorkspace({
                 </button>
               ))}
             </div>
-            <div className="rounded-md border p-3 text-sm">
-              <p className="font-semibold">Camera truth</p>
+            <details className="rounded-md border p-3 text-sm">
+              <summary className="cursor-pointer font-semibold">Advanced camera</summary>
               <dl className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
                 <dt className="text-muted-foreground">Filmback</dt>
                 <dd>36 × 24mm</dd>
@@ -969,7 +1103,7 @@ export function RealLocationWorkspace({
                     : "Proposed"}
                 </dd>
               </dl>
-            </div>
+            </details>
             <div className="rounded-md border p-3 text-xs">
               <p className="font-semibold">Shooting instruction</p>
               <p className="text-muted-foreground mt-1 leading-relaxed">{shootingInstructions}</p>
@@ -1004,34 +1138,37 @@ export function RealLocationWorkspace({
         </div>
 
         {workspace.environment.sourcePhotos?.length ? (
-          <div className="mt-5 border-t pt-4">
-            <div className="flex flex-wrap items-end justify-between gap-2">
-              <div>
-                <h3 className="font-semibold">Photo presence · actual location</h3>
-                <p className="text-muted-foreground text-xs">
-                  Source evidence preserves the room&apos;s real light, texture, color, and
-                  atmosphere.
-                </p>
+          <details className="mt-5 border-t pt-4">
+            <summary className="cursor-pointer text-sm font-semibold">Source photos</summary>
+            <div className="mt-3">
+              <div className="flex flex-wrap items-end justify-between gap-2">
+                <div>
+                  <h3 className="font-semibold">Photo presence · actual location</h3>
+                  <p className="text-muted-foreground text-xs">
+                    Source evidence preserves the room&apos;s real light, texture, color, and
+                    atmosphere.
+                  </p>
+                </div>
+                <span className="text-muted-foreground text-xs">
+                  {workspace.environment.sourcePhotos.length} photos
+                </span>
               </div>
-              <span className="text-muted-foreground text-xs">
-                {workspace.environment.sourcePhotos.length} photos
-              </span>
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                {workspace.environment.sourcePhotos.slice(0, 6).map((photo, index) => (
+                  <figure key={photo.mediaAssetId} className="overflow-hidden rounded-md border">
+                    <Image
+                      unoptimized
+                      width={320}
+                      height={240}
+                      src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-environments/${encodeURIComponent(workspace.environment.id)}/photos/${encodeURIComponent(photo.mediaAssetId)}`}
+                      alt={`Actual location source angle ${index + 1}`}
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </figure>
+                ))}
+              </div>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-              {workspace.environment.sourcePhotos.slice(0, 6).map((photo, index) => (
-                <figure key={photo.mediaAssetId} className="overflow-hidden rounded-md border">
-                  <Image
-                    unoptimized
-                    width={320}
-                    height={240}
-                    src={`/api/v1/projects/${encodeURIComponent(projectId)}/location-environments/${encodeURIComponent(workspace.environment.id)}/photos/${encodeURIComponent(photo.mediaAssetId)}`}
-                    alt={`Actual location source angle ${index + 1}`}
-                    className="aspect-[4/3] w-full object-cover"
-                  />
-                </figure>
-              ))}
-            </div>
-          </div>
+          </details>
         ) : null}
 
         {workspace.savedShots.length ? (
@@ -1061,8 +1198,30 @@ export function RealLocationWorkspace({
         ) : null}
 
         <details className="mt-5 border-t pt-4">
-          <summary className="cursor-pointer text-sm font-semibold">Add a new scan version</summary>
-          <div className="mt-3">
+          <summary className="cursor-pointer text-sm font-semibold">Room details</summary>
+          <dl className="text-muted-foreground mt-3 grid gap-1 text-xs sm:grid-cols-2">
+            <div>
+              <dt className="font-semibold">Scale</dt>
+              <dd>
+                {workspace.environment.scaleConfidence === "OBSERVED" ? "Measured" : "Estimated"}
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold">Viewer</dt>
+              <dd>
+                Room version {workspace.environment.version} ·{" "}
+                {fps ? `${fps} fps` : "checking performance"} · {LOCATION_RENDERER_VERSION}
+              </dd>
+            </div>
+          </dl>
+        </details>
+
+        <details className="mt-5 border-t pt-4">
+          <summary className="cursor-pointer text-sm font-semibold">
+            Replace or rebuild room
+          </summary>
+          <div className="mt-4 space-y-4">
+            {reconstructionInput}
             <LocationScanInput compact busy={busy} onUpload={onUpload} />
           </div>
         </details>

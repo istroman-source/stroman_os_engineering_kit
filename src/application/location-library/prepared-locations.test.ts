@@ -11,8 +11,11 @@ import {
   createPreparedLocationForOwner,
   completePreparedLocationReconstruction,
   failPreparedLocationReconstruction,
+  getPreparedLocationForOwner,
+  getPreparedLocationGeometryForOwner,
   listPreparedLocationsForOwner,
   preparedLocationView,
+  renamePreparedLocationForOwner,
   startPreparedLocationReconstruction,
   uploadPreparedLocationPhotos,
 } from "./prepared-locations";
@@ -97,6 +100,77 @@ describe("prepared location application", () => {
     await expect(listPreparedLocationsForOwner(deps, owner)).resolves.toEqual([location]);
   });
 
+  it("owner-scopes room detail and geometry without exposing stored evidence paths", async () => {
+    const preparedLocations = new Locations();
+    const preparedLocationReconstructions = new Reconstructions();
+    const owner = OwnerId.unsafe("usr_LOCATIONOWNER");
+    const other = OwnerId.unsafe("usr_LOCATIONOTHER");
+    preparedLocations.values.push({
+      id: "loc_PRIVATE001",
+      ownerId: owner,
+      name: "Private room",
+      inputKind: "GLB",
+      status: "READY",
+      environment: {
+        source: "GLB",
+        inputId: "loc_PRIVATE001:sha256:room",
+        bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 4, y: 3, z: 5 } },
+        scaleMetersPerUnit: 1,
+        sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      },
+      failureCode: null,
+      inputs: [
+        {
+          id: "locin_GEOMETRY1",
+          kind: "GEOMETRY",
+          fileName: "room.glb",
+          contentType: "model/gltf-binary",
+          byteSize: 3,
+          contentHash: "sha256:room",
+          storageKey: "private/server/path",
+          createdAt: new Date("2026-08-21T13:00:00.000Z"),
+        },
+      ],
+      createdAt: new Date("2026-08-21T13:00:00.000Z"),
+      updatedAt: new Date("2026-08-21T13:00:00.000Z"),
+      lockVersion: 1,
+    });
+    const deps = {
+      preparedLocations,
+      preparedLocationReconstructions,
+      ids: new SequentialIdGenerator(),
+      clock: new FixedClock(new Date("2026-08-22T13:00:00.000Z")),
+      sourceStorage: {
+        put: async () => ({ leaseId: "lease" }),
+        get: async (key: string) => {
+          expect(key).toBe("private/server/path");
+          return new Uint8Array([1, 2, 3]);
+        },
+        retain: async () => undefined,
+        discard: async () => undefined,
+      },
+      locationGeometryInspector: {
+        inferRoomScale: () => {
+          throw new Error("not used");
+        },
+      },
+    };
+
+    await expect(
+      getPreparedLocationForOwner(deps, { actorId: other, locationId: "loc_PRIVATE001" }),
+    ).rejects.toMatchObject({ code: "NOT_FOUND" });
+    await expect(
+      getPreparedLocationGeometryForOwner(deps, { actorId: owner, locationId: "loc_PRIVATE001" }),
+    ).resolves.toMatchObject({ bytes: new Uint8Array([1, 2, 3]), contentHash: "sha256:room" });
+    await expect(
+      renamePreparedLocationForOwner(deps, {
+        actorId: owner,
+        locationId: "loc_PRIVATE001",
+        name: "  New room name  ",
+      }),
+    ).resolves.toMatchObject({ name: "New room name" });
+  });
+
   it("preserves photo evidence once and queues it idempotently for the Mac worker", async () => {
     const preparedLocations = new Locations();
     const preparedLocationReconstructions = new Reconstructions();
@@ -130,7 +204,29 @@ describe("prepared location application", () => {
       contentType: "image/jpeg",
       bytes: new Uint8Array([index + 1]),
     }));
-    await uploadPreparedLocationPhotos(deps, { actorId: owner, locationId: location.id, files });
+    for (const file of files.slice(0, 19)) {
+      await uploadPreparedLocationPhotos(deps, {
+        actorId: owner,
+        locationId: location.id,
+        files: [file],
+      });
+    }
+    expect((await preparedLocations.findById(location.id))?.status).toBe("DRAFT");
+    await uploadPreparedLocationPhotos(deps, {
+      actorId: owner,
+      locationId: location.id,
+      files: [files[19]!],
+    });
+    await uploadPreparedLocationPhotos(deps, {
+      actorId: owner,
+      locationId: location.id,
+      files: [files[19]!],
+    });
+    expect(
+      (await preparedLocations.findById(location.id))?.inputs.filter(
+        (item) => item.kind === "PHOTO",
+      ),
+    ).toHaveLength(20);
     const first = await startPreparedLocationReconstruction(deps, {
       actorId: owner,
       locationId: location.id,

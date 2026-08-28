@@ -1,83 +1,87 @@
 /*
- * Stroman OS — Design Tokens (single source of truth).
+ * Stroman OS design tokens.
  *
- * Components must never hardcode raw values. They consume these tokens through
- * Tailwind utilities (mapped in globals.css) or via var(--token) directly.
- *
- * The interface is DARK-FIRST: the dark palette is the default under :root, and
- * `.light` is an explicit opt-out. This matches the UI/UX specification
- * ("dark-first, high contrast, restrained accent use").
+ * The default experience is a warm, light editorial workspace. Components
+ * consume semantic tokens so content stays legible and the accent hierarchy
+ * remains consistent across Projects, Locations, and focused workspaces.
  */
 
 :root {
-  /* Native controls (scrollbars, form widgets) follow the dark theme. */
-  color-scheme: dark;
+  color-scheme: light;
 
-  /* ---- Color: semantic surfaces & content (dark, default) ---- */
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
+  /* Core canvas and content */
+  --background: #f7f5f0;
+  --foreground: #262522;
+  --card: #ffffff;
+  --card-foreground: #262522;
+  --popover: #ffffff;
+  --popover-foreground: #262522;
 
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
+  /* Action hierarchy */
+  --primary: #9d4638;
+  --primary-foreground: #fffaf8;
+  --secondary: #e7efeb;
+  --secondary-foreground: #344a43;
+  --muted: #efede7;
+  --muted-foreground: #68645c;
+  --accent: #f6eae6;
+  --accent-foreground: #71372e;
 
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
+  /* Status and interaction */
+  --success: #376453;
+  --success-foreground: #f6fffb;
+  --success-soft: #e6f1ec;
+  --warning: #946223;
+  --warning-foreground: #fffaf1;
+  --warning-soft: #f7eddc;
+  --info: #3d6477;
+  --info-foreground: #f7fcff;
+  --info-soft: #e6f0f4;
+  --destructive: #b43d35;
+  --destructive-foreground: #fff9f8;
+  --destructive-soft: #f8e8e6;
 
-  --primary: oklch(0.92 0.004 286.32);
-  --primary-foreground: oklch(0.21 0.006 285.885);
+  --border: #dedad2;
+  --input: #cfc9bf;
+  --ring: #9d4638;
 
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
+  /* Application shell */
+  --sidebar: #f1eee7;
+  --sidebar-foreground: #2f2d29;
+  --sidebar-border: #dedad2;
+  --sidebar-accent: #e7ded3;
+  --sidebar-accent-foreground: #71372e;
 
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.552 0.016 285.938);
-
-  /* Sidebar surface (application shell). */
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-
-  /* ---- Radius ---- */
-  --radius: 0.625rem;
+  /* Shape */
+  --radius: 0.75rem;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 10px);
 
-  /* ---- Typography ---- */
+  /* Typography */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
 
-  /* ---- Elevation (shadows) ---- */
+  /* Quiet depth for hierarchy without dashboard-like chrome */
   --elevation-0: none;
-  --elevation-1: 0 1px 2px 0 oklch(0 0 0 / 0.24);
-  --elevation-2: 0 2px 8px -1px oklch(0 0 0 / 0.32);
-  --elevation-3: 0 8px 24px -4px oklch(0 0 0 / 0.4);
+  --elevation-1: 0 1px 2px rgb(71 61 48 / 0.07);
+  --elevation-2: 0 8px 24px -14px rgb(71 61 48 / 0.24);
+  --elevation-3: 0 18px 44px -22px rgb(71 61 48 / 0.3);
 
-  /* ---- Motion ---- */
+  /* Motion */
   --duration-fast: 120ms;
-  --duration-base: 200ms;
-  --duration-slow: 320ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
 
-  /* ---- Focus ---- */
-  --focus-ring-width: 2px;
+  /* Focus */
+  --focus-ring-width: 3px;
   --focus-ring-offset: 2px;
 
-  /* ---- Z-index scale (mirrored in src/lib/tokens.ts for JS use) ---- */
+  /* Z-index */
   --z-base: 0;
   --z-dropdown: 1000;
   --z-sticky: 1100;
@@ -87,44 +91,45 @@
   --z-tooltip: 1500;
 }
 
-.light {
-  color-scheme: light;
+/* Optional dark surface for future user preference; light remains canonical. */
+.dark {
+  color-scheme: dark;
 
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-
-  --elevation-1: 0 1px 2px 0 oklch(0 0 0 / 0.06);
-  --elevation-2: 0 2px 8px -1px oklch(0 0 0 / 0.1);
-  --elevation-3: 0 8px 24px -4px oklch(0 0 0 / 0.14);
+  --background: #1c1b19;
+  --foreground: #f7f5f0;
+  --card: #25231f;
+  --card-foreground: #f7f5f0;
+  --popover: #25231f;
+  --popover-foreground: #f7f5f0;
+  --primary: #d58a79;
+  --primary-foreground: #28130f;
+  --secondary: #33463f;
+  --secondary-foreground: #eef7f2;
+  --muted: #302e2a;
+  --muted-foreground: #b9b3a9;
+  --accent: #432d28;
+  --accent-foreground: #f5ddd7;
+  --success: #8fc6b1;
+  --success-foreground: #12251e;
+  --success-soft: #243a32;
+  --warning: #e0ae6d;
+  --warning-foreground: #2b1d0b;
+  --warning-soft: #43331f;
+  --info: #94bdd0;
+  --info-foreground: #14252d;
+  --info-soft: #243740;
+  --destructive: #e7877f;
+  --destructive-foreground: #2d100d;
+  --destructive-soft: #432725;
+  --border: #45413a;
+  --input: #5b554b;
+  --ring: #d58a79;
+  --sidebar: #211f1c;
+  --sidebar-foreground: #f7f5f0;
+  --sidebar-border: #45413a;
+  --sidebar-accent: #432d28;
+  --sidebar-accent-foreground: #f5ddd7;
+  --elevation-1: 0 1px 2px rgb(0 0 0 / 0.26);
+  --elevation-2: 0 8px 24px -14px rgb(0 0 0 / 0.55);
+  --elevation-3: 0 18px 44px -22px rgb(0 0 0 / 0.68);
 }

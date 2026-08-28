@@ -178,10 +178,10 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
             Analysis version {result.run.version} · {result.run.status.toLowerCase()}
           </p>
           <div>
-            <h3 className="text-sm font-semibold">Source-backed moments</h3>
+            <h3 className="text-sm font-semibold">Quotes and source moments</h3>
             <p className="text-muted-foreground mt-1 text-xs">
-              Direct transcript or visible-frame evidence. These moments are source material, not
-              story conclusions.
+              Exact transcript excerpts and visible-frame evidence, kept in source order. These are
+              source material, not story conclusions.
             </p>
             <FindingList
               outputs={result.outputs.filter((output) => output.kind === "OBSERVATION")}

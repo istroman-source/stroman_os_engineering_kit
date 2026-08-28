@@ -5,7 +5,7 @@ import { Button } from "@/ui/primitives/button";
 import type { AnalyzeFields } from "./creative-api";
 
 const inputClass =
-  "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "w-full rounded-md border border-border bg-background px-3 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm";
 
 const EMPTY: AnalyzeFields = {
   title: "",

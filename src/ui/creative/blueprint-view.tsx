@@ -371,6 +371,7 @@ export function BlueprintView({
   analysis,
   busy,
   error,
+  focus,
   onReanalyze,
   onStage,
   onProduction,
@@ -387,6 +388,7 @@ export function BlueprintView({
   analysis: Analysis;
   busy: boolean;
   error: string | null;
+  focus?: "story" | "storyboard";
   onReanalyze: () => void;
   onStage: (stage: ProductionStage) => Promise<void>;
   onProduction: (production: Partial<ProductionReality>) => Promise<void>;
@@ -425,7 +427,15 @@ export function BlueprintView({
     readonly stage: ProductionStage;
     readonly value: Depth;
   }>({ stage: plan.stage, value: defaultDepth });
-  const depth = depthChoice.stage === plan.stage ? depthChoice.value : defaultDepth;
+  const depth =
+    focus === "story"
+      ? "SPINE"
+      : focus === "storyboard"
+        ? "BLUEPRINT"
+        : depthChoice.stage === plan.stage
+          ? depthChoice.value
+          : defaultDepth;
+  const Heading = focus ? "h2" : "h1";
   return (
     <div className="mb-8 flex flex-col gap-5">
       <header className="flex flex-wrap items-start justify-between gap-4">
@@ -433,7 +443,9 @@ export function BlueprintView({
           <p className="text-muted-foreground text-xs tracking-wide uppercase">
             Filmmaking workspace
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight">{analysis.brief.title}</h1>
+          <Heading className="text-2xl font-semibold tracking-tight">
+            {analysis.brief.title}
+          </Heading>
           <p className="text-muted-foreground text-sm">
             {[analysis.brief.client, analysis.brief.projectType].filter(Boolean).join(" · ") ||
               "Idea-stage project"}
@@ -444,40 +456,44 @@ export function BlueprintView({
         </Button>
       </header>
 
-      <section className="border-border rounded-lg border p-2" aria-label="Production stage">
-        <p className="text-muted-foreground px-2 pt-1 text-[0.65rem] font-semibold tracking-wide uppercase">
-          What stage are you solving?
-        </p>
-        <div className="mt-1 flex flex-wrap gap-1 sm:flex-nowrap sm:overflow-x-auto">
-          {stages.map(([value, label]) => (
+      {focus !== "story" ? (
+        <section className="border-border rounded-lg border p-2" aria-label="Production stage">
+          <p className="text-muted-foreground px-2 pt-1 text-[0.65rem] font-semibold tracking-wide uppercase">
+            What stage are you solving?
+          </p>
+          <div className="mt-1 flex flex-wrap gap-1 sm:flex-nowrap sm:overflow-x-auto">
+            {stages.map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => void onStage(value)}
+                disabled={busy}
+                aria-pressed={plan.stage === value}
+                className={`shrink-0 rounded-md px-3 py-2 text-sm ${plan.stage === value ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {!focus ? (
+        <nav className="grid gap-2 sm:grid-cols-3" aria-label="Story, plan, and edit workspace">
+          {depths.map(([value, label, note]) => (
             <button
               key={value}
               type="button"
-              onClick={() => void onStage(value)}
-              disabled={busy}
-              aria-pressed={plan.stage === value}
-              className={`shrink-0 rounded-md px-3 py-2 text-sm ${plan.stage === value ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"}`}
+              onClick={() => setDepthChoice({ stage: plan.stage, value })}
+              aria-current={depth === value ? "page" : undefined}
+              className={`rounded-lg border px-4 py-3 text-left ${depth === value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}
             >
-              {label}
+              <span className="block text-sm font-semibold">{label}</span>
+              <span className="text-muted-foreground mt-0.5 block text-xs">{note}</span>
             </button>
           ))}
-        </div>
-      </section>
-
-      <nav className="grid gap-2 sm:grid-cols-3" aria-label="Story, plan, and edit workspace">
-        {depths.map(([value, label, note]) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setDepthChoice({ stage: plan.stage, value })}
-            aria-current={depth === value ? "page" : undefined}
-            className={`rounded-lg border px-4 py-3 text-left ${depth === value ? "border-primary bg-primary/5" : "border-border hover:bg-muted/50"}`}
-          >
-            <span className="block text-sm font-semibold">{label}</span>
-            <span className="text-muted-foreground mt-0.5 block text-xs">{note}</span>
-          </button>
-        ))}
-      </nav>
+        </nav>
+      ) : null}
 
       {error ? (
         <p
@@ -488,6 +504,16 @@ export function BlueprintView({
         </p>
       ) : null}
       {depth === "SPINE" ? <Spine analysis={analysis} /> : null}
+      {focus === "story" ? (
+        <details className="border-border bg-card rounded-lg border p-5">
+          <summary className="cursor-pointer font-semibold">
+            Explore the reasoning and alternatives
+          </summary>
+          <div className="mt-4">
+            <DeepRoom analysis={analysis} />
+          </div>
+        </details>
+      ) : null}
       {depth === "BLUEPRINT" ? (
         <div className="space-y-5">
           <section className="bg-card rounded-lg border p-5" aria-labelledby="planning-inputs">
@@ -534,19 +560,19 @@ export function BlueprintView({
             onStartReconstruction={
               onStartLocationReconstruction ??
               (async () => {
-                throw new Error("Photo reconstruction is unavailable.");
+                throw new Error("Room building is unavailable.");
               })
             }
             onRefreshReconstruction={
               onRefreshLocationReconstruction ??
               (async () => {
-                throw new Error("Photo reconstruction is unavailable.");
+                throw new Error("Room building is unavailable.");
               })
             }
             onRetryReconstruction={
               onRetryLocationReconstruction ??
               (async () => {
-                throw new Error("Photo reconstruction is unavailable.");
+                throw new Error("Room building is unavailable.");
               })
             }
             onSave={onSaveLocation ?? (async () => undefined)}

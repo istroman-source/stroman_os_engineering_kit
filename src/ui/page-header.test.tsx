@@ -17,4 +17,18 @@ describe("PageHeader", () => {
     const { container } = render(<PageHeader title="Settings" />);
     expect(container.querySelectorAll("p")).toHaveLength(0);
   });
+
+  it("provides navigation context and a clear action slot", () => {
+    render(
+      <PageHeader
+        title="Kitchen"
+        breadcrumbs={[{ label: "Locations", href: "/locations" }, { label: "Kitchen" }]}
+        actions={<button type="button">Update room</button>}
+      />,
+    );
+
+    expect(screen.getByRole("navigation", { name: "Breadcrumb" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Locations" })).toHaveAttribute("href", "/locations");
+    expect(screen.getByRole("button", { name: "Update room" })).toBeInTheDocument();
+  });
 });

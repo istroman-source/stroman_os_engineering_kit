@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { navItems } from "./nav-config";
+import { navItems, secondaryNavItems } from "./nav-config";
 
 describe("primary navigation", () => {
-  it("exposes the story workflow without internal knowledge-management surfaces", () => {
+  it("keeps only the two filmmaker workspaces in primary navigation", () => {
     expect(navItems.map(({ href, label }) => ({ href, label }))).toEqual([
-      { href: "/projects", label: "Story Studio" },
+      { href: "/projects", label: "Projects" },
+      { href: "/locations", label: "Locations" },
+    ]);
+  });
+
+  it("keeps settings secondary", () => {
+    expect(secondaryNavItems.map(({ href, label }) => ({ href, label }))).toEqual([
       { href: "/settings", label: "Settings" },
     ]);
   });

@@ -21,6 +21,11 @@ describe("Button", () => {
     expect(screen.getByRole("button", { name: "Delete" }).className).toContain("bg-destructive");
   });
 
+  it("uses the minimum 44px interaction target", () => {
+    render(<Button>Open project</Button>);
+    expect(screen.getByRole("button", { name: "Open project" }).className).toContain("min-h-11");
+  });
+
   it("respects the disabled attribute", () => {
     render(<Button disabled>Nope</Button>);
     expect(screen.getByRole("button", { name: "Nope" })).toBeDisabled();
