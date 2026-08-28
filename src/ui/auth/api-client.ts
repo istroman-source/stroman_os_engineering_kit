@@ -108,7 +108,24 @@ export interface PreparedLocationItem {
   readonly inputCount: number;
   readonly hasEnvironment: boolean;
   readonly failureCode: string | null;
+  readonly createdAt: string;
   readonly updatedAt: string;
+}
+
+export interface PreparedLocationEnvironment {
+  readonly source: "GLB" | "PHOTOS";
+  readonly bounds: {
+    readonly min: { readonly x: number; readonly y: number; readonly z: number };
+    readonly max: { readonly x: number; readonly y: number; readonly z: number };
+  };
+  readonly sourceToCanonical: readonly number[];
+  readonly scaleMetersPerUnit: number;
+  readonly scaleConfidence: "ESTIMATED";
+}
+
+export interface PreparedLocationDetail extends PreparedLocationItem {
+  readonly photoCount: number;
+  readonly environment: PreparedLocationEnvironment | null;
 }
 
 /** Session state for the app-shell UX. Server authorization remains authoritative. */
@@ -189,6 +206,27 @@ export function createPreparedLocation(input: {
   );
 }
 
+export function getPreparedLocation(locationId: string): Promise<PreparedLocationDetail> {
+  return request<{ location: PreparedLocationDetail }>(
+    `/api/v1/locations/${encodeURIComponent(locationId)}`,
+    { method: "GET" },
+  ).then((body) => body.location);
+}
+
+export function renamePreparedLocation(
+  locationId: string,
+  name: string,
+): Promise<PreparedLocationDetail> {
+  return request<{ location: PreparedLocationDetail }>(
+    `/api/v1/locations/${encodeURIComponent(locationId)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    },
+  ).then((body) => body.location);
+}
+
 export function uploadPreparedLocationGlb(
   locationId: string,
   file: File,
@@ -204,13 +242,26 @@ export function uploadPreparedLocationGlb(
 export function uploadPreparedLocationPhotos(
   locationId: string,
   files: File[],
+  onProgress?: (completed: number, total: number) => void,
 ): Promise<PreparedLocationItem> {
-  const form = new FormData();
-  files.forEach((file) => form.append("files", file));
-  return apiPostForm<{ location: PreparedLocationItem }>(
-    `/api/v1/locations/${encodeURIComponent(locationId)}/photos`,
-    form,
-  ).then((body) => body.location);
+  return files
+    .reduce<Promise<PreparedLocationItem | null>>(async (previous, file, index) => {
+      await previous;
+      const form = new FormData();
+      form.append("files", file);
+      const location = (
+        await apiPostForm<{ location: PreparedLocationItem }>(
+          `/api/v1/locations/${encodeURIComponent(locationId)}/photos`,
+          form,
+        )
+      ).location;
+      onProgress?.(index + 1, files.length);
+      return location;
+    }, Promise.resolve(null))
+    .then((location) => {
+      if (!location) throw new Error("Choose at least one room photo.");
+      return location;
+    });
 }
 
 export function startPreparedLocationReconstruction(

@@ -107,7 +107,7 @@ export function DecisionDetail({
         >
           ← Workspace
         </Link>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">{decision.question}</h1>
+        <h2 className="mt-1 text-2xl font-semibold tracking-tight">{decision.question}</h2>
         <span className="text-muted-foreground text-xs tracking-wide uppercase">
           {decision.status}
         </span>

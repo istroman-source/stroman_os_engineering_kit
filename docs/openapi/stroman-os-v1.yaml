@@ -1649,6 +1649,50 @@ paths:
       responses:
         "201": { description: Prepared location created. }
         "401": { $ref: "#/components/responses/Unauthorized" }
+  /api/v1/locations/{locationId}:
+    parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
+    get:
+      tags: [Projects]
+      operationId: getPreparedLocation
+      summary: Open one owner-scoped prepared room without exposing storage metadata.
+      responses:
+        "200": { description: Prepared location detail. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [Projects]
+      operationId: renamePreparedLocation
+      summary: Rename a prepared room while preserving its evidence and build.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [name]
+              properties:
+                name: { type: string, minLength: 1, maxLength: 160 }
+      responses:
+        "200": { description: Renamed prepared location detail. }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/locations/{locationId}/geometry:
+    parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
+    get:
+      tags: [Projects]
+      operationId: getPreparedLocationGeometry
+      summary: Stream the authenticated owner's ready GLB room geometry.
+      responses:
+        "200":
+          description: Textured room geometry.
+          content:
+            model/gltf-binary:
+              schema: { type: string, format: binary }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
   /api/v1/locations/{locationId}/glb:
     parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
     post:
@@ -1666,14 +1710,14 @@ paths:
                 properties: { file: { type: string, format: binary } },
               }
       responses:
-        "200": { description: Ready prepared location. }
+        "202": { description: Ready prepared location. }
         "401": { $ref: "#/components/responses/Unauthorized" }
   /api/v1/locations/{locationId}/photos:
     parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
     post:
       tags: [Projects]
       operationId: uploadPreparedLocationPhotos
-      summary: Preserve 20–40 overlapping room photos before reconstruction.
+      summary: Preserve one overlapping room photo at a time before reconstruction.
       requestBody:
         required: true
         content:
@@ -1682,11 +1726,13 @@ paths:
               {
                 type: object,
                 required: [files],
-                properties: { files: { type: array, items: { type: string, format: binary } } },
+                properties: { files: { type: string, format: binary } },
               }
       responses:
         "202": { description: Private evidence preserved. }
         "401": { $ref: "#/components/responses/Unauthorized" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "422": { $ref: "#/components/responses/Unprocessable" }
   /api/v1/locations/{locationId}/reconstruct:
     parameters: [{ name: locationId, in: path, required: true, schema: { type: string } }]
     post:

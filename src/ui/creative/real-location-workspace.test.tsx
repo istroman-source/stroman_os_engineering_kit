@@ -90,7 +90,7 @@ describe("LocationPhotoInput", () => {
     await screen.findByText(/last status check/i);
     await user.click(screen.getByRole("button", { name: /check now/i }));
     expect(screen.getByRole("button", { name: /checking/i })).toBeDisabled();
-    expect(screen.getByText(/checking the reconstruction service now/i)).toBeVisible();
+    expect(screen.getByText(/checking the room build now/i)).toBeVisible();
 
     await act(async () => resolveManual(processing));
     await waitFor(() => expect(onRefresh).toHaveBeenCalledTimes(2));

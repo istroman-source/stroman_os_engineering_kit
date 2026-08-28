@@ -11,10 +11,16 @@ import {
   listProjects,
   type ProjectItem,
 } from "@/ui/auth/api-client";
-import { LocationsView } from "@/ui/locations/locations-view";
 
 const inputClass =
-  "flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "min-h-11 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-base outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring";
+
+const statusLabels: Record<ProjectItem["status"], string> = {
+  DRAFT: "Draft",
+  ACTIVE: "In progress",
+  COMPLETED: "Complete",
+  ARCHIVED: "Archived",
+};
 
 /**
  * Minimal working projects interface backed by the existing /api/v1/projects
@@ -73,27 +79,29 @@ export function ProjectsView() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <LocationsView />
-      <form onSubmit={onCreate} className="flex flex-col gap-3" aria-label="Start a story">
+    <div className="flex flex-col gap-8">
+      <form
+        onSubmit={onCreate}
+        className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5 shadow-sm sm:p-6"
+        aria-label="Create project"
+      >
         <div>
-          <h2 className="text-sm font-semibold">Start with the concept</h2>
-          <p className="text-muted-foreground text-sm">
-            Name the video. You’ll describe the story, source material, intent, and constraints
-            next.
+          <h2 className="text-lg font-semibold">Create a project</h2>
+          <p className="text-muted-foreground mt-1 max-w-xl text-sm">
+            Give the film a working title. You can shape its story, storyboard, and materials next.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <input
             className={inputClass}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Working title"
+            placeholder="Film or video title"
             maxLength={200}
-            aria-label="Video working title"
+            aria-label="Project working title"
           />
-          <Button type="submit" disabled={busy || name.trim() === ""}>
-            {busy ? "Starting…" : "Start story"}
+          <Button className="sm:min-w-36" type="submit" disabled={busy || name.trim() === ""}>
+            {busy ? "Creating…" : "Create project"}
           </Button>
         </div>
       </form>
@@ -111,25 +119,38 @@ export function ProjectsView() {
           {loadError}
         </p>
       ) : projects.length === 0 ? (
-        <div className="border-border bg-card text-muted-foreground rounded-lg border p-8 text-sm">
-          No stories yet. Start with your first video concept above.
+        <div className="border-border bg-card rounded-2xl border px-6 py-12 text-center">
+          <h2 className="font-semibold">No projects yet</h2>
+          <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
+            Create your first project above. Stroman will guide you from intent to a shootable plan.
+          </p>
         </div>
       ) : (
-        <ul className="flex flex-col gap-2" aria-label="Projects">
-          {projects.map((project) => (
-            <li key={project.id}>
-              <Link
-                href={`/projects/${project.id}`}
-                className="border-border bg-card hover:border-primary/50 flex items-center justify-between rounded-lg border p-4 transition-colors"
-              >
-                <span className="text-sm font-medium">{project.name}</span>
-                <span className="text-muted-foreground text-xs tracking-wide uppercase">
-                  {project.status}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <section aria-labelledby="your-projects" className="space-y-3">
+          <div>
+            <h2 id="your-projects" className="text-lg font-semibold">
+              Your projects
+            </h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Open a project to continue its story or storyboard.
+            </p>
+          </div>
+          <ul className="grid gap-3 sm:grid-cols-2" aria-label="Projects">
+            {projects.map((project) => (
+              <li key={project.id}>
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="border-border bg-card hover:border-primary/50 focus-visible:ring-ring flex min-h-28 flex-col justify-between rounded-xl border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
+                >
+                  <span className="font-semibold">{project.name}</span>
+                  <span className="text-muted-foreground mt-5 text-sm">
+                    {statusLabels[project.status] ?? project.status}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   );

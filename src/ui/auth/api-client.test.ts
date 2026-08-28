@@ -7,6 +7,7 @@ import {
   listProjects,
   signOut,
   startOtp,
+  uploadPreparedLocationPhotos,
   verifyOtp,
 } from "./api-client";
 
@@ -94,6 +95,37 @@ describe("api-client", () => {
   it("signOut resolves on 200", async () => {
     stubFetch(200, { ok: true });
     await expect(signOut()).resolves.toEqual({ ok: true });
+  });
+
+  it("uploads room photos one small request at a time and reports progress", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 202,
+        text: async () => JSON.stringify({ location: { id: "loc_1" } }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 202,
+        text: async () => JSON.stringify({ location: { id: "loc_1" } }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+    const progress = vi.fn();
+    const files = [
+      new File(["first"], "first.jpg", { type: "image/jpeg" }),
+      new File(["second"], "second.jpg", { type: "image/jpeg" }),
+    ];
+
+    await expect(uploadPreparedLocationPhotos("loc_1", files, progress)).resolves.toMatchObject({
+      id: "loc_1",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(progress).toHaveBeenNthCalledWith(1, 1, 2);
+    expect(progress).toHaveBeenNthCalledWith(2, 2, 2);
+    expect((fetchMock.mock.calls[0]?.[1] as RequestInit).body).toBeInstanceOf(FormData);
+    expect((fetchMock.mock.calls[1]?.[1] as RequestInit).body).toBeInstanceOf(FormData);
   });
 });
 

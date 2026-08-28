@@ -8,7 +8,7 @@ import { friendlyError, getSession, startOtp, verifyOtp } from "./api-client";
 type Phase = "checking" | "email" | "code";
 
 const inputClass =
-  "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "w-full rounded-md border border-border bg-background px-3 py-2 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm";
 
 /** Cooldown after a send, to prevent accidental repeat requests hitting the quota. */
 const RESEND_COOLDOWN_SECONDS = 60;

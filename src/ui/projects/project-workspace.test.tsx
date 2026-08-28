@@ -59,7 +59,7 @@ describe("ProjectWorkspace", () => {
     vi.mocked(listDecisions).mockResolvedValue([]);
     render(<ProjectWorkspace projectId="proj_1" />);
 
-    expect(await screen.findByRole("heading", { name: "Signature Reel" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Creative decisions" })).toBeInTheDocument();
     expect(screen.getByText(/no decisions yet/i)).toBeInTheDocument();
   });
 
@@ -80,7 +80,7 @@ describe("ProjectWorkspace", () => {
     const user = userEvent.setup();
     render(<ProjectWorkspace projectId="proj_1" />);
 
-    await screen.findByRole("heading", { name: "Signature Reel" });
+    await screen.findByRole("heading", { name: "Creative decisions" });
     await user.type(screen.getByLabelText(/decision question/i), "Which thumbnail?");
     await user.type(screen.getByLabelText("Option 1"), "Dish");
     await user.type(screen.getByLabelText("Option 2"), "Chef");
