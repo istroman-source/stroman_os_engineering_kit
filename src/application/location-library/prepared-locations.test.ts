@@ -100,7 +100,7 @@ describe("prepared location application", () => {
     await expect(listPreparedLocationsForOwner(deps, owner)).resolves.toEqual([location]);
   });
 
-  it("owner-scopes room detail and geometry without exposing stored evidence paths", async () => {
+  it("owner-scopes last-known-good geometry during a rebuild without exposing stored evidence paths", async () => {
     const preparedLocations = new Locations();
     const preparedLocationReconstructions = new Reconstructions();
     const owner = OwnerId.unsafe("usr_LOCATIONOWNER");
@@ -110,7 +110,7 @@ describe("prepared location application", () => {
       ownerId: owner,
       name: "Private room",
       inputKind: "GLB",
-      status: "READY",
+      status: "PROCESSING",
       environment: {
         source: "GLB",
         inputId: "loc_PRIVATE001:sha256:room",

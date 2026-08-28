@@ -524,7 +524,10 @@ export async function getPreparedLocationGeometryForOwner(
   input: { readonly actorId: OwnerId; readonly locationId: string },
 ) {
   const location = await getPreparedLocationForOwner(deps, input);
-  if (location.status !== "READY" || location.environment === null) {
+  // A rebuild keeps its last-known-good environment attached while the Mac worker
+  // processes the replacement. That geometry remains private to the owner and is
+  // safe to view until a successful replacement atomically takes its place.
+  if (location.environment === null) {
     throw new AppError("CONFLICT", "This room is not ready to open yet.");
   }
   const environment = location.environment as { contentHash?: unknown; inputId?: unknown };
