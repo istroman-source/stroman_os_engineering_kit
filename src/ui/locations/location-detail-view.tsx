@@ -184,13 +184,15 @@ export function LocationDetailView({
         </p>
       ) : null}
 
-      {location.status === "READY" && location.environment ? (
+      {location.environment ? (
         <PreparedRoomViewer
           locationId={location.id}
           locationName={location.name}
           environment={location.environment}
         />
-      ) : location.status === "DRAFT" ? (
+      ) : null}
+
+      {location.status === "DRAFT" ? (
         <section className="border-border bg-card rounded-2xl border p-6 shadow-sm">
           <h2 className="text-xl font-semibold">Add the room</h2>
           <p className="text-muted-foreground mt-2 max-w-xl text-sm">
@@ -280,11 +282,11 @@ export function LocationDetailView({
             {busy ? "Starting…" : location.status === "FAILED" ? "Try build again" : "Build room"}
           </Button>
         </section>
-      ) : (
+      ) : !location.environment ? (
         <p className="text-muted-foreground rounded-xl border p-5 text-sm">
           The room is saved, but its visual preview is unavailable. Your original files remain safe.
         </p>
-      )}
+      ) : null}
 
       <div className="grid gap-3 md:grid-cols-2">
         <details className="border-border bg-card rounded-xl border p-4">
@@ -326,10 +328,21 @@ export function LocationDetailView({
             {location.inputKind === "PHOTOS" ? "updated room photos" : "an updated 3D scan"}. This
             version and its original source files will stay safe until the replacement is ready.
           </p>
+          {location.inputKind === "PHOTOS" && location.photoCount >= 20 ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-4"
+              disabled={busy || inFlight}
+              onClick={() => void run(() => startPreparedLocationReconstruction(location.id))}
+            >
+              <RotateCcw /> {busy ? "Starting…" : "Rebuild from saved photos"}
+            </Button>
+          ) : null}
           <Button
             type="button"
             variant="outline"
-            className="mt-4"
+            className="mt-3"
             disabled={busy}
             onClick={() => void prepareNewVersion()}
           >

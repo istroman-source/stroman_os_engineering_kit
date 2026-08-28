@@ -72,7 +72,7 @@ describe("LocationDetailView", () => {
     );
   });
 
-  it("opens a ready room, renames it, and offers a safe new photo version", async () => {
+  it("opens a ready room, renames it, and offers safe rebuild and new-version paths", async () => {
     const user = userEvent.setup();
     vi.mocked(getPreparedLocation)
       .mockResolvedValueOnce(ready)
@@ -99,6 +99,8 @@ describe("LocationDetailView", () => {
     );
 
     await user.click(screen.getByText(/replace or rebuild room/i));
+    await user.click(screen.getByRole("button", { name: /rebuild from saved photos/i }));
+    await waitFor(() => expect(startPreparedLocationReconstruction).toHaveBeenCalledWith(ready.id));
     await user.click(screen.getByRole("button", { name: /prepare a new version/i }));
     await waitFor(() =>
       expect(createPreparedLocation).toHaveBeenCalledWith({
@@ -107,6 +109,14 @@ describe("LocationDetailView", () => {
       }),
     );
     expect(push).toHaveBeenCalledWith("/locations/loc_NEWVERSION1");
+  });
+
+  it("keeps an existing room visible while its saved photos rebuild", async () => {
+    vi.mocked(getPreparedLocation).mockResolvedValue({ ...ready, status: "PROCESSING" });
+    render(<LocationDetailView locationId={ready.id} />);
+
+    expect(await screen.findByLabelText(/room viewer for downtown kitchen/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /building your room/i })).toBeInTheDocument();
   });
 
   it("uploads draft photos and queues their build as one action", async () => {
