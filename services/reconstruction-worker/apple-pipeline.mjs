@@ -100,7 +100,6 @@ export async function runApplePipeline(
     timeoutMs = MAX_STAGE_MS,
     log,
     executable = process.env.STROMAN_APPLE_PHOTOGRAMMETRY_BIN,
-    // A room is a camera-planning environment, not a thumbnail asset. Keep the
     // A room is a camera-planning environment, not a thumbnail asset. Keep
     // lower settings as explicit operator overrides, but make Apple's full
     // reconstruction the baseline for faithful geometry and texture detail.
