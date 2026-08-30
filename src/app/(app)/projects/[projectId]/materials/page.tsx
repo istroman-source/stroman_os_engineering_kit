@@ -12,10 +12,10 @@ export default async function ProjectMaterialsPage({
   return (
     <div>
       <header className="mb-6 max-w-3xl">
-        <h2 className="text-2xl font-semibold tracking-tight">Materials and quotes</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">Bring in your footage</h2>
         <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-          Bring in footage or transcripts, then analyze them for exact quotes, visible evidence, and
-          editorial possibilities. Stroman keeps observations separate from interpretation.
+          Add footage or a transcript. Stroman finds the moments you can use, keeps source facts
+          separate from creative ideas, and carries them into your edit.
         </p>
       </header>
       <SourceIntake projectId={projectId} />
