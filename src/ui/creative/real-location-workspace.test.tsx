@@ -44,7 +44,7 @@ describe("LocationPhotoInput", () => {
       (_, index) => new File([`photo-${index}`], `angle-${index + 1}.jpg`, { type: "image/jpeg" }),
     );
     await user.upload(screen.getByLabelText(/20–40 overlapping photos/i), photos);
-    await user.click(screen.getByRole("button", { name: /build this space/i }));
+    await user.click(screen.getByRole("button", { name: /build this room/i }));
 
     await waitFor(() => expect(onStart).toHaveBeenCalledOnce());
     expect(onStart.mock.calls[0]![0]).toMatchObject({ name: "Actual kitchen", photos });

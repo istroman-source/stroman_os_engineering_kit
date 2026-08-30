@@ -289,7 +289,7 @@ export function LocationPhotoInput({
   const active = job?.status === "SUBMITTING" || job?.status === "PROCESSING";
   return (
     <section className="bg-card rounded-lg border p-5" aria-labelledby="build-space-heading">
-      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">Space</p>
+      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">Room</p>
       <h2 id="build-space-heading" className="mt-1 text-lg font-semibold">
         Build the actual room from photos
       </h2>
@@ -371,7 +371,7 @@ export function LocationPhotoInput({
                 ? uploadProgress.uploaded < uploadProgress.total
                   ? `Uploading photo ${uploadProgress.uploaded + 1} of ${uploadProgress.total}…`
                   : "Starting room build…"
-                : "Build this space"}
+                : "Build this room"}
             </Button>
             <span className="text-muted-foreground text-xs">
               Photos are preserved privately in this project and used only to build this room. Exact
