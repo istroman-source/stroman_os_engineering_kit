@@ -89,11 +89,12 @@ describe("LocationDetailView", () => {
     render(<LocationDetailView locationId={ready.id} />);
 
     expect(await screen.findByLabelText(/room viewer for downtown kitchen/i)).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /rename location/i }));
-    const input = screen.getByLabelText("Location name");
+    expect(screen.getByRole("link", { name: /all rooms/i })).toHaveAttribute("href", "/locations");
+    await user.click(screen.getByRole("button", { name: /rename room/i }));
+    const input = screen.getByLabelText("Room name");
     await user.clear(input);
     await user.type(input, "Hero kitchen");
-    await user.click(screen.getByRole("button", { name: /save location name/i }));
+    await user.click(screen.getByRole("button", { name: /save room name/i }));
     await waitFor(() =>
       expect(renamePreparedLocation).toHaveBeenCalledWith(ready.id, "Hero kitchen"),
     );
