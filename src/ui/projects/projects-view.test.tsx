@@ -42,7 +42,7 @@ describe("ProjectsView", () => {
   it("shows an empty state when there are no projects", async () => {
     vi.mocked(listProjects).mockResolvedValue([]);
     render(<ProjectsView />);
-    expect(await screen.findByText(/no projects yet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/make your first video/i)).toBeInTheDocument();
   });
 
   it("creates a project and moves directly into its story workspace", async () => {
@@ -51,9 +51,9 @@ describe("ProjectsView", () => {
     vi.mocked(createProject).mockResolvedValue(project("proj_9", "New Reel"));
     render(<ProjectsView />);
 
-    await screen.findByText(/no projects yet/i);
+    await screen.findByText(/make your first video/i);
     await user.type(screen.getByLabelText(/project working title/i), "New Reel");
-    await user.click(screen.getByRole("button", { name: /create project/i }));
+    await user.click(screen.getByRole("button", { name: /start a video/i }));
 
     await waitFor(() => expect(createProject).toHaveBeenCalledWith("New Reel"));
     expect(pushMock).toHaveBeenCalledWith("/projects/proj_9");
@@ -66,9 +66,9 @@ describe("ProjectsView", () => {
     vi.mocked(createProject).mockRejectedValue({ status: 422, message: "Name is invalid." });
     render(<ProjectsView />);
 
-    await screen.findByText(/no projects yet/i);
+    await screen.findByText(/make your first video/i);
     await user.type(screen.getByLabelText(/project working title/i), "bad");
-    await user.click(screen.getByRole("button", { name: /create project/i }));
+    await user.click(screen.getByRole("button", { name: /start a video/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/invalid/i);
   });
