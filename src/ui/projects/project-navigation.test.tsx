@@ -42,9 +42,6 @@ describe("ProjectNavigation", () => {
     );
     expect(screen.getByRole("link", { name: "Footage & notes" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Choices" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Rooms" })).toHaveAttribute(
-      "href",
-      "/locations",
-    );
+    expect(screen.getByRole("link", { name: "Rooms" })).toHaveAttribute("href", "/locations");
   });
 });

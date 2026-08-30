@@ -123,8 +123,8 @@ export function ProjectsView() {
         <div className="border-border bg-card rounded-2xl border px-6 py-12 text-center">
           <h2 className="font-semibold">Make your first video</h2>
           <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
-            Start with a working title above. Stroman will guide you from the idea to a plan you
-            can actually shoot.
+            Start with a working title above. Stroman will guide you from the idea to a plan you can
+            actually shoot.
           </p>
         </div>
       ) : (
@@ -134,8 +134,8 @@ export function ProjectsView() {
               Continue a video
             </h2>
             <p className="text-muted-foreground mt-1 text-sm">
-              Pick up where you left off. Stroman keeps the idea, plan, places, and material in
-              one workspace.
+              Pick up where you left off. Stroman keeps the idea, plan, places, and material in one
+              workspace.
             </p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2" aria-label="Projects">

@@ -367,8 +367,8 @@ export function ShotPlanningSpace({
           {shot.title}: {shot.camera.focalLengthMm}mm {shot.camera.support.toLowerCase()} setup.
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          Adjust the camera, framing, subject, or movement in the room—or focus a mark and use
-          the arrow keys. Save the version you want to shoot; every suggestion stays editable.
+          Adjust the camera, framing, subject, or movement in the room—or focus a mark and use the
+          arrow keys. Save the version you want to shoot; every suggestion stays editable.
         </p>
       </div>
       <div className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">

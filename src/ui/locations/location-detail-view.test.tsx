@@ -129,7 +129,9 @@ describe("LocationDetailView", () => {
     });
     render(<LocationDetailView locationId={ready.id} />);
 
-    expect(await screen.findByRole("heading", { name: /try that build again/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: /try that build again/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/your original 3d scan remains safely attached/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /try build again/i })).toBeInTheDocument();
   });

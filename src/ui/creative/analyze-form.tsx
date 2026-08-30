@@ -79,8 +79,8 @@ export function AnalyzeForm({
       <div className="border-primary/30 bg-primary/5 rounded-lg border p-4">
         <p className="text-sm font-medium">Start with one sentence</p>
         <p className="text-muted-foreground mt-1 text-xs">
-          Tell Stroman what you want to make. It will turn the idea into a shootable direction;
-          you stay in control of every recommendation.
+          Tell Stroman what you want to make. It will turn the idea into a shootable direction; you
+          stay in control of every recommendation.
         </p>
       </div>
       <Field label="What are you making?" required>
@@ -105,22 +105,67 @@ export function AnalyzeForm({
       {showDetails ? (
         <div className="border-border grid gap-4 rounded-lg border p-4 sm:grid-cols-2">
           <Field label="Who is this for?">
-            <input className={inputClass} value={fields.client} onChange={(e) => set("client", e.target.value)} maxLength={200} aria-label="Client or owner" placeholder="Client, brand, or person" />
+            <input
+              className={inputClass}
+              value={fields.client}
+              onChange={(e) => set("client", e.target.value)}
+              maxLength={200}
+              aria-label="Client or owner"
+              placeholder="Client, brand, or person"
+            />
           </Field>
           <Field label="What kind of video is it?">
-            <input className={inputClass} value={fields.projectType} onChange={(e) => set("projectType", e.target.value)} placeholder="Commercial, documentary, short film…" maxLength={120} aria-label="Project type" />
+            <input
+              className={inputClass}
+              value={fields.projectType}
+              onChange={(e) => set("projectType", e.target.value)}
+              placeholder="Commercial, documentary, short film…"
+              maxLength={120}
+              aria-label="Project type"
+            />
           </Field>
           <Field label="What should the audience feel or do?">
-            <textarea className={inputClass} rows={2} value={fields.creativeGoal} onChange={(e) => set("creativeGoal", e.target.value)} maxLength={2000} aria-label="Creative intent" placeholder="The change you want to create" />
+            <textarea
+              className={inputClass}
+              rows={2}
+              value={fields.creativeGoal}
+              onChange={(e) => set("creativeGoal", e.target.value)}
+              maxLength={2000}
+              aria-label="Creative intent"
+              placeholder="The change you want to create"
+            />
           </Field>
           <Field label="Who needs to see it?">
-            <textarea className={inputClass} rows={2} value={fields.targetAudience} onChange={(e) => set("targetAudience", e.target.value)} maxLength={2000} aria-label="Target audience" placeholder="The people this is for" />
+            <textarea
+              className={inputClass}
+              rows={2}
+              value={fields.targetAudience}
+              onChange={(e) => set("targetAudience", e.target.value)}
+              maxLength={2000}
+              aria-label="Target audience"
+              placeholder="The people this is for"
+            />
           </Field>
           <Field label="What should it feel like?">
-            <input className={inputClass} value={fields.desiredEmotion} onChange={(e) => set("desiredEmotion", e.target.value)} placeholder="Hopeful, urgent, intimate…" maxLength={200} aria-label="Desired emotion" />
+            <input
+              className={inputClass}
+              value={fields.desiredEmotion}
+              onChange={(e) => set("desiredEmotion", e.target.value)}
+              placeholder="Hopeful, urgent, intimate…"
+              maxLength={200}
+              aria-label="Desired emotion"
+            />
           </Field>
           <Field label="What do we need to work around?">
-            <textarea className={inputClass} rows={4} value={fields.context} onChange={(e) => set("context", e.target.value)} placeholder="Locations, access, footage, duration, platform, or hard limits" maxLength={5000} aria-label="Source material and constraints" />
+            <textarea
+              className={inputClass}
+              rows={4}
+              value={fields.context}
+              onChange={(e) => set("context", e.target.value)}
+              placeholder="Locations, access, footage, duration, platform, or hard limits"
+              maxLength={5000}
+              aria-label="Source material and constraints"
+            />
           </Field>
         </div>
       ) : null}

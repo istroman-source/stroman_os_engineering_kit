@@ -13,8 +13,8 @@ export default async function ProjectStoryboardPage({
         <div>
           <h2 className="font-semibold">Plan your shots</h2>
           <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-            Choose a prepared room, then compose frames your crew can actually shoot. You can
-            adjust every suggestion.
+            Choose a prepared room, then compose frames your crew can actually shoot. You can adjust
+            every suggestion.
           </p>
         </div>
         <Link

@@ -272,9 +272,7 @@ export function LocationDetailView({
           <h2 className="text-lg font-semibold">
             {location.status === "FAILED" ? "Let’s try that build again" : "Ready to build"}
           </h2>
-          <p className="text-muted-foreground mt-2 max-w-xl text-sm">
-            {preservedInputMessage}
-          </p>
+          <p className="text-muted-foreground mt-2 max-w-xl text-sm">{preservedInputMessage}</p>
           <Button
             type="button"
             className="mt-5"

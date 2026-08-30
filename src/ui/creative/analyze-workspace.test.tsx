@@ -37,7 +37,9 @@ describe("AnalyzeWorkspace", () => {
     vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
     render(<AnalyzeWorkspace projectId="proj_1" />);
 
-    expect(await screen.findByRole("button", { name: /add details that change the plan/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /add details that change the plan/i }),
+    ).toBeInTheDocument();
     expect(screen.queryByLabelText("Project type")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /add details that change the plan/i }));
     expect(screen.getByLabelText("Project type")).toBeInTheDocument();
