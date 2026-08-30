@@ -14,6 +14,7 @@ private enum RunnerError: LocalizedError {
     case invalidDetail(String)
     case unsupportedHardware
     case insufficientSamples(usable: Int, total: Int)
+    case incompleteRoomCoverage
     case requestFailed(String)
     case missingResult
 
@@ -27,6 +28,8 @@ private enum RunnerError: LocalizedError {
             return "Apple photogrammetry is not supported on this Mac."
         case .insufficientSamples(let usable, let total):
             return "Only \(usable) of \(total) source photos were usable for reconstruction."
+        case .incompleteRoomCoverage:
+            return "Apple could not connect this capture into one dependable room. Take one slower overlapping walk, including the floor, ceiling, corners, and doorways, then rebuild."
         case .requestFailed(let message):
             return "Apple photogrammetry failed: \(message)"
         case .missingResult:
@@ -87,7 +90,7 @@ private struct StromanApplePhotogrammetry {
 
         let images = URL(fileURLWithPath: arguments[1], isDirectory: true).standardizedFileURL
         let output = URL(fileURLWithPath: arguments[2], isDirectory: true).standardizedFileURL
-        let detailName = arguments.count == 4 ? arguments[3].lowercased() : "reduced"
+        let detailName = arguments.count == 4 ? arguments[3].lowercased() : "medium"
         let detail: PhotogrammetrySession.Request.Detail
         switch detailName {
         case "reduced": detail = .reduced
@@ -100,7 +103,10 @@ private struct StromanApplePhotogrammetry {
         }
 
         var configuration = PhotogrammetrySession.Configuration()
-        configuration.sampleOrdering = .sequential
+        // File selection order is not a verified physical walk around the
+        // room. Asking Object Capture to infer that order avoids false camera
+        // adjacency and the warped joins it can create from arbitrary uploads.
+        configuration.sampleOrdering = .unordered
         configuration.featureSensitivity = .high
         configuration.isObjectMaskingEnabled = false
         configuration.ignoreBoundingBox = true
@@ -134,10 +140,11 @@ private struct StromanApplePhotogrammetry {
             case .processingCancelled:
                 throw RunnerError.requestFailed("processing was cancelled")
             case .stitchingIncomplete:
-                emit(
-                    event: "warning",
-                    message: "Some capture regions could not be stitched into the model."
-                )
+                // A mesh with unstitched regions may look complete enough to
+                // display yet cannot be trusted for camera placement. Fail
+                // closed, preserving the evidence so the filmmaker can retry
+                // rather than quietly receiving a warped planning space.
+                throw RunnerError.incompleteRoomCoverage
             case .processingComplete:
                 let usableSamples = totalSamples - rejectedSamples.count
                 let minimumUsable = max(12, Int(ceil(Double(totalSamples) * 0.6)))

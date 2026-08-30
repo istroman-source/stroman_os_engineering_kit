@@ -42,7 +42,7 @@ describe("Stroman Apple photogrammetry pipeline", () => {
     expect(commands).toEqual([
       {
         command: "/safe/apple-photogrammetry",
-        args: [imagesPath, path.join(workspace, "apple-output"), "reduced"],
+        args: [imagesPath, path.join(workspace, "apple-output"), "medium"],
       },
       {
         command: "/safe/gltfpack",
@@ -51,6 +51,9 @@ describe("Stroman Apple photogrammetry pipeline", () => {
           path.join(workspace, "apple-output", "model", "room.obj"),
           "-o",
           path.join(workspace, "result.glb"),
+          "-vpf",
+          "-vtf",
+          "-vnf",
         ],
       },
     ]);
@@ -67,6 +70,23 @@ describe("Stroman Apple photogrammetry pipeline", () => {
         runCommand: async () => {},
       }),
     ).rejects.toThrow("without a completion event");
+  });
+
+  it("fails closed when native reconstruction reports a room that cannot be stitched", async () => {
+    await expect(
+      runApplePipeline("/safe/workspace", {
+        imagesPath: "/safe/images",
+        executable: "/safe/apple-photogrammetry",
+        runCommand: async (_command, _args, options) => {
+          await options.onStdout(
+            JSON.stringify({
+              event: "error",
+              message: "Apple could not connect this capture into one dependable room.",
+            }),
+          );
+        },
+      }),
+    ).rejects.toThrow("could not connect this capture into one dependable room");
   });
 
   it("rejects unsupported detail values before starting a native process", async () => {

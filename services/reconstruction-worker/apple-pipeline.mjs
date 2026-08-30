@@ -100,7 +100,10 @@ export async function runApplePipeline(
     timeoutMs = MAX_STAGE_MS,
     log,
     executable = process.env.STROMAN_APPLE_PHOTOGRAMMETRY_BIN,
-    detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "reduced",
+    // A room is a camera-planning environment, not a thumbnail asset. Keep the
+    // cheaper reduced setting available as an explicit operator override, but
+    // make medium the baseline so the worker retains usable surface detail.
+    detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "medium",
     gltfpack = process.env.STROMAN_GLTFPACK_BIN ??
       path.join(process.cwd(), "node_modules/.bin/gltfpack"),
   } = {},
@@ -139,7 +142,13 @@ export async function runApplePipeline(
   const sourceObj = await findObj(appleOutput);
   const resultPath = path.join(workspace, "result.glb");
   await onProgress?.({ phase: "PACKAGING", percent: 97 });
-  await runCommand(gltfpack, ["-i", sourceObj, "-o", resultPath], { timeoutMs, log });
+  // gltfpack's default integer quantization discards precision from large-room
+  // vertices and UVs. Preserve positions, normals, and texture coordinates so
+  // the viewer receives the spatial relationships Apple reconstructed.
+  await runCommand(gltfpack, ["-i", sourceObj, "-o", resultPath, "-vpf", "-vtf", "-vnf"], {
+    timeoutMs,
+    log,
+  });
   await validateGlbResult(resultPath);
   await onProgress?.({ phase: "PACKAGING", percent: 100 });
   return resultPath;

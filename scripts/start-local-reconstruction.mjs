@@ -14,7 +14,7 @@ const source = path.join(root, "services", "reconstruction-worker", "apple-photo
 const workerPort = 3211;
 const appPort = 3200;
 const secret = randomBytes(48).toString("base64url");
-const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "reduced";
+const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "medium";
 const children = new Set();
 let stopping = false;
 
