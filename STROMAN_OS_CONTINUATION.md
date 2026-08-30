@@ -43,9 +43,9 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 - [x] Simplify the project entry and project navigation.
 - [x] Simplify Storyboard, Materials, source import, analysis, edit, and export entry language.
 - [x] Simplify the Locations library entry state without changing reconstruction behavior.
+- [x] Simplify creative decision creation and detail for plain-language guidance and progressive disclosure.
 - [ ] Simplify location-detail advanced details, recovery, and on-set mobile hierarchy.
-- [ ] Audit project decision creation and decision detail for plain-language guidance and progressive disclosure.
-- [ ] Redesign global navigation, dashboard, onboarding, and empty states around one primary action.
+- [x] Simplify global navigation and project empty states around one primary action.
 - [ ] Audit shot planning, production-stage flow, and AI placement for filmmaker authority and progressive disclosure.
 - [ ] Audit responsive and accessibility behavior across modified major screens.
 - [ ] Remove repeated information and preserve cross-stage project continuity wherever current contracts support it.
@@ -55,8 +55,8 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 
 ## Next task
 
-Audit and simplify the project’s Storyboard and Materials entry copy so users see a clear next action before advanced workspace controls.
+Simplify location-detail advanced details, recovery language, and on-set mobile hierarchy without changing the room or reconstruction contracts.
 
 ## First action next run
 
-Read this file, run `git status --short --branch`, inspect `src/app/(app)/projects/[projectId]/storyboard/page.tsx` and `src/app/(app)/projects/[projectId]/materials/page.tsx`, then implement the smallest safe copy/hierarchy improvement with targeted tests.
+Read this file, run `git status --short --branch`, inspect `src/ui/locations/location-detail-view.tsx` and `src/ui/locations/prepared-room-viewer.tsx`, then implement the smallest safe mobile-first recovery or hierarchy improvement with targeted tests.

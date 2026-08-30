@@ -8,7 +8,7 @@ export interface NavItem {
 
 export const navItems: readonly NavItem[] = [
   { href: "/projects", label: "Projects", icon: Clapperboard },
-  { href: "/locations", label: "Locations", icon: MapPin },
+  { href: "/locations", label: "Rooms", icon: MapPin },
 ];
 
 export const secondaryNavItems: readonly NavItem[] = [
