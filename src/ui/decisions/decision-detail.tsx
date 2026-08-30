@@ -97,6 +97,7 @@ export function DecisionDetail({
 
   const optionLabel = (id: string | null): string =>
     (id && decision.options.find((option) => option.id === id)?.label) || "—";
+  const statusLabel = decision.status === "DECIDED" ? "Decided" : "Still choosing";
 
   return (
     <div className="flex flex-col gap-6">
@@ -108,14 +109,12 @@ export function DecisionDetail({
           ← Workspace
         </Link>
         <h2 className="mt-1 text-2xl font-semibold tracking-tight">{decision.question}</h2>
-        <span className="text-muted-foreground text-xs tracking-wide uppercase">
-          {decision.status}
-        </span>
+        <span className="text-muted-foreground text-xs">{statusLabel}</span>
       </div>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-semibold">Options</h2>
-        <ul className="flex flex-col gap-2" aria-label="Options">
+        <h2 className="text-sm font-semibold">Choices you’re weighing</h2>
+        <ul className="flex flex-col gap-2" aria-label="Choices you’re weighing">
           {decision.options.map((option) => (
             <li key={option.id} className="border-border bg-card rounded-lg border p-3 text-sm">
               <span className="font-medium">{option.label}</span>
@@ -208,7 +207,7 @@ function AdvisorySection({
       (rec && decision.options.find((option) => option.id === rec)?.label) || "No single option";
     return (
       <section className="border-border bg-card flex flex-col gap-2 rounded-lg border p-4">
-        <h2 className="text-sm font-semibold">AI advisory</h2>
+        <h2 className="text-sm font-semibold">Recommendation to consider</h2>
         <p className="text-sm">
           Recommends: <span className="font-medium">{recLabel}</span> ·{" "}
           {Math.round(decision.advisory.confidence * 100)}% confidence
@@ -242,126 +241,129 @@ function AdvisorySection({
   if (decision.status !== "PROPOSED") return null;
 
   return (
-    <form
-      onSubmit={onAttach}
-      aria-label="Attach AI advisory"
-      className="border-border flex flex-col gap-3 rounded-lg border border-dashed p-4"
-    >
-      <h2 className="text-sm font-semibold">AI advisory</h2>
-      <p className="text-muted-foreground text-xs">
-        The advisory the AI engine will provide. Entered manually until the AI recommender is
-        connected — the human decision below always stays authoritative.
-      </p>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Recommended option</span>
-        <select
-          className={inputClass}
-          value={recommendedOptionId}
-          onChange={(e) => setRecommendedOptionId(e.target.value)}
-          aria-label="Recommended option"
-        >
-          <option value="">No single option</option>
-          {decision.options.map((option) => (
-            <option key={option.id} value={option.id}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Rationale</span>
-        <textarea
-          className={inputClass}
-          rows={2}
-          value={rationale}
-          onChange={(e) => setRationale(e.target.value)}
-          maxLength={2000}
-          aria-label="Advisory rationale"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Confidence: {confidencePct}%</span>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={confidencePct}
-          onChange={(e) => setConfidencePct(Number(e.target.value))}
-          aria-label="Advisory confidence"
-        />
-      </label>
-
-      <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-medium">Supporting evidence</legend>
-        <p className="text-muted-foreground text-xs">
-          What information supports this recommendation?
-        </p>
-        {evidence.map((entry, index) => (
-          <div key={index} className="border-border flex flex-col gap-2 rounded-md border p-3">
-            <input
+    <form onSubmit={onAttach} className="border-border rounded-lg border border-dashed p-4">
+      <details>
+        <summary className="focus-visible:ring-ring inline-flex min-h-11 cursor-pointer items-center text-sm font-medium focus-visible:ring-2 focus-visible:outline-none">
+          Add a recommendation manually
+        </summary>
+        <div className="mt-3 flex flex-col gap-3">
+          <p className="text-muted-foreground text-xs">
+            Add supporting thinking when it helps the team compare choices. This never makes the
+            decision for you.
+          </p>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Recommended option</span>
+            <select
               className={inputClass}
-              value={entry.sourceLabel}
-              onChange={(e) => setEvidenceField(index, "sourceLabel", e.target.value)}
-              placeholder="Source (e.g. Client brief)"
-              maxLength={200}
-              aria-label={`Evidence ${index + 1} source`}
-            />
+              value={recommendedOptionId}
+              onChange={(e) => setRecommendedOptionId(e.target.value)}
+              aria-label="Recommended option"
+            >
+              <option value="">No single option</option>
+              {decision.options.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Rationale</span>
             <textarea
               className={inputClass}
               rows={2}
-              value={entry.observation}
-              onChange={(e) => setEvidenceField(index, "observation", e.target.value)}
-              placeholder="Observation or excerpt"
+              value={rationale}
+              onChange={(e) => setRationale(e.target.value)}
               maxLength={2000}
-              aria-label={`Evidence ${index + 1} observation`}
+              aria-label="Advisory rationale"
             />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium">Confidence: {confidencePct}%</span>
             <input
-              className={inputClass}
-              value={entry.relevance}
-              onChange={(e) => setEvidenceField(index, "relevance", e.target.value)}
-              placeholder="Why it's relevant"
-              maxLength={2000}
-              aria-label={`Evidence ${index + 1} relevance`}
+              type="range"
+              min={0}
+              max={100}
+              value={confidencePct}
+              onChange={(e) => setConfidencePct(Number(e.target.value))}
+              aria-label="Advisory confidence"
             />
+          </label>
+
+          <fieldset className="flex flex-col gap-2">
+            <legend className="text-sm font-medium">Supporting evidence</legend>
+            <p className="text-muted-foreground text-xs">
+              What information supports this recommendation?
+            </p>
+            {evidence.map((entry, index) => (
+              <div key={index} className="border-border flex flex-col gap-2 rounded-md border p-3">
+                <input
+                  className={inputClass}
+                  value={entry.sourceLabel}
+                  onChange={(e) => setEvidenceField(index, "sourceLabel", e.target.value)}
+                  placeholder="Source (e.g. Client brief)"
+                  maxLength={200}
+                  aria-label={`Evidence ${index + 1} source`}
+                />
+                <textarea
+                  className={inputClass}
+                  rows={2}
+                  value={entry.observation}
+                  onChange={(e) => setEvidenceField(index, "observation", e.target.value)}
+                  placeholder="Observation or excerpt"
+                  maxLength={2000}
+                  aria-label={`Evidence ${index + 1} observation`}
+                />
+                <input
+                  className={inputClass}
+                  value={entry.relevance}
+                  onChange={(e) => setEvidenceField(index, "relevance", e.target.value)}
+                  placeholder="Why it's relevant"
+                  maxLength={2000}
+                  aria-label={`Evidence ${index + 1} relevance`}
+                />
+                <div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEvidence((current) => current.filter((_, i) => i !== index))}
+                    aria-label={`Remove evidence ${index + 1}`}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              </div>
+            ))}
             <div>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => setEvidence((current) => current.filter((_, i) => i !== index))}
+                disabled={evidence.length >= 20}
+                onClick={() =>
+                  setEvidence((current) => [
+                    ...current,
+                    { sourceLabel: "", observation: "", relevance: "" },
+                  ])
+                }
               >
-                Remove
+                Add evidence
               </Button>
             </div>
+          </fieldset>
+          {error ? (
+            <p role="alert" className="text-destructive text-sm">
+              {error}
+            </p>
+          ) : null}
+          <div>
+            <Button type="submit" variant="secondary" disabled={busy || rationale.trim() === ""}>
+              {busy ? "Saving…" : "Save recommendation"}
+            </Button>
           </div>
-        ))}
-        <div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={evidence.length >= 20}
-            onClick={() =>
-              setEvidence((current) => [
-                ...current,
-                { sourceLabel: "", observation: "", relevance: "" },
-              ])
-            }
-          >
-            Add evidence
-          </Button>
         </div>
-      </fieldset>
-      {error ? (
-        <p role="alert" className="text-destructive text-sm">
-          {error}
-        </p>
-      ) : null}
-      <div>
-        <Button type="submit" variant="secondary" disabled={busy || rationale.trim() === ""}>
-          {busy ? "Attaching…" : "Attach advisory"}
-        </Button>
-      </div>
+      </details>
     </form>
   );
 }

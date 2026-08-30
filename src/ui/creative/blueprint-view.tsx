@@ -518,29 +518,15 @@ export function BlueprintView({
         <div className="space-y-5">
           <section className="bg-card rounded-lg border p-5" aria-labelledby="planning-inputs">
             <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-              Start with what you have
+              Plan from what is real
             </p>
             <h2 id="planning-inputs" className="mt-1 font-semibold">
-              Your idea is enough. Ground the room when the location matters.
+              Your idea is enough to begin.
             </h2>
-            <div className="mt-3 grid gap-2 text-sm sm:grid-cols-4">
-              <span className="rounded-md border border-emerald-700/30 bg-emerald-700/5 p-3">
-                <strong>Idea</strong>
-                <span className="text-muted-foreground block text-xs">In use</span>
-              </span>
-              <span className="rounded-md border p-3">
-                <strong>Location photos</strong>
-                <span className="text-muted-foreground block text-xs">Optional below</span>
-              </span>
-              <span className="rounded-md border p-3">
-                <strong>Footage / transcript</strong>
-                <span className="text-muted-foreground block text-xs">Bring into Edit</span>
-              </span>
-              <span className="rounded-md border p-3">
-                <strong>Nothing else</strong>
-                <span className="text-muted-foreground block text-xs">Keep planning</span>
-              </span>
-            </div>
+            <p className="text-muted-foreground mt-2 max-w-3xl text-sm">
+              Add a room only when its real geometry changes the shot. Footage and transcripts stay
+              in Edit, where they can shape the cut without crowding this planning view.
+            </p>
           </section>
           <ScoutPlanningInput
             plan={plan}

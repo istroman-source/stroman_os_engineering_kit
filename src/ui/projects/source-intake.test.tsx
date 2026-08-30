@@ -49,7 +49,7 @@ describe("SourceIntake", () => {
     render(<SourceIntake projectId="proj_1" />);
     await screen.findByText("existing-interview.txt");
 
-    const input = screen.getByLabelText("Transcript") as HTMLInputElement;
+    const input = screen.getByLabelText("Transcript or script") as HTMLInputElement;
     const file = new window.File(["A meaningful interview transcript."], "interview.txt", {
       type: "text/plain",
     });
@@ -67,7 +67,7 @@ describe("SourceIntake", () => {
         expect.objectContaining({ method: "POST" }),
       ),
     );
-    expect(await screen.findByText("Complete")).toBeInTheDocument();
+    expect(await screen.findByText("Ready")).toBeInTheDocument();
     expect(resetSpy).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });

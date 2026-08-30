@@ -35,16 +35,13 @@ describe("ProjectNavigation", () => {
     render(<ProjectNavigation projectId="proj_1" />);
 
     expect(await screen.findByRole("heading", { name: "Harbor Light" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Story" })).toHaveAttribute("href", "/projects/proj_1");
-    expect(screen.getByRole("link", { name: "Storyboard" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Idea" })).toHaveAttribute("href", "/projects/proj_1");
+    expect(screen.getByRole("link", { name: "Plan shots" })).toHaveAttribute(
       "aria-current",
       "page",
     );
-    expect(screen.getByRole("link", { name: "Materials" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Decisions" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "View locations" })).toHaveAttribute(
-      "href",
-      "/locations",
-    );
+    expect(screen.getByRole("link", { name: "Footage & notes" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Choices" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Rooms" })).toHaveAttribute("href", "/locations");
   });
 });

@@ -29,7 +29,20 @@ describe("AnalyzeWorkspace", () => {
   it("shows the form when the project has not been analyzed (404)", async () => {
     vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
     render(<AnalyzeWorkspace projectId="proj_1" />);
-    expect(await screen.findByRole("form", { name: /develop idea/i })).toBeInTheDocument();
+    expect(await screen.findByRole("form", { name: /start a video/i })).toBeInTheDocument();
+  });
+
+  it("keeps optional project details out of the first decision", async () => {
+    const user = userEvent.setup();
+    vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
+    render(<AnalyzeWorkspace projectId="proj_1" />);
+
+    expect(
+      await screen.findByRole("button", { name: /add details that change the plan/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText("Project type")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /add details that change the plan/i }));
+    expect(screen.getByLabelText("Project type")).toBeInTheDocument();
   });
 
   it("shows the existing blueprint immediately when already analyzed", async () => {
@@ -49,12 +62,12 @@ describe("AnalyzeWorkspace", () => {
     const user = userEvent.setup();
     render(<AnalyzeWorkspace projectId="proj_1" />);
 
-    await screen.findByRole("form", { name: /develop idea/i });
+    await screen.findByRole("form", { name: /start a video/i });
     await user.type(
-      screen.getByLabelText("Video concept"),
+      screen.getByLabelText("What are you making?"),
       "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
     );
-    await user.click(screen.getByRole("button", { name: /develop creative direction/i }));
+    await user.click(screen.getByRole("button", { name: /make my plan/i }));
 
     await waitFor(() => expect(analyzeProject).toHaveBeenCalledWith("proj_1", expect.any(Object)));
     expect(

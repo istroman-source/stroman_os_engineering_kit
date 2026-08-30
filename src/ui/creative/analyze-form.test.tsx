@@ -9,11 +9,11 @@ describe("AnalyzeForm", () => {
     const user = userEvent.setup();
     render(<AnalyzeForm busy={false} error={null} onSubmit={onSubmit} />);
 
-    const submit = screen.getByRole("button", { name: /develop creative direction/i });
+    const submit = screen.getByRole("button", { name: /make my plan/i });
     expect(submit).toBeDisabled();
 
     await user.type(
-      screen.getByLabelText("Video concept"),
+      screen.getByLabelText("What are you making?"),
       "A baker teaches his daughter the family recipe before selling the bakery",
     );
 
@@ -48,7 +48,7 @@ describe("AnalyzeForm", () => {
         }}
       />,
     );
-    expect(screen.getByLabelText("Video concept")).toHaveValue("Existing");
+    expect(screen.getByLabelText("What are you making?")).toHaveValue("Existing");
     expect(screen.getByLabelText("Client or owner")).toHaveValue("C");
   });
 
@@ -74,7 +74,7 @@ describe("AnalyzeForm", () => {
     };
 
     render(<AnalyzeForm busy={false} error={null} onSubmit={onSubmit} initial={savedBrief} />);
-    await user.click(screen.getByRole("button", { name: /develop creative direction/i }));
+    await user.click(screen.getByRole("button", { name: /make my plan/i }));
 
     expect(onSubmit).toHaveBeenCalledWith(editable);
     expect(Object.keys(onSubmit.mock.calls[0]![0])).toEqual(Object.keys(editable));

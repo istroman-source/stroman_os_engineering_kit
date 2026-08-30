@@ -5,7 +5,7 @@ describe("primary navigation", () => {
   it("keeps only the two filmmaker workspaces in primary navigation", () => {
     expect(navItems.map(({ href, label }) => ({ href, label }))).toEqual([
       { href: "/projects", label: "Projects" },
-      { href: "/locations", label: "Locations" },
+      { href: "/locations", label: "Rooms" },
     ]);
   });
 

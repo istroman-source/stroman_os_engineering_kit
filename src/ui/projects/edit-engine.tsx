@@ -58,13 +58,13 @@ export function EditEngine({ projectId }: { projectId: string }) {
         Edit Engine · analysis version {result.analysisVersion}
       </p>
       <h2 id="edit-engine" className="mt-1 text-xl font-semibold">
-        Current story
+        Your edit so far
       </h2>
       <p className="mt-3 text-sm">{result.story.summary}</p>
       <p className="text-muted-foreground mt-2 text-sm">{result.story.objective}</p>
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <div>
-          <h3 className="text-sm font-semibold">Strongest observations</h3>
+          <h3 className="text-sm font-semibold">What the footage proves</h3>
           <ul className="mt-2 space-y-2">
             {result.strongestObservations.map((item) => (
               <li key={item.id} className="border-border rounded border p-3 text-sm">
@@ -78,7 +78,7 @@ export function EditEngine({ projectId }: { projectId: string }) {
           </ul>
         </div>
         <div>
-          <h3 className="text-sm font-semibold">Edit recommendations</h3>
+          <h3 className="text-sm font-semibold">Ways to shape the edit</h3>
           <ul className="mt-2 space-y-2">
             {result.recommendations.map((item) => (
               <li key={item.id} className="border-primary/40 rounded border p-3">
@@ -95,7 +95,7 @@ export function EditEngine({ projectId }: { projectId: string }) {
         </div>
       </div>
       <div className="mt-5">
-        <h3 className="text-sm font-semibold">Creative alternatives</h3>
+        <h3 className="text-sm font-semibold">Other approaches to consider</h3>
         <div className="mt-2 grid gap-2 md:grid-cols-3">
           {result.alternatives.map((item) => (
             <article key={item.title} className="border-border rounded border p-3">

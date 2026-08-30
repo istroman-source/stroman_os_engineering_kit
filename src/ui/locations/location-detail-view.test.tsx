@@ -119,6 +119,23 @@ describe("LocationDetailView", () => {
     expect(screen.getByRole("heading", { name: /building your room/i })).toBeInTheDocument();
   });
 
+  it("explains that a failed 3D scan remains available for retry", async () => {
+    vi.mocked(getPreparedLocation).mockResolvedValue({
+      ...ready,
+      inputKind: "GLB",
+      status: "FAILED",
+      photoCount: 0,
+      environment: null,
+    });
+    render(<LocationDetailView locationId={ready.id} />);
+
+    expect(
+      await screen.findByRole("heading", { name: /try that build again/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/your original 3d scan remains safely attached/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /try build again/i })).toBeInTheDocument();
+  });
+
   it("uploads draft photos and queues their build as one action", async () => {
     const user = userEvent.setup();
     const draft = {

@@ -9,7 +9,7 @@ const inputClass =
   "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /**
- * Frame a new creative decision: a question plus the options under consideration.
+ * Compare creative options: a question plus the options under consideration.
  * The decision — not a task — is the unit of work, so the question is required and
  * at least two options must be given (the domain enforces both).
  */
@@ -62,9 +62,15 @@ export function NewDecisionForm({
   return (
     <form
       onSubmit={onSubmit}
-      aria-label="Frame a decision"
+      aria-label="Compare options"
       className="border-border bg-card flex flex-col gap-3 rounded-lg border p-4"
     >
+      <div>
+        <h2 className="text-sm font-semibold">Compare options</h2>
+        <p className="text-muted-foreground text-xs">
+          Put the choices that could change the film side by side. You make the call.
+        </p>
+      </div>
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium">What decision are you making?</span>
         <input
@@ -77,7 +83,7 @@ export function NewDecisionForm({
         />
       </label>
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">Options</span>
+        <span className="text-sm font-medium">Choices to compare</span>
         {labels.map((label, index) => (
           <input
             key={index}
@@ -97,7 +103,7 @@ export function NewDecisionForm({
             onClick={() => setLabels((current) => [...current, ""])}
             disabled={labels.length >= 50}
           >
-            Add option
+            Add another option
           </Button>
         </div>
       </div>
@@ -108,7 +114,7 @@ export function NewDecisionForm({
       ) : null}
       <div>
         <Button type="submit" disabled={busy}>
-          {busy ? "Framing…" : "Frame decision"}
+          {busy ? "Saving…" : "Compare options"}
         </Button>
       </div>
     </form>

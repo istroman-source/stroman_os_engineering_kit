@@ -57,8 +57,8 @@ describe("LocationsView", () => {
       inputCount: 0,
     });
     render(<LocationsView />);
-    await screen.findByText(/add your first filming location/i);
-    await user.click(screen.getAllByRole("button", { name: /add location/i })[0]!);
+    await screen.findByText(/add your first room/i);
+    await user.click(screen.getAllByRole("button", { name: /add a room/i })[0]!);
     await user.type(screen.getByLabelText(/location name/i), "Studio office");
     await user.click(screen.getByRole("button", { name: /continue/i }));
     await waitFor(() =>

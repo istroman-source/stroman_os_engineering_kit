@@ -361,14 +361,14 @@ export function ShotPlanningSpace({
     <section className="space-y-5" aria-label="Interactive 3D filmmaking space">
       <div className="bg-card rounded-lg border p-5">
         <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-          Stroman recommends
+          Starting proposal
         </p>
         <h2 className="mt-1 text-xl font-semibold">
           {shot.title}: {shot.camera.focalLengthMm}mm {shot.camera.support.toLowerCase()} setup.
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          Drag the camera, target, subject, or path marks in the room—or focus a mark and use the
-          arrow keys. The frame and shooting information remain one decision.
+          Adjust the camera, framing, subject, or movement in the room—or focus a mark and use the
+          arrow keys. Save the version you want to shoot; every suggestion stays editable.
         </p>
       </div>
       <div className="grid gap-5 xl:grid-cols-[.9fr_1.1fr]">

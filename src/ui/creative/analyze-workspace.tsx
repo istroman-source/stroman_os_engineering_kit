@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { errorStatus, friendlyError } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
@@ -106,18 +105,9 @@ export function AnalyzeWorkspace({
     return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
 
-  const nav = focus ? null : (
-    <nav className="text-muted-foreground flex gap-4 text-xs" aria-label="Story workspace">
-      <Link className="underline-offset-4 hover:underline" href="/projects">
-        ← Projects
-      </Link>
-    </nav>
-  );
-
   if (mode === "blueprint" && analysis) {
     return (
       <div className="flex flex-col gap-6">
-        {nav}
         <BlueprintView
           analysis={analysis}
           busy={busy}
@@ -172,13 +162,11 @@ export function AnalyzeWorkspace({
 
   return (
     <div className="flex flex-col gap-6">
-      {nav}
       <header>
-        <h2 className="text-2xl font-semibold tracking-tight">Develop the idea</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">What are you making?</h2>
         <p className="text-muted-foreground text-sm">
-          Begin with a concept. Stroman will recommend a direction, challenge it, search distinct
-          alternatives, expose the decisions that matter, and sketch a shootable director blueprint.
-          It will not pretend proposed material already exists.
+          Start with the idea. Stroman will help you shape a story, choose what matters, and make a
+          plan you can actually shoot.
         </p>
       </header>
       <AnalyzeForm initial={analysis?.brief} busy={busy} error={error} onSubmit={onAnalyze} />

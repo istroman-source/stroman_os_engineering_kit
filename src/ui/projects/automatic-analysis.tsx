@@ -155,16 +155,15 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="analysis" className="text-lg font-semibold">
-            Evidence-grounded analysis
+            Find story moments
           </h2>
           <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-            Create observations, themes, and an editorial starting point from imported transcripts
-            and sampled video frames. Every claim keeps its source evidence; recommendations remain
-            advisory.
+            Turn what you captured into source-backed moments and ideas to consider. Stroman shows
+            what it observed separately from its creative suggestions.
           </p>
         </div>
         <Button type="button" onClick={run} disabled={busy}>
-          {busy ? "Analyzing…" : result ? "Run new analysis" : "Analyze transcripts"}
+          {busy ? "Finding moments…" : result ? "Refresh findings" : "Find story moments"}
         </Button>
       </div>
       {error ? (
@@ -178,7 +177,7 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
             Analysis version {result.run.version} · {result.run.status.toLowerCase()}
           </p>
           <div>
-            <h3 className="text-sm font-semibold">Quotes and source moments</h3>
+            <h3 className="text-sm font-semibold">What was actually captured</h3>
             <p className="text-muted-foreground mt-1 text-xs">
               Exact transcript excerpts and visible-frame evidence, kept in source order. These are
               source material, not story conclusions.
@@ -189,7 +188,7 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
             />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">Editorial interpretations to test</h3>
+            <h3 className="text-sm font-semibold">Ideas to test</h3>
             <p className="text-muted-foreground mt-1 text-xs">
               Evidence-grounded patterns and possible story connections. Confirm, revise, or reject
               them against the fuller material.
@@ -200,7 +199,7 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
             />
           </div>
           <div>
-            <h3 className="text-sm font-semibold">Filmmaker-controlled editorial tests</h3>
+            <h3 className="text-sm font-semibold">Your next creative choices</h3>
             <p className="text-muted-foreground mt-1 text-xs">
               Suggestions are starting points, never automatic creative decisions.
             </p>

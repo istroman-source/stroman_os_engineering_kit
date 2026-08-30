@@ -83,12 +83,13 @@ export function ProjectsView() {
       <form
         onSubmit={onCreate}
         className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5 shadow-sm sm:p-6"
-        aria-label="Create project"
+        aria-label="Start a video"
       >
         <div>
-          <h2 className="text-lg font-semibold">Create a project</h2>
+          <h2 className="text-lg font-semibold">Start a video</h2>
           <p className="text-muted-foreground mt-1 max-w-xl text-sm">
-            Give the film a working title. You can shape its story, storyboard, and materials next.
+            Give it a working title. Next, tell Stroman what you want to make — you can fill in
+            production details only when they matter.
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -96,12 +97,12 @@ export function ProjectsView() {
             className={inputClass}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Film or video title"
+            placeholder="Working title — you can change it later"
             maxLength={200}
             aria-label="Project working title"
           />
           <Button className="sm:min-w-36" type="submit" disabled={busy || name.trim() === ""}>
-            {busy ? "Creating…" : "Create project"}
+            {busy ? "Starting…" : "Start a video"}
           </Button>
         </div>
       </form>
@@ -120,19 +121,21 @@ export function ProjectsView() {
         </p>
       ) : projects.length === 0 ? (
         <div className="border-border bg-card rounded-2xl border px-6 py-12 text-center">
-          <h2 className="font-semibold">No projects yet</h2>
+          <h2 className="font-semibold">Make your first video</h2>
           <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
-            Create your first project above. Stroman will guide you from intent to a shootable plan.
+            Start with a working title above. Stroman will guide you from the idea to a plan you can
+            actually shoot.
           </p>
         </div>
       ) : (
         <section aria-labelledby="your-projects" className="space-y-3">
           <div>
             <h2 id="your-projects" className="text-lg font-semibold">
-              Your projects
+              Continue a video
             </h2>
             <p className="text-muted-foreground mt-1 text-sm">
-              Open a project to continue its story or storyboard.
+              Pick up where you left off. Stroman keeps the idea, plan, places, and material in one
+              workspace.
             </p>
           </div>
           <ul className="grid gap-3 sm:grid-cols-2" aria-label="Projects">
@@ -144,7 +147,7 @@ export function ProjectsView() {
                 >
                   <span className="font-semibold">{project.name}</span>
                   <span className="text-muted-foreground mt-5 text-sm">
-                    {statusLabels[project.status] ?? project.status}
+                    {statusLabels[project.status] ?? project.status} · Open workspace
                   </span>
                 </Link>
               </li>
