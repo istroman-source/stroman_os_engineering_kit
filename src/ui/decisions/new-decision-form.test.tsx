@@ -22,7 +22,7 @@ describe("NewDecisionForm", () => {
     await user.type(screen.getByLabelText(/decision question/i), "Which opening?");
     await user.type(screen.getByLabelText("Option 1"), "Cold open");
     // Only one option filled → invalid.
-    await user.click(screen.getByRole("button", { name: /frame decision/i }));
+    await user.click(screen.getByRole("button", { name: /^compare options$/i }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/at least two options/i);
     expect(proposeDecision).not.toHaveBeenCalled();
@@ -37,7 +37,7 @@ describe("NewDecisionForm", () => {
     await user.type(screen.getByLabelText(/decision question/i), "Which opening?");
     await user.type(screen.getByLabelText("Option 1"), "Cold open");
     await user.type(screen.getByLabelText("Option 2"), "Interview");
-    await user.click(screen.getByRole("button", { name: /frame decision/i }));
+    await user.click(screen.getByRole("button", { name: /^compare options$/i }));
 
     await waitFor(() =>
       expect(proposeDecision).toHaveBeenCalledWith({

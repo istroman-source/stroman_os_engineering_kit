@@ -52,15 +52,19 @@ beforeEach(() => {
 });
 
 describe("DecisionDetail", () => {
-  it("shows the question, options, and the decision forms while PROPOSED", async () => {
+  it("shows the question and decision form while keeping manual recommendations out of the default path", async () => {
     vi.mocked(getDecision).mockResolvedValue({ data: base, etag: '"decision:1"' });
     render(<DecisionDetail projectId="proj_1" decisionId="dec_1" />);
 
     expect(await screen.findByText("Which opening shot?")).toBeInTheDocument();
     expect(
-      within(screen.getByRole("list", { name: "Options" })).getByText("Cold open"),
+      within(screen.getByRole("list", { name: "Choices you’re weighing" })).getByText("Cold open"),
     ).toBeInTheDocument();
-    expect(screen.getByRole("form", { name: /attach ai advisory/i })).toBeInTheDocument();
+    expect(screen.getByText(/still choosing/i)).toBeInTheDocument();
+    expect(screen.getByText(/add a recommendation manually/i)).toBeInTheDocument();
+    expect(screen.getByText(/add a recommendation manually/i).closest("details")).not.toHaveAttribute(
+      "open",
+    );
     expect(screen.getByRole("form", { name: /record decision/i })).toBeInTheDocument();
   });
 
@@ -85,7 +89,7 @@ describe("DecisionDetail", () => {
     });
     render(<DecisionDetail projectId="proj_1" decisionId="dec_1" />);
 
-    expect(await screen.findByText(/AI advisory/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Recommendation to consider/i)).toBeInTheDocument();
     expect(screen.getByText(/Recommends:/)).toHaveTextContent(/Cold open/);
     expect(screen.getByText(/90% confidence/i)).toBeInTheDocument();
     expect(screen.getByText(/Hooks faster/)).toBeInTheDocument();
@@ -147,12 +151,13 @@ describe("DecisionDetail", () => {
     render(<DecisionDetail projectId="proj_1" decisionId="dec_1" />);
 
     await screen.findByText("Which opening shot?");
+    await user.click(screen.getByText(/add a recommendation manually/i));
     await user.type(screen.getByLabelText(/advisory rationale/i), "Faster hook");
     await user.click(screen.getByRole("button", { name: /add evidence/i }));
     await user.type(screen.getByLabelText(/evidence 1 source/i), "Brief");
     await user.type(screen.getByLabelText(/evidence 1 observation/i), "Fast hook");
     await user.type(screen.getByLabelText(/evidence 1 relevance/i), "Cold open wins");
-    await user.click(screen.getByRole("button", { name: /attach advisory/i }));
+    await user.click(screen.getByRole("button", { name: /save recommendation/i }));
 
     await waitFor(() =>
       expect(attachAdvisory).toHaveBeenCalledWith("dec_1", '"decision:1"', {
