@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { errorStatus, friendlyError } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
@@ -106,18 +105,9 @@ export function AnalyzeWorkspace({
     return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
 
-  const nav = focus ? null : (
-    <nav className="text-muted-foreground flex gap-4 text-xs" aria-label="Story workspace">
-      <Link className="underline-offset-4 hover:underline" href="/projects">
-        ← Projects
-      </Link>
-    </nav>
-  );
-
   if (mode === "blueprint" && analysis) {
     return (
       <div className="flex flex-col gap-6">
-        {nav}
         <BlueprintView
           analysis={analysis}
           busy={busy}
@@ -172,7 +162,6 @@ export function AnalyzeWorkspace({
 
   return (
     <div className="flex flex-col gap-6">
-      {nav}
       <header>
         <h2 className="text-2xl font-semibold tracking-tight">What are you making?</h2>
         <p className="text-muted-foreground text-sm">

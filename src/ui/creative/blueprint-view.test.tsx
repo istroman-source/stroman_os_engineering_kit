@@ -49,6 +49,18 @@ describe("BlueprintView", () => {
     expect(screen.getByRole("button", { name: "Lighting" })).toBeInTheDocument();
   });
 
+  it("keeps planning inputs concise and puts optional production detail behind disclosure", async () => {
+    const user = userEvent.setup();
+    render(<BlueprintView {...props()} />);
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
+
+    expect(screen.getByRole("heading", { name: /your idea is enough to begin/i })).toBeVisible();
+    expect(screen.getByText(/add a room only when its real geometry changes the shot/i)).toBeVisible();
+    expect(screen.queryByText(/^Nothing else$/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/production reality.*add only what changes the plan/i).closest("details"))
+      .not.toHaveAttribute("open");
+  });
+
   it("seeds the spatial workspace from this project and saves the exact edited camera state", async () => {
     const onShotPlanning = vi.fn().mockResolvedValue(undefined);
     const user = userEvent.setup();
