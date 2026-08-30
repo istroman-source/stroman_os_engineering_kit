@@ -51,15 +51,15 @@ describe("AutomaticAnalysis", () => {
     render(<AutomaticAnalysis projectId="proj_1" />);
 
     expect(
-      await screen.findByRole("heading", { name: "Quotes and source moments" }),
+      await screen.findByRole("heading", { name: "What was actually captured" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Source-backed")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Editorial interpretations to test" }),
+      screen.getByRole("heading", { name: "Ideas to test" }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Editorial interpretation · Story progression/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Filmmaker-controlled editorial tests" }),
+      screen.getByRole("heading", { name: "Your next creative choices" }),
     ).toBeInTheDocument();
     expect(screen.getByText(/never automatic creative decisions/i)).toBeInTheDocument();
     expect(screen.queryByText(/Source-backed moment:/i)).not.toBeInTheDocument();

@@ -133,25 +133,25 @@ export function SourceIntake({ projectId }: { projectId: string }) {
   return (
     <section className="border-border bg-card mb-8 rounded-lg border p-5" aria-labelledby="sources">
       <h2 id="sources" className="text-lg font-semibold">
-        Source material
+        Add what you captured
       </h2>
       <p className="text-muted-foreground mt-1 text-sm">
-        Add media and transcripts to this project. Video imports are sampled for visible evidence;
-        transcripts remain available for source-grounded story analysis.
+        Start with a video, audio recording, or transcript. Stroman keeps the original material and
+        helps you find the moments worth using.
       </p>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <form onSubmit={(event) => upload(event, "Media")} className="flex flex-col gap-2">
           <label className="text-sm font-medium" htmlFor="media-file">
-            Media
+            Video or audio
           </label>
           <input id="media-file" name="file" type="file" accept="video/*,audio/*" required />
           <Button type="submit" disabled={busy !== null}>
-            {busy === "Media" ? (activity ?? "Preparing media…") : "Import media"}
+            {busy === "Media" ? (activity ?? "Preparing media…") : "Add video or audio"}
           </Button>
         </form>
         <form onSubmit={(event) => upload(event, "Transcript")} className="flex flex-col gap-2">
           <label className="text-sm font-medium" htmlFor="transcript-file">
-            Transcript
+            Transcript or script
           </label>
           <input
             id="transcript-file"
@@ -161,7 +161,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
             required
           />
           <Button type="submit" disabled={busy !== null}>
-            {busy === "Transcript" ? "Importing…" : "Import transcript"}
+            {busy === "Transcript" ? "Adding…" : "Add transcript"}
           </Button>
         </form>
       </div>
@@ -188,7 +188,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
                   {item.sourceKind === "MEDIA" ? "Media" : "Transcript"}
                 </span>
               </span>
-              <span>{item.status === "COMPLETED" ? "Complete" : "Importing…"}</span>
+              <span>{item.status === "COMPLETED" ? "Ready" : "Adding…"}</span>
             </li>
           ))}
         </ul>
