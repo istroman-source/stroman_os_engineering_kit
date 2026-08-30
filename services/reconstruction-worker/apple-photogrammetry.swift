@@ -1,5 +1,6 @@
 import Foundation
 import RealityKit
+import Vision
 
 private struct WorkerEvent: Encodable {
     let event: String
@@ -58,13 +59,49 @@ private func emit(
     fflush(stdout)
 }
 
-private func sourceImageCount(at directory: URL) throws -> Int {
+private func sourceImageURLs(at directory: URL) throws -> [URL] {
     let allowed = Set(["heic", "heif", "jpg", "jpeg", "png"])
     return try FileManager.default.contentsOfDirectory(
         at: directory,
         includingPropertiesForKeys: [.isRegularFileKey],
         options: [.skipsHiddenFiles]
-    ).filter { allowed.contains($0.pathExtension.lowercased()) }.count
+    ).filter { allowed.contains($0.pathExtension.lowercased()) }
+        .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+}
+
+/**
+ A close-up portrait has no stable relationship to the photographed room and
+ can dominate Object Capture's matching. We retain the original evidence, but
+ keep only this clearly incompatible kind of frame out of the temporary input
+ directory. A small, distant face remains valid room evidence and is retained.
+ */
+private func containsDominantFace(_ image: URL) -> Bool {
+    let request = VNDetectFaceRectanglesRequest()
+    do {
+        try VNImageRequestHandler(url: image, options: [:]).perform([request])
+        return (request.results ?? []).contains { face in
+            face.boundingBox.width * face.boundingBox.height >= 0.08
+        }
+    } catch {
+        // Vision uncertainty must never discard source evidence. Let Apple's
+        // reconstruction engine evaluate frames Vision cannot read.
+        return false
+    }
+}
+
+private func reconstructionInputDirectory(
+    originalImages: URL,
+    acceptedImages: [URL],
+    excludedPortraits: Int
+) throws -> (url: URL, cleanup: Bool) {
+    guard excludedPortraits > 0 else { return (originalImages, false) }
+    let temporaryInput = originalImages.deletingLastPathComponent()
+        .appendingPathComponent("stroman-room-input-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: temporaryInput, withIntermediateDirectories: true)
+    for image in acceptedImages {
+        try FileManager.default.copyItem(at: image, to: temporaryInput.appendingPathComponent(image.lastPathComponent))
+    }
+    return (temporaryInput, true)
 }
 
 @main
@@ -98,9 +135,27 @@ private struct StromanApplePhotogrammetry {
         case "full": detail = .full
         default: throw RunnerError.invalidDetail(detailName)
         }
-        let totalSamples = try sourceImageCount(at: images)
+        let sourceImages = try sourceImageURLs(at: images)
+        let totalSamples = sourceImages.count
         guard totalSamples >= 20 else {
             throw RunnerError.insufficientSamples(usable: totalSamples, total: totalSamples)
+        }
+        let portraitImages = sourceImages.filter(containsDominantFace)
+        let reconstructionImages = sourceImages.filter { image in
+            !portraitImages.contains(image)
+        }
+        guard reconstructionImages.count >= 20 else {
+            throw RunnerError.insufficientSamples(usable: reconstructionImages.count, total: totalSamples)
+        }
+        let reconstructionInput = try reconstructionInputDirectory(
+            originalImages: images,
+            acceptedImages: reconstructionImages,
+            excludedPortraits: portraitImages.count
+        )
+        defer {
+            if reconstructionInput.cleanup {
+                try? FileManager.default.removeItem(at: reconstructionInput.url)
+            }
         }
 
         var configuration = PhotogrammetrySession.Configuration()
@@ -112,12 +167,20 @@ private struct StromanApplePhotogrammetry {
         configuration.isObjectMaskingEnabled = false
         configuration.ignoreBoundingBox = true
 
-        let session = try PhotogrammetrySession(input: images, configuration: configuration)
+        let session = try PhotogrammetrySession(input: reconstructionInput.url, configuration: configuration)
         let request = PhotogrammetrySession.Request.modelFile(url: output, detail: detail)
-        var rejectedSamples = Set<String>()
+        var rejectedSamples = Set(portraitImages.map(\.lastPathComponent))
         var producedModel = false
 
         emit(event: "started", fraction: 0, totalSamples: totalSamples)
+        if !portraitImages.isEmpty {
+            emit(
+                event: "filteredPortraitSamples",
+                message: "Excluded \(portraitImages.count) close-up portrait \(portraitImages.count == 1 ? "frame" : "frames") from room reconstruction.",
+                usableSamples: reconstructionImages.count,
+                totalSamples: totalSamples
+            )
+        }
         try session.process(requests: [request])
 
         for try await result in session.outputs {
