@@ -108,7 +108,7 @@ export function LocationDetailView({
           <ArrowLeft className="size-4" /> {returnTo ? "Back to storyboard" : "Rooms"}
         </Link>
         <p role="status" className="text-muted-foreground py-12 text-sm">
-          Opening location…
+          Opening room…
         </p>
         {error ? (
           <p role="alert" className="text-destructive text-sm">
@@ -313,8 +313,8 @@ export function LocationDetailView({
           </summary>
           <p className="text-muted-foreground mt-4 text-sm">
             {location.inputKind === "PHOTOS"
-              ? `${location.photoCount} original photos are preserved with this location.`
-              : "The original 3D scan is preserved with this location."}
+              ? `${location.photoCount} original photos are preserved with this room.`
+              : "The original 3D scan is preserved with this room."}
           </p>
         </details>
       </div>

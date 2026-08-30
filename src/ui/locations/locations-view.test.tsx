@@ -46,7 +46,7 @@ describe("LocationsView", () => {
     );
   });
 
-  it("keeps adding a location to one guided flow", async () => {
+  it("keeps adding a room to one guided flow", async () => {
     const user = userEvent.setup();
     vi.mocked(listPreparedLocations).mockResolvedValue([]);
     vi.mocked(createPreparedLocation).mockResolvedValue({
@@ -59,7 +59,8 @@ describe("LocationsView", () => {
     render(<LocationsView />);
     await screen.findByText(/add your first room/i);
     await user.click(screen.getAllByRole("button", { name: /add a room/i })[0]!);
-    await user.type(screen.getByLabelText(/location name/i), "Studio office");
+    expect(screen.getByText("New room")).toBeVisible();
+    await user.type(screen.getByLabelText(/room name/i), "Studio office");
     await user.click(screen.getByRole("button", { name: /continue/i }));
     await waitFor(() =>
       expect(createPreparedLocation).toHaveBeenCalledWith({
