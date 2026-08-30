@@ -34,6 +34,7 @@ export function ProjectsView() {
   const [busy, setBusy] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
 
   // Initial load. State is set inside the promise callbacks (never synchronously
   // in the effect body), which is the pattern React's rules-of-hooks lint allows.
@@ -56,7 +57,7 @@ export function ProjectsView() {
     return () => {
       active = false;
     };
-  }, [router]);
+  }, [loadAttempt, router]);
 
   async function onCreate(event: FormEvent) {
     event.preventDefault();
@@ -116,9 +117,21 @@ export function ProjectsView() {
       {projects === null ? (
         <p className="text-muted-foreground text-sm">Loading projects…</p>
       ) : loadError ? (
-        <p role="alert" className="text-destructive text-sm">
-          {loadError}
-        </p>
+        <div role="alert" className="border-border bg-card rounded-xl border p-5">
+          <p className="text-destructive text-sm">{loadError}</p>
+          <Button
+            type="button"
+            variant="outline"
+            className="mt-3"
+            onClick={() => {
+              setProjects(null);
+              setLoadError(null);
+              setLoadAttempt((attempt) => attempt + 1);
+            }}
+          >
+            Reload projects
+          </Button>
+        </div>
       ) : projects.length === 0 ? (
         <div className="border-border bg-card rounded-2xl border px-6 py-12 text-center">
           <h2 className="font-semibold">Make your first video</h2>

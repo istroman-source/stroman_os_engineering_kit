@@ -1,16 +1,16 @@
-import { ok, type Result } from "@/lib/result";
-import { defineStateMachine, type InvalidStateTransitionError } from "../shared";
+import { err, ok, type Result } from "@/lib/result";
+import { defineStateMachine, InvalidStateTransitionError } from "../shared";
 import type { OwnerId, ProjectId } from "./project-id";
 import type { ProjectName } from "./project-name";
 
-/** Project lifecycle. Archive is reachable from any non-terminal state. */
+/** Project lifecycle. Archived work can be restored without deleting its history. */
 export type ProjectStatus = "DRAFT" | "ACTIVE" | "COMPLETED" | "ARCHIVED";
 
 const lifecycle = defineStateMachine<ProjectStatus>({
   DRAFT: ["ACTIVE", "ARCHIVED"],
   ACTIVE: ["COMPLETED", "ARCHIVED"],
-  COMPLETED: ["ARCHIVED"],
-  ARCHIVED: [],
+  COMPLETED: ["ACTIVE", "ARCHIVED"],
+  ARCHIVED: ["ACTIVE"],
 });
 
 /**
@@ -51,6 +51,11 @@ export function createProject(input: CreateProjectInput): Project {
   };
 }
 
+/** Rename a project without changing its lifecycle or concurrency token. */
+export function renameProject(project: Project, name: ProjectName, now: Date): Project {
+  return { ...project, name, updatedAt: now };
+}
+
 function transition(
   project: Project,
   to: ProjectStatus,
@@ -80,4 +85,14 @@ export function archiveProject(
   now: Date,
 ): Result<Project, InvalidStateTransitionError> {
   return transition(project, "ARCHIVED", now);
+}
+
+export function reopenProject(
+  project: Project,
+  now: Date,
+): Result<Project, InvalidStateTransitionError> {
+  if (project.status !== "COMPLETED" && project.status !== "ARCHIVED") {
+    return err(new InvalidStateTransitionError("Project", project.status, "ACTIVE"));
+  }
+  return transition(project, "ACTIVE", now);
 }

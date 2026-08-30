@@ -10,6 +10,9 @@ import { z } from "zod";
 export const CreateProjectRequest = z.object({ name: z.string().min(1).max(200) }).strict();
 export type CreateProjectRequest = z.infer<typeof CreateProjectRequest>;
 
+export const RenameProjectRequest = z.object({ name: z.string().min(1).max(200) }).strict();
+export type RenameProjectRequest = z.infer<typeof RenameProjectRequest>;
+
 // --- Authentication (passwordless email OTP) ---
 // The email is validated for shape only; the provider decides deliverability and
 // whether an account exists (responses stay neutral to avoid enumeration).

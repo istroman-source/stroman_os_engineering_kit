@@ -72,4 +72,18 @@ describe("ProjectsView", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent(/invalid/i);
   });
+
+  it("recovers from a temporary project-list failure without reloading the app", async () => {
+    const user = userEvent.setup();
+    vi.mocked(listProjects)
+      .mockRejectedValueOnce({ status: 503, message: "Temporarily unavailable." })
+      .mockResolvedValueOnce([project("proj_2", "Recovered project")]);
+    render(<ProjectsView />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/temporarily unavailable/i);
+    await user.click(screen.getByRole("button", { name: "Reload projects" }));
+
+    expect(await screen.findByText("Recovered project")).toBeInTheDocument();
+    expect(listProjects).toHaveBeenCalledTimes(2);
+  });
 });

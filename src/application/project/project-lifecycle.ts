@@ -4,6 +4,7 @@ import {
   activateProject as activate,
   archiveProject as archive,
   completeProject as complete,
+  reopenProject as reopen,
   type OwnerId,
   type Project,
   type ProjectId,
@@ -94,4 +95,11 @@ export function archiveProject(
   input: ProjectLifecycleInput,
 ): Promise<ProjectLifecycleResult> {
   return runTransition(deps, input, "project.archive", archive);
+}
+
+export function reopenProject(
+  deps: ProjectLifecycleDeps,
+  input: ProjectLifecycleInput,
+): Promise<ProjectLifecycleResult> {
+  return runTransition(deps, input, "project.reopen", reopen);
 }

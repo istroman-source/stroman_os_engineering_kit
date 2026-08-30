@@ -17,10 +17,11 @@ import { POST as attachAdvisory } from "./decisions/[decisionId]/advisory/route"
 import { POST as decideDecision } from "./decisions/[decisionId]/decide/route";
 import { GET as getEvaluation } from "./evaluations/[evaluationId]/route";
 import { POST as recordEvaluation } from "./evaluations/route";
-import { GET as getProject } from "./projects/[projectId]/route";
+import { GET as getProject, PATCH as renameProject } from "./projects/[projectId]/route";
 import { POST as activateProject } from "./projects/[projectId]/activate/route";
 import { POST as archiveProject } from "./projects/[projectId]/archive/route";
 import { POST as completeProject } from "./projects/[projectId]/complete/route";
+import { POST as reopenProject } from "./projects/[projectId]/reopen/route";
 import { GET as listProjectDecisions } from "./projects/[projectId]/decisions/route";
 import { GET as listProjectEvaluations } from "./projects/[projectId]/evaluations/route";
 import { GET as listProjects, POST as createProject } from "./projects/route";
@@ -120,6 +121,38 @@ describe("projects", () => {
     const res = await call(getProject, { principal: OTHER, params: { projectId: project.id } });
     expect(res.status).toBe(403);
   });
+
+  it("renames with If-Match, returns the next token, and preserves ownership", async () => {
+    const project = await makeProject("Working title");
+    const renamed = await call(renameProject, {
+      method: "PATCH",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: project.etag,
+      json: { name: "Final title" },
+    });
+    expect(renamed.status).toBe(200);
+    expect((renamed.body as { name: string }).name).toBe("Final title");
+    expect(renamed.headers.get("etag")).toBe('"project:2"');
+
+    const denied = await call(renameProject, {
+      method: "PATCH",
+      principal: OTHER,
+      params: { projectId: project.id },
+      ifMatch: renamed.headers.get("etag") ?? "",
+      json: { name: "Not mine" },
+    });
+    expect(denied.status).toBe(403);
+
+    const stale = await call(renameProject, {
+      method: "PATCH",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: project.etag,
+      json: { name: "Stale title" },
+    });
+    expect(stale.status).toBe(409);
+  });
 });
 
 describe("optimistic concurrency", () => {
@@ -168,6 +201,28 @@ describe("optimistic concurrency", () => {
       ifMatch: '"content:1"',
     });
     expect(wrongType.status).toBe(400);
+  });
+
+  it("restores an archived project and retains the concurrency chain", async () => {
+    const project = await makeProject();
+    const archived = await call(archiveProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: project.etag,
+    });
+    expect(archived.status).toBe(200);
+    expect((archived.body as { status: string }).status).toBe("ARCHIVED");
+
+    const restored = await call(reopenProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: archived.headers.get("etag") ?? "",
+    });
+    expect(restored.status).toBe(200);
+    expect((restored.body as { status: string }).status).toBe("ACTIVE");
+    expect(restored.headers.get("etag")).toBe('"project:3"');
   });
 });
 

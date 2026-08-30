@@ -86,6 +86,20 @@ export async function apiPostWithEtag<T>(
   return { data: raw.body as T, etag: raw.etag };
 }
 
+/** PATCH JSON with a required optimistic-concurrency token. */
+export async function apiPatchWithEtag<T>(
+  path: string,
+  data: unknown,
+  ifMatch: string,
+): Promise<WithEtag<T>> {
+  const raw = await requestRaw(path, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "If-Match": ifMatch },
+    body: JSON.stringify(data),
+  });
+  return { data: raw.body as T, etag: raw.etag };
+}
+
 /** POST browser-owned multipart data while preserving the standard typed API error contract. */
 export async function apiPostForm<T>(path: string, body: FormData): Promise<T> {
   return request<T>(path, { method: "POST", body });
@@ -275,9 +289,37 @@ export function startPreparedLocationReconstruction(
 
 /** Fetch a single project (owner-scoped) for the workspace header. */
 export function getProject(projectId: string): Promise<ProjectItem> {
-  return request<ProjectItem>(`/api/v1/projects/${encodeURIComponent(projectId)}`, {
-    method: "GET",
-  });
+  return apiGetWithEtag<ProjectItem>(`/api/v1/projects/${encodeURIComponent(projectId)}`).then(
+    ({ data, etag }) => ({ ...data, concurrencyToken: etag ?? undefined }),
+  );
+}
+
+/** Rename a project using the exact state last loaded by the browser. */
+export function renameProject(
+  projectId: string,
+  name: string,
+  concurrencyToken: string,
+): Promise<ProjectItem> {
+  return apiPatchWithEtag<ProjectItem>(
+    `/api/v1/projects/${encodeURIComponent(projectId)}`,
+    { name },
+    concurrencyToken,
+  ).then(({ data, etag }) => ({ ...data, concurrencyToken: etag ?? undefined }));
+}
+
+export type ProjectLifecycleAction = "activate" | "complete" | "archive" | "reopen";
+
+/** Apply a project lifecycle action using the exact state last loaded by the browser. */
+export function updateProjectLifecycle(
+  projectId: string,
+  action: ProjectLifecycleAction,
+  concurrencyToken: string,
+): Promise<ProjectItem> {
+  return apiPostWithEtag<ProjectItem>(
+    `/api/v1/projects/${encodeURIComponent(projectId)}/${action}`,
+    {},
+    concurrencyToken,
+  ).then(({ data, etag }) => ({ ...data, concurrencyToken: etag ?? undefined }));
 }
 
 /** Map an API failure to a safe, user-facing message (no provider/internal detail). */
