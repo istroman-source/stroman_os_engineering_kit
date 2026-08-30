@@ -58,14 +58,15 @@ export function PromptHandoff({ projectId }: { projectId: string }) {
   return (
     <section className="border-border bg-card mb-8 rounded-lg border p-5" aria-labelledby="handoff">
       <h2 id="handoff" className="text-lg font-semibold">
-        Editor handoff
+        Take your plan to another tool
       </h2>
       <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
-        Export a grounded editing brief when you are ready to move into another approved tool.
+        Review, copy, or download a source-grounded editing brief when you are ready to continue in
+        another tool.
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <Button type="button" variant="secondary" onClick={() => setExpanded((value) => !value)}>
-          {expanded ? "Hide handoff" : "Review handoff"}
+          {expanded ? "Hide export details" : "Review export details"}
         </Button>
         {expanded ? (
           <>
