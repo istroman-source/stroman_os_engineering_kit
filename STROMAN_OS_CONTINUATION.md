@@ -39,14 +39,19 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 
 ## ACTIVE WORK QUEUE
 
+- [ ] Complete full UX audit against the original redesign brief and maintain the final PASS/PARTIAL/FAIL audit.
 - [x] Simplify the project entry and project navigation.
 - [x] Simplify Storyboard, Materials, source import, analysis, edit, and export entry language.
-- [ ] Audit and simplify the Locations library and location-detail empty states without changing reconstruction behavior.
+- [x] Simplify the Locations library entry state without changing reconstruction behavior.
+- [ ] Simplify location-detail advanced details, recovery, and on-set mobile hierarchy.
 - [ ] Audit project decision creation and decision detail for plain-language guidance and progressive disclosure.
-- [ ] Audit global navigation, dashboard, and empty states for one clear primary action.
+- [ ] Redesign global navigation, dashboard, onboarding, and empty states around one primary action.
+- [ ] Audit shot planning, production-stage flow, and AI placement for filmmaker authority and progressive disclosure.
+- [ ] Audit responsive and accessibility behavior across modified major screens.
+- [ ] Remove repeated information and preserve cross-stage project continuity wherever current contracts support it.
 - [ ] Run targeted UX regression coverage for every modified area.
 - [ ] Run typecheck, lint, and the full locally-runnable suite; record any environment-only failures precisely.
-- [ ] Prepare a single local UX release summary and exact verification record.
+- [ ] Perform the full Definition-of-Done audit; every relevant area must be PASS before declaring the redesign complete.
 
 ## Next task
 

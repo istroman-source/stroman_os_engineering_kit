@@ -291,7 +291,7 @@ export function LocationDetailView({
       <div className="grid gap-3 md:grid-cols-2">
         <details className="border-border bg-card rounded-xl border p-4">
           <summary className="focus-visible:ring-ring inline-flex min-h-11 cursor-pointer items-center font-medium focus-visible:ring-2 focus-visible:outline-none">
-            Room details
+            About this room
           </summary>
           <dl className="text-muted-foreground mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <dt>Source</dt>
