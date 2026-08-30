@@ -52,7 +52,7 @@ export function preparedLocationStatus(location: PreparedLocationItem): {
   if (location.status === "UPLOADING")
     return {
       label: "Adding files",
-      detail: "Keeping the source files safely with this location.",
+      detail: "Keeping the source files safely with this room.",
       tone: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
     };
   return {
@@ -155,7 +155,7 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-primary text-xs font-semibold tracking-[0.12em] uppercase">
-                New location
+                New room
               </p>
               <h2 id="add-location-title" className="mt-1 text-xl font-semibold">
                 Which room are you preparing?
@@ -166,14 +166,14 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
               variant="ghost"
               size="icon"
               onClick={() => setAdding(false)}
-              aria-label="Close add location"
+              aria-label="Close add room"
             >
               <X aria-hidden="true" />
             </Button>
           </div>
           <form onSubmit={onCreate} className="mt-6 max-w-2xl space-y-5">
             <label className="block space-y-2">
-              <span className="text-sm font-medium">Location name</span>
+              <span className="text-sm font-medium">Room name</span>
               <input
                 className={inputClass}
                 value={name}
@@ -237,7 +237,7 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
               </div>
             </fieldset>
             <Button type="submit" size="lg" disabled={busy || !name.trim()}>
-              {busy ? "Adding location…" : "Continue"}
+              {busy ? "Adding room…" : "Continue"}
               <ChevronRight aria-hidden="true" />
             </Button>
           </form>
@@ -255,7 +255,7 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
 
       {locations === null ? (
         <p role="status" className="text-muted-foreground py-10 text-sm">
-          Loading locations…
+          Loading rooms…
         </p>
       ) : locations.length === 0 ? (
         <section className="border-border bg-muted/25 grid min-h-64 place-items-center rounded-2xl border border-dashed p-8 text-center">

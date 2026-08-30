@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LocationDetailView } from "@/ui/locations/location-detail-view";
 
-export const metadata: Metadata = { title: "Location" };
+export const metadata: Metadata = { title: "Room" };
 
 export default async function LocationPage({
   params,

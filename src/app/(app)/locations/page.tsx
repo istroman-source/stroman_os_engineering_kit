@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/ui/page-header";
 import { LocationsView } from "@/ui/locations/locations-view";
 
-export const metadata: Metadata = { title: "Locations" };
+export const metadata: Metadata = { title: "Rooms" };
 
 function safeReturnTo(value: string | string[] | undefined) {
   const path = typeof value === "string" ? value : undefined;
@@ -20,7 +20,7 @@ export default async function LocationsPage({
   return (
     <div>
       <PageHeader
-        title="Locations"
+        title="Rooms"
         description="Prepare real rooms once, then reuse them across your stories."
       />
       <LocationsView returnTo={safeReturnTo(returnTo)} />

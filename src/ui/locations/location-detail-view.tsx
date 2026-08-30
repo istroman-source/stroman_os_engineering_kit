@@ -105,10 +105,10 @@ export function LocationDetailView({
           href={returnTo ?? "/locations"}
           className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm"
         >
-          <ArrowLeft className="size-4" /> {returnTo ? "Back to storyboard" : "Locations"}
+          <ArrowLeft className="size-4" /> {returnTo ? "Back to storyboard" : "Rooms"}
         </Link>
         <p role="status" className="text-muted-foreground py-12 text-sm">
-          Opening location…
+          Opening room…
         </p>
         {error ? (
           <p role="alert" className="text-destructive text-sm">
@@ -131,7 +131,7 @@ export function LocationDetailView({
         href={returnTo ?? "/locations"}
         className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm"
       >
-        <ArrowLeft className="size-4" /> {returnTo ? "Back to storyboard" : "All locations"}
+        <ArrowLeft className="size-4" /> {returnTo ? "Back to storyboard" : "All rooms"}
       </Link>
 
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -139,7 +139,7 @@ export function LocationDetailView({
           {editingName ? (
             <form onSubmit={onRename} className="flex max-w-lg items-center gap-2">
               <label className="sr-only" htmlFor="location-name">
-                Location name
+                Room name
               </label>
               <input
                 id="location-name"
@@ -153,7 +153,7 @@ export function LocationDetailView({
                 type="submit"
                 size="icon"
                 disabled={busy || !name.trim()}
-                aria-label="Save location name"
+                aria-label="Save room name"
               >
                 <Check />
               </Button>
@@ -166,7 +166,7 @@ export function LocationDetailView({
                 variant="ghost"
                 size="icon"
                 onClick={() => setEditingName(true)}
-                aria-label="Rename location"
+                aria-label="Rename room"
               >
                 <Pencil />
               </Button>
@@ -313,8 +313,8 @@ export function LocationDetailView({
           </summary>
           <p className="text-muted-foreground mt-4 text-sm">
             {location.inputKind === "PHOTOS"
-              ? `${location.photoCount} original photos are preserved with this location.`
-              : "The original 3D scan is preserved with this location."}
+              ? `${location.photoCount} original photos are preserved with this room.`
+              : "The original 3D scan is preserved with this room."}
           </p>
         </details>
       </div>
