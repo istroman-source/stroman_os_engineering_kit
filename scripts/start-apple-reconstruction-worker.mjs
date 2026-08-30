@@ -11,7 +11,7 @@ const binary = path.join(runtimePath, "stroman-apple-photogrammetry");
 const moduleCachePath = path.join(runtimePath, "swift-module-cache");
 const source = path.join(root, "services", "reconstruction-worker", "apple-photogrammetry.swift");
 const port = process.env.PORT ?? "3211";
-const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "reduced";
+const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "medium";
 
 function run(command, args) {
   return new Promise((resolve, reject) => {
