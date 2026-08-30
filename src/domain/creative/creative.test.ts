@@ -74,7 +74,33 @@ describe("createCreativeBrief", () => {
     });
 
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.value.targetAudience).toBe("");
+    if (result.ok) {
+      expect(result.value.targetAudience).toBe("");
+      expect(result.value.runtimeTarget).toBe("");
+      expect(result.value.deliveryPlatform).toBe("");
+      expect(result.value.successCriteria).toBe("");
+    }
+  });
+
+  it("validates and preserves structured project intent", () => {
+    const result = createCreativeBrief({
+      id: CreativeBriefId.unsafe("brief_INTENT001"),
+      projectId: ProjectId.unsafe("proj_AAAAAAA1"),
+      now: T0,
+      ...fields(),
+      runtimeTarget: "30 seconds",
+      deliveryPlatform: "16:9 broadcast and separately composed 9:16 social",
+      references: "Natural-light food documentaries",
+      restrictions: "No customer faces",
+      clientRequirements: "Hero the crab cake before the logo",
+      nonNegotiables: "Real kitchen and real staff",
+      successCriteria: "Viewers understand why the process earns the price",
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.runtimeTarget).toBe("30 seconds");
+    expect(result.value.nonNegotiables).toContain("Real kitchen");
   });
 });
 

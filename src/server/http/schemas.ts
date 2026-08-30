@@ -192,6 +192,13 @@ export const AnalyzeProjectRequest = z
     targetAudience: z.string().max(2000).default(""),
     desiredEmotion: z.string().max(200).default(""),
     context: z.string().max(5000).default(""),
+    runtimeTarget: z.string().max(200).default(""),
+    deliveryPlatform: z.string().max(300).default(""),
+    references: z.string().max(5000).default(""),
+    restrictions: z.string().max(5000).default(""),
+    clientRequirements: z.string().max(5000).default(""),
+    nonNegotiables: z.string().max(5000).default(""),
+    successCriteria: z.string().max(5000).default(""),
   })
   .strict();
 export type AnalyzeProjectRequest = z.infer<typeof AnalyzeProjectRequest>;

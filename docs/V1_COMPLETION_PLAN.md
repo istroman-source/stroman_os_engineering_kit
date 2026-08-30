@@ -49,15 +49,22 @@ a second owner cannot see or mutate it; stale writes do not overwrite current st
 
 ## Phase 2 — structured intent and project memory
 
-- [ ] Define the minimum structured intent fields: objective, audience, mode, runtime, platform,
+- [x] Define the minimum structured intent fields: objective, audience, mode, runtime, platform,
   desired audience effect, references, constraints, client requirements, non-negotiables, and
   success criteria.
-- [ ] Add backward-compatible persistence and migration without rewriting existing brief meaning.
-- [ ] Present one concise intent editor with progressive disclosure and explicit save/revision state.
-- [ ] Preserve an inspectable revision history or durable memory record for consequential intent
+- [x] Add backward-compatible persistence and migration without rewriting existing brief meaning.
+- [x] Present one concise intent editor with progressive disclosure and explicit save/revision state.
+- [x] Preserve an inspectable revision history or durable memory record for consequential intent
   changes.
 - [ ] Compose current intent into Develop, Build, Edit, Review, decisions, and exports.
-- [ ] Cover migration, ownership, revision, concurrency, and legacy-project behavior.
+- [x] Cover migration, ownership, revision, concurrency, and legacy-project behavior.
+
+Implemented locally: structured intent and immutable revision snapshots now cross domain,
+persistence, HTTP, hosted/deterministic reasoning, and filmmaker UI boundaries. Fresh-database
+migrations, repository concurrency, owner-scoped API history, legacy omitted fields, hosted prompt
+propagation, and evaluations are verified. The remaining composition checkbox closes with the
+Edit, decision, Review, and export phases because those filmmaker-facing consumers do not all exist
+yet.
 
 **Acceptance:** the filmmaker can return later and see what the project is trying to achieve, what
 changed, and which current outputs used that intent.

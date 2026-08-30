@@ -29,6 +29,13 @@ export interface CreativeBrief {
   readonly targetAudience: string;
   readonly desiredEmotion: string;
   readonly context: string;
+  readonly runtimeTarget: string;
+  readonly deliveryPlatform: string;
+  readonly references: string;
+  readonly restrictions: string;
+  readonly clientRequirements: string;
+  readonly nonNegotiables: string;
+  readonly successCriteria: string;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly planningContext: CreativePlanningContext;
@@ -47,6 +54,18 @@ export interface AnalyzeFields {
   readonly targetAudience: string;
   readonly desiredEmotion: string;
   readonly context: string;
+  readonly runtimeTarget: string;
+  readonly deliveryPlatform: string;
+  readonly references: string;
+  readonly restrictions: string;
+  readonly clientRequirements: string;
+  readonly nonNegotiables: string;
+  readonly successCriteria: string;
+}
+
+export interface IntentRevision extends AnalyzeFields {
+  readonly version: number;
+  readonly createdAt: string;
 }
 
 const enc = encodeURIComponent;
@@ -55,6 +74,13 @@ const enc = encodeURIComponent;
 export async function getAnalysis(projectId: string): Promise<Analysis> {
   const { data } = await apiGetWithEtag<Analysis>(`/api/v1/projects/${enc(projectId)}/analysis`);
   return data;
+}
+
+export async function getIntentHistory(projectId: string): Promise<IntentRevision[]> {
+  const { data } = await apiGetWithEtag<{ items: IntentRevision[] }>(
+    `/api/v1/projects/${enc(projectId)}/analysis/history`,
+  );
+  return data.items ?? [];
 }
 
 const RECOVERY_POLL_INTERVAL_MS = 5_000;

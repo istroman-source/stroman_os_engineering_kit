@@ -524,7 +524,7 @@ components:
         rationale: { type: string, maxLength: 2000 }
     AnalyzeProjectRequest:
       type: object
-      required: [title, client, projectType, creativeGoal, targetAudience, desiredEmotion, context]
+      required: [title]
       additionalProperties: false
       properties:
         title: { type: string, maxLength: 200 }
@@ -534,6 +534,13 @@ components:
         targetAudience: { type: string, maxLength: 2000 }
         desiredEmotion: { type: string, maxLength: 200 }
         context: { type: string, maxLength: 5000 }
+        runtimeTarget: { type: string, maxLength: 200 }
+        deliveryPlatform: { type: string, maxLength: 300 }
+        references: { type: string, maxLength: 5000 }
+        restrictions: { type: string, maxLength: 5000 }
+        clientRequirements: { type: string, maxLength: 5000 }
+        nonNegotiables: { type: string, maxLength: 5000 }
+        successCriteria: { type: string, maxLength: 5000 }
     ProductionReality:
       type: object
       additionalProperties: false
@@ -884,6 +891,13 @@ components:
           targetAudience,
           desiredEmotion,
           context,
+          runtimeTarget,
+          deliveryPlatform,
+          references,
+          restrictions,
+          clientRequirements,
+          nonNegotiables,
+          successCriteria,
           createdAt,
           updatedAt,
           planningContext,
@@ -898,9 +912,61 @@ components:
         targetAudience: { type: string }
         desiredEmotion: { type: string }
         context: { type: string }
+        runtimeTarget: { type: string }
+        deliveryPlatform: { type: string }
+        references: { type: string }
+        restrictions: { type: string }
+        clientRequirements: { type: string }
+        nonNegotiables: { type: string }
+        successCriteria: { type: string }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         planningContext: { $ref: "#/components/schemas/CreativePlanningContext" }
+    CreativeBriefRevision:
+      type: object
+      required:
+        [
+          version,
+          createdAt,
+          title,
+          client,
+          projectType,
+          creativeGoal,
+          targetAudience,
+          desiredEmotion,
+          context,
+          runtimeTarget,
+          deliveryPlatform,
+          references,
+          restrictions,
+          clientRequirements,
+          nonNegotiables,
+          successCriteria,
+        ]
+      properties:
+        version: { type: integer, minimum: 1 }
+        createdAt: { type: string, format: date-time }
+        title: { type: string }
+        client: { type: string }
+        projectType: { type: string }
+        creativeGoal: { type: string }
+        targetAudience: { type: string }
+        desiredEmotion: { type: string }
+        context: { type: string }
+        runtimeTarget: { type: string }
+        deliveryPlatform: { type: string }
+        references: { type: string }
+        restrictions: { type: string }
+        clientRequirements: { type: string }
+        nonNegotiables: { type: string }
+        successCriteria: { type: string }
+    CreativeBriefRevisionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CreativeBriefRevision" }
     HookConcept:
       type: object
       required: [title, description]
@@ -2277,6 +2343,25 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
         "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/analysis/history:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: listProjectIntentHistory
+      summary: List immutable filmmaker-intent snapshots, oldest first.
+      responses:
+        "200":
+          description: Saved intent revisions.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreativeBriefRevisionList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/imports:
     parameters:
       - name: projectId

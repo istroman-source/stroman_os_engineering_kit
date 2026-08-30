@@ -58,7 +58,7 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Some operational readiness documents still describe authentication and database models as absent;
   this is historical documentation drift, not a runtime defect.
 
-### 2. Project intent and creative memory — PARTIAL
+### 2. Project intent and creative memory — COMPLETE LOCALLY; DOWNSTREAM COMPOSITION PENDING
 
 **Complete**
 
@@ -68,13 +68,24 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Saving intent regenerates a provider-neutral creative blueprint atomically.
 - A durable memory/knowledge graph exists behind application and persistence boundaries.
 
-**Missing for V1**
+**Completed in the functional pass**
 
 - Runtime, delivery platform, references, restrictions, client requirements, non-negotiables, and
-  success criteria are not first-class structured intent.
-- Project intent revisions are not presented as a durable, reviewable project-memory timeline.
-- The memory graph is not composed into the filmmaker-facing project workflow; project context is
-  spread across brief, planning, sources, analysis, and decisions.
+  success criteria are first-class structured intent while legacy clients and rows safely normalize
+  omitted values to empty text.
+- Every initial save and consequential revision records an immutable, owner-scoped intent snapshot.
+- The Analyze editor keeps the required intent concise, progressively discloses production detail,
+  and exposes an inspectable revision timeline without provider or system plumbing.
+- Current structured intent is included in hosted and deterministic creative reasoning; migration,
+  ownership, revision order, concurrency, legacy input, and prompt propagation have targeted
+  automated coverage.
+
+**Missing for V1**
+
+- Edit, unified decisions, Review, and exports must consume the same current intent snapshot as
+  those later V1 surfaces are completed.
+- The broader memory graph remains an internal foundation; V1 surfaces its useful state through
+  intent history and the later Review packet rather than exposing graph plumbing.
 
 ### 3. Sources, evidence, and media understanding — PARTIAL
 

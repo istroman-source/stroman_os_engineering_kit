@@ -7,7 +7,7 @@ import {
   createCreativeBrief,
   evaluateCreativeQuality,
   generateDevelopmentBlueprint,
-  type CreativeBriefFields,
+  type CreativeBriefInputFields,
   type MeaningfulDevelopment,
 } from "../src/domain/creative";
 import { ProjectId } from "../src/domain/project";
@@ -15,7 +15,7 @@ import { developCreativeBlueprint } from "../src/application/creative";
 import { DeterministicCreativeReasoningProvider } from "../src/infrastructure/creative";
 
 interface JimmyFixture {
-  readonly brief: CreativeBriefFields;
+  readonly brief: CreativeBriefInputFields;
   readonly reviewedFailure: {
     readonly representativeLanguage: readonly string[];
     readonly blockingFailures: readonly string[];
@@ -26,7 +26,7 @@ const fixture = JSON.parse(
   readFileSync(resolve(process.cwd(), "evaluations/fixtures/jimmys-famous-meals.json"), "utf8"),
 ) as JimmyFixture;
 
-function brief(fields: CreativeBriefFields, suffix = "JIMMY001") {
+function brief(fields: CreativeBriefInputFields, suffix = "JIMMY001") {
   const idSuffix = suffix.padEnd(8, "0");
   const result = createCreativeBrief({
     id: CreativeBriefId.unsafe(`brief_${idSuffix}`),

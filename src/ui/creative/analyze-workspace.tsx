@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation";
 import { errorStatus, friendlyError } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
 import { BlueprintView } from "./blueprint-view";
-import { type Analysis, type AnalyzeFields, analyzeProject, getAnalysis } from "./creative-api";
+import {
+  type Analysis,
+  type AnalyzeFields,
+  type IntentRevision,
+  analyzeProject,
+  getAnalysis,
+  getIntentHistory,
+} from "./creative-api";
 import {
   saveLocationShot,
   getLatestLocationPhotoReconstruction,
@@ -37,6 +44,7 @@ export function AnalyzeWorkspace({
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [intentHistory, setIntentHistory] = useState<IntentRevision[]>([]);
 
   useEffect(() => {
     let active = true;
@@ -45,6 +53,13 @@ export function AnalyzeWorkspace({
         if (!active) return;
         setAnalysis(loaded);
         setMode("blueprint");
+        void getIntentHistory(projectId)
+          .then((history) => {
+            if (active) setIntentHistory(history);
+          })
+          .catch(() => {
+            // The saved blueprint remains usable if optional history retrieval is unavailable.
+          });
       })
       .catch((err) => {
         if (!active) return;
@@ -68,6 +83,7 @@ export function AnalyzeWorkspace({
     try {
       const result = await analyzeProject(projectId, fields);
       setAnalysis(result);
+      setIntentHistory(await getIntentHistory(projectId).catch(() => []));
       setMode("blueprint");
     } catch (err) {
       if (errorStatus(err) === 401) {
@@ -169,7 +185,13 @@ export function AnalyzeWorkspace({
           plan you can actually shoot.
         </p>
       </header>
-      <AnalyzeForm initial={analysis?.brief} busy={busy} error={error} onSubmit={onAnalyze} />
+      <AnalyzeForm
+        initial={analysis?.brief}
+        history={intentHistory}
+        busy={busy}
+        error={error}
+        onSubmit={onAnalyze}
+      />
     </div>
   );
 }

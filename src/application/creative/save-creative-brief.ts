@@ -3,7 +3,7 @@ import { err, ok, type Result } from "@/lib/result";
 import {
   type CreativeBrief,
   CreativeBriefId,
-  type CreativeBriefFields,
+  type CreativeBriefInputFields,
   type CreativeBriefRepository,
   attachCreativeBlueprint,
   createCreativeBrief,
@@ -31,7 +31,7 @@ export interface SaveCreativeBriefDeps extends DevelopCreativeBlueprintDeps {
 export interface SaveCreativeBriefInput {
   readonly actorId: OwnerId;
   readonly projectId: ProjectId;
-  readonly fields: CreativeBriefFields;
+  readonly fields: CreativeBriefInputFields;
 }
 
 export type SaveCreativeBriefResult = Result<

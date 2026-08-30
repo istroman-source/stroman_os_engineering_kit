@@ -1,5 +1,5 @@
 import type { ProjectId } from "../project";
-import type { CreativeBrief } from "./creative-brief";
+import type { CreativeBrief, CreativeBriefRevision } from "./creative-brief";
 
 /**
  * Persistence port for the Creative Brief. One brief per project (the project id
@@ -11,4 +11,6 @@ export interface CreativeBriefRepository {
   insert(brief: CreativeBrief): Promise<void>;
   /** Compare-and-swap on lockVersion; rejects stale writes and missing rows. */
   update(brief: CreativeBrief): Promise<void>;
+  /** Immutable intent snapshots, oldest first. */
+  listRevisions(projectId: ProjectId): Promise<readonly CreativeBriefRevision[]>;
 }

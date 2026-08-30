@@ -16,6 +16,13 @@ const FIELDS: AnalyzeFields = {
   targetAudience: "Working commuters",
   desiredEmotion: "Bracing tenderness",
   context: "One dawn; no interruption to ferry operations.",
+  runtimeTarget: "30 seconds",
+  deliveryPlatform: "Broadcast and social",
+  references: "working-harbor observational photography",
+  restrictions: "Do not interrupt ferry operations.",
+  clientRequirements: "Show the first ferry leaving.",
+  nonNegotiables: "One dawn shoot.",
+  successCriteria: "Commuters recognize the labor behind the ritual.",
 };
 
 function response(status: number, body: unknown, raw = false) {

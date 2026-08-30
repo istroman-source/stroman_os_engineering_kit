@@ -5,6 +5,7 @@ import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes"
 import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repositories";
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
 import { getCreativeBrief } from "./get-creative-brief";
+import { listCreativeBriefRevisions } from "./list-creative-brief-revisions";
 import { saveCreativeBrief } from "./save-creative-brief";
 import { updateCreativePlanning } from "./update-creative-planning";
 import { FakeCreativeReasoningProvider } from "../../../test/adapters/fake-creative-reasoning-provider";
@@ -32,6 +33,13 @@ function fields() {
     desiredEmotion: "Understood, relatable, sentimental",
     context:
       "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
+    runtimeTarget: "30 seconds",
+    deliveryPlatform: "Broadcast and social",
+    references: "Natural morning-routine observation",
+    restrictions: "Never show the baby's face.",
+    clientRequirements: "Show Jimmy's Famous Meals clearly.",
+    nonNegotiables: "Hands and feet only when the baby enters frame.",
+    successCriteria: "Parents recognize a credible convenience benefit.",
   };
 }
 
@@ -62,6 +70,8 @@ describe("saveCreativeBrief", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.value.brief.title).toContain("Jimmy's Famous Meals");
+    expect(result.value.brief.runtimeTarget).toBe("30 seconds");
+    expect(result.value.brief.restrictions).toContain("baby's face");
     expect(result.value.blueprint.hookConcepts).toHaveLength(3);
     const persisted = await d.creativeBriefs.findByProject(PROJECT);
     expect(persisted?.blueprint).toEqual(result.value.blueprint);
@@ -81,6 +91,12 @@ describe("saveCreativeBrief", () => {
     expect(again.value.brief.desiredEmotion).toBe("nostalgic");
     // Still exactly one brief for the project.
     expect(await d.creativeBriefs.findByProject(PROJECT)).not.toBeNull();
+    const history = await d.creativeBriefs.listRevisions(PROJECT);
+    expect(history).toHaveLength(2);
+    expect(history.map((revision) => revision.fields.desiredEmotion)).toEqual([
+      "Understood, relatable, sentimental",
+      "nostalgic",
+    ]);
   });
 
   it("denies analyzing another owner's project", async () => {
@@ -103,6 +119,31 @@ describe("saveCreativeBrief", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe("listCreativeBriefRevisions", () => {
+  it("returns immutable intent history to the owner and denies another owner", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    await saveCreativeBrief(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      fields: { ...fields(), successCriteria: "Parents choose the product without feeling sold." },
+    });
+
+    const history = await listCreativeBriefRevisions(d, { actorId: OWNER, projectId: PROJECT });
+    expect(history.ok && history.value.map((revision) => revision.version)).toEqual([1, 2]);
+    expect(history.ok && history.value[1]?.successCriteria).toBe(
+      "Parents choose the product without feeling sold.",
+    );
+
+    const denied = await listCreativeBriefRevisions(d, {
+      actorId: OTHER,
+      projectId: PROJECT,
+    });
+    expect(denied.ok).toBe(false);
+    if (!denied.ok) expect(denied.error).toBeInstanceOf(NotAuthorizedError);
   });
 });
 

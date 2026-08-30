@@ -232,6 +232,13 @@ function briefPayload(brief: CreativeBrief): Record<string, string> {
     targetAudience: brief.targetAudience,
     desiredEmotion: brief.desiredEmotion,
     context: brief.context,
+    runtimeTarget: brief.runtimeTarget,
+    deliveryPlatform: brief.deliveryPlatform,
+    references: brief.references,
+    restrictions: brief.restrictions,
+    clientRequirements: brief.clientRequirements,
+    nonNegotiables: brief.nonNegotiables,
+    successCriteria: brief.successCriteria,
   };
 }
 

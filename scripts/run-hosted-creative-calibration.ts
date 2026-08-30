@@ -11,7 +11,7 @@ import {
   createCreativeBrief,
   evaluateCreativeQuality,
   evaluateVisualPlanQuality,
-  type CreativeBriefFields,
+  type CreativeBriefInputFields,
   type MeaningfulDevelopment,
   type ProjectUnderstanding,
 } from "../src/domain/creative/index";
@@ -22,12 +22,12 @@ import { createCreativeReasoningProvider } from "../src/infrastructure/creative/
 interface CalibrationCase {
   readonly id: string;
   readonly expectedMode: "COMMERCIAL" | "DOCUMENTARY" | "NARRATIVE" | "PERFORMANCE" | "OPEN";
-  readonly brief: CreativeBriefFields;
+  readonly brief: CreativeBriefInputFields;
 }
 
 interface JimmyFixture {
   readonly fixtureId: string;
-  readonly brief: CreativeBriefFields;
+  readonly brief: CreativeBriefInputFields;
 }
 
 async function formattedJson(value: unknown): Promise<string> {

@@ -12,6 +12,7 @@ import { TestAuthenticator } from "@test/adapters/test-auth";
 import { call, TEST_ORIGIN } from "@test/http/call";
 import { POST as createProject } from "./projects/route";
 import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectId]/analysis/route";
+import { GET as getIntentHistory } from "./projects/[projectId]/analysis/history/route";
 import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
 import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
 import { GET as getScoutPhoto } from "./projects/[projectId]/scout-photos/[mediaAssetId]/route";
@@ -67,6 +68,13 @@ const brief = {
   desiredEmotion: "Understood, relatable, sentimental",
   context:
     "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
+  runtimeTarget: "30 seconds",
+  deliveryPlatform: "Broadcast and social",
+  references: "Natural morning-routine observation",
+  restrictions: "Never show the baby's face.",
+  clientRequirements: "Show Jimmy's Famous Meals clearly.",
+  nonNegotiables: "Hands and feet only when the baby enters frame.",
+  successCriteria: "Parents recognize a credible convenience benefit.",
 };
 
 function testLocationGlb(): Uint8Array {
@@ -106,7 +114,7 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     });
     expect(analyzed.status).toBe(200);
     const body = analyzed.body as {
-      brief: { title: string; projectId: string };
+      brief: { title: string; projectId: string; runtimeTarget: string; restrictions: string };
       blueprint: {
         hookConcepts: unknown[];
         interviewStrategy: unknown;
@@ -115,6 +123,8 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     };
     expect(body.brief.title).toContain("Jimmy's Famous Meals");
     expect(body.brief.projectId).toBe(projectId);
+    expect(body.brief.runtimeTarget).toBe("30 seconds");
+    expect(body.brief.restrictions).toContain("baby's face");
     expect(body.blueprint.hookConcepts).toHaveLength(3);
     expect(body.blueprint.interviewStrategy).toBeNull();
     expect(body.blueprint).not.toHaveProperty("masterPrompt");
@@ -146,6 +156,29 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       "nostalgic",
     );
     expect(await prisma.creativeBrief.count()).toBe(1);
+    const history = await call(getIntentHistory, { principal: ACTOR, params: { projectId } });
+    expect(history.status).toBe(200);
+    const revisions = (
+      history.body as { items: Array<{ version: number; desiredEmotion: string }> }
+    ).items;
+    expect(revisions.map((revision) => revision.version)).toEqual([1, 2]);
+    expect(revisions.map((revision) => revision.desiredEmotion)).toEqual([
+      "Understood, relatable, sentimental",
+      "nostalgic",
+    ]);
+    expect(await prisma.creativeBriefRevision.count()).toBe(2);
+  });
+
+  it("keeps intent history owner-scoped", async () => {
+    const projectId = await makeProject();
+    await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    const denied = await call(getIntentHistory, { principal: OTHER, params: { projectId } });
+    expect(denied.status).toBe(403);
   });
 
   it("persists stage and production reality without rerunning creative intent", async () => {
