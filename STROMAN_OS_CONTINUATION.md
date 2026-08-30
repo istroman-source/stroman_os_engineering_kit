@@ -47,16 +47,16 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 - [x] Simplify location-detail advanced details, recovery, and on-set mobile hierarchy.
 - [x] Simplify global navigation and project empty states around one primary action.
 - [x] Audit shot planning, production-stage flow, and AI placement for filmmaker authority and progressive disclosure.
-- [ ] Audit responsive and accessibility behavior across modified major screens.
+- [x] Audit responsive and accessibility behavior across modified major screens.
 - [x] Remove repeated information and preserve cross-stage project continuity wherever current contracts support it.
-- [ ] Run targeted UX regression coverage for every modified area.
+- [x] Run targeted UX regression coverage for every modified area (48/48 passing).
 - [ ] Run typecheck, lint, and the full locally-runnable suite; record any environment-only failures precisely.
 - [ ] Perform the full Definition-of-Done audit; every relevant area must be PASS before declaring the redesign complete.
 
 ## Next task
 
-Audit responsive and accessibility behavior across every modified major screen, then run the complete targeted UX regression set.
+Run typecheck, lint, the full locally-runnable suite, and production build; then complete the final PASS/PARTIAL/FAIL audit.
 
 ## First action next run
 
-Read this file, run `git status --short --branch`, inspect the modified-screen diff for labels, focus order, touch targets, overflow, and mobile stacking, then fix and test every reproducible issue.
+Read this file, run `git status --short --branch`, run the final verification commands once, repair any reproducible failures, and record exact environment-only limitations without weakening checks.

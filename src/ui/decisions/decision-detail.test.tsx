@@ -62,9 +62,9 @@ describe("DecisionDetail", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/still choosing/i)).toBeInTheDocument();
     expect(screen.getByText(/add a recommendation manually/i)).toBeInTheDocument();
-    expect(screen.getByText(/add a recommendation manually/i).closest("details")).not.toHaveAttribute(
-      "open",
-    );
+    expect(
+      screen.getByText(/add a recommendation manually/i).closest("details"),
+    ).not.toHaveAttribute("open");
     expect(screen.getByRole("form", { name: /record decision/i })).toBeInTheDocument();
   });
 
@@ -154,6 +154,7 @@ describe("DecisionDetail", () => {
     await user.click(screen.getByText(/add a recommendation manually/i));
     await user.type(screen.getByLabelText(/advisory rationale/i), "Faster hook");
     await user.click(screen.getByRole("button", { name: /add evidence/i }));
+    expect(screen.getByRole("button", { name: /remove evidence 1/i })).toBeInTheDocument();
     await user.type(screen.getByLabelText(/evidence 1 source/i), "Brief");
     await user.type(screen.getByLabelText(/evidence 1 observation/i), "Fast hook");
     await user.type(screen.getByLabelText(/evidence 1 relevance/i), "Cold open wins");

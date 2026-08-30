@@ -144,7 +144,14 @@ export function SourceIntake({ projectId }: { projectId: string }) {
           <label className="text-sm font-medium" htmlFor="media-file">
             Video or audio
           </label>
-          <input id="media-file" name="file" type="file" accept="video/*,audio/*" required />
+          <input
+            id="media-file"
+            className="max-w-full text-sm"
+            name="file"
+            type="file"
+            accept="video/*,audio/*"
+            required
+          />
           <Button type="submit" disabled={busy !== null}>
             {busy === "Media" ? (activity ?? "Preparing media…") : "Add video or audio"}
           </Button>
@@ -155,6 +162,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
           </label>
           <input
             id="transcript-file"
+            className="max-w-full text-sm"
             name="file"
             type="file"
             accept=".srt,.vtt,.json,.txt"
