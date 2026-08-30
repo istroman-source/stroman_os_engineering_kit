@@ -44,7 +44,7 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 - [x] Simplify Storyboard, Materials, source import, analysis, edit, and export entry language.
 - [x] Simplify the Locations library entry state without changing reconstruction behavior.
 - [x] Simplify creative decision creation and detail for plain-language guidance and progressive disclosure.
-- [ ] Simplify location-detail advanced details, recovery, and on-set mobile hierarchy.
+- [x] Simplify location-detail advanced details, recovery, and on-set mobile hierarchy.
 - [x] Simplify global navigation and project empty states around one primary action.
 - [ ] Audit shot planning, production-stage flow, and AI placement for filmmaker authority and progressive disclosure.
 - [ ] Audit responsive and accessibility behavior across modified major screens.
@@ -55,8 +55,8 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 
 ## Next task
 
-Simplify location-detail advanced details, recovery language, and on-set mobile hierarchy without changing the room or reconstruction contracts.
+Audit shot planning, production-stage flow, and AI placement for filmmaker authority and progressive disclosure.
 
 ## First action next run
 
-Read this file, run `git status --short --branch`, inspect `src/ui/locations/location-detail-view.tsx` and `src/ui/locations/prepared-room-viewer.tsx`, then implement the smallest safe mobile-first recovery or hierarchy improvement with targeted tests.
+Read this file, run `git status --short --branch`, inspect `src/ui/creative/shot-planning-space.tsx` and the storyboard workspace, then implement the smallest safe authority-first hierarchy improvement with targeted coverage.

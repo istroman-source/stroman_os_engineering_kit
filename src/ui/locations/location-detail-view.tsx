@@ -120,6 +120,10 @@ export function LocationDetailView({
 
   const status = preparedLocationStatus(location);
   const inFlight = location.status === "PROCESSING" || location.status === "UPLOADING";
+  const preservedInputMessage =
+    location.inputKind === "PHOTOS"
+      ? `${location.photoCount} original photo${location.photoCount === 1 ? " remains" : "s remain"} safely attached to this room. You do not need to upload them again.`
+      : "Your original 3D scan remains safely attached to this room. You do not need to upload it again.";
 
   return (
     <div className="space-y-8">
@@ -269,8 +273,7 @@ export function LocationDetailView({
             {location.status === "FAILED" ? "Let’s try that build again" : "Ready to build"}
           </h2>
           <p className="text-muted-foreground mt-2 max-w-xl text-sm">
-            {location.photoCount} original photos remain safely attached to this location. You do
-            not need to upload them again.
+            {preservedInputMessage}
           </p>
           <Button
             type="button"
