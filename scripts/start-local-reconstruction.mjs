@@ -14,7 +14,7 @@ const source = path.join(root, "services", "reconstruction-worker", "apple-photo
 const workerPort = 3211;
 const appPort = 3200;
 const secret = randomBytes(48).toString("base64url");
-const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "medium";
+const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "full";
 const children = new Set();
 let stopping = false;
 
@@ -80,8 +80,8 @@ async function waitForWorker() {
 if (process.platform !== "darwin") {
   throw new Error("Local Apple reconstruction requires macOS.");
 }
-if (!new Set(["reduced", "medium"]).has(detail)) {
-  throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced or medium.");
+if (!new Set(["reduced", "medium", "full"]).has(detail)) {
+  throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced, medium, or full.");
 }
 
 await mkdir(runtimePath, { recursive: true, mode: 0o700 });

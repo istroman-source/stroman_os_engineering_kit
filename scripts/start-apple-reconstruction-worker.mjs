@@ -11,7 +11,10 @@ const binary = path.join(runtimePath, "stroman-apple-photogrammetry");
 const moduleCachePath = path.join(runtimePath, "swift-module-cache");
 const source = path.join(root, "services", "reconstruction-worker", "apple-photogrammetry.swift");
 const port = process.env.PORT ?? "3211";
-const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "medium";
+// Rooms are planning environments, not preview assets. Use Apple's complete
+// reconstruction by default; an operator can still explicitly opt into a
+// lower setting when turnaround matters more than spatial fidelity.
+const detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "full";
 
 function run(command, args) {
   return new Promise((resolve, reject) => {
@@ -30,8 +33,8 @@ function run(command, args) {
 }
 
 if (process.platform !== "darwin") throw new Error("Apple reconstruction workers require macOS.");
-if (!new Set(["reduced", "medium"]).has(detail)) {
-  throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced or medium.");
+if (!new Set(["reduced", "medium", "full"]).has(detail)) {
+  throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced, medium, or full.");
 }
 
 const { secret } = await appleReconstructionWorkerLaunchConfig(process.env);

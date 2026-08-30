@@ -21,7 +21,7 @@ private enum RunnerError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidArguments:
-            return "Expected an input image directory, an output directory, and an optional reduced or medium detail level."
+            return "Expected an input image directory, an output directory, and an optional reduced, medium, or full detail level."
         case .invalidDetail(let value):
             return "Unsupported Apple reconstruction detail level: \(value)."
         case .unsupportedHardware:
@@ -90,11 +90,12 @@ private struct StromanApplePhotogrammetry {
 
         let images = URL(fileURLWithPath: arguments[1], isDirectory: true).standardizedFileURL
         let output = URL(fileURLWithPath: arguments[2], isDirectory: true).standardizedFileURL
-        let detailName = arguments.count == 4 ? arguments[3].lowercased() : "medium"
+        let detailName = arguments.count == 4 ? arguments[3].lowercased() : "full"
         let detail: PhotogrammetrySession.Request.Detail
         switch detailName {
         case "reduced": detail = .reduced
         case "medium": detail = .medium
+        case "full": detail = .full
         default: throw RunnerError.invalidDetail(detailName)
         }
         let totalSamples = try sourceImageCount(at: images)

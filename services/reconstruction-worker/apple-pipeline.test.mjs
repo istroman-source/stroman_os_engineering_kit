@@ -42,7 +42,7 @@ describe("Stroman Apple photogrammetry pipeline", () => {
     expect(commands).toEqual([
       {
         command: "/safe/apple-photogrammetry",
-        args: [imagesPath, path.join(workspace, "apple-output"), "medium"],
+        args: [imagesPath, path.join(workspace, "apple-output"), "full"],
       },
       {
         command: "/safe/gltfpack",
@@ -94,8 +94,8 @@ describe("Stroman Apple photogrammetry pipeline", () => {
       runApplePipeline("/safe/workspace", {
         imagesPath: "/safe/images",
         executable: "/safe/apple-photogrammetry",
-        detail: "full",
+        detail: "draft",
       }),
-    ).rejects.toThrow("must be reduced or medium");
+    ).rejects.toThrow("must be reduced, medium, or full");
   });
 });
