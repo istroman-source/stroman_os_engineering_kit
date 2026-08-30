@@ -128,7 +128,7 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold">Your locations</h2>
+          <h2 className="text-lg font-semibold">Your rooms</h2>
           <p className="text-muted-foreground mt-1 text-sm">
             Build a room once, then return whenever a story needs it.
           </p>
@@ -143,7 +143,7 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
           aria-expanded={adding}
         >
           <Plus aria-hidden="true" />
-          Add location
+          Add a room
         </Button>
       </div>
 
@@ -263,13 +263,13 @@ export function LocationsView({ returnTo }: { returnTo?: string }) {
             <span className="bg-primary/10 text-primary mx-auto grid size-11 place-items-center rounded-full">
               <MapPin aria-hidden="true" />
             </span>
-            <h2 className="mt-4 text-lg font-semibold">Add your first filming location</h2>
+            <h2 className="mt-4 text-lg font-semibold">Add your first room</h2>
             <p className="text-muted-foreground mt-2 text-sm">
               Photograph a real room or bring an existing 3D scan. Stroman keeps it ready for future
               stories.
             </p>
             <Button type="button" className="mt-5" onClick={() => setAdding(true)}>
-              <Plus aria-hidden="true" /> Add location
+              <Plus aria-hidden="true" /> Add a room
             </Button>
           </div>
         </section>

@@ -37,6 +37,17 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 3. Run typecheck, focused lint, and focused tests after each coherent slice.
 4. Run the full local suite when appropriate; record the localhost sandbox limitation exactly if it recurs.
 
+## ACTIVE WORK QUEUE
+
+- [x] Simplify the project entry and project navigation.
+- [x] Simplify Storyboard, Materials, source import, analysis, edit, and export entry language.
+- [ ] Audit and simplify the Locations library and location-detail empty states without changing reconstruction behavior.
+- [ ] Audit project decision creation and decision detail for plain-language guidance and progressive disclosure.
+- [ ] Audit global navigation, dashboard, and empty states for one clear primary action.
+- [ ] Run targeted UX regression coverage for every modified area.
+- [ ] Run typecheck, lint, and the full locally-runnable suite; record any environment-only failures precisely.
+- [ ] Prepare a single local UX release summary and exact verification record.
+
 ## Next task
 
 Audit and simplify the project’s Storyboard and Materials entry copy so users see a clear next action before advanced workspace controls.
