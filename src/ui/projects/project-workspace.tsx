@@ -67,7 +67,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-baseline justify-between gap-4">
+      <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Creative decisions</h2>
           <p className="text-muted-foreground text-sm">
@@ -80,7 +80,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold">Frame a new decision</h2>
+        <h2 className="text-sm font-semibold">Compare a new set of options</h2>
         <NewDecisionForm
           projectId={projectId}
           onCreated={(decision) => setDecisions((current) => [decision, ...(current ?? [])])}
@@ -92,7 +92,7 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
         <h2 className="text-sm font-semibold">Decisions</h2>
         {decisions.length === 0 ? (
           <div className="border-border bg-card text-muted-foreground rounded-lg border p-8 text-sm">
-            No decisions yet. Frame the first one above.
+            No choices recorded yet. Compare the first set of options above.
           </div>
         ) : (
           <ul className="flex flex-col gap-2" aria-label="Decisions">
@@ -103,11 +103,10 @@ export function ProjectWorkspace({ projectId }: { projectId: string }) {
                   className="border-border bg-card hover:border-primary/50 flex flex-col gap-1 rounded-lg border p-4 transition-colors"
                 >
                   <span className="text-sm font-medium">{decision.question}</span>
-                  <span className="text-muted-foreground flex gap-3 text-xs">
-                    <span className="tracking-wide uppercase">{decision.status}</span>
+                  <span className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                    <span>{decision.status === "DECIDED" ? "Decided" : "Still choosing"}</span>
                     <span>{decision.options.length} options</span>
-                    {decision.advisory ? <span>AI advised</span> : null}
-                    {decision.status === "DECIDED" ? <span>· decided</span> : null}
+                    {decision.advisory ? <span>Recommendation available</span> : null}
                   </span>
                 </Link>
               </li>

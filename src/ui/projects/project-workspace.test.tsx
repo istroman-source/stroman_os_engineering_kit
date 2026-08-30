@@ -60,7 +60,7 @@ describe("ProjectWorkspace", () => {
     render(<ProjectWorkspace projectId="proj_1" />);
 
     expect(await screen.findByRole("heading", { name: "Creative decisions" })).toBeInTheDocument();
-    expect(screen.getByText(/no decisions yet/i)).toBeInTheDocument();
+    expect(screen.getByText(/no choices recorded yet/i)).toBeInTheDocument();
   });
 
   it("lists existing decisions in the feed", async () => {
@@ -84,7 +84,7 @@ describe("ProjectWorkspace", () => {
     await user.type(screen.getByLabelText(/decision question/i), "Which thumbnail?");
     await user.type(screen.getByLabelText("Option 1"), "Dish");
     await user.type(screen.getByLabelText("Option 2"), "Chef");
-    await user.click(screen.getByRole("button", { name: /frame decision/i }));
+    await user.click(screen.getByRole("button", { name: /^compare options$/i }));
 
     await waitFor(() => expect(proposeDecision).toHaveBeenCalled());
     expect(await screen.findByText("Which thumbnail?")).toBeInTheDocument();
