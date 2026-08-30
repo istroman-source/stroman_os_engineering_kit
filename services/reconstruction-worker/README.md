@@ -18,12 +18,13 @@ ephemeral signing secret without printing it, starts the worker on loopback, and
 at `http://localhost:3200`. The filmmaker still uploads and enters the reconstructed room entirely
 inside Stroman. Source photos and job attempts remain under the gitignored `.data/` runtime path.
 
-The Apple engine uses sequential high-sensitivity matching with masking disabled and the automatic
-object bounding box ignored so it can recover the complete photographed scene. It rejects sets with
-fewer than 20 source photos or fewer than 60% usable samples, requests a reduced textured OBJ from
-RealityKit, and packages that result as the same bounded GLB used by every other provider. This is the
-lowest-cost first-pass setting; set `STROMAN_APPLE_RECONSTRUCTION_DETAIL=medium` only after a viable
-capture needs more detail.
+The Apple engine uses unordered high-sensitivity matching with masking disabled and the automatic
+object bounding box ignored so it can recover a complete photographed scene without treating file
+selection order as proven camera adjacency. It rejects sets with fewer than 20 source photos, fewer
+than 60% usable samples, or an incomplete stitch. By default it requests RealityKit's full-detail
+model and packages it as the same bounded GLB used by every other provider. Operators can explicitly
+set `STROMAN_APPLE_RECONSTRUCTION_DETAIL=medium` or `reduced` when a faster, lower-fidelity pass is
+the deliberate tradeoff.
 
 This path has no reconstruction fee, but the Mac must remain awake while processing. It is the
 private-test default, not a claim that a user's localhost is production infrastructure. Remote web

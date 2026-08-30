@@ -100,10 +100,10 @@ export async function runApplePipeline(
     timeoutMs = MAX_STAGE_MS,
     log,
     executable = process.env.STROMAN_APPLE_PHOTOGRAMMETRY_BIN,
-    // A room is a camera-planning environment, not a thumbnail asset. Keep the
-    // cheaper reduced setting available as an explicit operator override, but
-    // make medium the baseline so the worker retains usable surface detail.
-    detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "medium",
+    // A room is a camera-planning environment, not a thumbnail asset. Keep
+    // lower settings as explicit operator overrides, but make Apple's full
+    // reconstruction the baseline for faithful geometry and texture detail.
+    detail = process.env.STROMAN_APPLE_RECONSTRUCTION_DETAIL ?? "full",
     gltfpack = process.env.STROMAN_GLTFPACK_BIN ??
       path.join(process.cwd(), "node_modules/.bin/gltfpack"),
   } = {},
@@ -112,8 +112,8 @@ export async function runApplePipeline(
     throw new Error("The Apple reconstruction engine requires macOS.");
   }
   if (!executable) throw new Error("STROMAN_APPLE_PHOTOGRAMMETRY_BIN is required.");
-  if (!new Set(["reduced", "medium"]).has(detail)) {
-    throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced or medium.");
+  if (!new Set(["reduced", "medium", "full"]).has(detail)) {
+    throw new Error("STROMAN_APPLE_RECONSTRUCTION_DETAIL must be reduced, medium, or full.");
   }
   const appleOutput = path.join(workspace, "apple-output");
   let reportedComplete = false;
