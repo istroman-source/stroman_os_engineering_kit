@@ -89,6 +89,7 @@ export function serializeDecision(view: DecisionView) {
     id: view.id,
     projectId: view.projectId,
     question: view.question,
+    context: view.context,
     options: view.options.map((option) => ({
       id: option.id,
       label: option.label,
@@ -98,8 +99,11 @@ export function serializeDecision(view: DecisionView) {
       ? {
           recommendedOptionId: view.advisory.recommendedOptionId,
           rationale: view.advisory.rationale,
+          tradeoff: view.advisory.tradeoff,
+          uncertainty: view.advisory.uncertainty,
           confidence: view.advisory.confidence,
           evidence: view.advisory.evidence.map((entry) => ({
+            evidenceReferenceId: entry.evidenceReferenceId,
             sourceLabel: entry.sourceLabel,
             observation: entry.observation,
             relevance: entry.relevance,

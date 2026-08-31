@@ -205,14 +205,17 @@ export function ShotPlanningSpace({
   proposal,
   busy,
   onSave,
+  onPromote,
 }: {
   initial: ShotPlanningState | null;
   proposal: ShotPlanningState;
   busy: boolean;
   onSave: (state: ShotPlanningState) => Promise<void>;
+  onPromote?: (shot: SpatialShotState) => Promise<void>;
 }) {
   const [state, setState] = useState<ShotPlanningState>(initial ?? proposal);
   const [savedMessage, setSavedMessage] = useState("");
+  const [promoting, setPromoting] = useState<string | null>(null);
   const shot = state.activeShot;
   const update = (patch: Partial<SpatialShotState>) =>
     setState((current) => ({
@@ -334,7 +337,12 @@ export function ShotPlanningSpace({
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = `${shot.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "shot-plan"}.txt`;
+    anchor.download = `${
+      shot.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "shot-plan"
+    }.txt`;
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -884,16 +892,30 @@ export function ShotPlanningSpace({
                 <Info label="Light" value={saved.light} />
                 <Info label="Look" value={saved.look || "Not yet specified"} />
                 <Info label="Sound" value={saved.sound} />
-                <Info
-                  label="Production notes"
-                  value={saved.productionNotes || "None recorded"}
-                />
+                <Info label="Production notes" value={saved.productionNotes || "None recorded"} />
                 <Info label="Why" value={saved.rationale} />
                 {saved.directionTitle ? (
                   <Info
                     label="Creative direction"
                     value={`${saved.directionTitle} — ${saved.directionRationale ?? saved.rationale}`}
                   />
+                ) : null}
+                {onPromote ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={promoting === saved.id}
+                    onClick={async () => {
+                      setPromoting(saved.id);
+                      try {
+                        await onPromote(saved);
+                      } finally {
+                        setPromoting(null);
+                      }
+                    }}
+                  >
+                    {promoting === saved.id ? "Creating decision…" : "Make shot a decision"}
+                  </Button>
                 ) : null}
               </div>
             </article>

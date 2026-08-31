@@ -403,6 +403,27 @@ export class InMemoryDecisionRepository extends FailableStore implements Decisio
     this.guard();
     updateInto(this.store, decision);
   }
+
+  async markForReview(
+    projectId: ProjectId,
+    originStages: readonly Decision["context"]["originStage"][],
+    reason: string,
+  ): Promise<void> {
+    this.guard();
+    for (const [id, decision] of this.store) {
+      if (
+        decision.projectId !== projectId ||
+        !originStages.includes(decision.context.originStage) ||
+        decision.context.needsReview
+      )
+        continue;
+      this.store.set(id, {
+        ...decision,
+        context: { ...decision.context, needsReview: true, reviewReason: reason },
+        lockVersion: decision.lockVersion + 1,
+      });
+    }
+  }
 }
 
 export class InMemoryMemoryRepository extends FailableStore implements MemoryRepository {

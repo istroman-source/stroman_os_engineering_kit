@@ -9,6 +9,7 @@ import {
   type ShotPlanningState,
   type LocationWorkspaceState,
   type SpatialSetPieceState,
+  type SpatialShotState,
 } from "@/domain/creative";
 import { Button } from "@/ui/primitives/button";
 import type { Analysis } from "./creative-api";
@@ -265,7 +266,7 @@ function Spine({
             }
           />
         </div>
-        <div className="mt-5 rounded-md bg-muted/50 p-4">
+        <div className="bg-muted/50 mt-5 rounded-md p-4">
           <p className="text-xs font-semibold tracking-wide uppercase">Basis for this proposal</p>
           <ul className="mt-2 space-y-2">
             {(recommendation.basis ?? []).map((item) => (
@@ -461,6 +462,7 @@ export function BlueprintView({
   onUploadScoutPhotos,
   onCorrection,
   onShotPlanning,
+  onPromoteShot,
   onUploadLocation,
   onGetLocationReconstruction,
   onStartLocationReconstruction,
@@ -479,6 +481,7 @@ export function BlueprintView({
   onUploadScoutPhotos: (files: readonly File[]) => Promise<void>;
   onCorrection: (statement: string, replacesClaimId: string | null) => Promise<void>;
   onShotPlanning: (state: ShotPlanningState) => Promise<void>;
+  onPromoteShot?: (shot: SpatialShotState) => Promise<void>;
   onUploadLocation?: (input: {
     file: File;
     name: string;
@@ -664,6 +667,7 @@ export function BlueprintView({
                   proposal={recommendedSpatialShot(analysis)}
                   busy={busy}
                   onSave={onShotPlanning}
+                  onPromote={onPromoteShot}
                 />
               </div>
             </details>

@@ -2,11 +2,13 @@ import { err, ok, type Result } from "@/lib/result";
 import {
   type Advisory,
   createDecision as createDecisionAggregate,
+  type DecisionContextInput,
   DecisionId,
   type DecisionOptionInput,
   type DecisionRepository,
 } from "@/domain/decision";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
+import type { EvidenceReferenceRepository } from "@/domain/evidence";
 import { type DomainError, makeConfidence } from "@/domain/shared";
 import { attempt } from "../shared/attempt";
 import { ensureOwner } from "../shared/authorization";
@@ -18,6 +20,7 @@ import { type AdvisoryEvidenceInput, type DecisionView, toDecisionView } from ".
 export interface ProposeDecisionDeps {
   readonly projects: ProjectRepository;
   readonly decisions: DecisionRepository;
+  readonly evidenceReferences: EvidenceReferenceRepository;
   readonly ids: IdGenerator;
   readonly clock: Clock;
 }
@@ -25,6 +28,8 @@ export interface ProposeDecisionDeps {
 export interface AdvisoryInput {
   readonly recommendedOptionId?: string | null;
   readonly rationale: string;
+  readonly tradeoff?: string | null;
+  readonly uncertainty?: string | null;
   readonly confidence: number;
   readonly evidence?: readonly AdvisoryEvidenceInput[];
 }
@@ -35,6 +40,7 @@ export interface ProposeDecisionInput {
   readonly question: string;
   readonly options: readonly DecisionOptionInput[];
   readonly advisory?: AdvisoryInput;
+  readonly context?: DecisionContextInput;
 }
 
 export type ProposeDecisionResult = Result<
@@ -55,6 +61,21 @@ export async function proposeDecision(
   const authorized = ensureOwner(input.actorId, project.ownerId, "decision.propose");
   if (!authorized.ok) return authorized;
 
+  for (const entry of input.advisory?.evidence ?? []) {
+    if (!entry.evidenceReferenceId) continue;
+    const evidenceLoad = await attempt("evidenceReference.findById", () =>
+      deps.evidenceReferences.findById(entry.evidenceReferenceId!),
+    );
+    if (!evidenceLoad.ok) return evidenceLoad;
+    if (
+      !evidenceLoad.value ||
+      evidenceLoad.value.ownerId !== input.actorId ||
+      evidenceLoad.value.projectId !== input.projectId
+    ) {
+      return err(new NotFoundError("EvidenceReference", entry.evidenceReferenceId));
+    }
+  }
+
   let advisory: Advisory | null = null;
   if (input.advisory) {
     const confidence = makeConfidence(input.advisory.confidence);
@@ -62,8 +83,11 @@ export async function proposeDecision(
     advisory = {
       recommendedOptionId: input.advisory.recommendedOptionId ?? null,
       rationale: input.advisory.rationale,
+      tradeoff: input.advisory.tradeoff ?? null,
+      uncertainty: input.advisory.uncertainty ?? null,
       confidence: confidence.value,
       evidence: (input.advisory.evidence ?? []).map((entry) => ({
+        evidenceReferenceId: entry.evidenceReferenceId ?? null,
         sourceLabel: entry.sourceLabel,
         observation: entry.observation,
         relevance: entry.relevance,
@@ -77,6 +101,7 @@ export async function proposeDecision(
     question: input.question,
     options: input.options,
     advisory,
+    context: input.context,
     now: deps.clock.now(),
   });
   if (!decision.ok) return decision;

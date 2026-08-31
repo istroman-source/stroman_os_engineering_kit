@@ -91,6 +91,7 @@ export type RecordEvaluationRequest = z.infer<typeof RecordEvaluationRequest>;
 
 const AdvisoryEvidenceInput = z
   .object({
+    evidenceReferenceId: z.string().min(1).max(200).nullish(),
     sourceLabel: z.string().min(1).max(200),
     observation: z.string().min(1).max(2000),
     relevance: z.string().min(1).max(2000),
@@ -101,6 +102,8 @@ const AdvisoryInput = z
   .object({
     recommendedOptionId: z.string().min(1).max(200).nullish(),
     rationale: z.string().min(1).max(2000),
+    tradeoff: z.string().min(1).max(2000).nullish(),
+    uncertainty: z.string().min(1).max(2000).nullish(),
     confidence: z.number().finite(),
     evidence: z.array(AdvisoryEvidenceInput).max(20).optional(),
   })
@@ -123,6 +126,15 @@ export const ProposeDecisionRequest = z
       .min(2)
       .max(50),
     advisory: AdvisoryInput.optional(),
+    context: z
+      .object({
+        originStage: z.enum(["MANUAL", "DEVELOP", "BUILD", "EDIT"]),
+        artifactKind: z.enum(["MANUAL", "CREATIVE_DIRECTION", "SHOT_PLAN", "EDIT_RECOMMENDATION"]),
+        artifactId: z.string().min(1).max(200).nullish(),
+        artifactVersion: z.number().int().positive().nullish(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 export type ProposeDecisionRequest = z.infer<typeof ProposeDecisionRequest>;

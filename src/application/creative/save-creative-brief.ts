@@ -11,6 +11,7 @@ import {
 } from "@/domain/creative";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
 import type { DomainError } from "@/domain/shared";
+import type { DecisionRepository } from "@/domain/decision";
 import { attempt, attemptUpdate } from "../shared/attempt";
 import { ensureOwner } from "../shared/authorization";
 import type { Clock, IdGenerator } from "../shared";
@@ -24,6 +25,7 @@ import {
 export interface SaveCreativeBriefDeps extends DevelopCreativeBlueprintDeps {
   readonly projects: ProjectRepository;
   readonly creativeBriefs: CreativeBriefRepository;
+  readonly decisions: DecisionRepository;
   readonly ids: IdGenerator;
   readonly clock: Clock;
 }
@@ -93,6 +95,14 @@ export async function saveCreativeBrief(
     );
     if (!saved.ok) return saved;
     brief = { ...brief, lockVersion: brief.lockVersion + 1 };
+    const marked = await attempt("decision.markForReview", () =>
+      deps.decisions.markForReview(
+        input.projectId,
+        ["DEVELOP", "BUILD", "EDIT"],
+        "Project intent changed after this decision was recorded.",
+      ),
+    );
+    if (!marked.ok) return marked;
   }
 
   return ok({ brief: toCreativeBriefView(brief), blueprint: developed.value });

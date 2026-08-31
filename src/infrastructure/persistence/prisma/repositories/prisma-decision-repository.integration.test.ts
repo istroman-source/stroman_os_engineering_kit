@@ -9,6 +9,7 @@ import {
   DecisionId,
 } from "@/domain/decision";
 import { OwnerId, ProjectId } from "@/domain/project";
+import { EvidenceReferenceId } from "@/domain/evidence";
 import { type Confidence, makeConfidence } from "@/domain/shared";
 import { PrismaDecisionRepository } from "@/infrastructure/persistence/prisma";
 import { createTestPrisma, resetDatabase } from "@test/db/integration-helpers";
@@ -32,6 +33,12 @@ function proposed(): Decision {
       { id: "a", label: "Cold open" },
       { id: "b", label: "Interview open" },
     ],
+    context: {
+      originStage: "BUILD",
+      artifactKind: "SHOT_PLAN",
+      artifactId: "shot-1",
+      artifactVersion: 2,
+    },
     now: T0,
   });
   if (!result.ok) throw result.error;
@@ -85,16 +92,48 @@ describe("PrismaDecisionRepository", () => {
     expect(loaded.options).toHaveLength(2);
     expect(loaded.selectedOptionId).toBeNull();
     expect(loaded.advisory).toBeNull();
+    expect(loaded.context).toMatchObject({
+      originStage: "BUILD",
+      artifactKind: "SHOT_PLAN",
+      artifactId: "shot-1",
+      artifactVersion: 2,
+      needsReview: false,
+    });
   });
 
   it("persists advisory without deciding", async () => {
+    await prisma.mediaAsset.create({
+      data: {
+        id: "media_AAAAAAA1",
+        ownerId: "usr_AAAAAAAA",
+        projectId: "proj_AAAAAAA1",
+        fileName: "frame-source.mp4",
+        mediaType: "video/mp4",
+        byteSize: 100,
+        contentHash: "sha256:decision-evidence",
+        createdAt: T0,
+      },
+    });
+    await prisma.evidenceReference.create({
+      data: {
+        id: "evref_AAAAAAA1",
+        ownerId: "usr_AAAAAAAA",
+        projectId: "proj_AAAAAAA1",
+        provenanceKind: "MEDIA_ASSET",
+        mediaAssetId: "media_AAAAAAA1",
+        createdAt: T0,
+      },
+    });
     await repo.insert(proposed());
     const withAdvisory = attachAdvisory(await load(), {
       recommendedOptionId: "a",
       rationale: "AI prefers A",
+      tradeoff: "Less intimacy",
+      uncertainty: "Location access may change",
       confidence: conf(0.9),
       evidence: [
         {
+          evidenceReferenceId: EvidenceReferenceId.unsafe("evref_AAAAAAA1"),
           sourceLabel: "Client brief",
           observation: "Wants a fast hook",
           relevance: "Cold open is faster",
@@ -108,6 +147,11 @@ describe("PrismaDecisionRepository", () => {
     expect(loaded.advisory?.recommendedOptionId).toBe("a");
     expect(loaded.advisory?.evidence).toHaveLength(1);
     expect(loaded.advisory?.evidence[0]?.sourceLabel).toBe("Client brief");
+    expect(loaded.advisory?.evidence[0]?.evidenceReferenceId).toBe("evref_AAAAAAA1");
+    expect(loaded.advisory).toMatchObject({
+      tradeoff: "Less intimacy",
+      uncertainty: "Location access may change",
+    });
     expect(loaded.status).toBe("PROPOSED");
     expect(loaded.selectedOptionId).toBeNull();
     expect(loaded.decidedBy).toBeNull();
@@ -130,6 +174,31 @@ describe("PrismaDecisionRepository", () => {
     expect(loaded.decidedBy).toBe(HUMAN);
     expect(loaded.decisionRationale).toContain("stakes");
     expect(await repo.listByProject(ProjectId.unsafe("proj_AAAAAAA1"))).toHaveLength(1);
+  });
+
+  it("marks affected staged decisions for review and preserves optimistic concurrency", async () => {
+    await repo.insert(proposed());
+    await repo.markForReview(
+      ProjectId.unsafe("proj_AAAAAAA1"),
+      ["BUILD"],
+      "The spatial plan changed.",
+    );
+    const flagged = await load();
+    expect(flagged.context).toMatchObject({
+      needsReview: true,
+      reviewReason: "The spatial plan changed.",
+    });
+    expect(flagged.lockVersion).toBe(2);
+
+    const reviewed = decide(flagged, {
+      selectedOptionId: "a",
+      decidedBy: HUMAN,
+      rationale: "The revised plan still supports this shot.",
+      now: T0,
+    });
+    if (!reviewed.ok) throw reviewed.error;
+    await repo.update(reviewed.value);
+    expect((await load()).context.needsReview).toBe(false);
   });
 
   it("rejects a duplicate/stale finalization — a second human cannot overwrite the decision", async () => {

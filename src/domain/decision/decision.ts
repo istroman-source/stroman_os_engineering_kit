@@ -1,6 +1,12 @@
 import { err, ok, type Result } from "@/lib/result";
-import { type Confidence, type DomainError, validateBoundedText } from "../shared";
+import {
+  type Confidence,
+  type DomainError,
+  InvalidValueError,
+  validateBoundedText,
+} from "../shared";
 import type { OwnerId, ProjectId } from "../project/project-id";
+import type { EvidenceReferenceId } from "../evidence";
 import type { DecisionId } from "./decision-id";
 import {
   DecisionAlreadyDecidedError,
@@ -10,6 +16,25 @@ import {
 } from "./decision-errors";
 
 export type DecisionStatus = "PROPOSED" | "DECIDED";
+export type DecisionOriginStage = "MANUAL" | "DEVELOP" | "BUILD" | "EDIT";
+export type DecisionArtifactKind =
+  "MANUAL" | "CREATIVE_DIRECTION" | "SHOT_PLAN" | "EDIT_RECOMMENDATION";
+
+export interface DecisionContext {
+  readonly originStage: DecisionOriginStage;
+  readonly artifactKind: DecisionArtifactKind;
+  readonly artifactId: string | null;
+  readonly artifactVersion: number | null;
+  readonly needsReview: boolean;
+  readonly reviewReason: string | null;
+}
+
+export interface DecisionContextInput {
+  readonly originStage: DecisionOriginStage;
+  readonly artifactKind: DecisionArtifactKind;
+  readonly artifactId?: string | null;
+  readonly artifactVersion?: number | null;
+}
 
 export interface DecisionOption {
   readonly id: string;
@@ -23,6 +48,7 @@ export interface DecisionOption {
  * text) so the reasoning behind a recommendation is legible to the human deciding.
  */
 export interface AdvisoryEvidence {
+  readonly evidenceReferenceId?: EvidenceReferenceId | null;
   readonly sourceLabel: string;
   readonly observation: string;
   readonly relevance: string;
@@ -36,6 +62,8 @@ export interface AdvisoryEvidence {
 export interface Advisory {
   readonly recommendedOptionId: string | null;
   readonly rationale: string;
+  readonly tradeoff?: string | null;
+  readonly uncertainty?: string | null;
   readonly confidence: Confidence;
   readonly evidence: readonly AdvisoryEvidence[];
 }
@@ -50,6 +78,7 @@ export interface Decision {
   readonly question: string;
   readonly options: readonly DecisionOption[];
   readonly advisory: Advisory | null;
+  readonly context: DecisionContext;
   readonly status: DecisionStatus;
   readonly selectedOptionId: string | null;
   readonly decidedBy: OwnerId | null;
@@ -75,6 +104,7 @@ export interface CreateDecisionInput {
   readonly question: string;
   readonly options: readonly DecisionOptionInput[];
   readonly advisory?: Advisory | null;
+  readonly context?: DecisionContextInput;
   readonly now: Date;
 }
 
@@ -103,6 +133,16 @@ export function createDecision(input: CreateDecisionInput): Result<Decision, Dom
   if (advisory?.recommendedOptionId != null && !hasOption(options, advisory.recommendedOptionId)) {
     return err(new UnknownOptionError(advisory.recommendedOptionId));
   }
+  const rawArtifactId = input.context?.artifactId?.trim() || null;
+  const validatedArtifactId = rawArtifactId
+    ? validateBoundedText(rawArtifactId, { label: "Affected artifact", max: 200 })
+    : null;
+  if (validatedArtifactId && !validatedArtifactId.ok) return validatedArtifactId;
+  const artifactId = validatedArtifactId?.value ?? null;
+  const artifactVersion = input.context?.artifactVersion ?? null;
+  if (artifactVersion !== null && (!Number.isSafeInteger(artifactVersion) || artifactVersion < 1)) {
+    return err(new InvalidValueError("Artifact version must be a positive integer"));
+  }
 
   return {
     ok: true,
@@ -112,6 +152,14 @@ export function createDecision(input: CreateDecisionInput): Result<Decision, Dom
       question: question.value,
       options,
       advisory,
+      context: {
+        originStage: input.context?.originStage ?? "MANUAL",
+        artifactKind: input.context?.artifactKind ?? "MANUAL",
+        artifactId,
+        artifactVersion,
+        needsReview: false,
+        reviewReason: null,
+      },
       status: "PROPOSED",
       selectedOptionId: null,
       decidedBy: null,
@@ -168,6 +216,7 @@ export function decide(decision: Decision, input: DecideInput): Result<Decision,
 
   return ok({
     ...decision,
+    context: { ...decision.context, needsReview: false, reviewReason: null },
     status: "DECIDED",
     selectedOptionId: input.selectedOptionId,
     decidedBy: input.decidedBy,

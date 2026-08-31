@@ -98,6 +98,14 @@ export function DecisionDetail({
   const optionLabel = (id: string | null): string =>
     (id && decision.options.find((option) => option.id === id)?.label) || "—";
   const statusLabel = decision.status === "DECIDED" ? "Decided" : "Still choosing";
+  const originLabel =
+    decision.context?.originStage === "DEVELOP"
+      ? "Develop recommendation"
+      : decision.context?.originStage === "BUILD"
+        ? "Build recommendation"
+        : decision.context?.originStage === "EDIT"
+          ? "Edit recommendation"
+          : "Filmmaker-created choice";
 
   return (
     <div className="flex flex-col gap-6">
@@ -109,8 +117,23 @@ export function DecisionDetail({
           ← Workspace
         </Link>
         <h2 className="mt-1 text-2xl font-semibold tracking-tight">{decision.question}</h2>
-        <span className="text-muted-foreground text-xs">{statusLabel}</span>
+        <span className="text-muted-foreground text-xs">
+          {statusLabel} · {originLabel}
+        </span>
       </div>
+
+      {decision.context?.needsReview ? (
+        <section
+          role="status"
+          className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-4"
+        >
+          <h2 className="text-sm font-semibold">Upstream work changed</h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {decision.context.reviewReason ??
+              "Review this choice against the current project before relying on it."}
+          </p>
+        </section>
+      ) : null}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-semibold">Choices you’re weighing</h2>
@@ -213,6 +236,18 @@ function AdvisorySection({
           {Math.round(decision.advisory.confidence * 100)}% confidence
         </p>
         <p className="text-muted-foreground text-sm">{decision.advisory.rationale}</p>
+        {decision.advisory.tradeoff ? (
+          <p className="text-muted-foreground text-sm">
+            <span className="text-foreground font-medium">Tradeoff:</span>{" "}
+            {decision.advisory.tradeoff}
+          </p>
+        ) : null}
+        {decision.advisory.uncertainty ? (
+          <p className="text-muted-foreground text-sm">
+            <span className="text-foreground font-medium">Uncertainty:</span>{" "}
+            {decision.advisory.uncertainty}
+          </p>
+        ) : null}
         <div className="mt-1 flex flex-col gap-2">
           <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
             Supporting evidence
@@ -228,6 +263,14 @@ function AdvisorySection({
                   <span className="text-muted-foreground block text-xs">
                     Why it matters: {entry.relevance}
                   </span>
+                  {entry.evidenceReferenceId ? (
+                    <Link
+                      className="text-primary mt-2 inline-flex text-xs underline-offset-4 hover:underline"
+                      href={`/projects/${decision.projectId}/materials#analysis`}
+                    >
+                      Inspect canonical source in Materials
+                    </Link>
+                  ) : null}
                 </li>
               ))}
             </ul>

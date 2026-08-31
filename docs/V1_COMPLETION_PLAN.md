@@ -196,12 +196,23 @@ authoritative edit decision without generic AI narration.
 
 ## Phase 8 — unified decision engine
 
-- [ ] Define one recommendation-to-decision contract shared by Develop, Build, and Edit.
-- [ ] Link advisory evidence to canonical evidence references where source material exists.
-- [ ] Support keep/revise/reject/defer semantics while preserving immutable final selection.
-- [ ] Record rationale, tradeoff, confidence/uncertainty, decision owner, and affected artifact.
-- [ ] Show when an upstream intent/evidence change makes a decision worth revisiting.
-- [ ] Cover ownership, concurrency, provenance, and no-AI-decision invariants.
+- [x] Define one recommendation-to-decision contract shared by Develop, Build, and Edit.
+- [x] Link advisory evidence to canonical evidence references where source material exists.
+- [x] Support keep/revise/reject/defer semantics while preserving immutable final selection.
+- [x] Record rationale, tradeoff, confidence/uncertainty, decision owner, and affected artifact.
+- [x] Show when an upstream intent/evidence change makes a decision worth revisiting.
+- [x] Cover ownership, concurrency, provenance, and no-AI-decision invariants.
+
+Implemented locally: Develop directions, saved Build shots, and Edit recommendations now use one
+recommendation-to-decision contract. Every generated proposal provides explicit keep, revise,
+reject, and defer paths; alternatives remain optional proposals and only the authenticated owner can
+finalize a selection with an immutable rationale. Decisions record their originating stage, affected
+artifact and version, structured tradeoff and uncertainty, and canonical evidence identifiers.
+Changes to project intent, planning, or source analysis conservatively mark affected choices for
+review, and an explicit human decision clears that warning. Ownership, evidence provenance,
+optimistic concurrency, stale-choice behavior, and the invariant that advisory output never decides
+are covered across domain, application, UI, HTTP, and fresh-PostgreSQL persistence tests. All 30
+migrations apply cleanly in the verified fresh-database path.
 
 **Acceptance:** consequential recommendations end in an inspectable human choice, not a transient
 card or model answer.

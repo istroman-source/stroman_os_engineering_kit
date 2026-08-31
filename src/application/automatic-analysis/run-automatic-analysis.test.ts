@@ -7,6 +7,7 @@ import {
   startAnalysisRun,
 } from "@/application/analysis";
 import type { GroundedEditorialAnalyzer } from "@/domain/analysis";
+import { createDecision, DecisionId } from "@/domain/decision";
 import { createEvidenceReference, EvidenceReferenceId } from "@/domain/evidence";
 import {
   createMediaAsset,
@@ -186,6 +187,36 @@ describe("runAutomaticAnalysis", () => {
       projectId: PROJECT,
     });
     expect(latest.ok && latest.value.run.version).toBe(2);
+  });
+
+  it("flags prior edit decisions when source evidence is reanalyzed", async () => {
+    const deps = setup();
+    seedTranscript(deps);
+    const decision = createDecision({
+      id: DecisionId.unsafe("dec_EDITSTALE1"),
+      projectId: PROJECT,
+      question: "Use this edit recommendation?",
+      options: [
+        { id: "keep", label: "Keep" },
+        { id: "reject", label: "Reject" },
+      ],
+      context: {
+        originStage: "EDIT",
+        artifactKind: "EDIT_RECOMMENDATION",
+        artifactVersion: 1,
+      },
+      now: NOW,
+    });
+    if (!decision.ok) throw decision.error;
+    deps.decisions.seed(decision.value);
+
+    const result = await runAutomaticAnalysis(deps, { actorId: OWNER, projectId: PROJECT });
+
+    expect(result.ok).toBe(true);
+    expect((await deps.decisions.findById(decision.value.id))?.context).toMatchObject({
+      needsReview: true,
+      reviewReason: expect.stringContaining("Source evidence or analysis changed"),
+    });
   });
 
   it("combines the latest transcript and visual runs without reviving stale findings", async () => {

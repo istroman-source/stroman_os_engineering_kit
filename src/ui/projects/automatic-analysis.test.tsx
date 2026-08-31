@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { proposeDecision } from "@/ui/decisions/decisions-api";
+import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 import { AutomaticAnalysis } from "./automatic-analysis";
 
-vi.mock("@/ui/decisions/decisions-api", () => ({ proposeDecision: vi.fn() }));
+vi.mock("@/ui/decisions/decisions-api", () => ({ proposeRecommendationDecision: vi.fn() }));
 
 beforeEach(() => {
-  vi.mocked(proposeDecision).mockReset();
+  vi.mocked(proposeRecommendationDecision).mockReset();
 });
 
 afterEach(() => {
@@ -74,7 +74,7 @@ describe("AutomaticAnalysis", () => {
   });
 
   it("promotes an edit recommendation into an open human decision", async () => {
-    vi.mocked(proposeDecision).mockResolvedValue({
+    vi.mocked(proposeRecommendationDecision).mockResolvedValue({
       data: { id: "decision-1" } as never,
       etag: '"decision:1"',
     });
@@ -114,18 +114,20 @@ describe("AutomaticAnalysis", () => {
     await screen.findByRole("heading", { name: "Hold the reveal" });
     await user.click(screen.getAllByRole("button", { name: "Make this a decision" })[0]!);
 
-    expect(proposeDecision).toHaveBeenCalledWith(
+    expect(proposeRecommendationDecision).toHaveBeenCalledWith(
       expect.objectContaining({
         projectId: "proj_1",
-        options: expect.arrayContaining([
-          expect.objectContaining({ id: "use-recommendation" }),
-          expect.objectContaining({ id: "alternative-recommendation-1" }),
-          expect.objectContaining({ id: "reject-recommendation" }),
-        ]),
-        advisory: expect.objectContaining({
-          recommendedOptionId: "use-recommendation",
+        context: {
+          originStage: "EDIT",
+          artifactKind: "EDIT_RECOMMENDATION",
+          artifactId: "rec-1",
+          artifactVersion: 2,
+        },
+        recommendation: expect.objectContaining({
           confidence: 0.72,
+          evidence: [expect.objectContaining({ evidenceReferenceId: "evidence-1" })],
         }),
+        alternatives: [expect.objectContaining({ label: "Reveal the result first" })],
       }),
     );
     expect(await screen.findByRole("link", { name: "Review this decision" })).toHaveAttribute(

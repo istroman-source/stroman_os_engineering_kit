@@ -1,5 +1,6 @@
 import { attachAdvisory } from "@/application/decision";
 import { DecisionId } from "@/domain/decision";
+import { EvidenceReferenceId } from "@/domain/evidence";
 import { getApiContext } from "@/server/composition";
 import { authenticateRequest } from "@/server/auth";
 import {
@@ -22,8 +23,15 @@ export const POST = apiRoute<{ decisionId: string }>(async ({ req, params, reque
     decisionId,
     recommendedOptionId: body.recommendedOptionId ?? null,
     rationale: body.rationale,
+    tradeoff: body.tradeoff ?? null,
+    uncertainty: body.uncertainty ?? null,
     confidence: body.confidence,
-    evidence: body.evidence,
+    evidence: body.evidence?.map((entry) => ({
+      ...entry,
+      evidenceReferenceId: entry.evidenceReferenceId
+        ? parsePathId(entry.evidenceReferenceId, EvidenceReferenceId.parse)
+        : null,
+    })),
     expectedVersion,
   });
   return sendResult(result, {

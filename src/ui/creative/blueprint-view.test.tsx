@@ -79,8 +79,9 @@ describe("BlueprintView", () => {
 
   it("seeds the spatial workspace from this project and saves the exact edited camera state", async () => {
     const onShotPlanning = vi.fn().mockResolvedValue(undefined);
+    const onPromoteShot = vi.fn().mockResolvedValue(undefined);
     const user = userEvent.setup();
-    render(<BlueprintView {...props({ onShotPlanning })} />);
+    render(<BlueprintView {...props({ onShotPlanning, onPromoteShot })} />);
     await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
 
     expect(
@@ -100,9 +101,7 @@ describe("BlueprintView", () => {
     });
     await user.selectOptions(screen.getByRole("combobox", { name: "Aspect ratio" }), "9:16");
     await user.selectOptions(screen.getByRole("combobox", { name: "Camera movement" }), "PUSH");
-    await user.click(
-      screen.getByText(/refine action, craft, and production notes/i),
-    );
+    await user.click(screen.getByText(/refine action, craft, and production notes/i));
     await user.clear(screen.getByLabelText("Look"));
     await user.type(screen.getByLabelText("Look"), "Cool dawn into one warm practical.");
     await user.clear(screen.getByLabelText("Production notes"));
@@ -130,6 +129,14 @@ describe("BlueprintView", () => {
     expect(screen.getByRole("button", { name: /download shot plan/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /print shot plan/i })).toBeInTheDocument();
     expect(screen.getByText(/never a crop/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Make shot a decision" }));
+    expect(onPromoteShot).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: saved.activeShot.id,
+        version: 1,
+        camera: expect.objectContaining({ focalLengthMm: 52, aspectRatio: "9:16" }),
+      }),
+    );
   });
 
   it("preserves separately authored horizontal and vertical saved setups", async () => {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/ui/primitives/button";
-import { proposeDecision } from "@/ui/decisions/decisions-api";
+import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 
 interface AnalysisResult {
   run: { id: string; version: number; status: string };
@@ -306,39 +306,35 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
     setPromoting(recommendation.id);
     setError(null);
     try {
-      const decision = await proposeDecision({
+      const decision = await proposeRecommendationDecision({
         projectId,
         question: `Should “${recommendation.title}” guide the next edit pass?`.slice(0, 500),
-        options: [
-          {
-            id: "use-recommendation",
-            label: recommendation.title.slice(0, 200),
-            rationale: recommendation.rationale.slice(0, 2000),
-          },
-          ...(result?.recommendations ?? [])
-            .filter((candidate) => candidate.id !== recommendation.id)
-            .slice(0, 3)
-            .map((candidate, index) => ({
-              id: `alternative-recommendation-${index + 1}`,
-              label: candidate.title.slice(0, 200),
-              rationale: candidate.rationale.slice(0, 2000),
-            })),
-          {
-            id: "revise-recommendation",
-            label: "Revise this approach",
-            rationale: "Keep the underlying opportunity but change how it shapes the edit.",
-          },
-          {
-            id: "reject-recommendation",
-            label: "Do not use this approach",
-            rationale: "Reject the proposal without silently turning advice into a decision.",
-          },
-        ],
-        advisory: {
-          recommendedOptionId: "use-recommendation",
-          rationale: recommendation.rationale.slice(0, 2000),
-          confidence: recommendation.confidence,
+        context: {
+          originStage: "EDIT",
+          artifactKind: "EDIT_RECOMMENDATION",
+          artifactId: recommendation.id,
+          artifactVersion: result?.run.version ?? null,
         },
+        recommendation: {
+          label: recommendation.title,
+          rationale: recommendation.rationale.slice(0, 2000),
+          tradeoff: "Committing to this approach may reduce space for other supported structures.",
+          uncertainty:
+            "Revisit this recommendation if fuller or contradictory source material changes the evidence pattern.",
+          confidence: recommendation.confidence,
+          evidence: recommendation.evidenceReferenceIds.map((evidenceReferenceId, index) => ({
+            evidenceReferenceId,
+            sourceLabel: `Cited source ${index + 1}`,
+            observation: "Source material cited by this edit recommendation.",
+            relevance: recommendation.rationale.slice(0, 2000),
+          })),
+        },
+        alternatives: (result?.recommendations ?? [])
+          .filter((candidate) => candidate.id !== recommendation.id)
+          .map((candidate) => ({
+            label: candidate.title,
+            rationale: candidate.rationale,
+          })),
       });
       setDecisionLinks((current) => ({ ...current, [recommendation.id]: decision.data.id }));
     } catch (caught) {

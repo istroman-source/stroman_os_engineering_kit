@@ -208,16 +208,27 @@ export async function completeAnalysisRun(
     if (!value.ok) throw value.error;
     return value.value;
   });
+  // Mark dependent edit choices first. If this conservative review marker fails,
+  // do not persist a completed analysis that the decision layer never heard about.
+  // A later result-write failure can only leave choices asking for extra review,
+  // never leave a superseded choice looking current.
+  const marked = await attempt("decision.markForReview", () =>
+    deps.decisions.markForReview(
+      completed.value.projectId,
+      ["EDIT"],
+      "Source evidence or analysis changed after this edit decision was recorded.",
+    ),
+  );
+  if (!marked.ok) return marked;
   const saved = await attemptUpdate("analysisRun.saveResult", () =>
     deps.analyses.saveResult(completed.value, outputValues, recommendationValues),
   );
-  return saved.ok
-    ? ok({
-        run: toAnalysisRunView(completed.value),
-        outputs: outputValues.map(toAnalysisOutputView),
-        recommendations: recommendationValues.map(toAnalysisRecommendationView),
-      })
-    : saved;
+  if (!saved.ok) return saved;
+  return ok({
+    run: toAnalysisRunView(completed.value),
+    outputs: outputValues.map(toAnalysisOutputView),
+    recommendations: recommendationValues.map(toAnalysisRecommendationView),
+  });
 }
 
 export async function getAnalysisRun(

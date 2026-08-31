@@ -13,7 +13,10 @@ import { createProject, makeProjectName, OwnerId, ProjectId } from "@/domain/pro
 import { OptimisticConcurrencyError } from "@/lib/errors";
 import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes";
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
-import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repositories";
+import {
+  InMemoryDecisionRepository,
+  InMemoryProjectRepository,
+} from "../../../test/adapters/in-memory-repositories";
 import {
   InMemorySourceImportRepository,
   InMemorySourceStorage,
@@ -89,6 +92,7 @@ function fixture() {
   return {
     projects,
     creativeBriefs: new InMemoryCreativeBriefRepository(),
+    decisions: new InMemoryDecisionRepository(),
     locationReconstructions: new Jobs(),
     locationReconstructionProvider: new Provider(),
     locationGeometryInspector: {

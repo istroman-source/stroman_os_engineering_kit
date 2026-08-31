@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyzeWorkspace } from "./analyze-workspace";
 import { analyzeProject, getAnalysis, getIntentHistory } from "./creative-api";
-import { proposeDecision } from "@/ui/decisions/decisions-api";
+import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 import { creativeAnalysisFixture } from "./creative-test-fixtures";
 
 const { replaceMock, routerMock } = vi.hoisted(() => {
@@ -19,7 +19,7 @@ vi.mock("./creative-api", () => ({
   getIntentHistory: vi.fn(),
   analyzeProject: vi.fn(),
 }));
-vi.mock("@/ui/decisions/decisions-api", () => ({ proposeDecision: vi.fn() }));
+vi.mock("@/ui/decisions/decisions-api", () => ({ proposeRecommendationDecision: vi.fn() }));
 vi.mock("@/ui/auth/api-client", () => ({
   errorStatus: (err: { status?: number }) => err?.status,
   friendlyError: (err: { message?: string }) => err?.message ?? "error",
@@ -31,7 +31,7 @@ beforeEach(() => {
   vi.mocked(analyzeProject).mockReset();
   vi.mocked(getIntentHistory).mockReset();
   vi.mocked(getIntentHistory).mockResolvedValue([]);
-  vi.mocked(proposeDecision).mockReset();
+  vi.mocked(proposeRecommendationDecision).mockReset();
   routerMock.push.mockReset();
 });
 
@@ -90,7 +90,7 @@ describe("AnalyzeWorkspace", () => {
 
   it("creates a traceable open choice from the recommended direction", async () => {
     vi.mocked(getAnalysis).mockResolvedValue(creativeAnalysisFixture());
-    vi.mocked(proposeDecision).mockResolvedValue({
+    vi.mocked(proposeRecommendationDecision).mockResolvedValue({
       data: { id: "dec_direction" },
       etag: '"decision:1"',
     } as never);
@@ -100,26 +100,25 @@ describe("AnalyzeWorkspace", () => {
     await user.click(await screen.findByRole("button", { name: /turn this into a choice/i }));
 
     await waitFor(() =>
-      expect(proposeDecision).toHaveBeenCalledWith(
+      expect(proposeRecommendationDecision).toHaveBeenCalledWith(
         expect.objectContaining({
           projectId: "proj_1",
           question: expect.stringContaining("Which creative direction"),
-          options: expect.arrayContaining([
-            expect.objectContaining({ id: "direction-1", label: "The first quiet bite" }),
-            expect.objectContaining({ id: "develop-another-direction" }),
-          ]),
-          advisory: expect.objectContaining({
-            recommendedOptionId: "direction-1",
+          context: expect.objectContaining({
+            originStage: "DEVELOP",
+            artifactKind: "CREATIVE_DIRECTION",
+          }),
+          recommendation: expect.objectContaining({
+            label: "The first quiet bite",
             confidence: 0.78,
             evidence: expect.arrayContaining([
               expect.objectContaining({ sourceLabel: "Audience and emotional job" }),
             ]),
           }),
+          alternatives: expect.any(Array),
         }),
       ),
     );
-    expect(routerMock.push).toHaveBeenCalledWith(
-      "/projects/proj_1/decisions/dec_direction",
-    );
+    expect(routerMock.push).toHaveBeenCalledWith("/projects/proj_1/decisions/dec_direction");
   });
 });

@@ -49,6 +49,20 @@ enum DecisionStatus {
   DECIDED
 }
 
+enum DecisionOriginStage {
+  MANUAL
+  DEVELOP
+  BUILD
+  EDIT
+}
+
+enum DecisionArtifactKind {
+  MANUAL
+  CREATIVE_DIRECTION
+  SHOT_PLAN
+  EDIT_RECOMMENDATION
+}
+
 enum ReviewerType {
   HUMAN
   AI
@@ -569,6 +583,7 @@ model EvidenceReference {
   transcriptSegment TranscriptSegment?               @relation(fields: [transcriptDocumentId, transcriptSegmentId], references: [transcriptDocumentId, id], onDelete: Restrict)
   analysisOutputs   AnalysisOutputEvidence[]
   recommendations   AnalysisRecommendationEvidence[]
+  decisionEvidence  DecisionEvidence[]
 
   @@index([projectId, createdAt])
   @@index([mediaAssetId, createdAt])
@@ -863,19 +878,27 @@ model Lesson {
 /// A recorded creative decision. Human-authority fields (selected option, decided
 /// by, rationale) are stored separately from AI advisory fields.
 model Decision {
-  id                          String         @id
-  projectId                   String         @map("project_id")
+  id                          String               @id
+  projectId                   String               @map("project_id")
   question                    String
   status                      DecisionStatus
-  selectedOptionId            String?        @map("selected_option_id")
-  decidedBy                   String?        @map("decided_by")
-  decisionRationale           String?        @map("decision_rationale")
-  advisoryRecommendedOptionId String?        @map("advisory_recommended_option_id")
-  advisoryRationale           String?        @map("advisory_rationale")
-  advisoryConfidence          Float?         @map("advisory_confidence")
-  createdAt                   DateTime       @map("created_at") @db.Timestamptz(3)
-  decidedAt                   DateTime?      @map("decided_at") @db.Timestamptz(3)
-  lockVersion                 Int            @default(1) @map("lock_version")
+  originStage                 DecisionOriginStage  @default(MANUAL) @map("origin_stage")
+  artifactKind                DecisionArtifactKind @default(MANUAL) @map("artifact_kind")
+  artifactId                  String?              @map("artifact_id")
+  artifactVersion             Int?                 @map("artifact_version")
+  needsReview                 Boolean              @default(false) @map("needs_review")
+  reviewReason                String?              @map("review_reason")
+  selectedOptionId            String?              @map("selected_option_id")
+  decidedBy                   String?              @map("decided_by")
+  decisionRationale           String?              @map("decision_rationale")
+  advisoryRecommendedOptionId String?              @map("advisory_recommended_option_id")
+  advisoryRationale           String?              @map("advisory_rationale")
+  advisoryTradeoff            String?              @map("advisory_tradeoff")
+  advisoryUncertainty         String?              @map("advisory_uncertainty")
+  advisoryConfidence          Float?               @map("advisory_confidence")
+  createdAt                   DateTime             @map("created_at") @db.Timestamptz(3)
+  decidedAt                   DateTime?            @map("decided_at") @db.Timestamptz(3)
+  lockVersion                 Int                  @default(1) @map("lock_version")
 
   project                 Project                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
   options                 DecisionOption[]
@@ -883,6 +906,7 @@ model Decision {
   analysisRecommendations AnalysisRecommendation[]
 
   @@index([projectId])
+  @@index([projectId, originStage, needsReview])
   @@map("decisions")
 }
 
@@ -890,15 +914,18 @@ model Decision {
 /// decision aggregate (replaced wholesale when the advisory is attached), so it
 /// cascades with its decision. `position` preserves ordering.
 model DecisionEvidence {
-  decisionId  String @map("decision_id")
-  position    Int
-  sourceLabel String @map("source_label")
-  observation String
-  relevance   String
+  decisionId          String  @map("decision_id")
+  position            Int
+  evidenceReferenceId String? @map("evidence_reference_id")
+  sourceLabel         String  @map("source_label")
+  observation         String
+  relevance           String
 
-  decision Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  decision          Decision           @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  evidenceReference EvidenceReference? @relation(fields: [evidenceReferenceId], references: [id], onDelete: Restrict)
 
   @@id([decisionId, position])
+  @@index([evidenceReferenceId])
   @@map("decision_evidence")
 }
 

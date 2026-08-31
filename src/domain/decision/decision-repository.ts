@@ -1,5 +1,5 @@
 import type { ProjectId } from "../project/project-id";
-import type { Decision } from "./decision";
+import type { Decision, DecisionOriginStage } from "./decision";
 import type { DecisionId } from "./decision-id";
 
 export interface DecisionRepository {
@@ -13,4 +13,10 @@ export interface DecisionRepository {
    * `lockVersion`) — so a duplicate finalization cannot overwrite a valid decision.
    */
   update(decision: Decision): Promise<void>;
+  /** Flag affected recommendation decisions when their upstream artifact changes. */
+  markForReview(
+    projectId: ProjectId,
+    originStages: readonly DecisionOriginStage[],
+    reason: string,
+  ): Promise<void>;
 }
