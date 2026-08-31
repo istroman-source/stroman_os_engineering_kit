@@ -27,7 +27,7 @@ completion.
 - [x] Record complete, partial, broken, not-started, and deferred capability state in
   `docs/V1_CURRENT_STATE.md`.
 - [x] Record the ordered V1 execution and verification plan in this document.
-- [ ] Keep both documents current as findings, scope decisions, and acceptance evidence change.
+- [x] Keep both documents current as findings, scope decisions, and acceptance evidence change.
 
 ## Phase 1 — project foundation and recoverable state
 
@@ -56,7 +56,7 @@ a second owner cannot see or mutate it; stale writes do not overwrite current st
 - [x] Present one concise intent editor with progressive disclosure and explicit save/revision state.
 - [x] Preserve an inspectable revision history or durable memory record for consequential intent
   changes.
-- [ ] Compose current intent into Develop, Build, Edit, Review, decisions, and exports.
+- [x] Compose current intent into Develop, Build, Edit, Review, decisions, and exports.
 - [x] Cover migration, ownership, revision, concurrency, and legacy-project behavior.
 
 Implemented locally: structured intent and immutable revision snapshots now cross domain,
@@ -80,7 +80,7 @@ changed, and which current outputs used that intent.
   an observation, interpretation, recommendation, or decision.
 - [x] Surface uncertainty, missing coverage, and processing provenance without exposing system
   plumbing by default.
-- [ ] Add authorization, integrity, retry, reload, and browser-level regression coverage.
+- [x] Add authorization, integrity, retry, reload, and browser-level regression coverage.
 
 Implemented locally: every accepted upload now creates a durable processing receipt after its
 original bytes are retained; transient persistence failures become single-claim retryable records,
@@ -122,13 +122,13 @@ the filmmaker can accept, revise, reject, or defer it without losing context.
 
 ## Phase 5 — Build and authoritative shot planning
 
-- [ ] Connect approved story recommendations to editable shots with preserved rationale.
+- [x] Connect approved story recommendations to editable shots with preserved rationale.
 - [x] Verify camera, lens, height, aim, blocking, movement, light, look, sound, and production notes
   share one authoritative shot state.
 - [x] Verify separately authored 16:9 and 9:16 compositions; never treat a crop as a second plan.
 - [x] Ensure saving a viewer adjustment updates the storyboard and shooting information.
 - [x] Produce a concise, printable/shareable shot-plan artifact.
-- [ ] Add targeted state-transition, rendering-contract, and browser coverage.
+- [x] Add targeted state-transition, rendering-contract, and browser coverage.
 
 Implemented locally: the saved spatial shot is now the single production state for camera position,
 aim, lens, height, aspect ratio, support, movement, subject/blocking, action, light, look, sound,
@@ -150,7 +150,7 @@ why it serves the film, and how to execute it.
 - [x] Gate “ready” on usable evidence and honest geometry/coverage status.
 - [x] Produce a concise room shoot brief: usable views, observed constraints, estimates, unknowns,
   no-go areas, and filmmaker corrections.
-- [ ] Verify preserved-input retry, outage recovery, duplicate prevention, reload persistence, and
+- [x] Verify preserved-input retry, outage recovery, duplicate prevention, reload persistence, and
   project selection for all three input methods.
 - [x] Ensure incomplete/distorted reconstruction asks for actionable coverage or replacement instead
   of claiming a shootable room.
@@ -177,7 +177,7 @@ interpret warped or falsely precise geometry.
 - [x] Make counter-evidence and uncertainty visible for editorial interpretations.
 - [x] Promote edit recommendations and alternatives into durable decisions.
 - [x] Preserve empty-state success for insufficient signal and grounded literal evidence.
-- [ ] Add cross-source, contradiction, chatter-only, reload, and browser regression fixtures.
+- [x] Add cross-source, contradiction, chatter-only, reload, and browser regression fixtures.
 
 Implemented locally: every analysis run now records whether it came from transcript or sampled visual
 media. The project result selects the newest completed run for each source type, so a later visual
@@ -286,21 +286,29 @@ same authority and evidence rules.
 
 ## Phase 12 — reliability benchmark and final runtime gate
 
-- [ ] Run migrations against a fresh and an existing compatible database state.
-- [ ] Run typecheck, lint, formatting, OpenAPI validation, unit, real-PostgreSQL API/integration,
+- [x] Run migrations against a fresh and an existing compatible database state.
+- [x] Run typecheck, lint, formatting, OpenAPI validation, unit, real-PostgreSQL API/integration,
   worker, evaluation, Playwright, security, and production-build gates.
 - [ ] Exercise the complete authenticated intent → sources → analysis → decisions → review → export
   journey in the running app.
-- [ ] Exercise GLB, connected-Mac reconstruction, and regular-photo room inputs without paid
+- [x] Exercise GLB, connected-Mac reconstruction, and regular-photo room inputs without paid
   reconstruction.
-- [ ] Verify retry, reload, outage, duplicate, stale-write, cross-owner, and failure-reporting paths.
-- [ ] Capture reproducible evidence and exact human-testing instructions.
+- [x] Verify retry, reload, outage, duplicate, stale-write, cross-owner, and failure-reporting paths.
+- [x] Capture reproducible evidence and exact human-testing instructions.
+
+Local gate evidence is recorded in `V1_RELEASE_EVIDENCE.md`. All 30 migrations pass on a fresh
+database; the last two migrations also pass over a seeded compatible 28-migration database without
+changing existing decision or evidence meaning. The complete current Apple pipeline reconstructed a
+preserved 26-photo room at full detail and the application accepted its 12.3 MB GLB as an honestly
+estimated shootable room. That run exposed and closed a canonical-bounds double-scaling regression.
+The remaining unchecked item is intentionally the post-merge signed-in browser confirmation of the
+exact reviewed deployment.
 
 ## Phase 13 — final audit, independent review, and release report
 
-- [ ] Re-scan TODO/FIXME/HACK/placeholder/mock markers and classify every real V1 item as resolved,
+- [x] Re-scan TODO/FIXME/HACK/placeholder/mock markers and classify every real V1 item as resolved,
   accepted limitation, or explicit deferral.
-- [ ] Reconcile `V1_CURRENT_STATE.md`, this plan, OpenAPI, schema, migrations, and release notes with
+- [x] Reconcile `V1_CURRENT_STATE.md`, this plan, OpenAPI, schema, migrations, and release notes with
   the final implementation.
 - [ ] Freeze the exact final SHA and obtain independent Claude review of product meaning, runtime
   evidence, and implementation.
@@ -308,6 +316,11 @@ same authority and evidence rules.
 - [ ] Push through the established non-force PR/CI/merge process and verify post-merge main CI.
 - [ ] Publish the final V1 report with exact SHA, verification evidence, limitations, and human-test
   procedure.
+
+The marker scan contains no unresolved product TODO, FIXME, or HACK. Matches are intentional input
+placeholders, test mocks, historical build instructions, and honesty language that rejects anonymous
+placeholder visuals. Schema and both additive migrations match the final decision/evidence model;
+OpenAPI documents all 98 routes. Release evidence and the human-test procedure are current.
 
 ## Completion condition
 

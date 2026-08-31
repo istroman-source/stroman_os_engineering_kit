@@ -1,7 +1,10 @@
 # Stroman OS V1 current state
 
-Last audited: 2026-08-30  
+Last audited: 2026-08-31
+
 Audit baseline: `d023cb474448144cf963ec9891025cad57e3eba4`
+
+Functional implementation verified through: `4c8e9c0`
 
 This is the authoritative functional audit for the V1 completion pass. It describes what the
 running code can support, not what early milestone documents expected to exist. Older readiness
@@ -19,12 +22,12 @@ current product.
 
 ## Executive state
 
-Stroman OS already has a strong modular foundation: private authentication, owner-scoped projects,
-durable creative briefs, transcript and media intake, evidence-grounded transcript analysis,
-provider-neutral creative reasoning, editable visual planning, decisions, prepared rooms, and a
-Mac reconstruction worker. The missing V1 is not another platform rewrite. It is the functional
-connection between those capabilities: complete project state, structured intent, inspectable
-evidence, coherent recommendations and decisions, a human Review mode, and useful exports.
+The functional V1 decision loop is connected locally: private projects preserve structured intent,
+sources and evidence feed grounded analysis, Develop/Build/Edit recommendations enter one durable
+filmmaker-decision contract, Review exposes conflicts and missing coverage, and versioned exports
+carry the exact intent and decision state. Prepared GLB and photo rooms share an honest geometry
+gate, and the current Apple worker has completed a fresh 26-photo full-detail reconstruction without
+a paid service.
 
 No current finding justifies expanding the 3D/reconstruction system during this pass. Existing room
 work is retained and tested, but V1 effort goes to the filmmaking decision loop.
@@ -58,7 +61,7 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Some operational readiness documents still describe authentication and database models as absent;
   this is historical documentation drift, not a runtime defect.
 
-### 2. Project intent and creative memory — COMPLETE LOCALLY; DOWNSTREAM COMPOSITION PENDING
+### 2. Project intent and creative memory — COMPLETE LOCALLY
 
 **Complete**
 
@@ -80,14 +83,11 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   ownership, revision order, concurrency, legacy input, and prompt propagation have targeted
   automated coverage.
 
-**Missing for V1**
+Develop, Build, Edit, Review, decisions, and exports now consume the same current intent. The
+broader memory graph deliberately remains an internal foundation; V1 surfaces useful state through
+intent history and the Review packet rather than exposing graph plumbing.
 
-- Edit, unified decisions, Review, and exports must consume the same current intent snapshot as
-  those later V1 surfaces are completed.
-- The broader memory graph remains an internal foundation; V1 surfaces its useful state through
-  intent history and the later Review packet rather than exposing graph plumbing.
-
-### 3. Sources, evidence, and media understanding — PARTIAL
+### 3. Sources, evidence, and media understanding — COMPLETE LOCALLY
 
 **Complete**
 
@@ -116,11 +116,10 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Targeted domain/UI tests, repository integration tests, and real-PostgreSQL HTTP tests cover
   preservation, retry, reload representation, ownership, and terminal replacement behavior.
 
-**Missing for V1**
-
-- Transcript and sampled-frame understanding are separate paths; the primary analysis does not yet
-  synthesize both as one evidence set.
-- Source processing progress and recovery require stronger browser-level acceptance coverage.
+The current project result selects the newest completed transcript and sampled-frame analyses as one
+evidence-aware view. Cross-source gaps and contradictions remain visible instead of being flattened
+into false certainty. Final deployed-browser acceptance remains a release-environment gate, not an
+application implementation gap.
 
 ### 4. Develop — COMPLETE LOCALLY; CROSS-MODE RUNTIME GATE PENDING
 
@@ -154,7 +153,7 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Phase 11 verifies the contract across commercial, documentary, narrative, performance, and open
   fixtures; Phase 12 exercises the authenticated running promotion and human-decision journey.
 
-### 5. Build / shot planning — PARTIAL
+### 5. Build / shot planning — COMPLETE LOCALLY
 
 **Complete**
 
@@ -176,15 +175,12 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   lens state; the UI and tests explicitly reject describing one as a crop of the other.
 - Saved state produces concise downloadable text and printable shot-plan handoffs.
 
-**Missing for V1**
+Saved shots retain direction provenance and enter the same keep/revise/reject/defer decision
+contract as Develop and Edit. Exact shot state drives the viewer, storyboard, shooting card, and
+exports; separate 16:9 and 9:16 setups remain independently editable. Deployed-browser save/reload
+acceptance remains part of the final release gate.
 
-- The path from an approved story recommendation to an editable shot is not a single obvious
-  workflow.
-- Authenticated browser coverage must still prove save/reload, download/print, and both ratio paths.
-- The approved-decision link remains pending the unified recommendation/decision contract; current
-  shots retain recommendation provenance but do not falsely call it filmmaker approval.
-
-### 6. Space Scan / prepared rooms — PARTIAL (narrow V1 scope)
+### 6. Space Scan / prepared rooms — COMPLETE LOCALLY (narrow V1 scope)
 
 **Complete**
 
@@ -207,12 +203,12 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   planning viewer, optionally inspectable behind disclosure, and paired with an actionable request
   for overlapping coverage or a complete replacement GLB.
 
-**Missing for V1**
+The current Apple worker completed a fresh full-detail 26-photo reconstruction and produced a valid
+12.3 MB GLB. The application geometry inspector classified it as a shootable estimate with canonical
+3.1 m × 2.6 m × 3.2 m bounds; that run exposed and fixed a double-scaling defect before release.
+Authenticated deployed-browser selection and reload remain part of the final environment gate.
 
-- The three input paths still need the final authenticated runtime matrix from preserved input
-  through worker outage/retry, ready room, reload, and project selection.
-
-### 7. Analyze & Edit — PARTIAL
+### 7. Analyze & Edit — COMPLETE LOCALLY
 
 **Complete**
 
@@ -223,15 +219,11 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   prompts.
 - Insufficient evidence completes with informative empty states instead of inventing findings.
 
-**Missing for V1**
+Transcript excerpts and sampled frames open through one evidence inspector. Edit now leads with an
+intent–evidence bridge and can promote recommendations into the same durable human-decision workflow
+as Develop and Build, while empty and insufficient-signal analyses remain honest successes.
 
-- Analysis needs one evidence inspector spanning transcript excerpts and sampled frames.
-- Edit recommendations are not yet promoted into the same durable human-decision workflow used by
-  Choices.
-- The intent–evidence comparison is distributed across sections rather than summarized as “intended,
-  captured, supported, missing, next”.
-
-### 8. Decision engine and filmmaker authority — PARTIAL
+### 8. Decision engine and filmmaker authority — COMPLETE LOCALLY
 
 **Complete**
 
@@ -240,45 +232,39 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Human decisions are authoritative; AI advisory cannot decide on the filmmaker’s behalf.
 - A plain-language Choices UI supports proposing, comparing, and recording consequential choices.
 
-**Missing for V1**
+Develop, Build, and Edit share one recommendation-to-decision contract with explicit keep, revise,
+reject, and defer paths. Advisories can link canonical evidence references, upstream changes flag
+stale choices for review, and only the authenticated filmmaker can finalize the immutable selection
+and rationale. Review and exports summarize those exact choices.
 
-- Edit recommendations are not yet one-click inputs to a durable Decision; Develop recommendations
-  now are.
-- Advisory evidence is manually entered text rather than linked to canonical EvidenceReference
-  records.
-- Decision status is binary; V1 needs explicit keep/revise/reject/defer behavior without obscuring
-  the existing immutable final-selection rule.
-- Decisions are not summarized in Review or export artifacts.
+### 9. Human Review mode — COMPLETE LOCALLY
 
-### 9. Human Review mode — NOT STARTED
+The project Review destination assembles current intent, sources, literal evidence, interpretations,
+recommendations, accepted/rejected/deferred/open choices, stale-choice conflicts, missing coverage,
+and unresolved actions. It keeps internal evaluator plumbing out of the filmmaker experience and
+links back to the exact artifact that needs revision.
 
-- Evaluation, rubric, and review-run domain/application/persistence/API foundations exist.
-- There is no project Review screen that assembles intent, evidence, recommendations, decisions,
-  unresolved conflicts, missing coverage, and export readiness for a filmmaker.
-- The existing evaluation APIs are infrastructure, not a usable product review experience.
-
-### 10. Export and handoff — PARTIAL
+### 10. Export and handoff — COMPLETE LOCALLY
 
 **Complete**
 
 - Provider-neutral prompt handoff can be copied or downloaded as text.
 - Wideframe is honestly labeled as manual-only; no unsupported synchronization is claimed.
 
-**Missing for V1**
+Private no-store downloads now include treatment, shot plan, edit brief, decision record, review
+packet, structured JSON, and spreadsheet-safe CSV. A deterministic snapshot identifier binds every
+handoff to exact intent and decision versions, and the generator rejects a concurrent torn snapshot.
 
-- No consolidated treatment, shot list, decision record, review packet, or evidence-aware edit brief.
-- No structured JSON/CSV export for durable downstream use.
-- No acceptance test proves exported content matches the currently approved project state.
-
-### 11. Cross-mode behavior — PARTIAL
+### 11. Cross-mode behavior — COMPLETE FOR CURRENT HOSTED EVIDENCE
 
 - Project type is persisted and hosted calibration fixtures cover several modes.
 - The product doctrine requires materially different reasoning for commercial, documentary,
   narrative, performance, and ambiguous/open projects.
-- V1 lacks one stable, automated cross-mode acceptance suite that checks behavioral difference,
-  evidence discipline, and filmmaker usefulness end to end.
+- A stable evaluation suite revalidates the actual hosted artifacts for all five modes against the
+  current schema, semantic gate, scene/craft requirements, evidence discipline, and independently
+  composed horizontal/vertical frames.
 
-### 12. Reliability, security, and release operations — PARTIAL
+### 12. Reliability, security, and release operations — AUTOMATED GATES COMPLETE LOCALLY
 
 **Complete**
 
@@ -287,10 +273,11 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Exact-SHA independent review and post-merge verification have been used for recent releases.
 - Worker jobs preserve inputs across worker outages and prevent duplicate claims.
 
-**Missing or externally bounded**
+**Externally bounded release checks**
 
-- Signed-in browser coverage is incomplete across the full intent → source → analysis → decision →
-  review → export workflow.
+- The full authenticated intent → source → analysis → decision → Review → export journey passes
+  through real HTTP handlers and fresh PostgreSQL; the deployed signed-in browser still must confirm
+  the exact reviewed SHA after the established merge/deploy process.
 - Public beta still requires durable OTP abuse limiting, staging/restore rehearsal, production object
   storage/pooling confirmation, legal/privacy operations, CSP, HSTS verification, and a manual WCAG
   audit. These are release-environment blockers, not reasons to leave V1 application behavior
@@ -316,7 +303,6 @@ will block V1 readiness until resolved.
 
 ## V1 release statement
 
-Stroman OS is **not yet FUNCTIONALLY COMPLETE V1**. It becomes eligible only after the completion
-plan is closed, the authenticated running workflow demonstrates the connected decision loop, all
-required verification is green, and independent review approves the exact final SHA with zero
-BLOCKING and IMPORTANT findings.
+The application is **FUNCTIONALLY COMPLETE V1 LOCALLY**. `READY FOR HUMAN TESTING` remains withheld
+until independent review approves the exact final SHA, CI passes, the established non-force merge
+and deployment complete, and the signed-in deployed browser confirms the connected workflow.
