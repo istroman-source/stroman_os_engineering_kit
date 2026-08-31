@@ -176,6 +176,9 @@ const finitePoint = (value: unknown): value is SpatialPoint => {
   );
 };
 
+const oneOf = <T extends string>(value: unknown, options: readonly T[]): value is T =>
+  typeof value === "string" && options.includes(value as T);
+
 export function isShotPlanningState(value: unknown): value is ShotPlanningState {
   if (!value || typeof value !== "object") return false;
   const state = value as Partial<ShotPlanningState>;
@@ -191,33 +194,53 @@ export function isShotPlanningState(value: unknown): value is ShotPlanningState 
       ) &&
       typeof item.camera?.focalLengthMm === "number" &&
       (item.camera?.aspectRatio === "16:9" || item.camera?.aspectRatio === "9:16") &&
+      oneOf(item.camera?.support, ["LOCKED", "HANDHELD", "GIMBAL", "DOLLY"] as const) &&
       Boolean(
         item.subject && finitePoint(item.subject.position) && finitePoint(item.subject.endPosition),
       ) &&
+      typeof item.subject?.id === "string" &&
+      typeof item.subject?.label === "string" &&
+      typeof item.subject?.facingDegrees === "number" &&
+      oneOf(item.subject?.pose, ["SEATED", "STANDING"] as const) &&
       Boolean(
         item.movement && finitePoint(item.movement.start) && finitePoint(item.movement.end),
       ) &&
+      oneOf(item.movement?.kind, ["LOCKED", "PUSH", "PULL", "TRACK", "ARC", "HANDHELD"] as const) &&
       Array.isArray(item.setPieces) &&
       item.setPieces.every(
         (setPiece) =>
           Boolean(setPiece) &&
           typeof setPiece.id === "string" &&
           typeof setPiece.label === "string" &&
+          oneOf(setPiece.kind, [
+            "DESK",
+            "TABLE",
+            "COUNTER",
+            "DOOR",
+            "WINDOW",
+            "OBJECT",
+            "PRACTICAL",
+          ] as const) &&
           finitePoint(setPiece.position) &&
           typeof setPiece.width === "number" &&
+          setPiece.width > 0 &&
           typeof setPiece.height === "number" &&
+          setPiece.height > 0 &&
           typeof setPiece.depth === "number" &&
+          setPiece.depth > 0 &&
           typeof setPiece.color === "string",
       ) &&
       typeof item.action === "string" &&
       typeof item.blocking === "string" &&
+      typeof item.lightColor === "string" &&
       typeof item.light === "string" &&
       (item.look === undefined || typeof item.look === "string") &&
       typeof item.sound === "string" &&
       (item.productionNotes === undefined || typeof item.productionNotes === "string") &&
       (item.directionTitle === undefined || typeof item.directionTitle === "string") &&
       (item.directionRationale === undefined || typeof item.directionRationale === "string") &&
-      typeof item.rationale === "string"
+      typeof item.rationale === "string" &&
+      oneOf(item.geometryConfidence, ["OBSERVED", "ESTIMATED", "FILMMAKER_CONFIRMED"] as const)
     );
   };
   return (
@@ -233,7 +256,11 @@ export function renderShotPlanText(
   projectTitle: string,
   shots: readonly SpatialShotState[],
 ): string {
-  const lines = [projectTitle.trim() || "Stroman OS shot plan", "", `Saved setups: ${shots.length}`];
+  const lines = [
+    projectTitle.trim() || "Stroman OS shot plan",
+    "",
+    `Saved setups: ${shots.length}`,
+  ];
   for (const [index, shot] of shots.entries()) {
     const camera = shot.camera;
     lines.push(

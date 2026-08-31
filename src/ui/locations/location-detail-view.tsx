@@ -292,11 +292,7 @@ export function LocationDetailView({
               onClick={() => void run(() => startPreparedLocationReconstruction(location.id))}
             >
               <RotateCcw />{" "}
-              {busy
-                ? "Starting…"
-                : location.status === "FAILED"
-                  ? "Try build again"
-                  : "Build room"}
+              {busy ? "Starting…" : location.status === "FAILED" ? "Try build again" : "Build room"}
             </Button>
           ) : null}
           {location.environment ? (
@@ -400,7 +396,10 @@ function RoomShootBrief({
     ["Do not plan here yet", brief.noGoAreas],
   ] as const;
   return (
-    <section className="border-border bg-card rounded-2xl border p-6 shadow-sm" aria-labelledby="shoot-brief">
+    <section
+      className="border-border bg-card rounded-2xl border p-6 shadow-sm"
+      aria-labelledby="shoot-brief"
+    >
       <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
         Room shoot brief
       </p>

@@ -23,10 +23,7 @@ export interface InnovationCase {
   readonly executionRisk: string;
 }
 
-export type DirectionBasisKind =
-  | "SUPPLIED_INTENT"
-  | "SOURCE_EVIDENCE"
-  | "CREATIVE_HYPOTHESIS";
+export type DirectionBasisKind = "SUPPLIED_INTENT" | "SOURCE_EVIDENCE" | "CREATIVE_HYPOTHESIS";
 
 export interface DirectionBasis {
   readonly kind: DirectionBasisKind;

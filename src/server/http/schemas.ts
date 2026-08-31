@@ -289,8 +289,12 @@ const SpatialShotRequest = z
     blocking: z.string().max(2000),
     lightColor: z.string().regex(/^#[0-9a-f]{6}$/i),
     light: z.string().max(2000),
+    look: z.string().max(2000).optional(),
     sound: z.string().max(2000),
+    productionNotes: z.string().max(2000).optional(),
     rationale: z.string().max(2000),
+    directionTitle: z.string().max(200).optional(),
+    directionRationale: z.string().max(2000).optional(),
     geometryConfidence: z.enum(["OBSERVED", "ESTIMATED", "FILMMAKER_CONFIRMED"]),
   })
   .strict();

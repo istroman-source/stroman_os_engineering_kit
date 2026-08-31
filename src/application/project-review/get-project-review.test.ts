@@ -121,9 +121,9 @@ describe("getProjectReview", () => {
         },
         decisions: { listByProject: vi.fn().mockResolvedValue([decision]) },
         sourceImports: {
-          listByProject: vi.fn().mockResolvedValue([
-            { status: "COMPLETED", sourceKind: "TRANSCRIPT" },
-          ]),
+          listByProject: vi
+            .fn()
+            .mockResolvedValue([{ status: "COMPLETED", sourceKind: "TRANSCRIPT" }]),
         },
       }),
       { actorId: OWNER, projectId: PROJECT },
@@ -134,9 +134,7 @@ describe("getProjectReview", () => {
       missingCoverage: [],
       unresolvedActions: [],
     });
-    expect(result.ok && result.value.evidence[0]?.evidenceReferenceIds).toEqual([
-      "evref_REVIEW1",
-    ]);
+    expect(result.ok && result.value.evidence[0]?.evidenceReferenceIds).toEqual(["evref_REVIEW1"]);
     expect(result.ok && result.value.recommendations[0]?.decisionId).toBe("dec_REVIEW001");
   });
 

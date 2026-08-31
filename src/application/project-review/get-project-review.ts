@@ -6,7 +6,11 @@ import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
 import type { SourceImportRepository } from "@/domain/source-import";
 import { attempt } from "@/application/shared/attempt";
 import { ensureOwner } from "@/application/shared/authorization";
-import { NotAuthorizedError, NotFoundError, type RepositoryError } from "@/application/shared/errors";
+import {
+  NotAuthorizedError,
+  NotFoundError,
+  type RepositoryError,
+} from "@/application/shared/errors";
 import { toDecisionView, type DecisionView } from "@/application/decision";
 
 export interface ProjectReviewView {
@@ -85,7 +89,9 @@ export async function getProjectReview(
   deps: GetProjectReviewDeps,
   input: { actorId: OwnerId; projectId: ProjectId },
 ): Promise<Result<ProjectReviewView, NotFoundError | NotAuthorizedError | RepositoryError>> {
-  const projectLoad = await attempt("project.findById", () => deps.projects.findById(input.projectId));
+  const projectLoad = await attempt("project.findById", () =>
+    deps.projects.findById(input.projectId),
+  );
   if (!projectLoad.ok) return projectLoad;
   if (!projectLoad.value) return err(new NotFoundError("Project", input.projectId));
   const owned = ensureOwner(input.actorId, projectLoad.value.ownerId, "project.review");
@@ -143,8 +149,7 @@ export async function getProjectReview(
         decisionId:
           (recommendation.decisionId as string | null) ??
           (decisions.find((decision) => decision.context.artifactId === recommendation.id)?.id as
-            | string
-            | undefined) ??
+            string | undefined) ??
           null,
       })),
     );
@@ -173,7 +178,10 @@ export async function getProjectReview(
       .map((recommendation) => `Review recommendation: ${recommendation.title}`),
   ];
   const isEmpty =
-    !briefLoad.value && importLoad.value.length === 0 && decisions.length === 0 && evidence.length === 0;
+    !briefLoad.value &&
+    importLoad.value.length === 0 &&
+    decisions.length === 0 &&
+    evidence.length === 0;
   const readiness = isEmpty
     ? "EMPTY"
     : conflicts.length > 0 || missingCoverage.length > 0 || unresolvedActions.length > 0

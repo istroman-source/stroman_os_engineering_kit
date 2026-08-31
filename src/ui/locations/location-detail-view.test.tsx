@@ -49,7 +49,9 @@ const ready = {
     shootBrief: {
       usability: "SHOOTABLE_ESTIMATE" as const,
       usableViews: ["Explore inside the recovered bounds."],
-      observedConstraints: ["Recovered bounds span approximately 4.0m wide × 3.0m high × 5.0m deep."],
+      observedConstraints: [
+        "Recovered bounds span approximately 4.0m wide × 3.0m high × 5.0m deep.",
+      ],
       estimates: ["Scale and dimensions are estimates."],
       unknowns: ["Doors and windows are not confirmed."],
       noGoAreas: ["Outside the mesh remains unverified."],

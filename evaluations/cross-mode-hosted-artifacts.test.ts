@@ -64,9 +64,9 @@ describe("stored hosted cross-mode release evidence", () => {
     expect(distinct(developments.map((item) => item.directionDecision.title))).toBe(true);
     expect(distinct(developments.map((item) => item.directionDecision.storyEngine))).toBe(true);
     expect(distinct(developments.map((item) => item.directionDecision.formalStrategy))).toBe(true);
-    expect(
-      distinct(developments.map((item) => item.sceneHypotheses[0]?.action ?? "missing")),
-    ).toBe(true);
+    expect(distinct(developments.map((item) => item.sceneHypotheses[0]?.action ?? "missing"))).toBe(
+      true,
+    );
     expect(
       distinct(developments.map((item) => item.sceneHypotheses[0]?.craft.camera ?? "missing")),
     ).toBe(true);
@@ -97,7 +97,9 @@ describe("stored hosted cross-mode release evidence", () => {
         expect(shot.horizontal.id).not.toBe(shot.vertical.id);
         expect(shot.horizontal.executionStrip).toHaveLength(2);
         expect(shot.vertical.executionStrip).toHaveLength(2);
-        expect(shot.horizontal.figures.length + shot.horizontal.setPieces.length).toBeGreaterThan(0);
+        expect(shot.horizontal.figures.length + shot.horizontal.setPieces.length).toBeGreaterThan(
+          0,
+        );
         expect(shot.vertical.figures.length + shot.vertical.setPieces.length).toBeGreaterThan(0);
       }
     }

@@ -161,7 +161,9 @@ export function ProjectReview({ projectId }: { projectId: string }) {
             <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               Current intent
             </p>
-            <h3 className="mt-2 text-xl font-semibold">{review.intent?.title ?? "Intent is open"}</h3>
+            <h3 className="mt-2 text-xl font-semibold">
+              {review.intent?.title ?? "Intent is open"}
+            </h3>
           </div>
           <Link className="text-primary text-sm underline-offset-4 hover:underline" href={base}>
             Revise the idea
@@ -199,7 +201,10 @@ export function ProjectReview({ projectId }: { projectId: string }) {
               {review.sources.completed} of {review.sources.total} sources are usable.
             </p>
           </div>
-          <Link className="text-primary text-sm underline-offset-4 hover:underline" href={`${base}/materials`}>
+          <Link
+            className="text-primary text-sm underline-offset-4 hover:underline"
+            href={`${base}/materials`}
+          >
             Inspect footage & notes
           </Link>
         </div>
@@ -253,7 +258,10 @@ export function ProjectReview({ projectId }: { projectId: string }) {
               {review.decisionSummary.deferred} deferred · {review.decisionSummary.unresolved} open
             </p>
           </div>
-          <Link className="text-primary text-sm underline-offset-4 hover:underline" href={`${base}/decisions`}>
+          <Link
+            className="text-primary text-sm underline-offset-4 hover:underline"
+            href={`${base}/decisions`}
+          >
             Work through choices
           </Link>
         </div>
@@ -281,14 +289,18 @@ export function ProjectReview({ projectId }: { projectId: string }) {
         )}
       </section>
 
-      {review.conflicts.length > 0 || review.missingCoverage.length > 0 || review.unresolvedActions.length > 0 ? (
+      {review.conflicts.length > 0 ||
+      review.missingCoverage.length > 0 ||
+      review.unresolvedActions.length > 0 ? (
         <section className="border-border bg-card rounded-2xl border p-5 sm:p-6">
           <h3 className="text-lg font-semibold">Before handoff</h3>
           {review.conflicts.length > 0 ? (
             <div className="mt-4">
               <h4 className="text-sm font-medium">Choices worth revisiting</h4>
               <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
-                {review.conflicts.map((item) => <li key={item}>{item}</li>)}
+                {review.conflicts.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           ) : null}
@@ -296,7 +308,9 @@ export function ProjectReview({ projectId }: { projectId: string }) {
             <div className="mt-4">
               <h4 className="text-sm font-medium">Missing coverage</h4>
               <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
-                {review.missingCoverage.map((item) => <li key={item}>{item}</li>)}
+                {review.missingCoverage.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </div>
           ) : null}
@@ -306,7 +320,9 @@ export function ProjectReview({ projectId }: { projectId: string }) {
                 Open actions ({review.unresolvedActions.length})
               </summary>
               <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
-                {review.unresolvedActions.map((item) => <li key={item}>{item}</li>)}
+                {review.unresolvedActions.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
               </ul>
             </details>
           ) : null}

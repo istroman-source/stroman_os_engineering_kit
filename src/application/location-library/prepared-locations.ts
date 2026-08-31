@@ -146,11 +146,7 @@ export async function completePreparedLocationReconstruction(
     throw new AppError("VALIDATION", "The Mac worker returned unusable room geometry.");
   }
   const contentHash = `sha256:${createHash("sha256").update(input.bytes).digest("hex")}`;
-  const shootBrief = assessLocationGeometry(
-    geometry.bounds,
-    geometry.scaleMetersPerUnit,
-    "PHOTOS",
-  );
+  const shootBrief = assessLocationGeometry(geometry.bounds, geometry.scaleMetersPerUnit, "PHOTOS");
   const existing = location.inputs.find(
     (item) => item.kind === "GEOMETRY" && item.contentHash === contentHash,
   );

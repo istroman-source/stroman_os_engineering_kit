@@ -102,7 +102,10 @@ function reviewMarkdown(review: ProjectReviewView, snapshotId: string): string {
     ...review.conflicts.map((item) => `- Revisit: ${oneLine(item)}`),
     ...review.unresolvedActions.map((item) => `- ${oneLine(item)}`),
   ];
-  return `${lines.filter((line, index, all) => line !== "" || all[index - 1] !== "").join("\n").trim()}\n`;
+  return `${lines
+    .filter((line, index, all) => line !== "" || all[index - 1] !== "")
+    .join("\n")
+    .trim()}\n`;
 }
 
 function treatmentMarkdown(
@@ -141,7 +144,10 @@ function treatmentMarkdown(
       .filter((decision) => decision.status === "DECIDED")
       .map((decision) => `- ${oneLine(decision.question)} — ${oneLine(decisionLabel(decision))}`),
   ];
-  return `${lines.filter((line, index, all) => line !== "" || all[index - 1] !== "").join("\n").trim()}\n`;
+  return `${lines
+    .filter((line, index, all) => line !== "" || all[index - 1] !== "")
+    .join("\n")
+    .trim()}\n`;
 }
 
 function shotPlanMarkdown(
@@ -179,7 +185,10 @@ function shotPlanMarkdown(
     ]),
     ...(visualShots.length === 0 ? ["No proposed coverage has been developed."] : []),
   ];
-  return `${lines.filter((line, index, all) => line !== "" || all[index - 1] !== "").join("\n").trim()}\n`;
+  return `${lines
+    .filter((line, index, all) => line !== "" || all[index - 1] !== "")
+    .join("\n")
+    .trim()}\n`;
 }
 
 function editBriefMarkdown(review: ProjectReviewView, snapshotId: string): string {
@@ -196,7 +205,9 @@ function editBriefMarkdown(review: ProjectReviewView, snapshotId: string): strin
     "",
     ...review.evidence
       .filter((item) => item.kind === "OBSERVATION")
-      .map((item) => `- ${oneLine(item.content)} [evidence: ${item.evidenceReferenceIds.join(", ")}]`),
+      .map(
+        (item) => `- ${oneLine(item.content)} [evidence: ${item.evidenceReferenceIds.join(", ")}]`,
+      ),
     "",
     "## Edit recommendations",
     "",
@@ -209,7 +220,9 @@ function editBriefMarkdown(review: ProjectReviewView, snapshotId: string): strin
     ...review.decisions
       .filter((decision) => decision.context.originStage === "EDIT")
       .map((decision) => `- ${oneLine(decision.question)} — ${oneLine(decisionLabel(decision))}`),
-  ].join("\n").trim()}\n`;
+  ]
+    .join("\n")
+    .trim()}\n`;
 }
 
 function decisionRecordMarkdown(review: ProjectReviewView, snapshotId: string): string {
@@ -293,7 +306,19 @@ export async function getProjectExport(
   }
   if (input.kind === "decisions-csv") {
     const rows = [
-      ["snapshot_id", "decision_id", "question", "status", "selection", "rationale", "owner", "stage", "artifact", "artifact_version", "needs_review"],
+      [
+        "snapshot_id",
+        "decision_id",
+        "question",
+        "status",
+        "selection",
+        "rationale",
+        "owner",
+        "stage",
+        "artifact",
+        "artifact_version",
+        "needs_review",
+      ],
       ...reviewResult.value.decisions.map((decision) => [
         snapshotId,
         decision.id,

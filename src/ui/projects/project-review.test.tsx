@@ -85,7 +85,9 @@ describe("ProjectReview", () => {
   it("separates source facts from interpretations and makes decisions inspectable", async () => {
     const user = userEvent.setup();
     render(<ProjectReview projectId="proj_1" />);
-    expect(await screen.findByRole("heading", { name: "What the film currently is" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "What the film currently is" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("The subject pauses before answering.")).toBeInTheDocument();
     const interpretationSummary = screen.getByText(/See editorial interpretations/);
     expect(interpretationSummary.closest("details")).not.toHaveAttribute("open");
@@ -117,7 +119,9 @@ describe("ProjectReview", () => {
       etag: null,
     });
     render(<ProjectReview projectId="proj_1" />);
-    expect(await screen.findByRole("heading", { name: "There is nothing to review yet" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "There is nothing to review yet" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Develop the idea" })).toHaveAttribute(
       "href",
       "/projects/proj_1",

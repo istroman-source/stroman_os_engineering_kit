@@ -35,7 +35,9 @@ export function assessLocationGeometry(
     issues.push("The recovered room bounds are invalid or empty.");
   } else {
     if (height < 1.7 || height > 8) {
-      issues.push(`The estimated ${meters(height)} room height is not credible enough to plan from.`);
+      issues.push(
+        `The estimated ${meters(height)} room height is not credible enough to plan from.`,
+      );
     }
     if (horizontalMin < 1.2) {
       issues.push("One recovered floor dimension is too narrow to represent a complete room.");
