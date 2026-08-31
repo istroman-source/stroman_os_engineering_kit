@@ -20,6 +20,39 @@ function props(overrides: Record<string, unknown> = {}) {
 }
 
 describe("BlueprintView", () => {
+  it("visibly identifies offline fallback reasoning without exposing provider plumbing", () => {
+    render(<BlueprintView {...props()} />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Offline creative draft");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /transparent offline fallback, not hosted project-specific reasoning/i,
+    );
+    expect(screen.queryByText(/openai_api_key|deterministic_specialist/i)).not.toBeInTheDocument();
+  });
+
+  it("does not label hosted project-specific reasoning as an offline draft", () => {
+    const analysis = creativeAnalysisFixture();
+    render(
+      <BlueprintView
+        {...props({
+          analysis: {
+            ...analysis,
+            blueprint: {
+              ...analysis.blueprint,
+              development: {
+                ...analysis.blueprint.development,
+                reasoningSource: "HOSTED_REASONING",
+              },
+            },
+          },
+        })}
+      />,
+    );
+
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.queryByText("Offline creative draft")).not.toBeInTheDocument();
+  });
+
   it("defaults to a concise creative spine and one obvious next decision", () => {
     render(<BlueprintView {...props()} />);
     expect(

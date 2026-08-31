@@ -28,6 +28,9 @@ critique, and synthesis. A hosted reasoning adapter may supply the primary creat
 configured; deterministic logic remains valuable for offline operation, contract validation,
 semantic gates, safety, and reproducible regression fixtures. Deterministic output must never be
 marketed as equivalent to an unexercised hosted creative path.
+Production application composition validates and passes the runtime environment into the provider
+factory. Missing hosted credentials therefore stop production startup; deterministic reasoning must
+be selected explicitly for offline/test use and is never a silent deployment fallback.
 When deterministic logic cannot produce project-dependent physical scenes, it must fail closed and
 ask for the configured reasoning path rather than completing a polished template.
 

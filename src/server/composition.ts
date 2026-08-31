@@ -152,6 +152,7 @@ export interface ApiContext {
 }
 
 export function createApiContext(): ApiContext {
+  const env = getServerEnv();
   return {
     analyses: new PrismaAnalysisRepository(prisma),
     auditIntegrations: new PrismaAuditIntegrationRepository(prisma),
@@ -165,7 +166,10 @@ export function createApiContext(): ApiContext {
     identity: new PrismaIdentityRepository(prisma),
     privateBetaAccess: new PrismaPrivateBetaAccessRepository(prisma),
     creativeBriefs: new PrismaCreativeBriefRepository(prisma),
-    creativeReasoning: createCreativeReasoningProvider(),
+    // Route every application composition through the validated runtime
+    // environment. Production therefore cannot silently select the offline
+    // deterministic specialist when hosted reasoning is unavailable.
+    creativeReasoning: createCreativeReasoningProvider(env),
     locationReconstructions: new PrismaLocationReconstructionRepository(prisma),
     preparedLocations: new PrismaPreparedLocationRepository(prisma),
     preparedLocationReconstructions: new PrismaPreparedLocationReconstructionRepository(prisma),

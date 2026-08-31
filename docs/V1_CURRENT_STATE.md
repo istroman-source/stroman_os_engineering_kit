@@ -129,6 +129,9 @@ application implementation gap.
   alternatives, scenes, interview strategy, production thinking, and storyboard artifacts.
 - Creative reasoning is provider-neutral, with a hosted path and a deterministic offline/testing
   specialist.
+- Production composition validates hosted configuration and fails closed if it is unavailable;
+  explicit offline drafts are visibly labeled as fallback work before the filmmaker can mistake
+  them for hosted project-specific judgment.
 - Permanent doctrine rejects generic restatement, unsupported certainty, and fake spatial claims.
 - Storyboard frames, blocking, lighting, look, sound, and execution information are separately
   represented.

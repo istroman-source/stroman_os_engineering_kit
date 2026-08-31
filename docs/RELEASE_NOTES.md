@@ -19,6 +19,9 @@
   paid service. The resulting 12.3 MB GLB passed current application validation and exposed a
   double-scaling defect in room dimensions; canonical bounds are now reported exactly once with
   regression coverage.
+- Production creative reasoning now fails closed if hosted configuration is unavailable. Explicit
+  offline/test drafts remain supported but carry a visible filmmaker-facing fallback label instead
+  of appearing equivalent to hosted project-specific judgment.
 
 The candidate remains behind exact-SHA independent review, CI, established merge/deploy safeguards,
 and the final signed-in deployed-browser acceptance. Evidence and human-test steps are in

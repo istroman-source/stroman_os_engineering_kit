@@ -158,8 +158,8 @@ describe("OpenAiCreativeReasoningProvider", () => {
 });
 
 describe("creative reasoning provider composition", () => {
-  it("uses hosted reasoning when configured and deterministic reasoning offline", () => {
-    expect(createCreativeReasoningProvider({})).toBeInstanceOf(
+  it("uses hosted reasoning when configured and deterministic reasoning in a known local runtime", () => {
+    expect(createCreativeReasoningProvider({ NODE_ENV: "development" })).toBeInstanceOf(
       DeterministicCreativeReasoningProvider,
     );
     expect(
@@ -173,6 +173,16 @@ describe("creative reasoning provider composition", () => {
   it("fails closed when hosted reasoning is explicitly selected without a credential", () => {
     expect(() =>
       createCreativeReasoningProvider({ STROMAN_CREATIVE_REASONING_PROVIDER: "openai" }),
+    ).toThrow(CreativeReasoningError);
+  });
+
+  it("fails closed when runtime identity is missing or production auto mode lacks a credential", () => {
+    expect(() => createCreativeReasoningProvider({})).toThrow(CreativeReasoningError);
+    expect(() =>
+      createCreativeReasoningProvider({
+        NODE_ENV: "production",
+        STROMAN_CREATIVE_REASONING_PROVIDER: "auto",
+      }),
     ).toThrow(CreativeReasoningError);
   });
 });

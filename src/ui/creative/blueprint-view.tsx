@@ -543,6 +543,19 @@ export function BlueprintView({
         </Button>
       </header>
 
+      {analysis.blueprint.development.reasoningSource === "DETERMINISTIC_SPECIALIST" ? (
+        <aside
+          role="status"
+          className="rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3"
+        >
+          <p className="text-sm font-semibold">Offline creative draft</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            This is a transparent offline fallback, not hosted project-specific reasoning. Use it as
+            a working draft and reconnect creative reasoning before approving the direction.
+          </p>
+        </aside>
+      ) : null}
+
       {focus !== "story" ? (
         <section className="border-border rounded-lg border p-2" aria-label="Production stage">
           <p className="text-muted-foreground px-2 pt-1 text-[0.65rem] font-semibold tracking-wide uppercase">

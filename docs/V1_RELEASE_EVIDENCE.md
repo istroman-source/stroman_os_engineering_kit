@@ -18,7 +18,7 @@ It contains no credential values or private source images.
 | ESLint | Passed with two pre-existing test-only unused-parameter warnings |
 | Prettier | Passed |
 | OpenAPI 3.1 | Passed, 98 paths |
-| Unit/UI/worker suite | Passed, 713 tests |
+| Unit/UI/worker suite | Passed, 716 tests |
 | Real-PostgreSQL integration | Passed, 92 tests |
 | Real-PostgreSQL authenticated API | Passed, 98 tests |
 | Authentication | Passed, 48 unit/application plus 32 real-PostgreSQL API tests |
@@ -33,6 +33,12 @@ The authenticated API acceptance creates a project, saves Jimmy intent, retains 
 transcript, promotes a source-backed Edit recommendation into a filmmaker decision, records the
 human choice, verifies Review readiness, and downloads the exact versioned project snapshot through
 real HTTP handlers and a fresh PostgreSQL database.
+
+The first independent candidate review found one IMPORTANT honesty gap: an unconfigured hosted
+provider could silently fall back to an offline draft. The remediation routes application
+composition through validated production configuration, fails closed without hosted credentials,
+and visibly labels every explicitly selected offline creative draft without exposing credentials or
+provider plumbing. Regression coverage verifies both the fail-closed and filmmaker-facing states.
 
 ## Free connected-Mac evidence
 
