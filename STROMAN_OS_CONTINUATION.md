@@ -27,7 +27,7 @@ testing without weakening filmmaker authority, evidence integrity, security, or 
 
 - TypeScript, formatting, OpenAPI (98 paths), production build, and Playwright desktop/mobile smoke
   pass.
-- Full unit/UI/worker suite: 712/712 passed; real-PostgreSQL integration: 92/92; authenticated API:
+- Full unit/UI/worker suite: 713/713 passed; real-PostgreSQL integration: 92/92; authenticated API:
   98/98; cross-mode evaluation: 28/28; guarded autopilot: 57/57.
 - Fresh 30-migration deployment and seeded compatible 28→30 migration rehearsal pass.
 - Current full-detail Apple pipeline produced and application-validated a 12.3 MB GLB from 26

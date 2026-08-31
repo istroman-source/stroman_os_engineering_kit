@@ -18,7 +18,7 @@ It contains no credential values or private source images.
 | ESLint | Passed with two pre-existing test-only unused-parameter warnings |
 | Prettier | Passed |
 | OpenAPI 3.1 | Passed, 98 paths |
-| Unit/UI/worker suite | Passed, 712 tests |
+| Unit/UI/worker suite | Passed, 713 tests |
 | Real-PostgreSQL integration | Passed, 92 tests |
 | Real-PostgreSQL authenticated API | Passed, 98 tests |
 | Authentication | Passed, 48 unit/application plus 32 real-PostgreSQL API tests |
