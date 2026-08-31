@@ -241,7 +241,7 @@ export async function runMediaVisualAnalysis(
     return err(new InvalidValueError("Visual frame analysis requires a video import"));
   }
 
-  const created = await createAnalysisRun(deps, input);
+  const created = await createAnalysisRun(deps, { ...input, sourceKind: "VISUAL_MEDIA" });
   if (!created.ok) return created;
   const analysisRunId = created.value.id as never;
   const started = await startAnalysisRun(deps, { actorId: input.actorId, analysisRunId });

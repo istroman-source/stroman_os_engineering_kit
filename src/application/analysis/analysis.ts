@@ -11,6 +11,7 @@ import {
   startAnalysisRun as startRun,
   type AnalysisOutputKind,
   type AnalysisRepository,
+  type AnalysisRunSourceKind,
 } from "@/domain/analysis";
 import type { DecisionId, DecisionRepository } from "@/domain/decision";
 import type { EvidenceReferenceId, EvidenceReferenceRepository } from "@/domain/evidence";
@@ -47,7 +48,11 @@ export async function createAnalysisRun(
     ids: IdGenerator;
     clock: Clock;
   },
-  input: { actorId: OwnerId; projectId: ProjectId },
+  input: {
+    actorId: OwnerId;
+    projectId: ProjectId;
+    sourceKind?: AnalysisRunSourceKind;
+  },
 ) {
   const project = await loadOwnedProject(
     deps.projects,
@@ -65,6 +70,7 @@ export async function createAnalysisRun(
     ownerId: input.actorId,
     projectId: input.projectId,
     version: Math.max(0, ...listed.value.map((run) => run.version)) + 1,
+    sourceKind: input.sourceKind,
     now: deps.clock.now(),
   });
   if (!made.ok) return made;

@@ -171,13 +171,25 @@ interpret warped or falsely precise geometry.
 
 ## Phase 7 — Analyze & Edit completion
 
-- [ ] Synthesize transcript and visual observations through one evidence-aware project analysis.
-- [ ] Present the intent–evidence bridge: intended, captured, supported story, exceeded plan,
+- [x] Synthesize transcript and visual observations through one evidence-aware project analysis.
+- [x] Present the intent–evidence bridge: intended, captured, supported story, exceeded plan,
   missing, and next action.
-- [ ] Make counter-evidence and uncertainty visible for editorial interpretations.
-- [ ] Promote edit recommendations and alternatives into durable decisions.
-- [ ] Preserve empty-state success for insufficient signal and grounded literal evidence.
+- [x] Make counter-evidence and uncertainty visible for editorial interpretations.
+- [x] Promote edit recommendations and alternatives into durable decisions.
+- [x] Preserve empty-state success for insufficient signal and grounded literal evidence.
 - [ ] Add cross-source, contradiction, chatter-only, reload, and browser regression fixtures.
+
+Implemented locally: every analysis run now records whether it came from transcript or sampled visual
+media. The project result selects the newest completed run for each source type, so a later visual
+pass cannot erase current transcript findings and an empty transcript pass cannot revive stale
+claims. The Edit Engine now leads with a compact intent–evidence bridge covering intended outcome,
+captured facts, supported story, possible material beyond the brief, explicit gaps, and the next
+advisory action. Interpretations show scored uncertainty and a concrete counter-evidence check.
+Recommendations can become open owner-scoped decisions with alternate recommendations plus explicit
+revise and reject paths; no option is silently selected. Targeted domain, application, and UI tests
+pass (30 tests), and the analysis repository passes against a fresh local PostgreSQL database with
+all 28 migrations. The remaining fixture item is reserved for the complete contradiction/reload and
+authenticated browser matrix in Phase 12.
 
 **Acceptance:** the filmmaker can see what the material actually supports, inspect why, and make an
 authoritative edit decision without generic AI narration.

@@ -124,7 +124,11 @@ describe("runMediaVisualAnalysis", () => {
     });
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.run).toMatchObject({ status: "COMPLETED", version: 1 });
+    expect(result.value.run).toMatchObject({
+      status: "COMPLETED",
+      version: 1,
+      sourceKind: "VISUAL_MEDIA",
+    });
     expect(result.value.outputs.map((output) => output.content)).toEqual([
       "[OBSERVED @ 00:00.5] An intern writes on a yellow note.",
       "[OBSERVED @ 00:01.5] The desk drawer is visibly open and empty.",

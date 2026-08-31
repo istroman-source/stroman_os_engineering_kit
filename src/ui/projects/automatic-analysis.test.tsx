@@ -1,7 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { proposeDecision } from "@/ui/decisions/decisions-api";
 import { AutomaticAnalysis } from "./automatic-analysis";
+
+vi.mock("@/ui/decisions/decisions-api", () => ({ proposeDecision: vi.fn() }));
+
+beforeEach(() => {
+  vi.mocked(proposeDecision).mockReset();
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -57,9 +64,74 @@ describe("AutomaticAnalysis", () => {
     expect(screen.getByText("Source-backed")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Ideas to test" })).toBeInTheDocument();
     expect(screen.getByText(/Editorial interpretation · Story progression/i)).toBeInTheDocument();
+    expect(screen.getByText(/58% confidence/i)).toBeInTheDocument();
+    expect(screen.getByText(/What could challenge this:/i)).toHaveTextContent(
+      /omitted or later material/i,
+    );
     expect(screen.getByRole("heading", { name: "Your next creative choices" })).toBeInTheDocument();
     expect(screen.getByText(/never automatic creative decisions/i)).toBeInTheDocument();
     expect(screen.queryByText(/Source-backed moment:/i)).not.toBeInTheDocument();
+  });
+
+  it("promotes an edit recommendation into an open human decision", async () => {
+    vi.mocked(proposeDecision).mockResolvedValue({
+      data: { id: "decision-1" } as never,
+      etag: '"decision:1"',
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          ({
+            ok: true,
+            status: 200,
+            json: async () => ({
+              run: { id: "run-1", version: 2, status: "COMPLETED" },
+              outputs: [],
+              recommendations: [
+                {
+                  id: "rec-1",
+                  title: "Hold the reveal",
+                  rationale: "The cited material supports a delayed reveal.",
+                  confidence: 0.72,
+                  evidenceReferenceIds: ["evidence-1"],
+                },
+                {
+                  id: "rec-2",
+                  title: "Reveal the result first",
+                  rationale: "The result provides immediate visual orientation.",
+                  confidence: 0.66,
+                  evidenceReferenceIds: ["evidence-2"],
+                },
+              ],
+            }),
+          }) as Response,
+      ),
+    );
+    const user = userEvent.setup();
+    render(<AutomaticAnalysis projectId="proj_1" />);
+
+    await screen.findByRole("heading", { name: "Hold the reveal" });
+    await user.click(screen.getAllByRole("button", { name: "Make this a decision" })[0]!);
+
+    expect(proposeDecision).toHaveBeenCalledWith(
+      expect.objectContaining({
+        projectId: "proj_1",
+        options: expect.arrayContaining([
+          expect.objectContaining({ id: "use-recommendation" }),
+          expect.objectContaining({ id: "alternative-recommendation-1" }),
+          expect.objectContaining({ id: "reject-recommendation" }),
+        ]),
+        advisory: expect.objectContaining({
+          recommendedOptionId: "use-recommendation",
+          confidence: 0.72,
+        }),
+      }),
+    );
+    expect(await screen.findByRole("link", { name: "Review this decision" })).toHaveAttribute(
+      "href",
+      "/projects/proj_1/decisions/decision-1",
+    );
   });
 
   it("renders timestamped video observations in playback order", async () => {

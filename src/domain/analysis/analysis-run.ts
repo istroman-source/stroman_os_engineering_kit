@@ -9,6 +9,7 @@ import {
 import type { AnalysisRunId } from "./ids";
 
 export type AnalysisRunStatus = "PENDING" | "RUNNING" | "COMPLETED" | "FAILED";
+export type AnalysisRunSourceKind = "LEGACY" | "TRANSCRIPT" | "VISUAL_MEDIA";
 
 /**
  * A project-scoped execution of editorial analysis. The monotonically increasing
@@ -19,6 +20,7 @@ export interface AnalysisRun {
   readonly ownerId: OwnerId;
   readonly projectId: ProjectId;
   readonly version: number;
+  readonly sourceKind: AnalysisRunSourceKind;
   readonly status: AnalysisRunStatus;
   readonly failureReason: string | null;
   readonly createdAt: Date;
@@ -31,6 +33,7 @@ export interface CreateAnalysisRunInput {
   readonly ownerId: OwnerId;
   readonly projectId: ProjectId;
   readonly version: number;
+  readonly sourceKind?: AnalysisRunSourceKind;
   readonly now: Date;
 }
 
@@ -82,6 +85,7 @@ export function createAnalysisRun(input: CreateAnalysisRunInput): Result<Analysi
     ownerId: input.ownerId,
     projectId: input.projectId,
     version: input.version,
+    sourceKind: input.sourceKind ?? "LEGACY",
     status: "PENDING",
     failureReason: null,
     createdAt: input.now,

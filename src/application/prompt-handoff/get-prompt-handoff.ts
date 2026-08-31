@@ -20,7 +20,12 @@ function promptText(value: string): string {
   return value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
-export function synthesizePrompt(editEngine: EditEngineView): PromptHandoffView {
+type PromptSynthesisInput = Pick<
+  EditEngineView,
+  "analysisVersion" | "story" | "strongestObservations" | "recommendations" | "alternatives"
+>;
+
+export function synthesizePrompt(editEngine: PromptSynthesisInput): PromptHandoffView {
   const evidenceReferenceIds = [
     ...new Set([
       ...editEngine.strongestObservations.flatMap((item) => item.evidenceReferenceIds),

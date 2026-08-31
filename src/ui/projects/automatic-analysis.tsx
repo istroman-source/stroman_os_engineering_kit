@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/ui/primitives/button";
+import { proposeDecision } from "@/ui/decisions/decisions-api";
 
 interface AnalysisResult {
   run: { id: string; version: number; status: string };
@@ -164,6 +165,19 @@ function interpretationLabel(kind: string): string {
   }
 }
 
+function counterEvidencePrompt(kind: string): string {
+  switch (kind) {
+    case "NARRATIVE":
+      return "Check whether omitted or later material changes this proposed progression.";
+    case "THEME":
+      return "Check whether this pattern holds across the full material, not only the cited moments.";
+    case "INFERENCE":
+      return "Look for source material that directly contradicts this inference.";
+    default:
+      return "Review neighboring and contradictory source material before accepting this interpretation.";
+  }
+}
+
 function FindingList({
   projectId,
   outputs,
@@ -205,6 +219,16 @@ function FindingList({
             </span>
           </div>
           <p className="mt-1 text-sm">{output.content.replace(/^Source-backed moment:\s*/, "")}</p>
+          {interpretation ? (
+            <div className="text-muted-foreground mt-2 space-y-1 text-xs">
+              <p>
+                {output.confidence === null
+                  ? "Confidence not scored"
+                  : `${Math.round(output.confidence * 100)}% confidence`}
+              </p>
+              <p>What could challenge this: {counterEvidencePrompt(output.kind)}</p>
+            </div>
+          ) : null}
           <EvidenceInspector projectId={projectId} ids={output.evidenceReferenceIds} />
         </li>
       ))}
@@ -215,6 +239,8 @@ function FindingList({
 export function AutomaticAnalysis({ projectId }: { projectId: string }) {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [busy, setBusy] = useState(false);
+  const [promoting, setPromoting] = useState<string | null>(null);
+  const [decisionLinks, setDecisionLinks] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
   const loadLatest = useCallback(async () => {
@@ -273,6 +299,52 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
       setError(caught instanceof Error ? caught.message : "Analysis could not be completed.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function promoteRecommendation(recommendation: AnalysisResult["recommendations"][number]) {
+    setPromoting(recommendation.id);
+    setError(null);
+    try {
+      const decision = await proposeDecision({
+        projectId,
+        question: `Should “${recommendation.title}” guide the next edit pass?`.slice(0, 500),
+        options: [
+          {
+            id: "use-recommendation",
+            label: recommendation.title.slice(0, 200),
+            rationale: recommendation.rationale.slice(0, 2000),
+          },
+          ...(result?.recommendations ?? [])
+            .filter((candidate) => candidate.id !== recommendation.id)
+            .slice(0, 3)
+            .map((candidate, index) => ({
+              id: `alternative-recommendation-${index + 1}`,
+              label: candidate.title.slice(0, 200),
+              rationale: candidate.rationale.slice(0, 2000),
+            })),
+          {
+            id: "revise-recommendation",
+            label: "Revise this approach",
+            rationale: "Keep the underlying opportunity but change how it shapes the edit.",
+          },
+          {
+            id: "reject-recommendation",
+            label: "Do not use this approach",
+            rationale: "Reject the proposal without silently turning advice into a decision.",
+          },
+        ],
+        advisory: {
+          recommendedOptionId: "use-recommendation",
+          rationale: recommendation.rationale.slice(0, 2000),
+          confidence: recommendation.confidence,
+        },
+      });
+      setDecisionLinks((current) => ({ ...current, [recommendation.id]: decision.data.id }));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The decision could not be created.");
+    } finally {
+      setPromoting(null);
     }
   }
 
@@ -350,6 +422,26 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
                   projectId={projectId}
                   ids={recommendation.evidenceReferenceIds}
                 />
+                {decisionLinks[recommendation.id] ? (
+                  <a
+                    href={`/projects/${projectId}/decisions/${decisionLinks[recommendation.id]}`}
+                    className="text-primary mt-3 inline-flex text-sm font-medium underline-offset-4 hover:underline"
+                  >
+                    Review this decision
+                  </a>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-3"
+                    disabled={promoting === recommendation.id}
+                    onClick={() => void promoteRecommendation(recommendation)}
+                  >
+                    {promoting === recommendation.id
+                      ? "Creating decision…"
+                      : "Make this a decision"}
+                  </Button>
+                )}
               </article>
             ))}
           </div>

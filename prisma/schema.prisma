@@ -97,6 +97,12 @@ enum AnalysisRunStatus {
   FAILED
 }
 
+enum AnalysisRunSourceKind {
+  LEGACY
+  TRANSCRIPT
+  VISUAL_MEDIA
+}
+
 enum AnalysisOutputKind {
   OBSERVATION
   INFERENCE
@@ -571,15 +577,16 @@ model EvidenceReference {
 }
 
 model AnalysisRun {
-  id            String            @id
-  ownerId       String            @map("owner_id")
-  projectId     String            @map("project_id")
+  id            String                @id
+  ownerId       String                @map("owner_id")
+  projectId     String                @map("project_id")
   version       Int
+  sourceKind    AnalysisRunSourceKind @default(LEGACY) @map("source_kind")
   status        AnalysisRunStatus
-  failureReason String?           @map("failure_reason")
-  createdAt     DateTime          @map("created_at") @db.Timestamptz(3)
-  startedAt     DateTime?         @map("started_at") @db.Timestamptz(3)
-  completedAt   DateTime?         @map("completed_at") @db.Timestamptz(3)
+  failureReason String?               @map("failure_reason")
+  createdAt     DateTime              @map("created_at") @db.Timestamptz(3)
+  startedAt     DateTime?             @map("started_at") @db.Timestamptz(3)
+  completedAt   DateTime?             @map("completed_at") @db.Timestamptz(3)
 
   project         Project                  @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
   outputs         AnalysisOutput[]
@@ -587,6 +594,7 @@ model AnalysisRun {
 
   @@unique([projectId, version])
   @@index([projectId, createdAt])
+  @@index([projectId, sourceKind, version])
   @@map("analysis_runs")
 }
 
