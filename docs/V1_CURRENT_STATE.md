@@ -195,14 +195,22 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   RunPod, or paid reconstruction.
 - Ready rooms can be selected for project grounding and opened in a camera viewer.
 
+**Completed in the functional pass**
+
+- GLB and connected-Mac photo results now share one deterministic readiness gate. A structurally
+  valid file cannot become `READY` when recovered bounds are empty, implausibly low/tall or narrow,
+  or severely stretched.
+- Every recovered room includes a plain-language shoot brief derived only from available geometry:
+  estimated bounds/scale, usable estimated exploration, observed constraints, semantic unknowns,
+  and unverified/no-go space. It never invents doors, windows, obstacles, or camera clearance.
+- Distorted or incomplete geometry is preserved as `NEEDS_ATTENTION`, withheld from the normal
+  planning viewer, optionally inspectable behind disclosure, and paired with an actionable request
+  for overlapping coverage or a complete replacement GLB.
+
 **Missing for V1**
 
-- V1 needs a concise shoot-brief use of existing room evidence and honest uncertainty, not more 3D
-  technology.
-- The three input paths need exact acceptance coverage from preserved input through ready room and
-  project selection.
-- Distorted or incomplete geometry must fail honestly or request useful coverage rather than appear
-  shoot-ready.
+- The three input paths still need the final authenticated runtime matrix from preserved input
+  through worker outage/retry, ready room, reload, and project selection.
 
 ### 7. Analyze & Edit — PARTIAL
 

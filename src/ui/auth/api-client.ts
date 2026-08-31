@@ -135,6 +135,16 @@ export interface PreparedLocationEnvironment {
   readonly sourceToCanonical: readonly number[];
   readonly scaleMetersPerUnit: number;
   readonly scaleConfidence: "ESTIMATED";
+  readonly shootBrief: {
+    readonly usability: "SHOOTABLE_ESTIMATE" | "REVIEW_REQUIRED";
+    readonly usableViews: readonly string[];
+    readonly observedConstraints: readonly string[];
+    readonly estimates: readonly string[];
+    readonly unknowns: readonly string[];
+    readonly noGoAreas: readonly string[];
+    readonly issues: readonly string[];
+    readonly correctiveAction: string | null;
+  };
 }
 
 export interface PreparedLocationDetail extends PreparedLocationItem {

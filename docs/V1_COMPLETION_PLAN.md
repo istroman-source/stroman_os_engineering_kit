@@ -145,15 +145,26 @@ why it serves the film, and how to execute it.
 
 ## Phase 6 — narrow Space Scan completion
 
-- [ ] Retain current GLB, Apple reconstruction, and overlapping-photo paths; do not add new 3D
+- [x] Retain current GLB, Apple reconstruction, and overlapping-photo paths; do not add new 3D
   technology.
-- [ ] Gate “ready” on usable evidence and honest geometry/coverage status.
-- [ ] Produce a concise room shoot brief: usable views, observed constraints, estimates, unknowns,
+- [x] Gate “ready” on usable evidence and honest geometry/coverage status.
+- [x] Produce a concise room shoot brief: usable views, observed constraints, estimates, unknowns,
   no-go areas, and filmmaker corrections.
 - [ ] Verify preserved-input retry, outage recovery, duplicate prevention, reload persistence, and
   project selection for all three input methods.
-- [ ] Ensure incomplete/distorted reconstruction asks for actionable coverage or replacement instead
+- [x] Ensure incomplete/distorted reconstruction asks for actionable coverage or replacement instead
   of claiming a shootable room.
+
+Implemented locally without adding reconstruction technology: both uploaded GLB and connected-Mac
+photo reconstruction pass through one deterministic geometry-readiness assessment. Plausible
+geometry remains clearly estimated and gets a concise shoot brief covering usable exploration,
+observed bounds, estimates, unknown semantic structure, and unverified/no-go space. Empty,
+implausibly low/tall, too-narrow, or severely stretched bounds are retained as `NEEDS_ATTENTION`
+rather than `READY`; the normal planning viewer is withheld and the UI asks for specific overlapping
+coverage or a complete replacement GLB. Original evidence and incomplete geometry remain preserved
+and inspectable behind disclosure. Targeted domain/application/UI tests pass (18 tests), and the
+owner-scoped real-PostgreSQL location API suite passes (4 tests) against all 27 migrations. The full
+three-input outage/reload/project-selection runtime matrix remains in Phase 12.
 
 **Acceptance:** a prepared room adds trustworthy planning context without forcing the filmmaker to
 interpret warped or falsely precise geometry.

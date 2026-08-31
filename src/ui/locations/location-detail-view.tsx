@@ -188,7 +188,9 @@ export function LocationDetailView({
         </p>
       ) : null}
 
-      {location.environment ? (
+      {location.environment ? <RoomShootBrief environment={location.environment} /> : null}
+
+      {location.environment && ["READY", "PROCESSING", "UPLOADING"].includes(location.status) ? (
         <PreparedRoomViewer
           locationId={location.id}
           locationName={location.name}
@@ -270,18 +272,47 @@ export function LocationDetailView({
       ) : location.status === "FAILED" || location.status === "NEEDS_ATTENTION" ? (
         <section className="border-border bg-card rounded-2xl border p-6 shadow-sm">
           <h2 className="text-lg font-semibold">
-            {location.status === "FAILED" ? "Let’s try that build again" : "Ready to build"}
+            {location.status === "FAILED"
+              ? "Let’s try that build again"
+              : location.environment
+                ? "This room needs more coverage"
+                : "Ready to build"}
           </h2>
           <p className="text-muted-foreground mt-2 max-w-xl text-sm">{preservedInputMessage}</p>
-          <Button
-            type="button"
-            className="mt-5"
-            disabled={busy}
-            onClick={() => void run(() => startPreparedLocationReconstruction(location.id))}
-          >
-            <RotateCcw />{" "}
-            {busy ? "Starting…" : location.status === "FAILED" ? "Try build again" : "Build room"}
-          </Button>
+          {location.environment?.shootBrief.correctiveAction ? (
+            <p className="mt-3 max-w-xl text-sm font-medium">
+              {location.environment.shootBrief.correctiveAction}
+            </p>
+          ) : null}
+          {!location.environment || location.status === "FAILED" ? (
+            <Button
+              type="button"
+              className="mt-5"
+              disabled={busy}
+              onClick={() => void run(() => startPreparedLocationReconstruction(location.id))}
+            >
+              <RotateCcw />{" "}
+              {busy
+                ? "Starting…"
+                : location.status === "FAILED"
+                  ? "Try build again"
+                  : "Build room"}
+            </Button>
+          ) : null}
+          {location.environment ? (
+            <details className="mt-5 border-t pt-4">
+              <summary className="cursor-pointer text-sm font-semibold">
+                Inspect incomplete room geometry
+              </summary>
+              <div className="mt-4">
+                <PreparedRoomViewer
+                  locationId={location.id}
+                  locationName={location.name}
+                  environment={location.environment}
+                />
+              </div>
+            </details>
+          ) : null}
         </section>
       ) : !location.environment ? (
         <p className="text-muted-foreground rounded-xl border p-5 text-sm">
@@ -352,5 +383,59 @@ export function LocationDetailView({
         </div>
       </details>
     </div>
+  );
+}
+
+function RoomShootBrief({
+  environment,
+}: {
+  environment: NonNullable<PreparedLocationDetail["environment"]>;
+}) {
+  const brief = environment.shootBrief;
+  const groups = [
+    ["Usable views", brief.usableViews],
+    ["Observed constraints", brief.observedConstraints],
+    ["Estimated", brief.estimates],
+    ["Still unknown", brief.unknowns],
+    ["Do not plan here yet", brief.noGoAreas],
+  ] as const;
+  return (
+    <section className="border-border bg-card rounded-2xl border p-6 shadow-sm" aria-labelledby="shoot-brief">
+      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+        Room shoot brief
+      </p>
+      <h2 id="shoot-brief" className="mt-1 text-xl font-semibold">
+        {brief.usability === "SHOOTABLE_ESTIMATE"
+          ? "Usable for estimated shot planning"
+          : "Review coverage before planning shots"}
+      </h2>
+      <p className="text-muted-foreground mt-2 text-sm">
+        Only recovered geometry is treated as spatial evidence. Dimensions remain estimates until a
+        filmmaker confirms them.
+      </p>
+      {brief.issues.length ? (
+        <ul className="mt-4 list-disc space-y-1 pl-5 text-sm text-amber-800">
+          {brief.issues.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        {groups.map(([label, items]) => (
+          <div key={label}>
+            <h3 className="text-xs font-semibold tracking-wide uppercase">{label}</h3>
+            {items.length ? (
+              <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-sm">
+                {items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground mt-2 text-sm">None confirmed yet.</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
