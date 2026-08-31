@@ -25,6 +25,7 @@ import { POST as reopenProject } from "./projects/[projectId]/reopen/route";
 import { GET as listProjectDecisions } from "./projects/[projectId]/decisions/route";
 import { GET as listProjectEvaluations } from "./projects/[projectId]/evaluations/route";
 import { GET as getProjectReview } from "./projects/[projectId]/review/route";
+import { GET as getProjectExport } from "./projects/[projectId]/exports/[kind]/route";
 import { GET as listProjects, POST as createProject } from "./projects/route";
 import { GET as getRubric } from "./rubrics/[rubricId]/route";
 import { POST as createRubric } from "./rubrics/route";
@@ -141,6 +142,27 @@ describe("projects", () => {
       params: { projectId: project.id },
     });
     expect(denied.status).toBe(403);
+  });
+
+  it("downloads an exact, private project snapshot and rejects unknown formats", async () => {
+    const project = await makeProject("Review / Export Project");
+    const exported = await call(getProjectExport, {
+      principal: ACTOR,
+      params: { projectId: project.id, kind: "snapshot-json" },
+    });
+    expect(exported.status).toBe(200);
+    expect(exported.headers.get("content-type")).toContain("application/json");
+    expect(exported.headers.get("content-disposition")).toMatch(
+      /^attachment; filename="review-export-project-/,
+    );
+    expect(exported.headers.get("cache-control")).toBe("no-store");
+    expect(exported.body).toMatchObject({ schemaVersion: 1, snapshotId: expect.any(String) });
+
+    const unknown = await call(getProjectExport, {
+      principal: ACTOR,
+      params: { projectId: project.id, kind: "automatic-cloud-edit" },
+    });
+    expect(unknown.status).toBe(404);
   });
 
   it("renames with If-Match, returns the next token, and preserves ownership", async () => {

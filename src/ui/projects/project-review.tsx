@@ -312,6 +312,50 @@ export function ProjectReview({ projectId }: { projectId: string }) {
           ) : null}
         </section>
       ) : null}
+
+      <section className="border-border bg-card rounded-2xl border p-5 sm:p-6">
+        <h3 className="text-lg font-semibold">Take the current project with you</h3>
+        <p className="text-muted-foreground mt-1 max-w-2xl text-sm">
+          Every file is generated from the same version-tied project snapshot. These downloads are
+          manual handoffs; no third-party service receives the project.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {[
+            ["review-packet", "Review packet"],
+            ["treatment", "Treatment"],
+            ["shot-plan", "Shot plan"],
+            ["edit-brief", "Edit brief"],
+            ["decision-record", "Decision record"],
+          ].map(([kind, label]) => (
+            <a
+              key={kind}
+              href={`/api/v1/projects/${encodeURIComponent(projectId)}/exports/${kind}`}
+              className="border-border bg-background hover:border-primary/50 inline-flex min-h-11 items-center rounded-lg border px-4 text-sm font-medium"
+            >
+              Download {label}
+            </a>
+          ))}
+        </div>
+        <details className="mt-4">
+          <summary className="min-h-11 cursor-pointer content-center text-sm font-medium">
+            Structured exports
+          </summary>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <a
+              href={`/api/v1/projects/${encodeURIComponent(projectId)}/exports/snapshot-json`}
+              className="text-primary inline-flex min-h-11 items-center text-sm underline-offset-4 hover:underline"
+            >
+              Download project JSON
+            </a>
+            <a
+              href={`/api/v1/projects/${encodeURIComponent(projectId)}/exports/decisions-csv`}
+              className="text-primary inline-flex min-h-11 items-center text-sm underline-offset-4 hover:underline"
+            >
+              Download decisions CSV
+            </a>
+          </div>
+        </details>
+      </section>
     </div>
   );
 }

@@ -97,6 +97,10 @@ describe("ProjectReview", () => {
       "/projects/proj_1/decisions/dec_1",
     );
     expect(screen.getByText("Ready to hand off")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Download Review packet" })).toHaveAttribute(
+      "href",
+      "/api/v1/projects/proj_1/exports/review-packet",
+    );
   });
 
   it("gives an empty project one clear next action", async () => {

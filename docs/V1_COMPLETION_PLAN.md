@@ -240,12 +240,22 @@ made, what evidence supports them, and what remains unresolved.
 
 ## Phase 10 — exports and handoff
 
-- [ ] Define an exportable project snapshot tied to current intent and decision versions.
-- [ ] Export a treatment/creative brief, shot plan, edit brief, decision record, and review packet in
+- [x] Define an exportable project snapshot tied to current intent and decision versions.
+- [x] Export a treatment/creative brief, shot plan, edit brief, decision record, and review packet in
   appropriate human-readable formats.
-- [ ] Provide structured JSON/CSV where it adds durable downstream value.
-- [ ] Keep unsupported third-party integrations explicitly manual.
-- [ ] Verify filename safety, ownership, content integrity, empty states, and snapshot consistency.
+- [x] Provide structured JSON/CSV where it adds durable downstream value.
+- [x] Keep unsupported third-party integrations explicitly manual.
+- [x] Verify filename safety, ownership, content integrity, empty states, and snapshot consistency.
+
+Implemented locally: Review now offers private downloads for the treatment, shot plan, edit brief,
+decision record, and complete review packet, plus a structured project JSON snapshot and a
+spreadsheet-safe decision CSV. Every export carries the same deterministic snapshot identifier and
+records the exact creative-intent and decision lock versions that produced it. The generator rereads
+those versions before returning and rejects a torn snapshot if the project changes mid-generation.
+Human-readable shot plans include separately composed 16:9 and 9:16 proposals plus exact saved
+filmmaker shots where present. Filenames are normalized, CSV formula injection is neutralized,
+downloads are private/no-store, and unsupported transfers remain explicit manual handoffs. Empty,
+ownership, filename, structured-content, concurrency, UI-link, and authenticated HTTP behavior pass.
 
 **Acceptance:** exports are understandable outside Stroman OS and exactly reflect the approved
 project state that produced them.
