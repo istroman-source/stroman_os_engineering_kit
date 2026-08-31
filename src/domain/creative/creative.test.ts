@@ -4,6 +4,7 @@ import {
   type CreativeBrief,
   CreativeBriefId,
   createCreativeBrief,
+  evaluateCreativeQuality,
   generateBlueprint,
   generateDevelopmentBlueprint,
   instructionAtDeskShotPlanning,
@@ -146,12 +147,49 @@ describe("generateBlueprint", () => {
     expect(bp).not.toHaveProperty("masterPrompt");
     expect(bp.development.basis).toBe("PROJECT_INTENT_ONLY");
     expect(bp.development.directionDecision.title).toBe("Proof before promise");
+    expect(bp.development.directionDecision.confidence).toBeGreaterThan(0);
+    expect(bp.development.directionDecision.basis).toEqual(
+      expect.arrayContaining([expect.objectContaining({ kind: "SUPPLIED_INTENT" })]),
+    );
     expect(bp.development.alternativeDecisions).toHaveLength(3);
     expect(bp.development.alternativeDecisions.some((direction) => direction.innovation)).toBe(
       true,
     );
     expect(bp.development).not.toHaveProperty("directorBlueprint");
     expect(bp.development).not.toHaveProperty("recommendedDirection");
+  });
+
+  it("rejects recommendations without traceability or genuinely distinct alternatives", () => {
+    const sourceBrief = brief();
+    const development = generateDevelopmentBlueprint(sourceBrief);
+    const untraceable = {
+      ...development,
+      directionDecision: {
+        ...development.directionDecision,
+        confidence: undefined,
+        confidenceRationale: undefined,
+        basis: [],
+      },
+    };
+    expect(evaluateCreativeQuality(sourceBrief, untraceable).blockingFindings).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("calibrated confidence"),
+        expect.stringContaining("traceable"),
+      ]),
+    );
+
+    const firstAlternative = development.alternativeDecisions[0]!;
+    const repeatedAlternatives = {
+      ...development,
+      alternativeDecisions: development.alternativeDecisions.map((item) => ({
+        ...item,
+        storyEngine: firstAlternative.storyEngine,
+        audienceJourney: firstAlternative.audienceJourney,
+      })),
+    };
+    expect(evaluateCreativeQuality(sourceBrief, repeatedAlternatives).blockingFindings).toContain(
+      "Alternative directions repeat an organizing principle or audience effect.",
+    );
   });
 
   it("is deterministic", () => {

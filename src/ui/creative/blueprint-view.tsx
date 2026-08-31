@@ -188,9 +188,28 @@ function PriorityLabel({ value }: { value: string }) {
   );
 }
 
-function Spine({ analysis }: { analysis: Analysis }) {
+function Spine({
+  analysis,
+  busy,
+  onPromoteDirection,
+}: {
+  analysis: Analysis;
+  busy: boolean;
+  onPromoteDirection: () => Promise<void>;
+}) {
   const spine = analysis.blueprint.development.visualPlan.creativeSpine;
   const priorities = analysis.blueprint.development.visualPlan.priorities;
+  const recommendation = analysis.blueprint.development.directionDecision;
+  const [promoting, setPromoting] = useState(false);
+
+  async function promote() {
+    setPromoting(true);
+    try {
+      await onPromoteDirection();
+    } finally {
+      setPromoting(false);
+    }
+  }
   return (
     <div className="space-y-5">
       <section className="border-border bg-card rounded-lg border p-5">
@@ -207,6 +226,65 @@ function Spine({ analysis }: { analysis: Analysis }) {
             <p className="text-muted-foreground text-xs tracking-wide uppercase">Audience effect</p>
             <p className="mt-1 text-sm leading-relaxed">{spine.audienceEffect}</p>
           </div>
+        </div>
+      </section>
+
+      <section className="border-border bg-card rounded-lg border p-5" aria-labelledby="direction">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-4xl">
+            <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+              Proposed direction
+            </p>
+            <h2 id="direction" className="mt-1 text-xl font-semibold">
+              {recommendation.title}
+            </h2>
+            <p className="mt-2 leading-relaxed">{recommendation.pointOfView}</p>
+          </div>
+          <div className="rounded-md border px-3 py-2 text-right">
+            <p className="text-muted-foreground text-[0.65rem] tracking-wide uppercase">
+              Working confidence
+            </p>
+            <p className="font-mono text-lg font-semibold">
+              {Math.round((recommendation.confidence ?? 0.5) * 100)}%
+            </p>
+          </div>
+        </div>
+        <div className="mt-5 grid gap-4 border-t pt-4 md:grid-cols-2">
+          <DeepNote label="Why it matters here" value={recommendation.whyThisProject} />
+          <DeepNote label="What it gives up" value={recommendation.sacrifice} />
+          <DeepNote label="How the story moves" value={recommendation.storyEngine} />
+          <DeepNote
+            label="What remains uncertain"
+            value={
+              recommendation.confidenceRationale ??
+              "This remains a working recommendation until the filmmaker confirms it."
+            }
+          />
+        </div>
+        <div className="mt-5 rounded-md bg-muted/50 p-4">
+          <p className="text-xs font-semibold tracking-wide uppercase">Basis for this proposal</p>
+          <ul className="mt-2 space-y-2">
+            {(recommendation.basis ?? []).map((item) => (
+              <li key={`${item.kind}-${item.label}`} className="text-sm">
+                <span className="font-medium">{item.label}:</span>{" "}
+                <span className="text-muted-foreground">{item.statement}</span>
+              </li>
+            ))}
+            {(recommendation.basis ?? []).length === 0 ? (
+              <li className="text-muted-foreground text-sm">
+                Based on the current project intent; source evidence has not yet confirmed it.
+              </li>
+            ) : null}
+          </ul>
+        </div>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Button onClick={() => void promote()} disabled={busy || promoting}>
+            {promoting ? "Opening choice…" : "Turn this into a choice"}
+          </Button>
+          <p className="text-muted-foreground max-w-xl text-xs">
+            Compare this direction with the real alternatives, revise it, reject the set, or leave
+            it open. Stroman never decides for you.
+          </p>
         </div>
       </section>
 
@@ -373,6 +451,7 @@ export function BlueprintView({
   error,
   focus,
   onReanalyze,
+  onPromoteDirection,
   onStage,
   onProduction,
   onUploadScoutPhotos,
@@ -390,6 +469,7 @@ export function BlueprintView({
   error: string | null;
   focus?: "story" | "storyboard";
   onReanalyze: () => void;
+  onPromoteDirection?: () => Promise<void>;
   onStage: (stage: ProductionStage) => Promise<void>;
   onProduction: (production: Partial<ProductionReality>) => Promise<void>;
   onUploadScoutPhotos: (files: readonly File[]) => Promise<void>;
@@ -503,7 +583,13 @@ export function BlueprintView({
           {error}
         </p>
       ) : null}
-      {depth === "SPINE" ? <Spine analysis={analysis} /> : null}
+      {depth === "SPINE" ? (
+        <Spine
+          analysis={analysis}
+          busy={busy}
+          onPromoteDirection={onPromoteDirection ?? (async () => undefined)}
+        />
+      ) : null}
       {focus === "story" ? (
         <details className="border-border bg-card rounded-lg border p-5">
           <summary className="cursor-pointer font-semibold">

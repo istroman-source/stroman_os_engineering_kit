@@ -98,13 +98,24 @@ its original context; recoverable failures never discard the input.
 
 ## Phase 4 — Develop completion
 
-- [ ] Organize creative output around proposed direction, why it matters, tradeoff, confidence,
+- [x] Organize creative output around proposed direction, why it matters, tradeoff, confidence,
   evidence/intent basis, alternatives, and filmmaker action.
-- [ ] Make distinct alternatives differ in organizing principle and audience effect rather than
+- [x] Make distinct alternatives differ in organizing principle and audience effect rather than
   noun substitution.
-- [ ] Promote a recommendation into a durable decision without copying internal IDs or prose.
-- [ ] Ensure scenes and craft choices are project-specific, concrete, and executable.
-- [ ] Extend hosted/deterministic fixtures and semantic gates for anti-genericness and traceability.
+- [x] Promote a recommendation into a durable decision without copying internal IDs or prose.
+- [x] Ensure scenes and craft choices are project-specific, concrete, and executable.
+- [x] Extend hosted/deterministic fixtures and semantic gates for anti-genericness and traceability.
+
+Implemented locally: Develop now leads with one explicit proposed direction and separates its
+project-specific value, story engine, real sacrifice, calibrated working confidence, uncertainty,
+and typed intent/evidence/hypothesis basis. One action creates a new owner-scoped open Choice with
+fresh option identifiers, all materially distinct directions, a reject-and-redevelop option, the
+recommendation as advisory rather than selection, and its traceable basis. Hosted structured
+outputs and the deterministic specialist now emit the same reasoning contract. The semantic gate
+rejects missing confidence, missing intent/evidence traceability, repeated alternative story
+engines or audience journeys, generic substitution, incomplete craft, and unsupported innovation.
+Targeted domain/application/provider/UI/API-client tests pass (66 tests), with typecheck, focused
+ESLint, formatting, and whitespace validation clean.
 
 **Acceptance:** supported modes produce useful, distinct, project-dependent creative thought and
 the filmmaker can accept, revise, reject, or defer it without losing context.

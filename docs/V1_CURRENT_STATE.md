@@ -122,7 +122,7 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   synthesize both as one evidence set.
 - Source processing progress and recovery require stronger browser-level acceptance coverage.
 
-### 4. Develop — PARTIAL
+### 4. Develop — COMPLETE LOCALLY; CROSS-MODE RUNTIME GATE PENDING
 
 **Complete**
 
@@ -134,14 +134,25 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Storyboard frames, blocking, lighting, look, sound, and execution information are separately
   represented.
 
-**Missing for V1**
+**Completed in the functional pass**
 
-- The filmmaker-facing result is not consistently organized around decision, tradeoff, confidence,
-  and next action.
-- Project intent constraints and evidence are not uniformly traceable through every durable
-  recommendation.
-- Generated alternatives and recommendations need explicit V1 acceptance fixtures across supported
-  modes, not only schema-valid output.
+- The default Develop surface now leads with one proposed direction and clearly separates why it
+  matters for this project, its story engine, sacrifice, calibrated confidence, uncertainty, typed
+  intent/evidence/hypothesis basis, and the filmmaker's next action.
+- Hosted and deterministic directions share the same traceability contract. The semantic quality
+  gate rejects missing basis/confidence, repeated alternative story engines or audience effects,
+  generic noun substitution, incomplete physical craft, and unsupported innovation.
+- A recommendation can become a durable open Choice in one action. The bridge generates new
+  decision-local option identifiers, carries visible rationale and traceable basis, includes the
+  materially distinct alternatives plus a reject-and-redevelop option, and records Stroman's
+  recommendation only as advisory. No option is selected for the filmmaker.
+- Existing scene gates require concrete physical action, a distinct dramatic turn, project-specific
+  causality, complete camera/blocking/light/design/color/sound thinking, and honest constraints.
+
+**Remaining release gate**
+
+- Phase 11 verifies the contract across commercial, documentary, narrative, performance, and open
+  fixtures; Phase 12 exercises the authenticated running promotion and human-decision journey.
 
 ### 5. Build / shot planning — PARTIAL
 
@@ -212,7 +223,8 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 
 **Missing for V1**
 
-- Recommendations generated in Develop and Edit are not one-click inputs to a durable Decision.
+- Edit recommendations are not yet one-click inputs to a durable Decision; Develop recommendations
+  now are.
 - Advisory evidence is manually entered text rather than linked to canonical EvidenceReference
   records.
 - Decision status is binary; V1 needs explicit keep/revise/reject/defer behavior without obscuring

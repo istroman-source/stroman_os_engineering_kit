@@ -34,6 +34,19 @@ describe("BlueprintView", () => {
       screen.queryByText(/horizontal and vertical are separate setups/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/discarded directions and tradeoffs/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "The first quiet bite" })).toBeInTheDocument();
+    expect(screen.getByText("78%")).toBeInTheDocument();
+    expect(screen.getByText(/audience and emotional job/i)).toBeInTheDocument();
+  });
+
+  it("promotes the proposed direction into a filmmaker-owned choice", async () => {
+    const onPromoteDirection = vi.fn().mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ onPromoteDirection })} />);
+
+    await user.click(screen.getByRole("button", { name: /turn this into a choice/i }));
+
+    expect(onPromoteDirection).toHaveBeenCalledOnce();
   });
 
   it("reveals independently composed 16:9 and 9:16 previs only in Plan", async () => {

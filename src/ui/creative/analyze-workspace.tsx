@@ -25,6 +25,7 @@ import {
 } from "./creative-api";
 import type { ProductionReality, ProductionStage } from "@/domain/creative";
 import type { LocationWorkspaceState, ShotPlanningState } from "@/domain/creative";
+import { proposeDecision } from "@/ui/decisions/decisions-api";
 
 type Mode = "loading" | "form" | "blueprint";
 
@@ -117,6 +118,61 @@ export function AnalyzeWorkspace({
     }
   }
 
+  async function promoteDirection() {
+    if (!analysis) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const recommendation = analysis.blueprint.development.directionDecision;
+      const directions = [
+        recommendation,
+        ...analysis.blueprint.development.alternativeDecisions,
+      ];
+      const recommendedOptionId = "direction-1";
+      const result = await proposeDecision({
+        projectId,
+        question: `Which creative direction should guide “${analysis.brief.title}”?`,
+        options: [
+          ...directions.map((direction, index) => ({
+            id: `direction-${index + 1}`,
+            label: direction.title.slice(0, 200),
+            rationale: `${direction.pointOfView}\n\nTradeoff: ${direction.sacrifice}`.slice(0, 2000),
+          })),
+          {
+            id: "develop-another-direction",
+            label: "None of these — develop another direction",
+            rationale: "Reject this set without silently turning a proposal into a decision.",
+          },
+        ],
+        advisory: {
+          recommendedOptionId,
+          rationale: `${recommendation.whyThisProject}\n\nTradeoff: ${recommendation.sacrifice}\n\nChange course if: ${recommendation.changeMyMindIf}`.slice(
+            0,
+            2000,
+          ),
+          confidence: recommendation.confidence ?? 0.5,
+          evidence: (recommendation.basis ?? []).map((item) => ({
+            sourceLabel: item.label.slice(0, 200),
+            observation: item.statement.slice(0, 2000),
+            relevance: `${item.kind === "CREATIVE_HYPOTHESIS" ? "Creative hypothesis" : item.kind === "SOURCE_EVIDENCE" ? "Source evidence" : "Supplied intent"} supporting the proposed direction.`.slice(
+              0,
+              2000,
+            ),
+          })),
+        },
+      });
+      router.push(`/projects/${projectId}/decisions/${result.data.id}`);
+    } catch (caught) {
+      if (errorStatus(caught) === 401) {
+        router.replace("/login");
+        return;
+      }
+      setError(friendlyError(caught));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (mode === "loading") {
     return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
@@ -130,6 +186,7 @@ export function AnalyzeWorkspace({
           error={error}
           focus={focus}
           onReanalyze={() => setMode("form")}
+          onPromoteDirection={promoteDirection}
           onStage={(stage: ProductionStage) =>
             runPlanning(() => updatePlanning(projectId, { stage }))
           }

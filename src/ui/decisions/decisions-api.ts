@@ -45,7 +45,8 @@ export interface DecisionListItem extends Decision {
 export interface NewDecisionInput {
   readonly projectId: string;
   readonly question: string;
-  readonly options: ReadonlyArray<{ id: string; label: string }>;
+  readonly options: ReadonlyArray<{ id: string; label: string; rationale?: string | null }>;
+  readonly advisory?: AdvisoryInput;
 }
 
 export interface AdvisoryInput {
