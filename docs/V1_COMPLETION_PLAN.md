@@ -262,12 +262,24 @@ project state that produced them.
 
 ## Phase 11 — cross-mode acceptance
 
-- [ ] Maintain commercial, documentary, narrative, performance, and ambiguous/open fixtures.
-- [ ] Verify mode differences affect creative reasoning, evidence use, structure, scenes, craft, and
+- [x] Maintain commercial, documentary, narrative, performance, and ambiguous/open fixtures.
+- [x] Verify mode differences affect creative reasoning, evidence use, structure, scenes, craft, and
   review—not just labels.
-- [ ] Compare relevant hosted outputs with a strong general-purpose baseline where the existing
+- [x] Compare relevant hosted outputs with a strong general-purpose baseline where the existing
   evaluation architecture supports it.
-- [ ] Record honest limitations when hosted calibration cannot run without a configured environment.
+- [x] Record honest limitations when hosted calibration cannot run without a configured environment.
+
+Implemented and revalidated: durable hosted application-path artifacts cover commercial,
+documentary, narrative, performance, and open/ambiguous projects. The evaluation gate verifies the
+real provider metadata, current Blueprint schema, application semantic gate, score of at least 85,
+non-generic substitution signal, scene-level action and turn, mode-specific camera/sound craft, and
+independent 16:9/9:16 compositions. Direction titles, story engines, formal strategies, opening
+actions, camera choices, and sound choices are materially distinct across all five modes. The Jimmy
+artifact remains paired with a raw general-purpose baseline; concrete weaknesses such as center-safe
+cropping and generic craft defaults are recorded without turning model self-scoring into a claimed
+human verdict. Re-running hosted calls requires an explicitly configured owner credential and usage;
+offline drafts continue to fail closed. The full evaluation suite passes 28/28, and deterministic
+checked-in artifacts were regenerated to match the current confidence and basis schema exactly.
 
 **Acceptance:** each mode demonstrates materially different filmmaking thought while preserving the
 same authority and evidence rules.
