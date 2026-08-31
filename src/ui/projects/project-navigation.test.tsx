@@ -42,7 +42,7 @@ beforeEach(() => {
 });
 
 describe("ProjectNavigation", () => {
-  it("makes the four project destinations and locations discoverable", async () => {
+  it("makes the five project destinations and locations discoverable", async () => {
     render(<ProjectNavigation projectId="proj_1" />);
 
     expect(await screen.findByRole("heading", { name: "Harbor Light" })).toBeInTheDocument();
@@ -53,6 +53,10 @@ describe("ProjectNavigation", () => {
     );
     expect(screen.getByRole("link", { name: "Footage & notes" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Choices" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Review" })).toHaveAttribute(
+      "href",
+      "/projects/proj_1/review",
+    );
     expect(screen.getByRole("link", { name: "Rooms" })).toHaveAttribute("href", "/locations");
   });
 

@@ -24,6 +24,7 @@ import { POST as completeProject } from "./projects/[projectId]/complete/route";
 import { POST as reopenProject } from "./projects/[projectId]/reopen/route";
 import { GET as listProjectDecisions } from "./projects/[projectId]/decisions/route";
 import { GET as listProjectEvaluations } from "./projects/[projectId]/evaluations/route";
+import { GET as getProjectReview } from "./projects/[projectId]/review/route";
 import { GET as listProjects, POST as createProject } from "./projects/route";
 import { GET as getRubric } from "./rubrics/[rubricId]/route";
 import { POST as createRubric } from "./rubrics/route";
@@ -120,6 +121,26 @@ describe("projects", () => {
     const project = await makeProject();
     const res = await call(getProject, { principal: OTHER, params: { projectId: project.id } });
     expect(res.status).toBe(403);
+  });
+
+  it("returns an owner-scoped empty project review before work begins", async () => {
+    const project = await makeProject("Review Project");
+    const review = await call(getProjectReview, {
+      principal: ACTOR,
+      params: { projectId: project.id },
+    });
+    expect(review.status).toBe(200);
+    expect(review.body).toMatchObject({
+      readiness: "EMPTY",
+      intent: null,
+      decisionSummary: { accepted: 0, rejected: 0, deferred: 0, unresolved: 0 },
+    });
+
+    const denied = await call(getProjectReview, {
+      principal: OTHER,
+      params: { projectId: project.id },
+    });
+    expect(denied.status).toBe(403);
   });
 
   it("renames with If-Match, returns the next token, and preserves ownership", async () => {

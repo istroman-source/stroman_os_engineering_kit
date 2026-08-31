@@ -219,12 +219,21 @@ card or model answer.
 
 ## Phase 9 — Review mode
 
-- [ ] Add a project Review destination using existing evaluation/review foundations where suitable.
-- [ ] Summarize current intent, evidence, key recommendations, accepted/rejected/deferred decisions,
+- [x] Add a project Review destination using existing evaluation/review foundations where suitable.
+- [x] Summarize current intent, evidence, key recommendations, accepted/rejected/deferred decisions,
   missing coverage, conflicts, and unresolved actions.
-- [ ] Allow the filmmaker to inspect evidence and jump back to revise the affected artifact.
-- [ ] Distinguish product review from internal rubric/reviewer plumbing.
-- [ ] Add empty, complete, conflict, insufficient-evidence, and ownership coverage.
+- [x] Allow the filmmaker to inspect evidence and jump back to revise the affected artifact.
+- [x] Distinguish product review from internal rubric/reviewer plumbing.
+- [x] Add empty, complete, conflict, insufficient-evidence, and ownership coverage.
+
+Implemented locally: every project now has a filmmaker-facing Review destination that assembles the
+current intent and direction, source inventory, latest evidence by source type, editorial
+interpretations, recommendations, accepted/rejected/deferred/open choices, stale-choice conflicts,
+coverage gaps, and unresolved actions. Source facts remain visibly separate from interpretations;
+the filmmaker can return directly to Idea, Footage & notes, or a specific choice to inspect proof or
+revise the affected work. This is deliberately separate from Stroman's internal rubric and reviewer
+infrastructure. Empty, complete, conflict, insufficient-evidence, reload-recovery, navigation, and
+cross-owner denial paths pass at the application, UI, and authenticated real-PostgreSQL HTTP layers.
 
 **Acceptance:** before handoff, the filmmaker can answer what the film is, why current decisions were
 made, what evidence supports them, and what remains unresolved.

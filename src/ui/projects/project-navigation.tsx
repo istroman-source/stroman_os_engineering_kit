@@ -19,6 +19,7 @@ const sections = [
   { suffix: "/storyboard", label: "Plan shots" },
   { suffix: "/materials", label: "Footage & notes" },
   { suffix: "/decisions", label: "Choices" },
+  { suffix: "/review", label: "Review" },
 ] as const;
 
 const statusLabels: Record<ProjectItem["status"], string> = {
