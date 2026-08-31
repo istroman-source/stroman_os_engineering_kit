@@ -9,6 +9,7 @@ import {
   generateDevelopmentBlueprint,
   instructionAtDeskShotPlanning,
   isShotPlanningState,
+  renderShotPlanText,
   reviseCreativeBrief,
 } from "./index";
 
@@ -117,6 +118,18 @@ describe("spatial shot planning", () => {
     expect(state.activeShot.setPieces.map((piece) => piece.label)).toEqual(
       expect.arrayContaining(["Desk", "Desk phone", "Yellow reminder", "Drawer · keyboard · mug"]),
     );
+  });
+
+  it("renders a complete handoff from the exact saved shot state", () => {
+    const state = instructionAtDeskShotPlanning();
+    const text = renderShotPlanText("Instruction film", [state.activeShot]);
+
+    expect(text).toContain("Instruction film");
+    expect(text).toContain("16:9 · 35mm · locked · camera 1.05m high");
+    expect(text).toContain("Action: Listen on the desk phone");
+    expect(text).toContain("Look: Restrained office color");
+    expect(text).toContain("Production notes: Keep the desk geography continuous");
+    expect(text).toContain("Geometry: estimated");
   });
 });
 

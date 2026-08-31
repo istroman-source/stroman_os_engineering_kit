@@ -165,13 +165,24 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Location grounding is optional and uncertainty labels distinguish observed, estimated, unknown,
   and filmmaker-confirmed claims.
 
+**Completed in the functional pass**
+
+- One versioned spatial-shot state now owns camera position/aim/height, focal length, ratio, support,
+  movement, subject/blocking, action, light, look, sound, production notes, creative rationale,
+  direction provenance, and geometry confidence.
+- Saving that state immediately renders the exact camera view and complete shooting card in the
+  storyboard, while durable planning persistence restores it after reload.
+- Horizontal and vertical frames are separately authored saved setups with independent ratio and
+  lens state; the UI and tests explicitly reject describing one as a crop of the other.
+- Saved state produces concise downloadable text and printable shot-plan handoffs.
+
 **Missing for V1**
 
 - The path from an approved story recommendation to an editable shot is not a single obvious
   workflow.
-- The application needs stronger tests that a saved camera adjustment updates the authoritative shot
-  and storyboard representation without losing intent/evidence links.
-- Shot-plan output needs a concise printable/shareable production artifact.
+- Authenticated browser coverage must still prove save/reload, download/print, and both ratio paths.
+- The approved-decision link remains pending the unified recommendation/decision contract; current
+  shots retain recommendation provenance but do not falsely call it filmmaker approval.
 
 ### 6. Space Scan / prepared rooms — PARTIAL (narrow V1 scope)
 

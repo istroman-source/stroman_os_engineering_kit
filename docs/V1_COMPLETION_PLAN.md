@@ -123,12 +123,22 @@ the filmmaker can accept, revise, reject, or defer it without losing context.
 ## Phase 5 — Build and authoritative shot planning
 
 - [ ] Connect approved story recommendations to editable shots with preserved rationale.
-- [ ] Verify camera, lens, height, aim, blocking, movement, light, look, sound, and production notes
+- [x] Verify camera, lens, height, aim, blocking, movement, light, look, sound, and production notes
   share one authoritative shot state.
-- [ ] Verify separately authored 16:9 and 9:16 compositions; never treat a crop as a second plan.
-- [ ] Ensure saving a viewer adjustment updates the storyboard and shooting information.
-- [ ] Produce a concise, printable/shareable shot-plan artifact.
+- [x] Verify separately authored 16:9 and 9:16 compositions; never treat a crop as a second plan.
+- [x] Ensure saving a viewer adjustment updates the storyboard and shooting information.
+- [x] Produce a concise, printable/shareable shot-plan artifact.
 - [ ] Add targeted state-transition, rendering-contract, and browser coverage.
+
+Implemented locally: the saved spatial shot is now the single production state for camera position,
+aim, lens, height, aspect ratio, support, movement, subject/blocking, action, light, look, sound,
+production notes, creative rationale, geometry confidence, and direction provenance. Saving produces
+an exact rendered storyboard frame and shooting card from that state; reload persistence already
+crosses the planning application/repository boundary. Horizontal and vertical setups remain
+separate saved versions and targeted UI coverage proves their focal length and aspect state do not
+collapse into a crop. The same saved state produces downloadable plain-text and printable shot-plan
+handoffs. Linking only a filmmaker-approved (rather than merely proposed) direction awaits the
+unified decision contract in Phase 8; authenticated browser acceptance remains in Phase 12.
 
 **Acceptance:** a serious filmmaker can identify where the camera and subject go, what the frame is,
 why it serves the film, and how to execute it.

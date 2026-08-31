@@ -100,6 +100,16 @@ describe("BlueprintView", () => {
     });
     await user.selectOptions(screen.getByRole("combobox", { name: "Aspect ratio" }), "9:16");
     await user.selectOptions(screen.getByRole("combobox", { name: "Camera movement" }), "PUSH");
+    await user.click(
+      screen.getByText(/refine action, craft, and production notes/i),
+    );
+    await user.clear(screen.getByLabelText("Look"));
+    await user.type(screen.getByLabelText("Look"), "Cool dawn into one warm practical.");
+    await user.clear(screen.getByLabelText("Production notes"));
+    await user.type(
+      screen.getByLabelText("Production notes"),
+      "Protect the doorway and record thirty seconds of room tone.",
+    );
     await user.click(screen.getByRole("button", { name: "Save this shot" }));
 
     expect(onShotPlanning).toHaveBeenCalledOnce();
@@ -109,11 +119,35 @@ describe("BlueprintView", () => {
     expect(saved.activeShot.geometryConfidence).toBe("FILMMAKER_CONFIRMED");
     expect(saved.activeShot.movement.kind).toBe("PUSH");
     expect(saved.activeShot.camera.support).toBe("DOLLY");
+    expect(saved.activeShot.look).toBe("Cool dawn into one warm practical.");
+    expect(saved.activeShot.productionNotes).toContain("Protect the doorway");
+    expect(saved.activeShot.directionTitle).toBe("The first quiet bite");
     expect(saved.activeShot.setPieces.length).toBeGreaterThan(0);
     expect(saved.savedShots).toHaveLength(1);
     expect(
       screen.getAllByRole("img", { name: /9:16 camera view at 52 millimeters/i }),
     ).toHaveLength(2);
+    expect(screen.getByRole("button", { name: /download shot plan/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /print shot plan/i })).toBeInTheDocument();
+    expect(screen.getByText(/never a crop/i)).toBeInTheDocument();
+  });
+
+  it("preserves separately authored horizontal and vertical saved setups", async () => {
+    const onShotPlanning = vi.fn().mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<BlueprintView {...props({ onShotPlanning })} />);
+    await user.click(screen.getByRole("button", { name: /planenter and shape the shot/i }));
+    await user.click(screen.getByRole("button", { name: "Save this shot" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "Aspect ratio" }), "9:16");
+    fireEvent.change(screen.getByRole("slider", { name: "Focal length" }), {
+      target: { value: "50" },
+    });
+    await user.click(screen.getByRole("button", { name: "Save this shot" }));
+
+    const latest = onShotPlanning.mock.calls.at(-1)![0];
+    expect(latest.savedShots).toHaveLength(2);
+    expect(latest.savedShots[0].camera).toMatchObject({ aspectRatio: "16:9", focalLengthMm: 40 });
+    expect(latest.savedShots[1].camera).toMatchObject({ aspectRatio: "9:16", focalLengthMm: 50 });
   });
 
   it("keeps blocking and lighting in separate single-question diagrams", async () => {

@@ -52,8 +52,12 @@ export interface SpatialShotState {
   readonly blocking: string;
   readonly lightColor: string;
   readonly light: string;
+  readonly look?: string;
   readonly sound: string;
+  readonly productionNotes?: string;
   readonly rationale: string;
+  readonly directionTitle?: string;
+  readonly directionRationale?: string;
   readonly geometryConfidence: "OBSERVED" | "ESTIMATED" | "FILMMAKER_CONFIRMED";
 }
 
@@ -149,9 +153,15 @@ export function instructionAtDeskShotPlanning(): ShotPlanningState {
       blocking: "Seated listen → quick stand → three efficient checks → stillness.",
       lightColor: "#c9d7bd",
       light: "Existing overhead fluorescents; flat, slightly green, and honest to the office.",
+      look: "Restrained office color with honest fluorescent green and no decorative polish.",
       sound: "Dry room tone. Phone, pencil, drawer, keyboard, and mug carry the beat.",
+      productionNotes:
+        "Keep the desk geography continuous and preserve the yellow reminder, drawer, keyboard, and mug for every take.",
       rationale:
         "The medium-wide keeps every failed hiding place in one geography, so the turn arrives through performance and timing rather than coverage.",
+      directionTitle: "Instruction becomes physical evidence",
+      directionRationale:
+        "The single geography lets the audience understand the search without explanatory coverage.",
       geometryConfidence: "ESTIMATED",
     },
     savedShots: [],
@@ -202,7 +212,11 @@ export function isShotPlanningState(value: unknown): value is ShotPlanningState 
       typeof item.action === "string" &&
       typeof item.blocking === "string" &&
       typeof item.light === "string" &&
+      (item.look === undefined || typeof item.look === "string") &&
       typeof item.sound === "string" &&
+      (item.productionNotes === undefined || typeof item.productionNotes === "string") &&
+      (item.directionTitle === undefined || typeof item.directionTitle === "string") &&
+      (item.directionRationale === undefined || typeof item.directionRationale === "string") &&
       typeof item.rationale === "string"
     );
   };
@@ -212,4 +226,33 @@ export function isShotPlanningState(value: unknown): value is ShotPlanningState 
     Array.isArray(state.savedShots) &&
     state.savedShots.every(validShot)
   );
+}
+
+/** Stable, human-readable production handoff generated only from authoritative saved state. */
+export function renderShotPlanText(
+  projectTitle: string,
+  shots: readonly SpatialShotState[],
+): string {
+  const lines = [projectTitle.trim() || "Stroman OS shot plan", "", `Saved setups: ${shots.length}`];
+  for (const [index, shot] of shots.entries()) {
+    const camera = shot.camera;
+    lines.push(
+      "",
+      `${index + 1}. ${shot.title} · v${shot.version}`,
+      `Direction: ${shot.directionTitle || "Working creative direction"}`,
+      `Frame: ${camera.aspectRatio} · ${camera.focalLengthMm}mm · ${camera.support.toLowerCase()} · camera ${camera.position.y.toFixed(2)}m high`,
+      `Camera: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)}) → (${camera.target.x.toFixed(2)}, ${camera.target.y.toFixed(2)}, ${camera.target.z.toFixed(2)})`,
+      `Movement: ${shot.movement.kind.toLowerCase()} from (${shot.movement.start.x.toFixed(2)}, ${shot.movement.start.z.toFixed(2)}) to (${shot.movement.end.x.toFixed(2)}, ${shot.movement.end.z.toFixed(2)})`,
+      `Subject: ${shot.subject.label} · ${shot.subject.pose.toLowerCase()} · (${shot.subject.position.x.toFixed(2)}, ${shot.subject.position.z.toFixed(2)}) → (${shot.subject.endPosition.x.toFixed(2)}, ${shot.subject.endPosition.z.toFixed(2)})`,
+      `Action: ${shot.action}`,
+      `Blocking: ${shot.blocking}`,
+      `Light: ${shot.light}`,
+      `Look: ${shot.look || "Not yet specified"}`,
+      `Sound: ${shot.sound}`,
+      `Production notes: ${shot.productionNotes || "None recorded"}`,
+      `Why: ${shot.rationale}`,
+      `Geometry: ${shot.geometryConfidence.toLowerCase().replaceAll("_", " ")}`,
+    );
+  }
+  return `${lines.join("\n")}\n`;
 }

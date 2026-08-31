@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import {
+  renderShotPlanText,
   type SpatialSetPieceState,
   type ShotPlanningState,
   type SpatialPoint,
@@ -327,6 +328,15 @@ export function ShotPlanningSpace({
     setState(next);
     await onSave(next);
     setSavedMessage(`${shot.title} · version ${version} saved`);
+  };
+  const downloadPlan = () => {
+    const text = renderShotPlanText(shot.title, state.savedShots);
+    const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${shot.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "shot-plan"}.txt`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
   const distance = Math.hypot(
     shot.camera.target.x - shot.camera.position.x,
@@ -791,6 +801,7 @@ export function ShotPlanningSpace({
           <Info label="Action" value={shot.action} />
           <Info label="Blocking" value={shot.blocking} />
           <Info label="Light / color" value={shot.light} />
+          <Info label="Look" value={shot.look || "Not yet specified"} />
           <Info label="Sound" value={shot.sound} />
           <Info
             label="Camera → target"
@@ -800,6 +811,33 @@ export function ShotPlanningSpace({
         <details className="mt-4 border-t pt-4">
           <summary className="cursor-pointer text-sm font-semibold">Why this shot</summary>
           <p className="text-muted-foreground mt-2 text-sm">{shot.rationale}</p>
+        </details>
+        <details className="mt-4 border-t pt-4">
+          <summary className="cursor-pointer text-sm font-semibold">
+            Refine action, craft, and production notes
+          </summary>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            {(
+              [
+                ["Action", "action", shot.action],
+                ["Blocking", "blocking", shot.blocking],
+                ["Light", "light", shot.light],
+                ["Look", "look", shot.look ?? ""],
+                ["Sound", "sound", shot.sound],
+                ["Production notes", "productionNotes", shot.productionNotes ?? ""],
+              ] as const
+            ).map(([label, field, value]) => (
+              <label key={field} className="text-sm font-medium">
+                {label}
+                <textarea
+                  aria-label={label}
+                  className="mt-2 min-h-24 w-full rounded border p-2 font-normal"
+                  value={value}
+                  onChange={(event) => update({ [field]: event.target.value })}
+                />
+              </label>
+            ))}
+          </div>
         </details>
         <div className="mt-5 flex items-center gap-3">
           <Button onClick={() => void save()} disabled={busy}>
@@ -814,7 +852,22 @@ export function ShotPlanningSpace({
       </article>
       {state.savedShots.length ? (
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Saved shot → storyboard</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold">Saved shot → storyboard</h2>
+              <p className="text-muted-foreground text-xs">
+                Every saved ratio is its own authored camera setup, never a crop.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={downloadPlan}>
+                Download shot plan
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => window.print()}>
+                Print shot plan
+              </Button>
+            </div>
+          </div>
           {state.savedShots.map((saved) => (
             <article
               key={`${saved.id}-${saved.version}`}
@@ -828,7 +881,20 @@ export function ShotPlanningSpace({
                 />
                 <Info label="Action" value={saved.action} />
                 <Info label="Blocking" value={saved.blocking} />
+                <Info label="Light" value={saved.light} />
+                <Info label="Look" value={saved.look || "Not yet specified"} />
+                <Info label="Sound" value={saved.sound} />
+                <Info
+                  label="Production notes"
+                  value={saved.productionNotes || "None recorded"}
+                />
                 <Info label="Why" value={saved.rationale} />
+                {saved.directionTitle ? (
+                  <Info
+                    label="Creative direction"
+                    value={`${saved.directionTitle} — ${saved.directionRationale ?? saved.rationale}`}
+                  />
+                ) : null}
               </div>
             </article>
           ))}
