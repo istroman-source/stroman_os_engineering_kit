@@ -108,7 +108,7 @@ describe("evidence application", () => {
         source: { kind: "MEDIA_ASSET", mediaAssetId: ASSET },
       }),
     );
-    expect(created.provenance).toEqual({ kind: "MEDIA_ASSET", mediaAssetId: ASSET });
+    expect(created.provenance).toEqual({ kind: "MEDIA_ASSET", mediaAssetId: ASSET, frame: null });
     expect(
       unwrap(await getEvidenceReference(e, { actorId: OWNER, evidenceReferenceId: created.id })),
     ).toEqual(created);

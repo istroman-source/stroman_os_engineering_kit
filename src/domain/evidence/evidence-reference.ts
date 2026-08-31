@@ -10,6 +10,14 @@ export type EvidenceProvenance =
   | {
       readonly kind: "MEDIA_ASSET";
       readonly mediaAssetId: MediaAssetId;
+      readonly frame?: null | {
+        readonly index: number;
+        readonly timestampMs: number;
+        readonly storageKey: string;
+        readonly contentType: "image/jpeg" | "image/png" | "image/webp";
+        readonly byteSize: number;
+        readonly contentHash: string;
+      };
     }
   | {
       readonly kind: "TRANSCRIPT_SEGMENT";
@@ -37,7 +45,11 @@ export interface CreateEvidenceReferenceInput {
 export function createEvidenceReference(input: CreateEvidenceReferenceInput): EvidenceReference {
   const provenance: EvidenceProvenance =
     input.provenance.kind === "MEDIA_ASSET"
-      ? { kind: "MEDIA_ASSET", mediaAssetId: input.provenance.mediaAssetId }
+      ? {
+          kind: "MEDIA_ASSET",
+          mediaAssetId: input.provenance.mediaAssetId,
+          frame: input.provenance.frame ? { ...input.provenance.frame } : null,
+        }
       : {
           kind: "TRANSCRIPT_SEGMENT",
           mediaAssetId: input.provenance.mediaAssetId,

@@ -163,4 +163,56 @@ describe("AutomaticAnalysis", () => {
     expect(screen.getByText(/thought begins here/i)).toBeInTheDocument();
     expect(screen.getByText(/0:01\.0–0:02\.5/)).toBeInTheDocument();
   });
+
+  it("renders the exact retained sampled frame instead of a timestamp-only citation", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        if (String(input).includes("/evidence/")) {
+          return {
+            ok: true,
+            status: 200,
+            json: async () => ({
+              id: "media-evidence",
+              kind: "MEDIA_ASSET",
+              source: { id: "media-1", name: "clip.mp4", mediaType: "video/mp4" },
+              transcript: null,
+              frame: {
+                index: 0,
+                timestampMs: 500,
+                contentType: "image/jpeg",
+                byteSize: 42,
+                url: "/api/v1/projects/proj_video/evidence/media-evidence/frame",
+              },
+              limitation: null,
+            }),
+          } as Response;
+        }
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            run: { id: "run-video", version: 1, status: "COMPLETED" },
+            outputs: [
+              {
+                id: "out-1",
+                kind: "OBSERVATION",
+                content: "[OBSERVED @ 00:00.5] The actor crosses the doorway.",
+                confidence: 0.9,
+                evidenceReferenceIds: ["media-evidence"],
+              },
+            ],
+            recommendations: [],
+          }),
+        } as Response;
+      }),
+    );
+    const user = userEvent.setup();
+    render(<AutomaticAnalysis projectId="proj_video" />);
+    await user.click(await screen.findByRole("button", { name: "Inspect source 1" }));
+    expect(
+      await screen.findByRole("img", { name: /exact sampled frame at 0:00\.5/i }),
+    ).toHaveAttribute("src", "/api/v1/projects/proj_video/evidence/media-evidence/frame");
+    expect(screen.getByText(/Exact sampled frame · 0:00\.5/)).toBeInTheDocument();
+  });
 });

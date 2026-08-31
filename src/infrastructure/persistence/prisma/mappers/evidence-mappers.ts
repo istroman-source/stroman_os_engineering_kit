@@ -15,12 +15,41 @@ export function toEvidenceReference(row: EvidenceReferenceRow): EvidenceReferenc
   if (row.provenanceKind === "MEDIA_ASSET") {
     if (row.transcriptDocumentId !== null || row.transcriptSegmentId !== null)
       throw new PersistenceMappingError("evidenceReference media provenance shape");
+    const frameValues = [
+      row.frameIndex,
+      row.frameTimestampMs,
+      row.frameStorageKey,
+      row.frameContentType,
+      row.frameByteSize,
+      row.frameContentHash,
+    ];
+    const hasFrame = frameValues.every((value) => value !== null);
+    if (!hasFrame && frameValues.some((value) => value !== null))
+      throw new PersistenceMappingError("evidenceReference frame provenance shape");
+    if (
+      hasFrame &&
+      (row.frameIndex! < 0 ||
+        row.frameTimestampMs! < 0 ||
+        row.frameByteSize! <= 0 ||
+        !["image/jpeg", "image/png", "image/webp"].includes(row.frameContentType!))
+    )
+      throw new PersistenceMappingError("evidenceReference frame provenance value");
     provenance = {
       kind: "MEDIA_ASSET",
       mediaAssetId: orThrowMapping(
         MediaAssetId.parse(row.mediaAssetId),
         "evidenceReference.mediaAssetId",
       ),
+      frame: hasFrame
+        ? {
+            index: row.frameIndex!,
+            timestampMs: row.frameTimestampMs!,
+            storageKey: row.frameStorageKey!,
+            contentType: row.frameContentType! as "image/jpeg" | "image/png" | "image/webp",
+            byteSize: row.frameByteSize!,
+            contentHash: row.frameContentHash!,
+          }
+        : null,
     };
   } else if (row.provenanceKind === "TRANSCRIPT_SEGMENT") {
     if (row.transcriptDocumentId === null || row.transcriptSegmentId === null)
@@ -65,6 +94,24 @@ export function toEvidenceReferenceFields(
       value.provenance.kind === "TRANSCRIPT_SEGMENT" ? value.provenance.transcriptDocumentId : null,
     transcriptSegmentId:
       value.provenance.kind === "TRANSCRIPT_SEGMENT" ? value.provenance.transcriptSegmentId : null,
+    frameIndex:
+      value.provenance.kind === "MEDIA_ASSET" ? (value.provenance.frame?.index ?? null) : null,
+    frameTimestampMs:
+      value.provenance.kind === "MEDIA_ASSET"
+        ? (value.provenance.frame?.timestampMs ?? null)
+        : null,
+    frameStorageKey:
+      value.provenance.kind === "MEDIA_ASSET" ? (value.provenance.frame?.storageKey ?? null) : null,
+    frameContentType:
+      value.provenance.kind === "MEDIA_ASSET"
+        ? (value.provenance.frame?.contentType ?? null)
+        : null,
+    frameByteSize:
+      value.provenance.kind === "MEDIA_ASSET" ? (value.provenance.frame?.byteSize ?? null) : null,
+    frameContentHash:
+      value.provenance.kind === "MEDIA_ASSET"
+        ? (value.provenance.frame?.contentHash ?? null)
+        : null,
     createdAt: value.createdAt,
   };
 }

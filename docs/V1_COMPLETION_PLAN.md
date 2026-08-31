@@ -76,7 +76,7 @@ changed, and which current outputs used that intent.
 - [x] Preserve original input on retryable failure and support retry without unnecessary re-upload.
 - [x] Normalize transcript, audio/video, script/brief/note document, and reference-image intake into
   one source inventory while preserving type-specific processing.
-- [ ] Add an evidence inspector that opens the exact transcript excerpt or sampled frame supporting
+- [x] Add an evidence inspector that opens the exact transcript excerpt or sampled frame supporting
   an observation, interpretation, recommendation, or decision.
 - [x] Surface uncertainty, missing coverage, and processing provenance without exposing system
   plumbing by default.
@@ -87,10 +87,11 @@ original bytes are retained; transient persistence failures become single-claim 
 and unreadable/corrupt inputs remain visible as replacement-required records. The UI distinguishes
 uploading, processing, ready, retryable, and terminal states, polls interrupted processing, and can
 retry preserved input. Owner-scoped transcript evidence opens inline at the exact cited segment
-with neighboring context. Media provenance and cited time are inspectable, but retaining and
-serving the exact sampled frame remains open. Video, audio, transcripts/scripts, project documents,
-and reference images now share the durable inventory while keeping transcript parsing and video
-frame analysis type-specific. The final authenticated browser gate also remains open.
+with neighboring context. Each analyzed sampled frame is now integrity-hashed, retained, linked only
+to the claims that cite it, and served through an owner-scoped no-store route inside the inspector.
+Video, audio, transcripts/scripts, project documents, and reference images share the durable
+inventory while keeping transcript parsing and video-frame analysis type-specific. The final
+authenticated browser gate remains open.
 
 **Acceptance:** every source is durable and understandable; every cited claim can be inspected in
 its original context; recoverable failures never discard the input.

@@ -1,8 +1,10 @@
+import { createHash } from "node:crypto";
 import { err, ok } from "@/lib/result";
 import { InvalidValueError } from "@/domain/shared";
 import type { EvidenceReferenceId, EvidenceReferenceRepository } from "@/domain/evidence";
 import type { MediaAssetRepository, TranscriptDocumentRepository } from "@/domain/media-transcript";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
+import type { SourceStorage } from "@/domain/source-import";
 import { loadOwnedProject } from "@/application/media-transcript/media-transcript-access";
 import { loadOwnedEvidenceReference } from "./evidence-access";
 import { attempt } from "@/application/shared/attempt";
@@ -25,6 +27,12 @@ export interface EvidenceInspection {
     readonly endMs: number | null;
     readonly contextBefore: string | null;
     readonly contextAfter: string | null;
+  };
+  readonly frame: null | {
+    readonly index: number;
+    readonly timestampMs: number;
+    readonly contentType: "image/jpeg" | "image/png" | "image/webp";
+    readonly byteSize: number;
   };
   readonly limitation: string | null;
 }
@@ -71,8 +79,17 @@ export async function inspectEvidenceReference(
       kind: "MEDIA_ASSET",
       source: { id: media.value.id, name: media.value.fileName, mediaType: media.value.mediaType },
       transcript: null,
-      limitation:
-        "The cited sampled time is preserved in the finding. The sampled frame image is not retained after analysis yet.",
+      frame: evidence.value.provenance.frame
+        ? {
+            index: evidence.value.provenance.frame.index,
+            timestampMs: evidence.value.provenance.frame.timestampMs,
+            contentType: evidence.value.provenance.frame.contentType,
+            byteSize: evidence.value.provenance.frame.byteSize,
+          }
+        : null,
+      limitation: evidence.value.provenance.frame
+        ? null
+        : "This older media citation predates retained sampled-frame evidence.",
     });
   }
 
@@ -103,6 +120,52 @@ export async function inspectEvidenceReference(
       contextBefore: transcript.value.segments[index - 1]?.text ?? null,
       contextAfter: transcript.value.segments[index + 1]?.text ?? null,
     },
+    frame: null,
     limitation: null,
   });
+}
+
+export async function getEvidenceFrame(
+  deps: {
+    projects: ProjectRepository;
+    evidenceReferences: EvidenceReferenceRepository;
+    sourceStorage: SourceStorage;
+  },
+  input: {
+    actorId: OwnerId;
+    projectId: ProjectId;
+    evidenceReferenceId: EvidenceReferenceId;
+  },
+) {
+  const project = await loadOwnedProject(
+    deps.projects,
+    input.actorId,
+    input.projectId,
+    "evidenceReference.frame",
+  );
+  if (!project.ok) return project;
+  const evidence = await loadOwnedEvidenceReference(
+    deps.evidenceReferences,
+    input.actorId,
+    input.evidenceReferenceId,
+    "evidenceReference.frame",
+  );
+  if (!evidence.ok) return evidence;
+  if (
+    evidence.value.projectId !== input.projectId ||
+    evidence.value.provenance.kind !== "MEDIA_ASSET" ||
+    !evidence.value.provenance.frame
+  ) {
+    return err(new NotFoundError("EvidenceFrame", input.evidenceReferenceId));
+  }
+  const frame = evidence.value.provenance.frame;
+  const loaded = await attempt("sourceStorage.getEvidenceFrame", () =>
+    deps.sourceStorage.get(frame.storageKey),
+  );
+  if (!loaded.ok) return loaded;
+  const digest = `sha256:${createHash("sha256").update(loaded.value).digest("hex")}`;
+  if (loaded.value.byteLength !== frame.byteSize || digest !== frame.contentHash) {
+    return err(new InvalidValueError("The retained evidence frame failed its integrity check"));
+  }
+  return ok({ bytes: loaded.value, contentType: frame.contentType });
 }

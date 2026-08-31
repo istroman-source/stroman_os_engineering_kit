@@ -37,6 +37,13 @@ interface EvidenceInspection {
     contextBefore: string | null;
     contextAfter: string | null;
   };
+  frame: null | {
+    index: number;
+    timestampMs: number;
+    contentType: string;
+    byteSize: number;
+    url: string;
+  };
   limitation: string | null;
 }
 
@@ -115,6 +122,19 @@ function EvidenceInspector({ projectId, ids }: { projectId: string; ids: string[
                 <p className="text-muted-foreground">{selected.transcript.contextAfter}…</p>
               ) : null}
             </div>
+          ) : selected.frame ? (
+            <figure className="mt-2">
+              {/* The URL is an owner-scoped same-origin route, never provider-controlled HTML. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selected.frame.url}
+                alt={`Exact sampled frame at ${formatTime(selected.frame.timestampMs) ?? "source time"}`}
+                className="max-h-80 w-full rounded border object-contain"
+              />
+              <figcaption className="text-muted-foreground mt-1 text-xs">
+                Exact sampled frame · {formatTime(selected.frame.timestampMs)}
+              </figcaption>
+            </figure>
           ) : (
             <p className="text-muted-foreground mt-1 text-xs">
               Video or audio source. Use the cited time in the finding to inspect the original.

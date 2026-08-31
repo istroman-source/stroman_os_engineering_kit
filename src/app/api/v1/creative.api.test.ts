@@ -28,6 +28,8 @@ import {
 import { POST as retryProjectSource } from "./projects/[projectId]/imports/[importId]/retry/route";
 import { POST as runAutomaticAnalysis } from "./projects/[projectId]/automatic-analysis/route";
 import { GET as inspectEvidence } from "./projects/[projectId]/evidence/[evidenceReferenceId]/route";
+import { GET as getEvidenceFrame } from "./projects/[projectId]/evidence/[evidenceReferenceId]/frame/route";
+import { POST as analyzeMediaFrames } from "./projects/[projectId]/media-visual-analysis/route";
 import {
   instructionAtDeskShotPlanning,
   type LocationReconstructionProvider,
@@ -186,6 +188,68 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       params: { projectId, importId: failed.id },
     });
     expect(retried.status).toBe(409);
+  });
+
+  it("retains and serves the exact sampled frame behind owner-scoped evidence", async () => {
+    const projectId = await makeProject();
+    const media = new FormData();
+    media.append("file", new File([new Uint8Array([7, 8, 9])], "clip.mp4", { type: "video/mp4" }));
+    const imported = await call(importProjectSource, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: media,
+      headers: { "content-length": "4096", "idempotency-key": "visual-media" },
+    });
+    expect(imported.status).toBe(201);
+    const mediaId = (imported.body as { mediaId: string }).mediaId;
+    const firstFrame = new Uint8Array([1, 3, 5, 7]);
+    const secondFrame = new Uint8Array([2, 4, 6, 8]);
+    const samples = new FormData();
+    samples.append("mediaId", mediaId);
+    samples.append(
+      "frameMetadata",
+      JSON.stringify([
+        { index: 0, timestampMs: 500 },
+        { index: 1, timestampMs: 1_500 },
+      ]),
+    );
+    samples.append("frame", new File([firstFrame], "frame-0.jpg", { type: "image/jpeg" }));
+    samples.append("frame", new File([secondFrame], "frame-1.jpg", { type: "image/jpeg" }));
+    const analyzed = await call(analyzeMediaFrames, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: samples,
+      headers: { "content-length": "8192" },
+    });
+    expect(analyzed.status).toBe(201);
+    const evidenceReferenceId = (
+      analyzed.body as { outputs: Array<{ evidenceReferenceIds: string[] }> }
+    ).outputs[0]!.evidenceReferenceIds[0]!;
+    const inspected = await call(inspectEvidence, {
+      principal: ACTOR,
+      params: { projectId, evidenceReferenceId },
+    });
+    expect(inspected.body).toMatchObject({
+      frame: {
+        index: 0,
+        timestampMs: 500,
+        url: `/api/v1/projects/${projectId}/evidence/${evidenceReferenceId}/frame`,
+      },
+    });
+    const frame = await getEvidenceFrame(
+      new Request("http://localhost/api", { headers: { "x-test-principal": ACTOR } }),
+      { params: Promise.resolve({ projectId, evidenceReferenceId }) },
+    );
+    expect(frame.status).toBe(200);
+    expect(frame.headers.get("content-type")).toBe("image/jpeg");
+    expect(new Uint8Array(await frame.arrayBuffer())).toEqual(firstFrame);
+    const denied = await getEvidenceFrame(
+      new Request("http://localhost/api", { headers: { "x-test-principal": OTHER } }),
+      { params: Promise.resolve({ projectId, evidenceReferenceId }) },
+    );
+    expect(denied.status).toBeGreaterThanOrEqual(403);
   });
 
   it("404 before analysis; analyzes into a blueprint; then GET returns it", async () => {

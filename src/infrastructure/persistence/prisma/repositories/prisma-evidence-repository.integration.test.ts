@@ -110,6 +110,29 @@ describe("PrismaEvidenceReferenceRepository", () => {
     expect(await evidence.listByTranscriptDocument(TRANSCRIPT)).toEqual([segment]);
   });
 
+  it("persists exact sampled-frame provenance", async () => {
+    const frame = createEvidenceReference({
+      id: EvidenceReferenceId.unsafe("evref_00000004"),
+      ownerId: OWNER,
+      projectId: PROJECT,
+      provenance: {
+        kind: "MEDIA_ASSET",
+        mediaAssetId: ASSET,
+        frame: {
+          index: 1,
+          timestampMs: 1_500,
+          storageKey: `${OWNER}/${PROJECT}/evidence-frames/frame.jpg`,
+          contentType: "image/jpeg",
+          byteSize: 24,
+          contentHash: "sha256:frame",
+        },
+      },
+      now: NOW,
+    });
+    await evidence.insert(frame);
+    expect(await evidence.findById(frame.id)).toEqual(frame);
+  });
+
   it("rejects duplicate identifiers without overwriting", async () => {
     const first = mediaEvidence();
     await evidence.insert(first);

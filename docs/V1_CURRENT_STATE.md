@@ -110,13 +110,14 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 - Unreadable or integrity-invalid files remain visible but cannot be unsafely retried.
 - Transcript evidence can be opened from observations, interpretations, and recommendations at the
   exact cited excerpt with neighboring context, source identity, speaker, and time range.
+- Sampled video frames are retained with byte size, digest, source time, and owner/project
+  provenance; the inspector renders the exact cited image through an integrity-checked private
+  route rather than forcing the filmmaker to translate a timestamp.
 - Targeted domain/UI tests, repository integration tests, and real-PostgreSQL HTTP tests cover
   preservation, retry, reload representation, ownership, and terminal replacement behavior.
 
 **Missing for V1**
 
-- Media evidence exposes the original source and cited sampled time, but the exact sampled frame is
-  not retained after analysis yet.
 - Transcript and sampled-frame understanding are separate paths; the primary analysis does not yet
   synthesize both as one evidence set.
 - Source processing progress and recovery require stronger browser-level acceptance coverage.

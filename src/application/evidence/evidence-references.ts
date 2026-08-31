@@ -65,7 +65,7 @@ export async function createEvidenceReference(
     if (!media.ok) return media;
     if (media.value.projectId !== input.projectId)
       return err(new InvalidValueError("Evidence media must belong to the evidence project"));
-    provenance = { kind: "MEDIA_ASSET" as const, mediaAssetId: media.value.id };
+    provenance = { kind: "MEDIA_ASSET" as const, mediaAssetId: media.value.id, frame: null };
   } else {
     const source = input.source;
     const transcript = await loadOwnedTranscript(

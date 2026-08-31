@@ -153,7 +153,7 @@ components:
         createdAt: { type: string, format: date-time }
     EvidenceInspection:
       type: object
-      required: [id, kind, source, transcript, limitation]
+      required: [id, kind, source, transcript, frame, limitation]
       properties:
         id: { type: string }
         kind: { type: string, enum: [MEDIA_ASSET, TRANSCRIPT_SEGMENT] }
@@ -178,6 +178,17 @@ components:
                 endMs: { type: [integer, "null"] }
                 contextBefore: { type: [string, "null"] }
                 contextAfter: { type: [string, "null"] }
+            - { type: "null" }
+        frame:
+          anyOf:
+            - type: object
+              required: [index, timestampMs, contentType, byteSize, url]
+              properties:
+                index: { type: integer, minimum: 0 }
+                timestampMs: { type: integer, minimum: 0 }
+                contentType: { type: string, enum: [image/jpeg, image/png, image/webp] }
+                byteSize: { type: integer, minimum: 1 }
+                url: { type: string }
             - { type: "null" }
         limitation: { type: [string, "null"] }
     AutomaticAnalysisResult:
@@ -2502,6 +2513,29 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/EvidenceInspection" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/evidence/{evidenceReferenceId}/frame:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: evidenceReferenceId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectEvidenceFrame
+      summary: Serve an integrity-checked retained sampled frame to its project owner.
+      responses:
+        "200":
+          description: Retained JPEG, PNG, or WebP frame bytes.
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/media-visual-analysis:

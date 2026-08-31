@@ -549,6 +549,12 @@ model EvidenceReference {
   mediaAssetId         String                 @map("media_asset_id")
   transcriptDocumentId String?                @map("transcript_document_id")
   transcriptSegmentId  String?                @map("transcript_segment_id")
+  frameIndex           Int?                   @map("frame_index")
+  frameTimestampMs     Int?                   @map("frame_timestamp_ms")
+  frameStorageKey      String?                @map("frame_storage_key")
+  frameContentType     String?                @map("frame_content_type")
+  frameByteSize        Int?                   @map("frame_byte_size")
+  frameContentHash     String?                @map("frame_content_hash")
   createdAt            DateTime               @map("created_at") @db.Timestamptz(3)
 
   project           Project                          @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)

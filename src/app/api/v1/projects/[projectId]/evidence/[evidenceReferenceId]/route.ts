@@ -15,6 +15,17 @@ export const GET = apiRoute<{ projectId: string; evidenceReferenceId: string }>(
       projectId,
       evidenceReferenceId,
     });
-    return sendResult(result, { requestId, serialize: (value) => value });
+    return sendResult(result, {
+      requestId,
+      serialize: (value) => ({
+        ...value,
+        frame: value.frame
+          ? {
+              ...value.frame,
+              url: `/api/v1/projects/${projectId}/evidence/${evidenceReferenceId}/frame`,
+            }
+          : null,
+      }),
+    });
   },
 );
