@@ -18,6 +18,7 @@ import {
 import {
   createEvidenceReference,
   getEvidenceReference,
+  inspectEvidenceReference,
   listEvidenceForMediaAsset,
   listEvidenceForProject,
   listEvidenceForTranscript,
@@ -59,7 +60,25 @@ function environment() {
     mediaAssetId: ASSET,
     title: "Interview",
     speakers: [],
-    segments: [{ id: SEGMENT, sequence: 0, text: "A grounded statement" }],
+    segments: [
+      {
+        id: TranscriptSegmentId.unsafe("trseg_00000000"),
+        sequence: 0,
+        text: "The setup before the cited moment",
+      },
+      {
+        id: SEGMENT,
+        sequence: 1,
+        text: "A grounded statement",
+        startMs: 1_000,
+        endMs: 2_000,
+      },
+      {
+        id: TranscriptSegmentId.unsafe("trseg_00000002"),
+        sequence: 2,
+        text: "The response after the cited moment",
+      },
+    ],
     now: NOW,
   });
   if (!transcript.ok) throw transcript.error;
@@ -125,6 +144,25 @@ describe("evidence application", () => {
         await listEvidenceForTranscript(e, { actorId: OWNER, transcriptDocumentId: TRANSCRIPT }),
       ),
     ).toEqual([created]);
+    expect(
+      unwrap(
+        await inspectEvidenceReference(e, {
+          actorId: OWNER,
+          projectId: PROJECT,
+          evidenceReferenceId: created.id,
+        }),
+      ),
+    ).toMatchObject({
+      kind: "TRANSCRIPT_SEGMENT",
+      source: { name: "interview.mp4" },
+      transcript: {
+        text: "A grounded statement",
+        startMs: 1_000,
+        endMs: 2_000,
+        contextBefore: "The setup before the cited moment",
+        contextAfter: "The response after the cited moment",
+      },
+    });
   });
 
   it("rejects missing segments without persistence", async () => {
@@ -167,6 +205,22 @@ describe("evidence application", () => {
     });
     expect(result.ok).toBe(false);
     expect(await e.evidenceReferences.listByProject(PROJECT)).toEqual([]);
+    const created = unwrap(
+      await createEvidenceReference(e, {
+        actorId: OWNER,
+        projectId: PROJECT,
+        source: { kind: "MEDIA_ASSET", mediaAssetId: ASSET },
+      }),
+    );
+    expect(
+      (
+        await inspectEvidenceReference(e, {
+          actorId: OTHER,
+          projectId: PROJECT,
+          evidenceReferenceId: created.id,
+        })
+      ).ok,
+    ).toBe(false);
   });
 
   it("returns safe failures for unknown records and repository errors", async () => {

@@ -11,7 +11,7 @@ const MAX_FILE_BYTES = 50 * 1024 * 1024;
 const MAX_REQUEST_BYTES = MAX_FILE_BYTES + 1024 * 1024;
 const transcriptFormats = new Set<TranscriptFormat>(["srt", "vtt", "json", "text"]);
 
-const serialize = (value: {
+export const serializeSourceImport = (value: {
   id: string;
   status: string;
   sourceName: string;
@@ -20,6 +20,7 @@ const serialize = (value: {
   contentHash: string;
   mediaAssetId: string | null;
   transcriptDocumentId: string | null;
+  failureCode: string | null;
   createdAt: Date;
 }) => ({
   id: value.id,
@@ -30,6 +31,7 @@ const serialize = (value: {
   contentHash: value.contentHash,
   mediaId: value.mediaAssetId,
   transcriptId: value.transcriptDocumentId,
+  failureCode: value.failureCode,
   createdAt: value.createdAt.toISOString(),
 });
 
@@ -69,7 +71,7 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
       transcriptFormat,
     },
   );
-  return sendResult(result, { requestId, status: 201, serialize });
+  return sendResult(result, { requestId, status: 201, serialize: serializeSourceImport });
 });
 
 export const GET = apiRoute<{ projectId: string }>(async ({ req, params, requestId }) => {
@@ -80,5 +82,5 @@ export const GET = apiRoute<{ projectId: string }>(async ({ req, params, request
   if (!project || project.ownerId !== actorId)
     throw new HttpError(404, "NOT_FOUND", "Project not found.");
   const imports = await context.sourceImports.listByProject(projectId);
-  return json({ items: imports.map(serialize) }, { requestId });
+  return json({ items: imports.map(serializeSourceImport) }, { requestId });
 });

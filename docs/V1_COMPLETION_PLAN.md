@@ -71,9 +71,9 @@ changed, and which current outputs used that intent.
 
 ## Phase 3 — source inventory and evidence inspection
 
-- [ ] Replace ambiguous source statuses with uploading/processing/ready/retryable/failed states and
+- [x] Replace ambiguous source statuses with uploading/processing/ready/retryable/failed states and
   plain-language recovery.
-- [ ] Preserve original input on retryable failure and support retry without unnecessary re-upload.
+- [x] Preserve original input on retryable failure and support retry without unnecessary re-upload.
 - [ ] Normalize transcript, audio/video, script/brief/note document, and reference-image intake into
   one source inventory while preserving type-specific processing.
 - [ ] Add an evidence inspector that opens the exact transcript excerpt or sampled frame supporting
@@ -81,6 +81,15 @@ changed, and which current outputs used that intent.
 - [ ] Surface uncertainty, missing coverage, and processing provenance without exposing system
   plumbing by default.
 - [ ] Add authorization, integrity, retry, reload, and browser-level regression coverage.
+
+Implemented locally: every accepted upload now creates a durable processing receipt after its
+original bytes are retained; transient persistence failures become single-claim retryable records,
+and unreadable/corrupt inputs remain visible as replacement-required records. The UI distinguishes
+uploading, processing, ready, retryable, and terminal states, polls interrupted processing, and can
+retry preserved input. Owner-scoped transcript evidence opens inline at the exact cited segment
+with neighboring context. Media provenance and cited time are inspectable, but retaining and
+serving the exact sampled frame remains open, as do document/reference-image normalization and the
+final authenticated browser gate.
 
 **Acceptance:** every source is durable and understandable; every cited claim can be inspected in
 its original context; recoverable failures never discard the input.

@@ -97,6 +97,7 @@ beforeEach(async () => {
 describe("Prisma source import repository", () => {
   it("commits receipt, media, transcript, and ordered segments atomically", async () => {
     const input = values();
+    await repository.start(input.receipt);
     const completed = await repository.completeAtomically(input);
     expect(completed).toMatchObject({
       status: "COMPLETED",
@@ -109,6 +110,7 @@ describe("Prisma source import repository", () => {
 
   it("rolls back every record when a child violates persistence constraints", async () => {
     const input = values();
+    await repository.start(input.receipt);
     const corrupt = {
       ...input.transcript,
       segments: [
@@ -121,6 +123,25 @@ describe("Prisma source import repository", () => {
     ).rejects.toBeTruthy();
     expect(await db.mediaAsset.count()).toBe(0);
     expect(await db.transcriptDocument.count()).toBe(0);
-    expect(await db.sourceImport.count()).toBe(0);
+    expect(await db.sourceImport.findUnique({ where: { id: input.receipt.id } })).toMatchObject({
+      status: "PROCESSING",
+      mediaAssetId: null,
+    });
+  });
+
+  it("claims one retry atomically and records its lifecycle", async () => {
+    const { receipt } = values();
+    await repository.start(receipt);
+    const failed = await repository.markFailure({
+      id: receipt.id,
+      projectId: PROJECT,
+      status: "RETRYABLE_FAILURE",
+      failureCode: "PERSISTENCE_UNAVAILABLE",
+      now: NOW,
+    });
+    expect(failed.status).toBe("RETRYABLE_FAILURE");
+    const claimed = await repository.claimRetry(receipt.id, PROJECT, NOW);
+    expect(claimed).toMatchObject({ status: "PROCESSING", failureCode: null });
+    await expect(repository.claimRetry(receipt.id, PROJECT, NOW)).resolves.toBeNull();
   });
 });

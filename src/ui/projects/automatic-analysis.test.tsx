@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AutomaticAnalysis } from "./automatic-analysis";
 
@@ -107,5 +108,59 @@ describe("AutomaticAnalysis", () => {
       "[OBSERVED @ 00:02.0] The hand overlaps the yellow note.",
       "[OBSERVED @ 00:03.8] The hand reaches the mug.",
     ]);
+  });
+
+  it("opens the exact transcript excerpt with neighboring source context", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      if (String(input).includes("/evidence/")) {
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            id: "evidence-1",
+            kind: "TRANSCRIPT_SEGMENT",
+            source: { id: "media-1", name: "interview.vtt", mediaType: "text/vtt" },
+            transcript: {
+              title: "Interview",
+              segmentId: "segment-1",
+              speaker: "Director",
+              text: "This is the exact cited sentence.",
+              startMs: 1_000,
+              endMs: 2_500,
+              contextBefore: "The thought begins here.",
+              contextAfter: "The thought resolves here.",
+            },
+            limitation: null,
+          }),
+        } as Response;
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          run: { id: "run-1", version: 1, status: "COMPLETED" },
+          outputs: [
+            {
+              id: "out-1",
+              kind: "OBSERVATION",
+              content: "Source-backed moment: This is the exact cited sentence.",
+              confidence: 1,
+              evidenceReferenceIds: ["evidence-1"],
+            },
+          ],
+          recommendations: [],
+        }),
+      } as Response;
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const user = userEvent.setup();
+    render(<AutomaticAnalysis projectId="proj_1" />);
+    await user.click(await screen.findByRole("button", { name: "Inspect source 1" }));
+
+    expect(await screen.findByRole("complementary", { name: "Source evidence" })).toHaveTextContent(
+      "Director: This is the exact cited sentence.",
+    );
+    expect(screen.getByText(/thought begins here/i)).toBeInTheDocument();
+    expect(screen.getByText(/0:01\.0–0:02\.5/)).toBeInTheDocument();
   });
 });

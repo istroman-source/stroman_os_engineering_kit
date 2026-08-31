@@ -133,6 +133,7 @@ components:
           contentHash,
           mediaId,
           transcriptId,
+          failureCode,
           createdAt,
         ]
       properties:
@@ -146,7 +147,39 @@ components:
         contentHash: { type: string }
         mediaId: { type: [string, "null"] }
         transcriptId: { type: [string, "null"] }
+        failureCode:
+          type: [string, "null"]
+          description: Stable failure category; technical internals are not exposed.
         createdAt: { type: string, format: date-time }
+    EvidenceInspection:
+      type: object
+      required: [id, kind, source, transcript, limitation]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [MEDIA_ASSET, TRANSCRIPT_SEGMENT] }
+        source:
+          type: object
+          required: [id, name, mediaType]
+          properties:
+            id: { type: string }
+            name: { type: string }
+            mediaType: { type: string }
+        transcript:
+          anyOf:
+            - type: object
+              required:
+                [title, segmentId, speaker, text, startMs, endMs, contextBefore, contextAfter]
+              properties:
+                title: { type: string }
+                segmentId: { type: string }
+                speaker: { type: [string, "null"] }
+                text: { type: string }
+                startMs: { type: [integer, "null"] }
+                endMs: { type: [integer, "null"] }
+                contextBefore: { type: [string, "null"] }
+                contextAfter: { type: [string, "null"] }
+            - { type: "null" }
+        limitation: { type: [string, "null"] }
     AutomaticAnalysisResult:
       type: object
       required: [run, outputs, recommendations]
@@ -2421,6 +2454,52 @@ paths:
           description: Content-Length is required before an upload body is read.
         "413":
           description: Upload request exceeds the bounded in-memory request limit.
+  /api/v1/projects/{projectId}/imports/{importId}/retry:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: importId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: retryProjectSourceImport
+      summary: Retry a recoverable source import using its preserved original bytes.
+      responses:
+        "200":
+          description: Current import receipt after the idempotent retry attempt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SourceImport" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/projects/{projectId}/evidence/{evidenceReferenceId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: evidenceReferenceId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: inspectProjectEvidence
+      summary: Inspect the owner-scoped source context supporting a claim.
+      responses:
+        "200":
+          description: Exact transcript excerpt or media-source provenance.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EvidenceInspection" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/media-visual-analysis:
     parameters:
       - name: projectId

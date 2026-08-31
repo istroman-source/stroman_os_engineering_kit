@@ -54,6 +54,10 @@ export class InMemorySourceImportRepository implements SourceImportRepository {
   readonly transcripts = new Map<string, TranscriptDocument>();
   failNext = false;
 
+  async findById(id: string): Promise<SourceImportReceipt | null> {
+    return this.receipts.get(id) ?? null;
+  }
+
   async findByKey(projectId: ProjectId, key: string): Promise<SourceImportReceipt | null> {
     return (
       [...this.receipts.values()].find(
@@ -68,6 +72,55 @@ export class InMemorySourceImportRepository implements SourceImportRepository {
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime() || a.id.localeCompare(b.id));
   }
 
+  async start(receipt: SourceImportReceipt): Promise<SourceImportReceipt> {
+    if (
+      [...this.receipts.values()].some(
+        (value) =>
+          value.projectId === receipt.projectId && value.idempotencyKey === receipt.idempotencyKey,
+      )
+    )
+      throw new ConflictError("Duplicate import");
+    this.receipts.set(receipt.id, receipt);
+    return receipt;
+  }
+
+  async claimRetry(
+    id: string,
+    projectId: ProjectId,
+    now: Date,
+  ): Promise<SourceImportReceipt | null> {
+    const receipt = this.receipts.get(id);
+    if (!receipt || receipt.projectId !== projectId || receipt.status !== "RETRYABLE_FAILURE")
+      return null;
+    const claimed = {
+      ...receipt,
+      status: "PROCESSING" as const,
+      failureCode: null,
+      updatedAt: now,
+    };
+    this.receipts.set(id, claimed);
+    return claimed;
+  }
+
+  async markFailure(input: {
+    id: string;
+    projectId: ProjectId;
+    status: "RETRYABLE_FAILURE" | "TERMINAL_FAILURE";
+    failureCode: string;
+    now: Date;
+  }): Promise<SourceImportReceipt> {
+    const receipt = this.receipts.get(input.id);
+    if (!receipt || receipt.projectId !== input.projectId) throw new Error("Import not found");
+    const failed = {
+      ...receipt,
+      status: input.status,
+      failureCode: input.failureCode,
+      updatedAt: input.now,
+    };
+    this.receipts.set(input.id, failed);
+    return failed;
+  }
+
   async completeAtomically(input: {
     receipt: SourceImportReceipt;
     media: MediaAsset;
@@ -77,14 +130,6 @@ export class InMemorySourceImportRepository implements SourceImportRepository {
       this.failNext = false;
       throw new Error("injected atomic failure");
     }
-    if (
-      [...this.receipts.values()].some(
-        (value) =>
-          value.projectId === input.receipt.projectId &&
-          value.idempotencyKey === input.receipt.idempotencyKey,
-      )
-    )
-      throw new ConflictError("Duplicate import");
     const completed: SourceImportReceipt = {
       ...input.receipt,
       status: "COMPLETED",
@@ -93,7 +138,7 @@ export class InMemorySourceImportRepository implements SourceImportRepository {
     };
     this.media.set(input.media.id, input.media);
     if (input.transcript) this.transcripts.set(input.transcript.id, input.transcript);
-    this.receipts.set(completed.id, completed);
+    this.receipts.set(input.receipt.id, completed);
     return completed;
   }
 }

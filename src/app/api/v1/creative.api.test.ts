@@ -22,6 +22,13 @@ import { GET as getLocationGeometry } from "./projects/[projectId]/location-envi
 import { POST as saveLocationShot } from "./projects/[projectId]/location-shots/route";
 import { GET as getLocationShot } from "./projects/[projectId]/location-shots/[mediaAssetId]/route";
 import {
+  GET as listProjectImports,
+  POST as importProjectSource,
+} from "./projects/[projectId]/imports/route";
+import { POST as retryProjectSource } from "./projects/[projectId]/imports/[importId]/retry/route";
+import { POST as runAutomaticAnalysis } from "./projects/[projectId]/automatic-analysis/route";
+import { GET as inspectEvidence } from "./projects/[projectId]/evidence/[evidenceReferenceId]/route";
+import {
   instructionAtDeskShotPlanning,
   type LocationReconstructionProvider,
 } from "@/domain/creative";
@@ -100,6 +107,87 @@ function testLocationGlb(): Uint8Array {
 }
 
 describe("Analyze Project (real HTTP + PostgreSQL)", () => {
+  it("preserves source status and opens exact owner-scoped transcript evidence", async () => {
+    const projectId = await makeProject();
+    const transcript = new FormData();
+    transcript.append(
+      "file",
+      new File(
+        ["First context.\n\nThe exact grounded sentence.\n\nFinal context."],
+        "interview.txt",
+        {
+          type: "text/plain",
+        },
+      ),
+    );
+    transcript.append("transcriptFormat", "text");
+    const imported = await call(importProjectSource, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: transcript,
+      headers: { "content-length": "4096", "idempotency-key": "evidence-transcript" },
+    });
+    expect(imported.status).toBe(201);
+    expect(imported.body).toMatchObject({ status: "COMPLETED", sourceName: "interview.txt" });
+    expect(
+      (await call(listProjectImports, { principal: OTHER, params: { projectId } })).status,
+    ).toBe(404);
+
+    const analyzed = await call(runAutomaticAnalysis, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+    });
+    expect(analyzed.status).toBe(201);
+    const evidenceReferenceId = (
+      analyzed.body as { outputs: Array<{ evidenceReferenceIds: string[] }> }
+    ).outputs[0]!.evidenceReferenceIds[0]!;
+    const inspected = await call(inspectEvidence, {
+      principal: ACTOR,
+      params: { projectId, evidenceReferenceId },
+    });
+    expect(inspected.status).toBe(200);
+    expect(inspected.body).toMatchObject({
+      kind: "TRANSCRIPT_SEGMENT",
+      source: { name: "interview.txt" },
+      transcript: { text: expect.any(String) },
+    });
+    expect(
+      (
+        await call(inspectEvidence, {
+          principal: OTHER,
+          params: { projectId, evidenceReferenceId },
+        })
+      ).status,
+    ).toBe(403);
+  });
+
+  it("keeps an unreadable transcript visible and refuses an unsafe retry", async () => {
+    const projectId = await makeProject();
+    const transcript = new FormData();
+    transcript.append("file", new File(["not valid vtt"], "broken.vtt", { type: "text/vtt" }));
+    transcript.append("transcriptFormat", "vtt");
+    const imported = await call(importProjectSource, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      body: transcript,
+      headers: { "content-length": "4096", "idempotency-key": "broken-transcript" },
+    });
+    expect(imported.status).toBe(422);
+    const listed = await call(listProjectImports, { principal: ACTOR, params: { projectId } });
+    expect(listed.status).toBe(200);
+    const failed = (listed.body as { items: Array<{ id: string; status: string }> }).items[0]!;
+    expect(failed.status).toBe("TERMINAL_FAILURE");
+    const retried = await call(retryProjectSource, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId, importId: failed.id },
+    });
+    expect(retried.status).toBe(409);
+  });
+
   it("404 before analysis; analyzes into a blueprint; then GET returns it", async () => {
     const projectId = await makeProject();
 

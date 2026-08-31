@@ -99,14 +99,24 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   interpretations, recommendations, and recommendation-evidence joins.
 - Grounded analysis rejects fabricated citations and preserves empty states for insufficient signal.
 
+**Completed in the functional pass**
+
+- Source intake now exposes honest uploading, processing, ready, retryable, and replacement-required
+  states with plain-language next actions.
+- Original bytes are retained before processing is attempted. Transient completion failures create
+  a durable retryable receipt, and retry claims the preserved input once without another upload.
+- Unreadable or integrity-invalid files remain visible but cannot be unsafely retried.
+- Transcript evidence can be opened from observations, interpretations, and recommendations at the
+  exact cited excerpt with neighboring context, source identity, speaker, and time range.
+- Targeted domain/UI tests, repository integration tests, and real-PostgreSQL HTTP tests cover
+  preservation, retry, reload representation, ownership, and terminal replacement behavior.
+
 **Missing for V1**
 
-- The source inventory does not clearly expose retryable versus terminal failures or offer a
-  preserved-input retry action; all non-complete items are currently shown as “Adding…”.
 - Scripts, briefs, notes, reference images, and general documents are not accepted through one
   coherent source workflow.
-- Filmmakers cannot open a recommendation or interpretation and inspect the exact supporting source
-  excerpt/frame in context.
+- Media evidence exposes the original source and cited sampled time, but the exact sampled frame is
+  not retained after analysis yet.
 - Transcript and sampled-frame understanding are separate paths; the primary analysis does not yet
   synthesize both as one evidence set.
 - Source processing progress and recovery require stronger browser-level acceptance coverage.
