@@ -17,7 +17,7 @@ export interface SourceImportReceipt {
   readonly idempotencyKey: string;
   readonly status: SourceImportStatus;
   readonly sourceName: string;
-  readonly sourceKind: "MEDIA" | "TRANSCRIPT";
+  readonly sourceKind: "MEDIA" | "TRANSCRIPT" | "DOCUMENT" | "REFERENCE_IMAGE";
   readonly contentType: string;
   readonly byteSize: number;
   readonly contentHash: string;

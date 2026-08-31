@@ -8,7 +8,7 @@ interface ImportItem {
   id: string;
   status: "UPLOADING" | "PROCESSING" | "COMPLETED" | "RETRYABLE_FAILURE" | "TERMINAL_FAILURE";
   sourceName: string;
-  sourceKind: "MEDIA" | "TRANSCRIPT";
+  sourceKind: "MEDIA" | "TRANSCRIPT" | "DOCUMENT" | "REFERENCE_IMAGE";
   byteSize: number;
   failureCode?: string | null;
 }
@@ -29,7 +29,7 @@ const STATUS_COPY: Record<ImportItem["status"], { label: string; detail: string 
 
 export function SourceIntake({ projectId }: { projectId: string }) {
   const [items, setItems] = useState<ImportItem[]>([]);
-  const [busy, setBusy] = useState<"Media" | "Transcript" | null>(null);
+  const [busy, setBusy] = useState<"Media" | "Transcript" | "Context" | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activity, setActivity] = useState<string | null>(null);
@@ -90,7 +90,10 @@ export function SourceIntake({ projectId }: { projectId: string }) {
     }
   }
 
-  async function upload(event: FormEvent<HTMLFormElement>, kind: "Media" | "Transcript") {
+  async function upload(
+    event: FormEvent<HTMLFormElement>,
+    kind: "Media" | "Transcript" | "Context",
+  ) {
     event.preventDefault();
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
@@ -103,6 +106,9 @@ export function SourceIntake({ projectId }: { projectId: string }) {
         extension === "srt" || extension === "vtt" || extension === "json" ? extension : "text",
       );
     }
+    if (kind === "Context") {
+      form.set("sourceKind", file.type.startsWith("image/") ? "REFERENCE_IMAGE" : "DOCUMENT");
+    }
     setBusy(kind);
     setError(null);
     setMediaInsight(null);
@@ -110,12 +116,20 @@ export function SourceIntake({ projectId }: { projectId: string }) {
       id: `pending-${kind}`,
       status: "UPLOADING",
       sourceName: file.name,
-      sourceKind: kind === "Media" ? "MEDIA" : "TRANSCRIPT",
+      sourceKind:
+        kind === "Transcript"
+          ? "TRANSCRIPT"
+          : kind === "Context" && file.type.startsWith("image/")
+            ? "REFERENCE_IMAGE"
+            : kind === "Context"
+              ? "DOCUMENT"
+              : "MEDIA",
       byteSize: file.size,
     };
     setItems((current) => [...current, temporary]);
     try {
-      const frames = kind === "Media" ? await extractVideoFrames(file) : [];
+      const frames =
+        kind === "Media" && file.type.startsWith("video/") ? await extractVideoFrames(file) : [];
       setActivity(frames.length ? "Importing media…" : null);
       const response = await fetch(`/api/v1/projects/${projectId}/imports`, {
         method: "POST",
@@ -183,7 +197,7 @@ export function SourceIntake({ projectId }: { projectId: string }) {
         Start with a video, audio recording, or transcript. Stroman keeps the original material and
         helps you find the moments worth using.
       </p>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <form onSubmit={(event) => upload(event, "Media")} className="flex flex-col gap-2">
           <label className="text-sm font-medium" htmlFor="media-file">
             Video or audio
@@ -216,6 +230,22 @@ export function SourceIntake({ projectId }: { projectId: string }) {
             {busy === "Transcript" ? "Adding…" : "Add transcript"}
           </Button>
         </form>
+        <form onSubmit={(event) => upload(event, "Context")} className="flex flex-col gap-2">
+          <label className="text-sm font-medium" htmlFor="context-file">
+            Brief, notes, or reference image
+          </label>
+          <input
+            id="context-file"
+            className="max-w-full text-sm"
+            name="file"
+            type="file"
+            accept=".txt,.md,.pdf,.doc,.docx,image/*"
+            required
+          />
+          <Button type="submit" disabled={busy !== null}>
+            {busy === "Context" ? "Adding context…" : "Add project context"}
+          </Button>
+        </form>
       </div>
       {error ? (
         <p role="alert" className="text-destructive mt-3 text-sm">
@@ -237,7 +267,13 @@ export function SourceIntake({ projectId }: { projectId: string }) {
                   <span>
                     <span className="font-medium">{item.sourceName}</span>
                     <span className="text-muted-foreground ml-2">
-                      {item.sourceKind === "MEDIA" ? "Media" : "Transcript"}
+                      {item.sourceKind === "MEDIA"
+                        ? "Media"
+                        : item.sourceKind === "TRANSCRIPT"
+                          ? "Transcript"
+                          : item.sourceKind === "REFERENCE_IMAGE"
+                            ? "Reference image"
+                            : "Document"}
                     </span>
                   </span>
                   <span className="font-medium">{status.label}</span>

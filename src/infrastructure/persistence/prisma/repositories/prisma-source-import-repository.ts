@@ -18,7 +18,7 @@ const ReceiptRow = z.object({
   idempotencyKey: z.string().min(1),
   status: z.enum(["PROCESSING", "COMPLETED", "RETRYABLE_FAILURE", "TERMINAL_FAILURE"]),
   sourceName: z.string().min(1),
-  sourceKind: z.enum(["MEDIA", "TRANSCRIPT"]),
+  sourceKind: z.enum(["MEDIA", "TRANSCRIPT", "DOCUMENT", "REFERENCE_IMAGE"]),
   contentType: z.string().min(1),
   byteSize: z.number().int().nonnegative(),
   contentHash: z.string().min(1),

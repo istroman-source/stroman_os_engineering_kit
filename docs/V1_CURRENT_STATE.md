@@ -105,6 +105,8 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
   states with plain-language next actions.
 - Original bytes are retained before processing is attempted. Transient completion failures create
   a durable retryable receipt, and retry claims the preserved input once without another upload.
+- Video, audio, transcripts/scripts, briefs/notes/documents, and reference images share one durable
+  inventory while transcript parsing and video-frame analysis retain type-specific behavior.
 - Unreadable or integrity-invalid files remain visible but cannot be unsafely retried.
 - Transcript evidence can be opened from observations, interpretations, and recommendations at the
   exact cited excerpt with neighboring context, source identity, speaker, and time range.
@@ -113,8 +115,6 @@ work is retained and tested, but V1 effort goes to the filmmaking decision loop.
 
 **Missing for V1**
 
-- Scripts, briefs, notes, reference images, and general documents are not accepted through one
-  coherent source workflow.
 - Media evidence exposes the original source and cited sampled time, but the exact sampled frame is
   not retained after analysis yet.
 - Transcript and sampled-frame understanding are separate paths; the primary analysis does not yet

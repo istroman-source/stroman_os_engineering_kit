@@ -74,11 +74,11 @@ changed, and which current outputs used that intent.
 - [x] Replace ambiguous source statuses with uploading/processing/ready/retryable/failed states and
   plain-language recovery.
 - [x] Preserve original input on retryable failure and support retry without unnecessary re-upload.
-- [ ] Normalize transcript, audio/video, script/brief/note document, and reference-image intake into
+- [x] Normalize transcript, audio/video, script/brief/note document, and reference-image intake into
   one source inventory while preserving type-specific processing.
 - [ ] Add an evidence inspector that opens the exact transcript excerpt or sampled frame supporting
   an observation, interpretation, recommendation, or decision.
-- [ ] Surface uncertainty, missing coverage, and processing provenance without exposing system
+- [x] Surface uncertainty, missing coverage, and processing provenance without exposing system
   plumbing by default.
 - [ ] Add authorization, integrity, retry, reload, and browser-level regression coverage.
 
@@ -88,8 +88,9 @@ and unreadable/corrupt inputs remain visible as replacement-required records. Th
 uploading, processing, ready, retryable, and terminal states, polls interrupted processing, and can
 retry preserved input. Owner-scoped transcript evidence opens inline at the exact cited segment
 with neighboring context. Media provenance and cited time are inspectable, but retaining and
-serving the exact sampled frame remains open, as do document/reference-image normalization and the
-final authenticated browser gate.
+serving the exact sampled frame remains open. Video, audio, transcripts/scripts, project documents,
+and reference images now share the durable inventory while keeping transcript parsing and video
+frame analysis type-specific. The final authenticated browser gate also remains open.
 
 **Acceptance:** every source is durable and understandable; every cited claim can be inspected in
 its original context; recoverable failures never discard the input.

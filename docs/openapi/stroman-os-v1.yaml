@@ -142,7 +142,7 @@ components:
           type: string
           enum: [PROCESSING, COMPLETED, RETRYABLE_FAILURE, TERMINAL_FAILURE]
         sourceName: { type: string }
-        sourceKind: { type: string, enum: [MEDIA, TRANSCRIPT] }
+        sourceKind: { type: string, enum: [MEDIA, TRANSCRIPT, DOCUMENT, REFERENCE_IMAGE] }
         byteSize: { type: integer, minimum: 0 }
         contentHash: { type: string }
         mediaId: { type: [string, "null"] }
@@ -2440,6 +2440,10 @@ paths:
                 transcriptFormat:
                   type: string
                   enum: [srt, vtt, json, text]
+                sourceKind:
+                  type: string
+                  enum: [MEDIA, DOCUMENT, REFERENCE_IMAGE]
+                  description: Optional non-transcript inventory classification.
       responses:
         "201":
           description: Completed import receipt.

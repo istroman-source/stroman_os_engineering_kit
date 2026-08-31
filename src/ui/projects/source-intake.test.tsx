@@ -133,4 +133,58 @@ describe("SourceIntake", () => {
     expect(await screen.findByText("Needs replacement")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /retry/i })).not.toBeInTheDocument();
   });
+
+  it("adds a brief to the same inventory as project context", async () => {
+    const BrowserFormData = window.FormData;
+    class FormDataWithUploadedFiles extends BrowserFormData {
+      constructor(form?: HTMLFormElement) {
+        super();
+        const input = form?.elements.namedItem("file");
+        const selected = input instanceof HTMLInputElement ? input.files?.[0] : null;
+        if (selected) this.set("file", selected);
+      }
+    }
+    vi.stubGlobal("File", window.File);
+    vi.stubGlobal("FormData", FormDataWithUploadedFiles);
+    const completed = {
+      id: "import-document",
+      status: "COMPLETED" as const,
+      sourceName: "creative-brief.pdf",
+      sourceKind: "DOCUMENT" as const,
+      byteSize: 24,
+    };
+    let uploaded = false;
+    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      if (init?.method === "POST") {
+        uploaded = true;
+        expect((init.body as FormData).get("sourceKind")).toBe("DOCUMENT");
+        return { ok: true, status: 201, json: async () => completed } as Response;
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ items: uploaded ? [completed] : [] }),
+      } as Response;
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const user = userEvent.setup();
+    render(<SourceIntake projectId="proj_1" />);
+    const input = screen.getByLabelText("Brief, notes, or reference image") as HTMLInputElement;
+    await user.upload(
+      input,
+      new window.File(["brief"], "creative-brief.pdf", { type: "application/pdf" }),
+    );
+    expect(input.files?.[0]?.name).toBe("creative-brief.pdf");
+    fireEvent.submit(input.closest("form")!);
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/v1/projects/proj_1/imports",
+        expect.objectContaining({ method: "POST" }),
+      ),
+    );
+    expect(await screen.findByText("creative-brief.pdf")).toBeInTheDocument();
+    expect(screen.getByText("Document")).toBeInTheDocument();
+    expect(screen.getByText("Ready")).toBeInTheDocument();
+  });
 });

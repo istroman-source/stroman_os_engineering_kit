@@ -214,6 +214,7 @@ export async function importProjectSource(
     bytes: Uint8Array;
     contentHash: string;
     transcriptFormat?: TranscriptFormat;
+    sourceKind?: SourceImportReceipt["sourceKind"];
   },
 ): Promise<Result<SourceImportReceipt, AppError>> {
   const project = await loadOwnedProject(
@@ -237,7 +238,7 @@ export async function importProjectSource(
     idempotencyKey: input.idempotencyKey,
     status: "PROCESSING",
     sourceName: input.sourceName,
-    sourceKind: input.transcriptFormat ? "TRANSCRIPT" : "MEDIA",
+    sourceKind: input.transcriptFormat ? "TRANSCRIPT" : (input.sourceKind ?? "MEDIA"),
     contentType: input.contentType,
     byteSize: input.bytes.byteLength,
     contentHash: input.contentHash,

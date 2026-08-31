@@ -112,6 +112,33 @@ describe("transcript import", () => {
     ).toEqual([0, 1]);
   });
 
+  it("normalizes documents and reference images into the same durable inventory", async () => {
+    const deps = env();
+    const document = await importProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "brief-1",
+      sourceName: "creative-brief.pdf",
+      contentType: "application/pdf",
+      bytes: new Uint8Array([1, 2, 3]),
+      contentHash: "sha256:document",
+      sourceKind: "DOCUMENT",
+    });
+    const image = await importProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "reference-1",
+      sourceName: "reference.jpg",
+      contentType: "image/jpeg",
+      bytes: new Uint8Array([4, 5, 6]),
+      contentHash: "sha256:image",
+      sourceKind: "REFERENCE_IMAGE",
+    });
+    expect(document.ok && document.value.sourceKind).toBe("DOCUMENT");
+    expect(image.ok && image.value.sourceKind).toBe("REFERENCE_IMAGE");
+    expect(await deps.imports.listByProject(PROJECT)).toHaveLength(2);
+  });
+
   it("returns the committed receipt for concurrent duplicate imports without cleanup", async () => {
     const deps = env();
     const input = {
