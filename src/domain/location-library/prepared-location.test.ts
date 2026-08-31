@@ -35,7 +35,6 @@ describe("assessLocationGeometry", () => {
   it("keeps a plausible room explicitly estimated and lists spatial unknowns", () => {
     const result = assessLocationGeometry(
       { min: { x: 0, y: 0, z: 0 }, max: { x: 5, y: 2.8, z: 4 } },
-      1,
       "PHOTOS",
     );
 
@@ -49,12 +48,20 @@ describe("assessLocationGeometry", () => {
   it("withholds distorted geometry and asks for actionable source coverage", () => {
     const result = assessLocationGeometry(
       { min: { x: 0, y: 0, z: 0 }, max: { x: 70, y: 2.8, z: 2 } },
-      1,
       "PHOTOS",
     );
 
     expect(result.usability).toBe("REVIEW_REQUIRED");
     expect(result.issues.join(" ")).toMatch(/stretched.*distorted/i);
     expect(result.correctiveAction).toMatch(/overlapping photos.*floor.*ceiling.*corners/i);
+  });
+
+  it("reports canonical reconstructed bounds without applying source scale twice", () => {
+    const result = assessLocationGeometry(
+      { min: { x: -1.5, y: 0, z: -1.6 }, max: { x: 1.5, y: 2.6, z: 1.6 } },
+      "PHOTOS",
+    );
+
+    expect(result.observedConstraints[0]).toContain("3.0m wide × 2.6m high × 3.2m deep");
   });
 });

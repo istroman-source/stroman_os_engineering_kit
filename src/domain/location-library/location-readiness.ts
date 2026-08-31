@@ -19,13 +19,14 @@ const meters = (value: number) => `${value.toFixed(value < 10 ? 1 : 0)}m`;
  */
 export function assessLocationGeometry(
   bounds: SpatialBounds,
-  scaleMetersPerUnit: number,
   source: "GLB" | "PHOTOS",
 ): LocationShootBrief {
+  // LocationGeometryInspector returns canonical, meter-scaled bounds. Applying its
+  // source-unit scale again would distort the filmmaker-facing dimensions.
   const dimensions = [
-    Math.abs(bounds.max.x - bounds.min.x) * scaleMetersPerUnit,
-    Math.abs(bounds.max.y - bounds.min.y) * scaleMetersPerUnit,
-    Math.abs(bounds.max.z - bounds.min.z) * scaleMetersPerUnit,
+    Math.abs(bounds.max.x - bounds.min.x),
+    Math.abs(bounds.max.y - bounds.min.y),
+    Math.abs(bounds.max.z - bounds.min.z),
   ] as const;
   const [width, height, depth] = dimensions;
   const horizontalMin = Math.min(width, depth);

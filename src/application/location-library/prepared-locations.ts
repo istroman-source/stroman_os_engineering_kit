@@ -146,7 +146,7 @@ export async function completePreparedLocationReconstruction(
     throw new AppError("VALIDATION", "The Mac worker returned unusable room geometry.");
   }
   const contentHash = `sha256:${createHash("sha256").update(input.bytes).digest("hex")}`;
-  const shootBrief = assessLocationGeometry(geometry.bounds, geometry.scaleMetersPerUnit, "PHOTOS");
+  const shootBrief = assessLocationGeometry(geometry.bounds, "PHOTOS");
   const existing = location.inputs.find(
     (item) => item.kind === "GEOMETRY" && item.contentHash === contentHash,
   );
@@ -265,7 +265,7 @@ export async function uploadPreparedLocationGlb(
   } catch {
     throw new AppError("VALIDATION", "That GLB does not contain a usable room geometry.");
   }
-  const shootBrief = assessLocationGeometry(geometry.bounds, geometry.scaleMetersPerUnit, "GLB");
+  const shootBrief = assessLocationGeometry(geometry.bounds, "GLB");
   const storageKey = `${input.actorId}/locations/${location.id}/${contentHash}`;
   const lease = await deps.sourceStorage.put(storageKey, input.bytes);
   try {
@@ -598,7 +598,6 @@ function environmentView(value: unknown) {
       environment.shootBrief ??
       assessLocationGeometry(
         { min, max },
-        scaleMetersPerUnit,
         environment.source === "APPLE_PHOTOGRAMMETRY" ? "PHOTOS" : "GLB",
       ),
   };
