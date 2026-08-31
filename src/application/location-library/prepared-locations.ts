@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import {
   createPreparedLocation,
+  assessLocationGeometry,
   type PreparedLocationReconstructionJob,
   type PreparedLocationReconstructionRepository,
   type PreparedLocationRepository,
@@ -145,6 +146,7 @@ export async function completePreparedLocationReconstruction(
     throw new AppError("VALIDATION", "The Mac worker returned unusable room geometry.");
   }
   const contentHash = `sha256:${createHash("sha256").update(input.bytes).digest("hex")}`;
+  const shootBrief = assessLocationGeometry(geometry.bounds, "PHOTOS");
   const existing = location.inputs.find(
     (item) => item.kind === "GEOMETRY" && item.contentHash === contentHash,
   );
@@ -171,7 +173,7 @@ export async function completePreparedLocationReconstruction(
   const now = deps.clock.now();
   await deps.preparedLocations.update({
     ...location,
-    status: "READY",
+    status: shootBrief.usability === "SHOOTABLE_ESTIMATE" ? "READY" : "NEEDS_ATTENTION",
     failureCode: null,
     updatedAt: now,
     environment: {
@@ -183,6 +185,7 @@ export async function completePreparedLocationReconstruction(
       scaleMetersPerUnit: geometry.scaleMetersPerUnit,
       scaleConfidence: "ESTIMATED",
       sourceToCanonical: geometry.sourceToCanonical,
+      shootBrief,
     },
   });
   await deps.preparedLocationReconstructions.update({
@@ -262,6 +265,7 @@ export async function uploadPreparedLocationGlb(
   } catch {
     throw new AppError("VALIDATION", "That GLB does not contain a usable room geometry.");
   }
+  const shootBrief = assessLocationGeometry(geometry.bounds, "GLB");
   const storageKey = `${input.actorId}/locations/${location.id}/${contentHash}`;
   const lease = await deps.sourceStorage.put(storageKey, input.bytes);
   try {
@@ -278,7 +282,10 @@ export async function uploadPreparedLocationGlb(
     await deps.sourceStorage.retain(storageKey, lease.leaseId);
     const updated = {
       ...location,
-      status: "READY" as const,
+      status:
+        shootBrief.usability === "SHOOTABLE_ESTIMATE"
+          ? ("READY" as const)
+          : ("NEEDS_ATTENTION" as const),
       environment: {
         source: "GLB",
         inputId: `${location.id}:${contentHash}`,
@@ -286,6 +293,7 @@ export async function uploadPreparedLocationGlb(
         scaleMetersPerUnit: geometry.scaleMetersPerUnit,
         scaleConfidence: "ESTIMATED",
         sourceToCanonical: geometry.sourceToCanonical,
+        shootBrief,
       },
       failureCode: null,
       updatedAt: deps.clock.now(),
@@ -586,6 +594,12 @@ function environmentView(value: unknown) {
     scaleMetersPerUnit,
     // Current GLB and photo workflows infer scale rather than claim a surveyed measurement.
     scaleConfidence: "ESTIMATED" as const,
+    shootBrief:
+      environment.shootBrief ??
+      assessLocationGeometry(
+        { min, max },
+        environment.source === "APPLE_PHOTOGRAMMETRY" ? "PHOTOS" : "GLB",
+      ),
   };
 }
 

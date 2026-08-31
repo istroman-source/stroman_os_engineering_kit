@@ -1,11 +1,18 @@
-import { Prisma, type CreativeBrief as CreativeBriefRow } from "@prisma/client";
+import {
+  Prisma,
+  type CreativeBrief as CreativeBriefRow,
+  type CreativeBriefRevision as CreativeBriefRevisionRow,
+} from "@prisma/client";
 import {
   type CreativeBrief,
+  type CreativeBriefRevision,
   CreativeBriefId,
   emptyCreativePlanningContext,
   isBlueprint,
   isCreativePlanningContext,
   isMeaningfulDevelopment,
+  parseCreativeBriefFields,
+  snapshotCreativeBrief,
 } from "@/domain/creative";
 import { ProjectId } from "@/domain/project";
 import { PersistenceMappingError } from "../errors";
@@ -40,12 +47,51 @@ export function toCreativeBrief(row: CreativeBriefRow): CreativeBrief {
     targetAudience: row.targetAudience,
     desiredEmotion: row.desiredEmotion,
     context: row.context,
+    runtimeTarget: row.runtimeTarget,
+    deliveryPlatform: row.deliveryPlatform,
+    references: row.references,
+    restrictions: row.restrictions,
+    clientRequirements: row.clientRequirements,
+    nonNegotiables: row.nonNegotiables,
+    successCriteria: row.successCriteria,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     lockVersion: row.lockVersion,
     blueprint: isBlueprint(row.blueprint) ? row.blueprint : null,
     reasoningProvider: row.reasoningProvider,
     planningContext: row.planningContext ?? emptyCreativePlanningContext(),
+  };
+}
+
+export function toCreativeBriefRevision(row: CreativeBriefRevisionRow): CreativeBriefRevision {
+  const fields = parseCreativeBriefFields(row.snapshot);
+  if (!fields.ok) {
+    throw new PersistenceMappingError(`creativeBriefRevision.snapshot id="${row.id}"`);
+  }
+  return {
+    creativeBriefId: orThrowMapping(
+      CreativeBriefId.parse(row.creativeBriefId),
+      `creativeBriefRevision.creativeBriefId="${row.creativeBriefId}"`,
+    ),
+    projectId: orThrowMapping(
+      ProjectId.parse(row.projectId),
+      `creativeBriefRevision.projectId="${row.projectId}"`,
+    ),
+    version: row.version,
+    fields: fields.value,
+    createdAt: row.createdAt,
+  };
+}
+
+export function toCreativeBriefRevisionFields(brief: CreativeBrief, version: number) {
+  const revision = snapshotCreativeBrief(brief, version);
+  return {
+    id: `${brief.id}:${version}`,
+    creativeBriefId: revision.creativeBriefId,
+    projectId: revision.projectId,
+    version: revision.version,
+    snapshot: revision.fields as unknown as Prisma.InputJsonValue,
+    createdAt: revision.createdAt,
   };
 }
 
@@ -60,6 +106,13 @@ export function toCreativeBriefFields(brief: CreativeBrief): Prisma.CreativeBrie
     targetAudience: brief.targetAudience,
     desiredEmotion: brief.desiredEmotion,
     context: brief.context,
+    runtimeTarget: brief.runtimeTarget,
+    deliveryPlatform: brief.deliveryPlatform,
+    references: brief.references,
+    restrictions: brief.restrictions,
+    clientRequirements: brief.clientRequirements,
+    nonNegotiables: brief.nonNegotiables,
+    successCriteria: brief.successCriteria,
     blueprint: brief.blueprint
       ? (brief.blueprint as unknown as Prisma.InputJsonValue)
       : Prisma.DbNull,

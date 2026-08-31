@@ -14,6 +14,7 @@ import {
 } from "@/domain/creative";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
 import type { SourceImportRepository, SourceStorage } from "@/domain/source-import";
+import type { DecisionRepository } from "@/domain/decision";
 import { AppError } from "@/lib/errors";
 import { updateCreativePlanning } from "./update-creative-planning";
 
@@ -26,6 +27,7 @@ const SUBMISSION_STALE_MS = 11 * 60_000;
 interface ReconstructionDeps {
   readonly projects: ProjectRepository;
   readonly creativeBriefs: CreativeBriefRepository;
+  readonly decisions: DecisionRepository;
   readonly locationReconstructions: LocationReconstructionRepository;
   readonly locationReconstructionProvider: LocationReconstructionProvider;
   readonly locationGeometryInspector: LocationGeometryInspector;

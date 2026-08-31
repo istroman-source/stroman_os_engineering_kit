@@ -17,7 +17,7 @@ export interface SourceImportReceipt {
   readonly idempotencyKey: string;
   readonly status: SourceImportStatus;
   readonly sourceName: string;
-  readonly sourceKind: "MEDIA" | "TRANSCRIPT";
+  readonly sourceKind: "MEDIA" | "TRANSCRIPT" | "DOCUMENT" | "REFERENCE_IMAGE";
   readonly contentType: string;
   readonly byteSize: number;
   readonly contentHash: string;
@@ -31,8 +31,18 @@ export interface SourceImportReceipt {
 }
 
 export interface SourceImportRepository {
+  findById(id: string): Promise<SourceImportReceipt | null>;
   findByKey(projectId: ProjectId, key: string): Promise<SourceImportReceipt | null>;
   listByProject(projectId: ProjectId): Promise<readonly SourceImportReceipt[]>;
+  start(receipt: SourceImportReceipt): Promise<SourceImportReceipt>;
+  claimRetry(id: string, projectId: ProjectId, now: Date): Promise<SourceImportReceipt | null>;
+  markFailure(input: {
+    id: string;
+    projectId: ProjectId;
+    status: "RETRYABLE_FAILURE" | "TERMINAL_FAILURE";
+    failureCode: string;
+    now: Date;
+  }): Promise<SourceImportReceipt>;
   completeAtomically(input: {
     receipt: SourceImportReceipt;
     media: MediaAsset;

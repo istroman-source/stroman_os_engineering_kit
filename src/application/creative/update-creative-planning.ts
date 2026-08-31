@@ -20,6 +20,7 @@ import {
 } from "@/domain/creative";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
 import { InvalidValueError, type DomainError } from "@/domain/shared";
+import type { DecisionRepository } from "@/domain/decision";
 import { attempt, attemptUpdate } from "../shared/attempt";
 import { ensureOwner } from "../shared/authorization";
 import type { IdGenerator } from "../shared";
@@ -29,6 +30,7 @@ import { type AnalysisView, toCreativeBriefView } from "./creative-view";
 export interface UpdateCreativePlanningDeps {
   readonly projects: ProjectRepository;
   readonly creativeBriefs: CreativeBriefRepository;
+  readonly decisions: DecisionRepository;
   readonly ids: IdGenerator;
 }
 
@@ -109,6 +111,14 @@ export async function updateCreativePlanning(
     deps.creativeBriefs.update(brief),
   );
   if (!saved.ok) return saved;
+  const marked = await attempt("decision.markForReview", () =>
+    deps.decisions.markForReview(
+      input.projectId,
+      ["BUILD"],
+      "The production or spatial plan changed after this shot decision was recorded.",
+    ),
+  );
+  if (!marked.ok) return marked;
   brief = { ...brief, lockVersion: brief.lockVersion + 1 };
   return ok({ brief: toCreativeBriefView(brief), blueprint });
 }

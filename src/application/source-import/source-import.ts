@@ -1,4 +1,5 @@
-import { AppError, ConflictError, ValidationError } from "@/lib/errors";
+import { createHash } from "node:crypto";
+import { AppError, ConflictError, NotFoundError, ValidationError } from "@/lib/errors";
 import { err, ok, type Result } from "@/lib/result";
 import {
   MediaAssetId,
@@ -42,6 +43,14 @@ export interface ParsedTranscript {
     startMs: number | null;
     endMs: number | null;
   }[];
+}
+
+interface SourceImportDependencies {
+  projects: ProjectRepository;
+  imports: SourceImportRepository;
+  storage: SourceStorage;
+  ids: IdGenerator;
+  clock: Clock;
 }
 
 function srtTimestamp(value: string): number {
@@ -195,13 +204,7 @@ export function parseTranscript(text: string, format: TranscriptFormat): ParsedT
 }
 
 export async function importProjectSource(
-  deps: {
-    projects: ProjectRepository;
-    imports: SourceImportRepository;
-    storage: SourceStorage;
-    ids: IdGenerator;
-    clock: Clock;
-  },
+  deps: SourceImportDependencies,
   input: {
     actorId: OwnerId;
     projectId: ProjectId;
@@ -211,6 +214,7 @@ export async function importProjectSource(
     bytes: Uint8Array;
     contentHash: string;
     transcriptFormat?: TranscriptFormat;
+    sourceKind?: SourceImportReceipt["sourceKind"];
   },
 ): Promise<Result<SourceImportReceipt, AppError>> {
   const project = await loadOwnedProject(
@@ -226,57 +230,7 @@ export async function importProjectSource(
   if (existing) return ok(existing);
 
   const now = deps.clock.now();
-  const mediaId = MediaAssetId.unsafe(deps.ids.generate(MediaAssetId.prefix));
   const storageKey = `${input.actorId}/${input.projectId}/${input.contentHash}`;
-  const media = createMediaAsset({
-    id: mediaId,
-    ownerId: input.actorId,
-    projectId: input.projectId,
-    fileName: input.sourceName,
-    mediaType: input.contentType,
-    byteSize: input.bytes.byteLength,
-    contentHash: input.contentHash,
-    now,
-  });
-  if (!media.ok) return media;
-
-  let transcript: TranscriptDocument | null = null;
-  if (input.transcriptFormat) {
-    let parsed: ParsedTranscript;
-    try {
-      parsed = parseTranscript(new TextDecoder().decode(input.bytes), input.transcriptFormat);
-    } catch (error) {
-      return err(
-        error instanceof AppError ? error : new TranscriptParseError("Transcript parsing failed"),
-      );
-    }
-    const speakerIds = parsed.speakers.map(() =>
-      TranscriptSpeakerId.unsafe(deps.ids.generate(TranscriptSpeakerId.prefix)),
-    );
-    const made = createTranscriptDocument({
-      id: TranscriptDocumentId.unsafe(deps.ids.generate(TranscriptDocumentId.prefix)),
-      ownerId: input.actorId,
-      projectId: input.projectId,
-      mediaAssetId: mediaId,
-      title: input.sourceName,
-      speakers: parsed.speakers.map((speaker, index) => ({
-        id: speakerIds[index]!,
-        label: speaker.label,
-      })),
-      segments: parsed.segments.map((segment) => ({
-        id: TranscriptSegmentId.unsafe(deps.ids.generate(TranscriptSegmentId.prefix)),
-        sequence: segment.sequence,
-        speakerId:
-          segment.speakerIndex === null ? null : (speakerIds[segment.speakerIndex] ?? null),
-        text: segment.text,
-        startMs: segment.startMs,
-        endMs: segment.endMs,
-      })),
-      now,
-    });
-    if (!made.ok) return made;
-    transcript = made.value;
-  }
   const receipt: SourceImportReceipt = {
     id: deps.ids.generate("simp"),
     ownerId: input.actorId,
@@ -284,7 +238,7 @@ export async function importProjectSource(
     idempotencyKey: input.idempotencyKey,
     status: "PROCESSING",
     sourceName: input.sourceName,
-    sourceKind: input.transcriptFormat ? "TRANSCRIPT" : "MEDIA",
+    sourceKind: input.transcriptFormat ? "TRANSCRIPT" : (input.sourceKind ?? "MEDIA"),
     contentType: input.contentType,
     byteSize: input.bytes.byteLength,
     contentHash: input.contentHash,
@@ -307,13 +261,8 @@ export async function importProjectSource(
     );
   }
   try {
-    const completed = await deps.imports.completeAtomically({
-      receipt,
-      media: media.value,
-      transcript,
-    });
+    await deps.imports.start(receipt);
     await deps.storage.retain(storageKey, lease.leaseId);
-    return ok(completed);
   } catch (error) {
     if (error instanceof ConflictError) {
       const original = await deps.imports.findByKey(input.projectId, input.idempotencyKey);
@@ -326,7 +275,148 @@ export async function importProjectSource(
     return err(
       error instanceof AppError
         ? error
-        : new AppError("UNAVAILABLE", "Import could not be completed", { cause: error }),
+        : new AppError("UNAVAILABLE", "Import could not be started", { cause: error }),
     );
   }
+  return processStoredSource(deps, receipt, input.bytes);
+}
+
+export async function retryProjectSource(
+  deps: SourceImportDependencies,
+  input: { actorId: OwnerId; projectId: ProjectId; sourceImportId: string },
+): Promise<Result<SourceImportReceipt, AppError>> {
+  const project = await loadOwnedProject(
+    deps.projects,
+    input.actorId,
+    input.projectId,
+    "sourceImport.retry",
+  );
+  if (!project.ok) return project;
+  const current = await deps.imports.findById(input.sourceImportId);
+  if (!current || current.projectId !== input.projectId)
+    return err(new NotFoundError("Source import not found."));
+  if (current.status === "COMPLETED" || current.status === "PROCESSING") return ok(current);
+  if (current.status !== "RETRYABLE_FAILURE")
+    return err(new ConflictError("This source needs replacement rather than retry."));
+  const now = deps.clock.now();
+  const claimed = await deps.imports.claimRetry(current.id, current.projectId, now);
+  if (!claimed) {
+    const latest = await deps.imports.findById(current.id);
+    return latest
+      ? ok(latest)
+      : err(new ConflictError("The source changed before retry could begin."));
+  }
+  let bytes: Uint8Array;
+  try {
+    bytes = await deps.storage.get(claimed.storageKey);
+  } catch (error) {
+    await recordFailure(deps, claimed, "RETRYABLE_FAILURE", "SOURCE_STORAGE_UNAVAILABLE");
+    return err(
+      new AppError("UNAVAILABLE", "The preserved source is temporarily unavailable.", {
+        cause: error,
+      }),
+    );
+  }
+  const digest = `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+  if (bytes.byteLength !== claimed.byteSize || digest !== claimed.contentHash) {
+    await recordFailure(deps, claimed, "TERMINAL_FAILURE", "SOURCE_INTEGRITY_MISMATCH");
+    return err(new SourceIntegrityError());
+  }
+  return processStoredSource(deps, { ...claimed, updatedAt: now }, bytes);
+}
+
+async function processStoredSource(
+  deps: SourceImportDependencies,
+  receipt: SourceImportReceipt,
+  bytes: Uint8Array,
+): Promise<Result<SourceImportReceipt, AppError>> {
+  const mediaId = MediaAssetId.unsafe(deps.ids.generate(MediaAssetId.prefix));
+  const media = createMediaAsset({
+    id: mediaId,
+    ownerId: receipt.ownerId,
+    projectId: receipt.projectId,
+    fileName: receipt.sourceName,
+    mediaType: receipt.contentType,
+    byteSize: receipt.byteSize,
+    contentHash: receipt.contentHash,
+    now: receipt.updatedAt,
+  });
+  if (!media.ok) {
+    await recordFailure(deps, receipt, "TERMINAL_FAILURE", "INVALID_MEDIA_METADATA");
+    return media;
+  }
+
+  let transcript: TranscriptDocument | null = null;
+  if (receipt.transcriptFormat) {
+    let parsed: ParsedTranscript;
+    try {
+      parsed = parseTranscript(new TextDecoder().decode(bytes), receipt.transcriptFormat);
+    } catch (error) {
+      await recordFailure(deps, receipt, "TERMINAL_FAILURE", "TRANSCRIPT_PARSE_FAILED");
+      return err(
+        error instanceof AppError ? error : new TranscriptParseError("Transcript parsing failed"),
+      );
+    }
+    const speakerIds = parsed.speakers.map(() =>
+      TranscriptSpeakerId.unsafe(deps.ids.generate(TranscriptSpeakerId.prefix)),
+    );
+    const made = createTranscriptDocument({
+      id: TranscriptDocumentId.unsafe(deps.ids.generate(TranscriptDocumentId.prefix)),
+      ownerId: receipt.ownerId,
+      projectId: receipt.projectId,
+      mediaAssetId: mediaId,
+      title: receipt.sourceName,
+      speakers: parsed.speakers.map((speaker, index) => ({
+        id: speakerIds[index]!,
+        label: speaker.label,
+      })),
+      segments: parsed.segments.map((segment) => ({
+        id: TranscriptSegmentId.unsafe(deps.ids.generate(TranscriptSegmentId.prefix)),
+        sequence: segment.sequence,
+        speakerId:
+          segment.speakerIndex === null ? null : (speakerIds[segment.speakerIndex] ?? null),
+        text: segment.text,
+        startMs: segment.startMs,
+        endMs: segment.endMs,
+      })),
+      now: receipt.updatedAt,
+    });
+    if (!made.ok) {
+      await recordFailure(deps, receipt, "TERMINAL_FAILURE", "INVALID_TRANSCRIPT_METADATA");
+      return made;
+    }
+    transcript = made.value;
+  }
+
+  try {
+    return ok(await deps.imports.completeAtomically({ receipt, media: media.value, transcript }));
+  } catch (error) {
+    await recordFailure(deps, receipt, "RETRYABLE_FAILURE", "PERSISTENCE_UNAVAILABLE");
+    return err(
+      error instanceof AppError
+        ? error
+        : new AppError(
+            "UNAVAILABLE",
+            "Import could not be completed. Your source was preserved for retry.",
+            {
+              cause: error,
+            },
+          ),
+    );
+  }
+}
+
+async function recordFailure(
+  deps: SourceImportDependencies,
+  receipt: SourceImportReceipt,
+  status: "RETRYABLE_FAILURE" | "TERMINAL_FAILURE",
+  failureCode: string,
+): Promise<void> {
+  await deps.imports.markFailure({
+    id: receipt.id,
+    projectId: receipt.projectId,
+    status,
+    failureCode,
+    now: deps.clock.now(),
+  });
 }

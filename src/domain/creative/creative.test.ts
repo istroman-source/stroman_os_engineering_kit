@@ -4,10 +4,12 @@ import {
   type CreativeBrief,
   CreativeBriefId,
   createCreativeBrief,
+  evaluateCreativeQuality,
   generateBlueprint,
   generateDevelopmentBlueprint,
   instructionAtDeskShotPlanning,
   isShotPlanningState,
+  renderShotPlanText,
   reviseCreativeBrief,
 } from "./index";
 
@@ -74,7 +76,33 @@ describe("createCreativeBrief", () => {
     });
 
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.value.targetAudience).toBe("");
+    if (result.ok) {
+      expect(result.value.targetAudience).toBe("");
+      expect(result.value.runtimeTarget).toBe("");
+      expect(result.value.deliveryPlatform).toBe("");
+      expect(result.value.successCriteria).toBe("");
+    }
+  });
+
+  it("validates and preserves structured project intent", () => {
+    const result = createCreativeBrief({
+      id: CreativeBriefId.unsafe("brief_INTENT001"),
+      projectId: ProjectId.unsafe("proj_AAAAAAA1"),
+      now: T0,
+      ...fields(),
+      runtimeTarget: "30 seconds",
+      deliveryPlatform: "16:9 broadcast and separately composed 9:16 social",
+      references: "Natural-light food documentaries",
+      restrictions: "No customer faces",
+      clientRequirements: "Hero the crab cake before the logo",
+      nonNegotiables: "Real kitchen and real staff",
+      successCriteria: "Viewers understand why the process earns the price",
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.runtimeTarget).toBe("30 seconds");
+    expect(result.value.nonNegotiables).toContain("Real kitchen");
   });
 });
 
@@ -90,6 +118,18 @@ describe("spatial shot planning", () => {
     expect(state.activeShot.setPieces.map((piece) => piece.label)).toEqual(
       expect.arrayContaining(["Desk", "Desk phone", "Yellow reminder", "Drawer · keyboard · mug"]),
     );
+  });
+
+  it("renders a complete handoff from the exact saved shot state", () => {
+    const state = instructionAtDeskShotPlanning();
+    const text = renderShotPlanText("Instruction film", [state.activeShot]);
+
+    expect(text).toContain("Instruction film");
+    expect(text).toContain("16:9 · 35mm · locked · camera 1.05m high");
+    expect(text).toContain("Action: Listen on the desk phone");
+    expect(text).toContain("Look: Restrained office color");
+    expect(text).toContain("Production notes: Keep the desk geography continuous");
+    expect(text).toContain("Geometry: estimated");
   });
 });
 
@@ -120,12 +160,49 @@ describe("generateBlueprint", () => {
     expect(bp).not.toHaveProperty("masterPrompt");
     expect(bp.development.basis).toBe("PROJECT_INTENT_ONLY");
     expect(bp.development.directionDecision.title).toBe("Proof before promise");
+    expect(bp.development.directionDecision.confidence).toBeGreaterThan(0);
+    expect(bp.development.directionDecision.basis).toEqual(
+      expect.arrayContaining([expect.objectContaining({ kind: "SUPPLIED_INTENT" })]),
+    );
     expect(bp.development.alternativeDecisions).toHaveLength(3);
     expect(bp.development.alternativeDecisions.some((direction) => direction.innovation)).toBe(
       true,
     );
     expect(bp.development).not.toHaveProperty("directorBlueprint");
     expect(bp.development).not.toHaveProperty("recommendedDirection");
+  });
+
+  it("rejects recommendations without traceability or genuinely distinct alternatives", () => {
+    const sourceBrief = brief();
+    const development = generateDevelopmentBlueprint(sourceBrief);
+    const untraceable = {
+      ...development,
+      directionDecision: {
+        ...development.directionDecision,
+        confidence: undefined,
+        confidenceRationale: undefined,
+        basis: [],
+      },
+    };
+    expect(evaluateCreativeQuality(sourceBrief, untraceable).blockingFindings).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("calibrated confidence"),
+        expect.stringContaining("traceable"),
+      ]),
+    );
+
+    const firstAlternative = development.alternativeDecisions[0]!;
+    const repeatedAlternatives = {
+      ...development,
+      alternativeDecisions: development.alternativeDecisions.map((item) => ({
+        ...item,
+        storyEngine: firstAlternative.storyEngine,
+        audienceJourney: firstAlternative.audienceJourney,
+      })),
+    };
+    expect(evaluateCreativeQuality(sourceBrief, repeatedAlternatives).blockingFindings).toContain(
+      "Alternative directions repeat an organizing principle or audience effect.",
+    );
   });
 
   it("is deterministic", () => {

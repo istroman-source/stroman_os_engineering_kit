@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { OwnerId, ProjectId, createProject, makeProjectName } from "@/domain/project";
 import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repositories";
@@ -8,7 +9,12 @@ import {
   InMemorySourceImportRepository,
   InMemorySourceStorage,
 } from "../../../test/adapters/in-memory-source-import";
-import { importProjectSource, parseTranscript, TranscriptParseError } from "./source-import";
+import {
+  importProjectSource,
+  parseTranscript,
+  retryProjectSource,
+  TranscriptParseError,
+} from "./source-import";
 
 const OWNER = OwnerId.unsafe("usr_00000001");
 const OTHER = OwnerId.unsafe("usr_00000002");
@@ -106,6 +112,33 @@ describe("transcript import", () => {
     ).toEqual([0, 1]);
   });
 
+  it("normalizes documents and reference images into the same durable inventory", async () => {
+    const deps = env();
+    const document = await importProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "brief-1",
+      sourceName: "creative-brief.pdf",
+      contentType: "application/pdf",
+      bytes: new Uint8Array([1, 2, 3]),
+      contentHash: "sha256:document",
+      sourceKind: "DOCUMENT",
+    });
+    const image = await importProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "reference-1",
+      sourceName: "reference.jpg",
+      contentType: "image/jpeg",
+      bytes: new Uint8Array([4, 5, 6]),
+      contentHash: "sha256:image",
+      sourceKind: "REFERENCE_IMAGE",
+    });
+    expect(document.ok && document.value.sourceKind).toBe("DOCUMENT");
+    expect(image.ok && image.value.sourceKind).toBe("REFERENCE_IMAGE");
+    expect(await deps.imports.listByProject(PROJECT)).toHaveLength(2);
+  });
+
   it("returns the committed receipt for concurrent duplicate imports without cleanup", async () => {
     const deps = env();
     const input = {
@@ -124,8 +157,9 @@ describe("transcript import", () => {
     expect(left.ok).toBe(true);
     expect(right.ok).toBe(true);
     if (!left.ok || !right.ok) throw new Error("expected successful duplicate imports");
-    expect(right.value).toEqual(left.value);
+    expect([left.value.status, right.value.status]).toContain("COMPLETED");
     expect(deps.imports.receipts.size).toBe(1);
+    expect([...deps.imports.receipts.values()][0]?.status).toBe("COMPLETED");
     expect(deps.storage.values.size).toBe(1);
     expect(deps.storage.discardCount).toBe(0);
   });
@@ -146,11 +180,15 @@ describe("transcript import", () => {
       importProjectSource(deps, { ...input, idempotencyKey: "second" }),
     ]);
     expect([failed, committed].filter((result) => result.ok)).toHaveLength(1);
-    expect(deps.imports.receipts.size).toBe(1);
+    expect(deps.imports.receipts.size).toBe(2);
+    expect([...deps.imports.receipts.values()].map((receipt) => receipt.status).sort()).toEqual([
+      "COMPLETED",
+      "RETRYABLE_FAILURE",
+    ]);
     expect(deps.storage.values.size).toBe(1);
   });
 
-  it("preserves project isolation and removes stored bytes after an atomic failure", async () => {
+  it("preserves project isolation and stored bytes after a retryable atomic failure", async () => {
     const deps = env();
     const denied = await importProjectSource(deps, {
       actorId: OTHER,
@@ -173,7 +211,69 @@ describe("transcript import", () => {
       contentHash: "sha256:fails",
     });
     expect(failed.ok).toBe(false);
-    expect(deps.storage.values.size).toBe(0);
+    expect(deps.storage.values.size).toBe(1);
+    expect([...deps.imports.receipts.values()][0]).toMatchObject({
+      status: "RETRYABLE_FAILURE",
+      failureCode: "PERSISTENCE_UNAVAILABLE",
+    });
     expect(deps.imports.media.size).toBe(0);
+  });
+
+  it("retries a transient failure from preserved bytes without another upload", async () => {
+    const deps = env();
+    const bytes = new Uint8Array([9, 8, 7]);
+    const contentHash = `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+    deps.imports.failNext = true;
+    const first = await importProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "retryable",
+      sourceName: "clip.mov",
+      contentType: "video/quicktime",
+      bytes,
+      contentHash,
+    });
+    expect(first.ok).toBe(false);
+    const failed = [...deps.imports.receipts.values()][0]!;
+    expect(failed.status).toBe("RETRYABLE_FAILURE");
+
+    const retried = await retryProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      sourceImportId: failed.id,
+    });
+    expect(retried.ok).toBe(true);
+    if (!retried.ok) throw retried.error;
+    expect(retried.value).toMatchObject({ id: failed.id, status: "COMPLETED" });
+    expect(deps.storage.values.size).toBe(1);
+    expect(deps.imports.media.size).toBe(1);
+  });
+
+  it("preserves unreadable transcript input but requires replacement instead of retry", async () => {
+    const deps = env();
+    const bytes = new TextEncoder().encode("not a valid vtt");
+    const result = await importProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      idempotencyKey: "terminal",
+      sourceName: "broken.vtt",
+      contentType: "text/vtt",
+      bytes,
+      contentHash: `sha256:${createHash("sha256").update(bytes).digest("hex")}`,
+      transcriptFormat: "vtt",
+    });
+    expect(result.ok).toBe(false);
+    const failed = [...deps.imports.receipts.values()][0]!;
+    expect(failed).toMatchObject({
+      status: "TERMINAL_FAILURE",
+      failureCode: "TRANSCRIPT_PARSE_FAILED",
+    });
+    expect(deps.storage.values.size).toBe(1);
+    const retry = await retryProjectSource(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      sourceImportId: failed.id,
+    });
+    expect(retry.ok).toBe(false);
   });
 });

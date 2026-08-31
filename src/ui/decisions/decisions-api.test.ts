@@ -4,6 +4,7 @@ import {
   getDecision,
   listDecisions,
   proposeDecision,
+  proposeRecommendationDecision,
   recordHumanDecision,
 } from "./decisions-api";
 
@@ -62,6 +63,45 @@ describe("decisions-api", () => {
     const [url, init] = fetchMock.mock.calls[0]!;
     expect(url).toBe("/api/v1/decisions");
     expect(init?.method).toBe("POST");
+  });
+
+  it("uses one keep/revise/reject/defer contract for recommendation decisions", async () => {
+    const fetchMock = stubFetch(201, decision, '"decision:1"');
+    await proposeRecommendationDecision({
+      projectId: "proj_1",
+      question: "Use this direction?",
+      context: {
+        originStage: "BUILD",
+        artifactKind: "SHOT_PLAN",
+        artifactId: "shot-1",
+        artifactVersion: 3,
+      },
+      recommendation: {
+        label: "Hold the wide frame",
+        rationale: "It keeps the blocking legible.",
+        tradeoff: "The performance reads with less intimacy.",
+        uncertainty: "Revisit after the location scout.",
+        confidence: 0.72,
+      },
+      alternatives: [{ label: "Move closer", rationale: "Prioritize the face." }],
+    });
+    const body = JSON.parse(String(fetchMock.mock.calls[0]![1]?.body)) as {
+      options: Array<{ id: string }>;
+      context: { originStage: string; artifactKind: string };
+      advisory: { tradeoff: string; uncertainty: string };
+    };
+    expect(body.options.map((option) => option.id)).toEqual([
+      "keep",
+      "alternative-1",
+      "revise",
+      "reject",
+      "defer",
+    ]);
+    expect(body.context).toMatchObject({ originStage: "BUILD", artifactKind: "SHOT_PLAN" });
+    expect(body.advisory).toMatchObject({
+      tradeoff: "The performance reads with less intimacy.",
+      uncertainty: "Revisit after the location scout.",
+    });
   });
 
   it("attaches an advisory WITH the If-Match token", async () => {

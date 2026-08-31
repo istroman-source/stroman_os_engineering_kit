@@ -5,7 +5,11 @@ describe("composeEditEngine", () => {
   it("combines creative intent with ranked grounded observations and alternatives", () => {
     const view = composeEditEngine(
       {
-        brief: {} as never,
+        brief: {
+          creativeGoal: "Reveal the cost behind the craft.",
+          targetAudience: "Working artists",
+          successCriteria: "Artists recognize their own tradeoffs.",
+        } as never,
         blueprint: {
           development: {} as never,
           projectSummary: "A portrait of a working artist.",
@@ -62,10 +66,22 @@ describe("composeEditEngine", () => {
 
     expect(view.analysisVersion).toBe(3);
     expect(view.story.objective).toBe("Reveal the cost behind the craft.");
-    expect(view.strongestObservations.map((item) => item.id)).toEqual(["high", "low"]);
+    expect(view.strongestObservations.map((item) => item.id)).toEqual(["high"]);
     expect(view.strongestObservations[0]?.evidenceReferenceIds).toEqual(["evidence-high"]);
     expect(view.recommendations).toHaveLength(1);
     expect(view.alternatives).toHaveLength(2);
+    expect(view.evidenceBridge.intended).toEqual({
+      goal: "Reveal the cost behind the craft.",
+      audience: "Working artists",
+      success: "Artists recognize their own tradeoffs.",
+    });
+    expect(view.evidenceBridge.supportedStory[0]).toMatchObject({
+      id: "low",
+      counterEvidencePrompt: expect.stringContaining("full material"),
+    });
+    expect(view.evidenceBridge.potentialBeyondBrief.map((item) => item.id)).toEqual(["high"]);
+    expect(view.evidenceBridge.missing.map((item) => item.id)).toEqual(["prompt"]);
+    expect(view.evidenceBridge.nextAction?.id).toBe("recommendation");
   });
 
   it("limits the workspace to five strongest observations", () => {
@@ -78,7 +94,11 @@ describe("composeEditEngine", () => {
     }));
     const view = composeEditEngine(
       {
-        brief: {} as never,
+        brief: {
+          creativeGoal: "Goal",
+          targetAudience: "Audience",
+          successCriteria: "Success",
+        } as never,
         blueprint: {
           development: {} as never,
           projectSummary: "Summary",

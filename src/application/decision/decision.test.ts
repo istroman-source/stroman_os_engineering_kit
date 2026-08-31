@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { DecisionAlreadyDecidedError, UnknownOptionError } from "@/domain/decision";
-import { OwnerId } from "@/domain/project";
+import { OwnerId, ProjectId } from "@/domain/project";
+import { createEvidenceReference, EvidenceReferenceId } from "@/domain/evidence";
+import { MediaAssetId } from "@/domain/media-transcript";
 import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes";
 import {
   InMemoryDecisionRepository,
+  InMemoryEvidenceReferenceRepository,
   InMemoryProjectRepository,
 } from "../../../test/adapters/in-memory-repositories";
 import { createProject } from "../project/create-project";
-import { NotAuthorizedError } from "../shared/errors";
+import { NotAuthorizedError, NotFoundError } from "../shared/errors";
 import { attachAdvisory } from "./attach-advisory";
 import { getDecision } from "./get-decision";
 import { listDecisionsForProject } from "./list-decisions-for-project";
@@ -25,6 +28,7 @@ function env() {
   return {
     projects: new InMemoryProjectRepository(),
     decisions: new InMemoryDecisionRepository(),
+    evidenceReferences: new InMemoryEvidenceReferenceRepository(),
     ids: new SequentialIdGenerator(),
     clock: new FixedClock(new Date("2026-07-19T00:00:00.000Z")),
   };
@@ -68,9 +72,115 @@ describe("proposeDecision", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(NotAuthorizedError);
   });
+
+  it("links advisory claims to canonical project evidence and rejects foreign evidence", async () => {
+    const e = env();
+    const project = await createProject(e, { actorId: OWNER, name: "P" });
+    if (!project.ok) throw project.error;
+    const evidence = createEvidenceReference({
+      id: EvidenceReferenceId.unsafe("evref_00000001"),
+      ownerId: OWNER,
+      projectId: project.value.id,
+      provenance: {
+        kind: "MEDIA_ASSET",
+        mediaAssetId: MediaAssetId.unsafe("media_00000001"),
+      },
+      now: e.clock.now(),
+    });
+    e.evidenceReferences.seed(evidence);
+    const linked = await proposeDecision(e, {
+      actorId: OWNER,
+      projectId: project.value.id,
+      question: "Which opening shot?",
+      options,
+      advisory: {
+        recommendedOptionId: "a",
+        rationale: "The sampled frame supports the faster opening.",
+        confidence: 0.8,
+        evidence: [
+          {
+            evidenceReferenceId: evidence.id,
+            sourceLabel: "Sampled frame",
+            observation: "The subject is immediately legible.",
+            relevance: "It supports a cold open.",
+          },
+        ],
+      },
+    });
+    expect(linked.ok && linked.value.advisory?.evidence[0]?.evidenceReferenceId).toBe(evidence.id);
+
+    const foreignEvidence = createEvidenceReference({
+      ...evidence,
+      id: EvidenceReferenceId.unsafe("evref_00000002"),
+      projectId: ProjectId.unsafe("proj_FOREIGN01"),
+      now: e.clock.now(),
+    });
+    e.evidenceReferences.seed(foreignEvidence);
+    const rejected = await proposeDecision(e, {
+      actorId: OWNER,
+      projectId: project.value.id,
+      question: "Which closing shot?",
+      options,
+      advisory: {
+        recommendedOptionId: "a",
+        rationale: "Foreign claim.",
+        confidence: 0.8,
+        evidence: [
+          {
+            evidenceReferenceId: foreignEvidence.id,
+            sourceLabel: "Foreign",
+            observation: "Not this project.",
+            relevance: "Must be rejected.",
+          },
+        ],
+      },
+    });
+    expect(rejected.ok).toBe(false);
+    if (!rejected.ok) expect(rejected.error).toBeInstanceOf(NotFoundError);
+  });
 });
 
 describe("human authority", () => {
+  it("flags an affected recommendation after upstream change and clears the flag on human review", async () => {
+    const e = env();
+    const project = await createProject(e, { actorId: OWNER, name: "P" });
+    if (!project.ok) throw project.error;
+    const proposed = await proposeDecision(e, {
+      actorId: OWNER,
+      projectId: project.value.id,
+      question: "Use this edit structure?",
+      options,
+      context: {
+        originStage: "EDIT",
+        artifactKind: "EDIT_RECOMMENDATION",
+        artifactId: "recommendation-1",
+        artifactVersion: 2,
+      },
+    });
+    if (!proposed.ok) throw proposed.error;
+    await e.decisions.markForReview(project.value.id, ["EDIT"], "Evidence changed.");
+    const stale = await getDecision(e, {
+      actorId: OWNER,
+      decisionId: proposed.value.id,
+    });
+    expect(stale.ok && stale.value.context).toMatchObject({
+      needsReview: true,
+      reviewReason: "Evidence changed.",
+    });
+    if (!stale.ok) return;
+    const reviewed = await recordHumanDecision(e, {
+      actorId: OWNER,
+      decisionId: proposed.value.id,
+      selectedOptionId: "a",
+      rationale: "The updated evidence still supports this choice.",
+      expectedVersion: stale.value.lockVersion,
+    });
+    expect(reviewed.ok && reviewed.value.context).toMatchObject({
+      needsReview: false,
+      reviewReason: null,
+    });
+  });
+
   it("attaching advisory never decides", async () => {
     const e = env();
     const decision = await proposedDecision(e);

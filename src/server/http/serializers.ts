@@ -89,6 +89,7 @@ export function serializeDecision(view: DecisionView) {
     id: view.id,
     projectId: view.projectId,
     question: view.question,
+    context: view.context,
     options: view.options.map((option) => ({
       id: option.id,
       label: option.label,
@@ -98,8 +99,11 @@ export function serializeDecision(view: DecisionView) {
       ? {
           recommendedOptionId: view.advisory.recommendedOptionId,
           rationale: view.advisory.rationale,
+          tradeoff: view.advisory.tradeoff,
+          uncertainty: view.advisory.uncertainty,
           confidence: view.advisory.confidence,
           evidence: view.advisory.evidence.map((entry) => ({
+            evidenceReferenceId: entry.evidenceReferenceId,
             sourceLabel: entry.sourceLabel,
             observation: entry.observation,
             relevance: entry.relevance,
@@ -128,6 +132,13 @@ export function serializeAnalysis(view: AnalysisView) {
       targetAudience: b.targetAudience,
       desiredEmotion: b.desiredEmotion,
       context: b.context,
+      runtimeTarget: b.runtimeTarget,
+      deliveryPlatform: b.deliveryPlatform,
+      references: b.references,
+      restrictions: b.restrictions,
+      clientRequirements: b.clientRequirements,
+      nonNegotiables: b.nonNegotiables,
+      successCriteria: b.successCriteria,
       createdAt: iso(b.createdAt),
       updatedAt: iso(b.updatedAt),
       planningContext: b.planningContext,

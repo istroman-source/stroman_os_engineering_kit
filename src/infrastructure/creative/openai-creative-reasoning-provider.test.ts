@@ -17,6 +17,13 @@ function brief() {
     targetAudience: "Parents who need convenience",
     desiredEmotion: "Understood",
     context: "Eight-month-old; never show the baby's face.",
+    runtimeTarget: "30 seconds",
+    deliveryPlatform: "Connected TV and vertical social",
+    references: "A quiet observational kitchen film",
+    restrictions: "No speed claims",
+    clientRequirements: "Show the sealed meal package",
+    nonNegotiables: "Never show the baby's face",
+    successCriteria: "A parent recognizes their own mental load",
   });
   if (!result.ok) throw result.error;
   return result.value;
@@ -70,6 +77,11 @@ describe("OpenAiCreativeReasoningProvider", () => {
     });
     expect(body.input[0]?.content).toMatch(/untrusted data/i);
     expect(body.input[1]?.content).toContain("never show the baby's face");
+    expect(body.input[1]?.content).toContain("30 seconds");
+    expect(body.input[1]?.content).toContain("Connected TV and vertical social");
+    expect(body.input[1]?.content).toContain("No speed claims");
+    expect(body.input[1]?.content).toContain("Show the sealed meal package");
+    expect(body.input[1]?.content).toContain("A parent recognizes their own mental load");
     expect(JSON.stringify(body)).not.toContain("test-secret");
     expect(new Headers(init?.headers).get("authorization")).toBe("Bearer test-secret");
   });
@@ -146,8 +158,8 @@ describe("OpenAiCreativeReasoningProvider", () => {
 });
 
 describe("creative reasoning provider composition", () => {
-  it("uses hosted reasoning when configured and deterministic reasoning offline", () => {
-    expect(createCreativeReasoningProvider({})).toBeInstanceOf(
+  it("uses hosted reasoning when configured and deterministic reasoning in a known local runtime", () => {
+    expect(createCreativeReasoningProvider({ NODE_ENV: "development" })).toBeInstanceOf(
       DeterministicCreativeReasoningProvider,
     );
     expect(
@@ -161,6 +173,16 @@ describe("creative reasoning provider composition", () => {
   it("fails closed when hosted reasoning is explicitly selected without a credential", () => {
     expect(() =>
       createCreativeReasoningProvider({ STROMAN_CREATIVE_REASONING_PROVIDER: "openai" }),
+    ).toThrow(CreativeReasoningError);
+  });
+
+  it("fails closed when runtime identity is missing or production auto mode lacks a credential", () => {
+    expect(() => createCreativeReasoningProvider({})).toThrow(CreativeReasoningError);
+    expect(() =>
+      createCreativeReasoningProvider({
+        NODE_ENV: "production",
+        STROMAN_CREATIVE_REASONING_PROVIDER: "auto",
+      }),
     ).toThrow(CreativeReasoningError);
   });
 });

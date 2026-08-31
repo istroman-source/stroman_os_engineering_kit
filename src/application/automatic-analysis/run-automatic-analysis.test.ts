@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { getLatestAutomaticAnalysis, runAutomaticAnalysis } from ".";
-import { createAnalysisRun, failAnalysisRun, startAnalysisRun } from "@/application/analysis";
+import {
+  completeAnalysisRun,
+  createAnalysisRun,
+  failAnalysisRun,
+  startAnalysisRun,
+} from "@/application/analysis";
 import type { GroundedEditorialAnalyzer } from "@/domain/analysis";
+import { createDecision, DecisionId } from "@/domain/decision";
+import { createEvidenceReference, EvidenceReferenceId } from "@/domain/evidence";
 import {
   createMediaAsset,
   createTranscriptDocument,
@@ -180,6 +187,188 @@ describe("runAutomaticAnalysis", () => {
       projectId: PROJECT,
     });
     expect(latest.ok && latest.value.run.version).toBe(2);
+  });
+
+  it("flags prior edit decisions when source evidence is reanalyzed", async () => {
+    const deps = setup();
+    seedTranscript(deps);
+    const decision = createDecision({
+      id: DecisionId.unsafe("dec_EDITSTALE1"),
+      projectId: PROJECT,
+      question: "Use this edit recommendation?",
+      options: [
+        { id: "keep", label: "Keep" },
+        { id: "reject", label: "Reject" },
+      ],
+      context: {
+        originStage: "EDIT",
+        artifactKind: "EDIT_RECOMMENDATION",
+        artifactVersion: 1,
+      },
+      now: NOW,
+    });
+    if (!decision.ok) throw decision.error;
+    deps.decisions.seed(decision.value);
+
+    const result = await runAutomaticAnalysis(deps, { actorId: OWNER, projectId: PROJECT });
+
+    expect(result.ok).toBe(true);
+    expect((await deps.decisions.findById(decision.value.id))?.context).toMatchObject({
+      needsReview: true,
+      reviewReason: expect.stringContaining("Source evidence or analysis changed"),
+    });
+  });
+
+  it("combines the latest transcript and visual runs without reviving stale findings", async () => {
+    const deps = setup();
+    seedTranscript(deps);
+    const firstTranscript = await runAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(firstTranscript.ok && firstTranscript.value.run.sourceKind).toBe("TRANSCRIPT");
+
+    const frameEvidence = createEvidenceReference({
+      id: EvidenceReferenceId.unsafe("evref_VISUAL001"),
+      ownerId: OWNER,
+      projectId: PROJECT,
+      provenance: {
+        kind: "MEDIA_ASSET",
+        mediaAssetId: MEDIA,
+        frame: {
+          index: 3,
+          timestampMs: 3000,
+          storageKey: "evidence/project/frame-3.jpg",
+          contentType: "image/jpeg",
+          byteSize: 1200,
+          contentHash: "sha256:frame-3",
+        },
+      },
+      now: NOW,
+    });
+    deps.evidenceReferences.seed(frameEvidence);
+    const visual = await createAnalysisRun(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      sourceKind: "VISUAL_MEDIA",
+    });
+    expect(visual.ok).toBe(true);
+    if (!visual.ok) return;
+    await startAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: visual.value.id as never,
+    });
+    const completedVisual = await completeAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: visual.value.id as never,
+      outputs: [
+        {
+          kind: "OBSERVATION",
+          content: "The doorway remains visible behind the speaker.",
+          confidence: 1,
+          evidenceReferenceIds: [frameEvidence.id],
+        },
+      ],
+      recommendations: [
+        {
+          title: "Preserve the doorway reveal",
+          rationale: "The sampled frame confirms a usable depth relationship.",
+          confidence: 0.8,
+          evidenceReferenceIds: [frameEvidence.id],
+        },
+      ],
+    });
+    expect(completedVisual.ok && completedVisual.value.run.sourceKind).toBe("VISUAL_MEDIA");
+
+    const newestTranscript = await runAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(newestTranscript.ok && newestTranscript.value.run.version).toBe(3);
+
+    const latest = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(latest.ok).toBe(true);
+    if (!latest.ok) return;
+    expect(latest.value.run).toMatchObject({ version: 3, sourceKind: "TRANSCRIPT" });
+    expect(latest.value.outputs.map((item) => item.content)).toEqual([
+      "The doorway remains visible behind the speaker.",
+      "Community is why we kept building this place together.",
+    ]);
+    expect(latest.value.recommendations.map((item) => item.title)).toEqual([
+      "Preserve the doorway reveal",
+      "Start with the explicit statement",
+    ]);
+    expect(latest.value.outputs).toHaveLength(2);
+
+    const emptyTranscript = await createAnalysisRun(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      sourceKind: "TRANSCRIPT",
+    });
+    expect(emptyTranscript.ok).toBe(true);
+    if (!emptyTranscript.ok) return;
+    await startAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: emptyTranscript.value.id as never,
+    });
+    await completeAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: emptyTranscript.value.id as never,
+      outputs: [],
+      recommendations: [],
+    });
+    const afterEmptyTranscript = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(afterEmptyTranscript.ok).toBe(true);
+    if (!afterEmptyTranscript.ok) return;
+    expect(afterEmptyTranscript.value.run).toMatchObject({
+      version: 4,
+      sourceKind: "TRANSCRIPT",
+    });
+    expect(afterEmptyTranscript.value.outputs.map((item) => item.content)).toEqual([
+      "The doorway remains visible behind the speaker.",
+    ]);
+  });
+
+  it("stops legacy results from resurfacing after typed source analysis begins", async () => {
+    const deps = setup();
+    seedTranscript(deps);
+    const legacy = await createAnalysisRun(deps, { actorId: OWNER, projectId: PROJECT });
+    expect(legacy.ok).toBe(true);
+    if (!legacy.ok) return;
+    await startAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: legacy.value.id as never,
+    });
+    await completeAnalysisRun(deps, {
+      actorId: OWNER,
+      analysisRunId: legacy.value.id as never,
+      outputs: [
+        {
+          kind: "INFERENCE",
+          content: "A stale legacy interpretation.",
+          confidence: 0.4,
+        },
+      ],
+      recommendations: [],
+    });
+
+    const transcript = await runAutomaticAnalysis(deps, { actorId: OWNER, projectId: PROJECT });
+    expect(transcript.ok).toBe(true);
+    const latest = await getLatestAutomaticAnalysis(deps, {
+      actorId: OWNER,
+      projectId: PROJECT,
+    });
+    expect(latest.ok).toBe(true);
+    if (!latest.ok) return;
+    expect(latest.value.outputs.map((item) => item.content)).not.toContain(
+      "A stale legacy interpretation.",
+    );
   });
 
   it("returns the latest completed run while newer pending, running, and failed runs exist", async () => {

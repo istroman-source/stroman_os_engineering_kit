@@ -10,6 +10,9 @@ import { z } from "zod";
 export const CreateProjectRequest = z.object({ name: z.string().min(1).max(200) }).strict();
 export type CreateProjectRequest = z.infer<typeof CreateProjectRequest>;
 
+export const RenameProjectRequest = z.object({ name: z.string().min(1).max(200) }).strict();
+export type RenameProjectRequest = z.infer<typeof RenameProjectRequest>;
+
 // --- Authentication (passwordless email OTP) ---
 // The email is validated for shape only; the provider decides deliverability and
 // whether an account exists (responses stay neutral to avoid enumeration).
@@ -88,6 +91,7 @@ export type RecordEvaluationRequest = z.infer<typeof RecordEvaluationRequest>;
 
 const AdvisoryEvidenceInput = z
   .object({
+    evidenceReferenceId: z.string().min(1).max(200).nullish(),
     sourceLabel: z.string().min(1).max(200),
     observation: z.string().min(1).max(2000),
     relevance: z.string().min(1).max(2000),
@@ -98,6 +102,8 @@ const AdvisoryInput = z
   .object({
     recommendedOptionId: z.string().min(1).max(200).nullish(),
     rationale: z.string().min(1).max(2000),
+    tradeoff: z.string().min(1).max(2000).nullish(),
+    uncertainty: z.string().min(1).max(2000).nullish(),
     confidence: z.number().finite(),
     evidence: z.array(AdvisoryEvidenceInput).max(20).optional(),
   })
@@ -120,6 +126,15 @@ export const ProposeDecisionRequest = z
       .min(2)
       .max(50),
     advisory: AdvisoryInput.optional(),
+    context: z
+      .object({
+        originStage: z.enum(["MANUAL", "DEVELOP", "BUILD", "EDIT"]),
+        artifactKind: z.enum(["MANUAL", "CREATIVE_DIRECTION", "SHOT_PLAN", "EDIT_RECOMMENDATION"]),
+        artifactId: z.string().min(1).max(200).nullish(),
+        artifactVersion: z.number().int().positive().nullish(),
+      })
+      .strict()
+      .optional(),
   })
   .strict();
 export type ProposeDecisionRequest = z.infer<typeof ProposeDecisionRequest>;
@@ -189,6 +204,13 @@ export const AnalyzeProjectRequest = z
     targetAudience: z.string().max(2000).default(""),
     desiredEmotion: z.string().max(200).default(""),
     context: z.string().max(5000).default(""),
+    runtimeTarget: z.string().max(200).default(""),
+    deliveryPlatform: z.string().max(300).default(""),
+    references: z.string().max(5000).default(""),
+    restrictions: z.string().max(5000).default(""),
+    clientRequirements: z.string().max(5000).default(""),
+    nonNegotiables: z.string().max(5000).default(""),
+    successCriteria: z.string().max(5000).default(""),
   })
   .strict();
 export type AnalyzeProjectRequest = z.infer<typeof AnalyzeProjectRequest>;
@@ -267,8 +289,12 @@ const SpatialShotRequest = z
     blocking: z.string().max(2000),
     lightColor: z.string().regex(/^#[0-9a-f]{6}$/i),
     light: z.string().max(2000),
+    look: z.string().max(2000).optional(),
     sound: z.string().max(2000),
+    productionNotes: z.string().max(2000).optional(),
     rationale: z.string().max(2000),
+    directionTitle: z.string().max(200).optional(),
+    directionRationale: z.string().max(2000).optional(),
     geometryConfidence: z.enum(["OBSERVED", "ESTIMATED", "FILMMAKER_CONFIRMED"]),
   })
   .strict();

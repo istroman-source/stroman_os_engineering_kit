@@ -24,6 +24,13 @@ function fields() {
     targetAudience: "Baltimore food lovers",
     desiredEmotion: "hungry",
     context: "20s vertical.",
+    runtimeTarget: "20 seconds",
+    deliveryPlatform: "Instagram",
+    references: "Baltimore food portraiture",
+    restrictions: "No unsafe kitchen blocking",
+    clientRequirements: "Show the crab cake",
+    nonNegotiables: "Real staff",
+    successCriteria: "Local viewers recognize the restaurant craft",
   };
 }
 
@@ -77,6 +84,11 @@ describe("PrismaCreativeBriefRepository (real PostgreSQL)", () => {
     const loaded = await repo.findByProject(PROJECT);
     expect(loaded?.title).toBe("Signature Dish Reel");
     expect(loaded?.lockVersion).toBe(1);
+    expect(loaded?.runtimeTarget).toBe("20 seconds");
+    expect(loaded?.successCriteria).toContain("restaurant craft");
+    const history = await repo.listRevisions(PROJECT);
+    expect(history).toHaveLength(1);
+    expect(history[0]?.fields.runtimeTarget).toBe("20 seconds");
   });
 
   it("updates via compare-and-swap and rejects a stale write", async () => {
@@ -91,6 +103,9 @@ describe("PrismaCreativeBriefRepository (real PostgreSQL)", () => {
     const reloaded = await repo.findByProject(PROJECT);
     expect(reloaded?.desiredEmotion).toBe("nostalgic");
     expect(reloaded?.lockVersion).toBe(2);
+    const history = await repo.listRevisions(PROJECT);
+    expect(history.map((revision) => revision.version)).toEqual([1, 2]);
+    expect(history[1]?.fields.desiredEmotion).toBe("nostalgic");
 
     // A second update at the old lockVersion is rejected.
     expect(await expectThrown(repo.update(revised.value))).toBeInstanceOf(

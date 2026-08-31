@@ -4,7 +4,7 @@ import {
   createCreativeBrief,
   evaluateCreativeQuality,
   generateDevelopmentBlueprint,
-  type CreativeBriefFields,
+  type CreativeBriefInputFields,
 } from "../src/domain/creative";
 import { ProjectId } from "../src/domain/project";
 
@@ -29,7 +29,7 @@ const BENCHMARK_CONTRACT = {
     "Compare outputs blind where possible; preserve written rationale and filmmaker disagreement instead of collapsing quality into one automatic score.",
 } as const;
 
-function brief(fields: CreativeBriefFields) {
+function brief(fields: CreativeBriefInputFields) {
   const result = createCreativeBrief({
     id: CreativeBriefId.unsafe("brief_BENCH001"),
     projectId: ProjectId.unsafe("proj_BENCH001"),

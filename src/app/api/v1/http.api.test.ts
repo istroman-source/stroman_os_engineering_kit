@@ -17,12 +17,18 @@ import { POST as attachAdvisory } from "./decisions/[decisionId]/advisory/route"
 import { POST as decideDecision } from "./decisions/[decisionId]/decide/route";
 import { GET as getEvaluation } from "./evaluations/[evaluationId]/route";
 import { POST as recordEvaluation } from "./evaluations/route";
-import { GET as getProject } from "./projects/[projectId]/route";
+import { GET as getProject, PATCH as renameProject } from "./projects/[projectId]/route";
+import { POST as analyzeProject } from "./projects/[projectId]/analysis/route";
+import { POST as importProjectSource } from "./projects/[projectId]/imports/route";
+import { POST as runAutomaticAnalysis } from "./projects/[projectId]/automatic-analysis/route";
 import { POST as activateProject } from "./projects/[projectId]/activate/route";
 import { POST as archiveProject } from "./projects/[projectId]/archive/route";
 import { POST as completeProject } from "./projects/[projectId]/complete/route";
+import { POST as reopenProject } from "./projects/[projectId]/reopen/route";
 import { GET as listProjectDecisions } from "./projects/[projectId]/decisions/route";
 import { GET as listProjectEvaluations } from "./projects/[projectId]/evaluations/route";
+import { GET as getProjectReview } from "./projects/[projectId]/review/route";
+import { GET as getProjectExport } from "./projects/[projectId]/exports/[kind]/route";
 import { GET as listProjects, POST as createProject } from "./projects/route";
 import { GET as getRubric } from "./rubrics/[rubricId]/route";
 import { POST as createRubric } from "./rubrics/route";
@@ -120,6 +126,212 @@ describe("projects", () => {
     const res = await call(getProject, { principal: OTHER, params: { projectId: project.id } });
     expect(res.status).toBe(403);
   });
+
+  it("returns an owner-scoped empty project review before work begins", async () => {
+    const project = await makeProject("Review Project");
+    const review = await call(getProjectReview, {
+      principal: ACTOR,
+      params: { projectId: project.id },
+    });
+    expect(review.status).toBe(200);
+    expect(review.body).toMatchObject({
+      readiness: "EMPTY",
+      intent: null,
+      decisionSummary: { accepted: 0, rejected: 0, deferred: 0, unresolved: 0 },
+    });
+
+    const denied = await call(getProjectReview, {
+      principal: OTHER,
+      params: { projectId: project.id },
+    });
+    expect(denied.status).toBe(403);
+  });
+
+  it("downloads an exact, private project snapshot and rejects unknown formats", async () => {
+    const project = await makeProject("Review / Export Project");
+    const exported = await call(getProjectExport, {
+      principal: ACTOR,
+      params: { projectId: project.id, kind: "snapshot-json" },
+    });
+    expect(exported.status).toBe(200);
+    expect(exported.headers.get("content-type")).toContain("application/json");
+    expect(exported.headers.get("content-disposition")).toMatch(
+      /^attachment; filename="review-export-project-/,
+    );
+    expect(exported.headers.get("cache-control")).toBe("no-store");
+    expect(exported.body).toMatchObject({ schemaVersion: 1, snapshotId: expect.any(String) });
+
+    const unknown = await call(getProjectExport, {
+      principal: ACTOR,
+      params: { projectId: project.id, kind: "automatic-cloud-edit" },
+    });
+    expect(unknown.status).toBe(404);
+  });
+
+  it("completes the authenticated intent → source → analysis → decision → review → export journey", async () => {
+    const project = await makeProject("Jimmy's Famous Meals — release journey");
+    const developed = await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      json: {
+        title: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+        client: "Jimmy's Famous Meals",
+        projectType: "Commercial",
+        creativeGoal: "Conversion",
+        targetAudience: "Parents who need convenience",
+        desiredEmotion: "Understood, relatable, sentimental",
+        context:
+          "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
+      },
+    });
+    expect(developed.status).toBe(200);
+
+    const form = new FormData();
+    form.set(
+      "file",
+      new File(
+        [
+          "Mom opens the fridge while the baby taps the high-chair tray. She pauses, chooses the meal, heats it, and finally sits for the first quiet bite. The baby reaches for her hand. She leaves the phone unanswered and stays seated through the bite.",
+        ],
+        "morning-observation.txt",
+        { type: "text/plain" },
+      ),
+    );
+    form.set("transcriptFormat", "text");
+    const imported = await call(importProjectSource, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      body: form,
+      headers: {
+        "idempotency-key": "release-journey-transcript",
+        "content-length": "1024",
+      },
+    });
+    expect(imported.status).toBe(201);
+    expect(imported.body).toMatchObject({ status: "COMPLETED", sourceKind: "TRANSCRIPT" });
+
+    const analyzed = await call(runAutomaticAnalysis, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+    });
+    expect(analyzed.status).toBe(201);
+    const analysis = analyzed.body as {
+      run: { version: number; status: string };
+      recommendations: Array<{
+        id: string;
+        title: string;
+        rationale: string;
+        confidence: number;
+        evidenceReferenceIds: string[];
+      }>;
+    };
+    expect(analysis.run.status).toBe("COMPLETED");
+    expect(analysis.recommendations.length).toBeGreaterThan(0);
+    const recommendation = analysis.recommendations[0]!;
+
+    const proposed = await call(proposeDecision, {
+      method: "POST",
+      principal: ACTOR,
+      json: {
+        projectId: project.id,
+        question: `Use this edit recommendation: ${recommendation.title}?`,
+        context: {
+          originStage: "EDIT",
+          artifactKind: "EDIT_RECOMMENDATION",
+          artifactId: recommendation.id,
+          artifactVersion: analysis.run.version,
+        },
+        options: [
+          { id: "keep", label: recommendation.title, rationale: recommendation.rationale },
+          { id: "revise", label: "Revise this recommendation" },
+          { id: "reject", label: "Reject this recommendation" },
+          { id: "defer", label: "Defer until more is known" },
+        ],
+        advisory: {
+          recommendedOptionId: "keep",
+          rationale: recommendation.rationale,
+          confidence: recommendation.confidence,
+          evidence: recommendation.evidenceReferenceIds.map((evidenceReferenceId) => ({
+            evidenceReferenceId,
+            sourceLabel: "Imported transcript",
+            observation: "The recommendation cites the exact imported source.",
+            relevance: "This source evidence supports the proposed edit choice.",
+          })),
+        },
+      },
+    });
+    expect(proposed.status).toBe(201);
+    const decision = proposed.body as { id: string };
+    const decided = await call(decideDecision, {
+      method: "POST",
+      principal: ACTOR,
+      params: { decisionId: decision.id },
+      ifMatch: proposed.headers.get("etag") ?? "",
+      json: {
+        selectedOptionId: "keep",
+        rationale: "The cited behavior makes the editorial turn source-backed and specific.",
+      },
+    });
+    expect(decided.status).toBe(200);
+
+    const reviewed = await call(getProjectReview, {
+      principal: ACTOR,
+      params: { projectId: project.id },
+    });
+    expect(reviewed.status).toBe(200);
+    expect(reviewed.body).toMatchObject({
+      readiness: "READY",
+      decisionSummary: { accepted: 1, rejected: 0, deferred: 0, unresolved: 0 },
+      missingCoverage: [],
+      unresolvedActions: [],
+    });
+
+    const exported = await call(getProjectExport, {
+      principal: ACTOR,
+      params: { projectId: project.id, kind: "snapshot-json" },
+    });
+    expect(exported.status).toBe(200);
+    expect(exported.headers.get("x-stroman-snapshot-id")).toBeTruthy();
+    expect(exported.body).toMatchObject({
+      schemaVersion: 1,
+      review: { readiness: "READY", decisionSummary: { accepted: 1 } },
+    });
+  });
+
+  it("renames with If-Match, returns the next token, and preserves ownership", async () => {
+    const project = await makeProject("Working title");
+    const renamed = await call(renameProject, {
+      method: "PATCH",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: project.etag,
+      json: { name: "Final title" },
+    });
+    expect(renamed.status).toBe(200);
+    expect((renamed.body as { name: string }).name).toBe("Final title");
+    expect(renamed.headers.get("etag")).toBe('"project:2"');
+
+    const denied = await call(renameProject, {
+      method: "PATCH",
+      principal: OTHER,
+      params: { projectId: project.id },
+      ifMatch: renamed.headers.get("etag") ?? "",
+      json: { name: "Not mine" },
+    });
+    expect(denied.status).toBe(403);
+
+    const stale = await call(renameProject, {
+      method: "PATCH",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: project.etag,
+      json: { name: "Stale title" },
+    });
+    expect(stale.status).toBe(409);
+  });
 });
 
 describe("optimistic concurrency", () => {
@@ -168,6 +380,28 @@ describe("optimistic concurrency", () => {
       ifMatch: '"content:1"',
     });
     expect(wrongType.status).toBe(400);
+  });
+
+  it("restores an archived project and retains the concurrency chain", async () => {
+    const project = await makeProject();
+    const archived = await call(archiveProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: project.etag,
+    });
+    expect(archived.status).toBe(200);
+    expect((archived.body as { status: string }).status).toBe("ARCHIVED");
+
+    const restored = await call(reopenProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId: project.id },
+      ifMatch: archived.headers.get("etag") ?? "",
+    });
+    expect(restored.status).toBe(200);
+    expect((restored.body as { status: string }).status).toBe("ACTIVE");
+    expect(restored.headers.get("etag")).toBe('"project:3"');
   });
 });
 

@@ -38,7 +38,23 @@ describe("AnalysisRun", () => {
     const completed = completeAnalysisRun(started.value, NOW);
     expect(completed.ok).toBe(true);
     if (!completed.ok) return;
-    expect(completed.value).toMatchObject({ version: 2, status: "COMPLETED" });
+    expect(completed.value).toMatchObject({
+      version: 2,
+      sourceKind: "LEGACY",
+      status: "COMPLETED",
+    });
+  });
+
+  it("preserves explicit source provenance through the lifecycle", () => {
+    const created = createAnalysisRun({
+      id: AnalysisRunId.unsafe("anrun_00000002"),
+      ownerId: OwnerId.unsafe("usr_00000001"),
+      projectId: ProjectId.unsafe("proj_00000001"),
+      version: 1,
+      sourceKind: "VISUAL_MEDIA",
+      now: NOW,
+    });
+    expect(created.ok && created.value.sourceKind).toBe("VISUAL_MEDIA");
   });
 
   it("records a bounded failure reason only from a running analysis", () => {

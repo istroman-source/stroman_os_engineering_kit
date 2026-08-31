@@ -8,6 +8,7 @@ const run: AnalysisRun = {
   ownerId: "usr_00000001",
   projectId: "proj_00000001",
   version: 1,
+  sourceKind: "LEGACY",
   status: "PENDING",
   failureReason: null,
   createdAt: new Date("2026-07-23T00:00:00Z"),

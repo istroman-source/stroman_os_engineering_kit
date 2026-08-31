@@ -30,6 +30,13 @@ export const POST = apiRoute<{ projectId: string }>(async ({ req, params, reques
       targetAudience: body.targetAudience ?? "",
       desiredEmotion: body.desiredEmotion ?? "",
       context: body.context ?? "",
+      runtimeTarget: body.runtimeTarget ?? "",
+      deliveryPlatform: body.deliveryPlatform ?? "",
+      references: body.references ?? "",
+      restrictions: body.restrictions ?? "",
+      clientRequirements: body.clientRequirements ?? "",
+      nonNegotiables: body.nonNegotiables ?? "",
+      successCriteria: body.successCriteria ?? "",
     },
   });
   return sendResult(result, { requestId, serialize: serializeAnalysis });

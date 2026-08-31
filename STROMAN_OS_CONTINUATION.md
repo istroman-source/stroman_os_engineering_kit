@@ -2,7 +2,8 @@
 
 ## Current objective
 
-Make Stroman OS easier to enter and navigate without changing its API contracts or production data.
+Complete the connected Stroman OS functional V1 and pass the exact-SHA release gate for human
+testing without weakening filmmaker authority, evidence integrity, security, or source preservation.
 
 ## Completed
 
@@ -24,28 +25,33 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 
 ## Verification
 
-- TypeScript: passed (`npm run typecheck`).
-- Targeted UX tests: 51/51 passed across every modified interaction area.
-- Full test suite: 657/657 passed. The 653 browser-independent tests passed in the sandbox; the four worker socket tests passed with local socket permission.
-- ESLint: zero errors; two pre-existing unused-parameter warnings remain in `decisions-api.test.ts`.
-- Production build: passed with `next build --webpack`. Turbopack rejects this checkout's development-only external `node_modules` symlink before compilation; webpack completed compilation, TypeScript, page generation, and build tracing.
-- Whitespace and formatting checks: passed for the changed surface.
+- TypeScript, formatting, OpenAPI (98 paths), production build, and Playwright desktop/mobile smoke
+  pass.
+- Full unit/UI/worker suite: 716/716 passed; real-PostgreSQL integration: 92/92; authenticated API:
+  98/98; cross-mode evaluation: 28/28; guarded autopilot: 57/57.
+- Fresh 30-migration deployment and seeded compatible 28→30 migration rehearsal pass.
+- Current full-detail Apple pipeline produced and application-validated a 12.3 MB GLB from 26
+  preserved room photos without a paid service.
+- ESLint has zero errors; two pre-existing unused-parameter warnings remain in
+  `decisions-api.test.ts`.
 
 ## Important constraints
 
-- Work only in this clean checkout: `work/ux-redesign`.
-- Preserve the separate dirty Apple reconstruction experiment in `work/room-fidelity-release`.
-- Do not use secrets, deployments, Railway, browser sign-in, external workers, or paid services during this local-only phase.
-- The localhost worker tests have now passed with the required local socket permission.
+- Work only in this clean checkout: `work/v1-functional-completion`.
+- Preserve the canonical checkout and the separate dirty Apple reconstruction experiment in
+  `work/room-fidelity-release`.
+- Do not use KIRI, RunPod, or paid reconstruction. Never expose credential values.
+- Preserve normal non-force PR, CI, independent-review, merge, deployment, and post-merge checks.
 
 ## Priority order
 
-1. Continue simplifying the remaining in-project language and hierarchy while preserving routes and API contracts.
-2. Add targeted regression coverage for each UX behavior changed.
-3. Run typecheck, focused lint, and focused tests after each coherent slice.
-4. Run the full local suite when appropriate; record the localhost sandbox limitation exactly if it recurs.
+1. Commit the reconciled release evidence and freeze the exact review SHA.
+2. Obtain independent product-meaning and implementation review; remediate any BLOCKING or IMPORTANT
+   finding against a new exact SHA.
+3. Push, pass exact-head CI, merge normally, and verify post-merge main CI.
+4. Exercise the signed-in deployed workflow and publish the human-test handoff.
 
-## ACTIVE WORK QUEUE
+## Completed UX redesign queue
 
 - [x] Complete full UX audit against the original redesign brief and maintain the final PASS/PARTIAL/FAIL audit.
 - [x] Simplify the project entry and project navigation.
@@ -75,6 +81,26 @@ Make Stroman OS easier to enter and navigate without changing its API contracts 
 - PASS — Reliability and error states: authentication redirects, retry-safe rooms, preserved source messaging, actionable failures, and live progress behavior remain covered.
 - N/A — Internal acquisition and knowledge administration routes: not part of the filmmaker-facing redesign or primary navigation.
 
-## Queue state
+## ACTIVE WORK QUEUE
 
-No executable UX redesign items remain.
+- [x] Complete the filmmaker-facing UX redesign.
+- [x] Complete project lifecycle, structured intent, source/evidence inspection, Develop, Build,
+  Edit, unified decisions, Review, exports, and cross-mode acceptance.
+- [x] Apply all 30 migrations on a fresh database and rehearse the final two over preserved
+  compatible data.
+- [x] Pass local unit/UI/worker, real-PostgreSQL integration/API/auth, evaluation, autopilot,
+  Playwright, security, OpenAPI, format, lint, typecheck, and production-build gates.
+- [x] Reconstruct the preserved 26-photo room through the current full-detail Apple pipeline and
+  validate its resulting GLB through the application geometry gate.
+- [x] Fix the runtime-discovered canonical room-dimension double scaling with regression coverage.
+- [x] Record exact automated/native evidence and reproducible human-testing instructions.
+- [x] Remediate the first independent review's hosted-versus-offline honesty finding: production
+  now fails closed, while explicit offline drafts are visibly labeled for the filmmaker.
+- [ ] Freeze the final exact SHA and obtain independent Claude review with zero BLOCKING and
+  IMPORTANT findings.
+- [ ] Push the private branch, pass exact-head CI, and complete the established non-force merge.
+- [ ] Verify post-merge main CI and the signed-in deployed intent → evidence → decision → Review →
+  export and prepared-room workflow.
+- [ ] Publish the final exact SHA, evidence, limitations, and READY FOR HUMAN TESTING verdict.
+
+The task remains in progress while an executable unchecked item remains.

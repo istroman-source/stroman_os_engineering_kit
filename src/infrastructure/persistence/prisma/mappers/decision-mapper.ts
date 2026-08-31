@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { type Advisory, type Decision, type DecisionOption, DecisionId } from "@/domain/decision";
 import { OwnerId, ProjectId } from "@/domain/project";
+import { EvidenceReferenceId } from "@/domain/evidence";
 import { makeConfidence } from "@/domain/shared";
 import { PersistenceMappingError } from "../errors";
 import { orThrowMapping } from "./shared";
@@ -17,6 +18,13 @@ function toAdvisory(row: DecisionRow): Advisory | null {
   const evidence = [...row.evidence]
     .sort((a, b) => a.position - b.position)
     .map((entry) => ({
+      evidenceReferenceId:
+        entry.evidenceReferenceId === null
+          ? null
+          : orThrowMapping(
+              EvidenceReferenceId.parse(entry.evidenceReferenceId),
+              "decisionEvidence.evidenceReferenceId",
+            ),
       sourceLabel: entry.sourceLabel,
       observation: entry.observation,
       relevance: entry.relevance,
@@ -24,6 +32,8 @@ function toAdvisory(row: DecisionRow): Advisory | null {
   return {
     recommendedOptionId: row.advisoryRecommendedOptionId,
     rationale: row.advisoryRationale,
+    tradeoff: row.advisoryTradeoff,
+    uncertainty: row.advisoryUncertainty,
     confidence: orThrowMapping(makeConfidence(row.advisoryConfidence), "advisory.confidence"),
     evidence,
   };
@@ -43,6 +53,14 @@ export function toDecision(row: DecisionRow): Decision {
     question: row.question,
     options,
     advisory: toAdvisory(row),
+    context: {
+      originStage: row.originStage,
+      artifactKind: row.artifactKind,
+      artifactId: row.artifactId,
+      artifactVersion: row.artifactVersion,
+      needsReview: row.needsReview,
+      reviewReason: row.reviewReason,
+    },
     status: row.status,
     selectedOptionId: row.selectedOptionId,
     decidedBy:
@@ -61,12 +79,20 @@ export function toDecisionFields(decision: Decision) {
     id: decision.id,
     projectId: decision.projectId,
     question: decision.question,
+    originStage: decision.context.originStage,
+    artifactKind: decision.context.artifactKind,
+    artifactId: decision.context.artifactId,
+    artifactVersion: decision.context.artifactVersion,
+    needsReview: decision.context.needsReview,
+    reviewReason: decision.context.reviewReason,
     status: decision.status,
     selectedOptionId: decision.selectedOptionId,
     decidedBy: decision.decidedBy,
     decisionRationale: decision.decisionRationale,
     advisoryRecommendedOptionId: decision.advisory?.recommendedOptionId ?? null,
     advisoryRationale: decision.advisory?.rationale ?? null,
+    advisoryTradeoff: decision.advisory?.tradeoff ?? null,
+    advisoryUncertainty: decision.advisory?.uncertainty ?? null,
     advisoryConfidence: decision.advisory?.confidence ?? null,
     createdAt: decision.createdAt,
     decidedAt: decision.decidedAt,
@@ -88,6 +114,7 @@ export function toDecisionEvidenceRows(decision: Decision) {
   return (decision.advisory?.evidence ?? []).map((entry, index) => ({
     decisionId: decision.id,
     position: index,
+    evidenceReferenceId: entry.evidenceReferenceId ?? null,
     sourceLabel: entry.sourceLabel,
     observation: entry.observation,
     relevance: entry.relevance,

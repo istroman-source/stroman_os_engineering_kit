@@ -49,6 +49,20 @@ enum DecisionStatus {
   DECIDED
 }
 
+enum DecisionOriginStage {
+  MANUAL
+  DEVELOP
+  BUILD
+  EDIT
+}
+
+enum DecisionArtifactKind {
+  MANUAL
+  CREATIVE_DIRECTION
+  SHOT_PLAN
+  EDIT_RECOMMENDATION
+}
+
 enum ReviewerType {
   HUMAN
   AI
@@ -95,6 +109,12 @@ enum AnalysisRunStatus {
   RUNNING
   COMPLETED
   FAILED
+}
+
+enum AnalysisRunSourceKind {
+  LEGACY
+  TRANSCRIPT
+  VISUAL_MEDIA
 }
 
 enum AnalysisOutputKind {
@@ -387,6 +407,7 @@ model Project {
   retrospectives             Retrospective[]
   decisions                  Decision[]
   creativeBrief              CreativeBrief?
+  creativeBriefRevisions     CreativeBriefRevision[]
   storyAngles                StoryAngle[]
   mediaAssets                MediaAsset[]
   transcripts                TranscriptDocument[]
@@ -548,6 +569,12 @@ model EvidenceReference {
   mediaAssetId         String                 @map("media_asset_id")
   transcriptDocumentId String?                @map("transcript_document_id")
   transcriptSegmentId  String?                @map("transcript_segment_id")
+  frameIndex           Int?                   @map("frame_index")
+  frameTimestampMs     Int?                   @map("frame_timestamp_ms")
+  frameStorageKey      String?                @map("frame_storage_key")
+  frameContentType     String?                @map("frame_content_type")
+  frameByteSize        Int?                   @map("frame_byte_size")
+  frameContentHash     String?                @map("frame_content_hash")
   createdAt            DateTime               @map("created_at") @db.Timestamptz(3)
 
   project           Project                          @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
@@ -556,6 +583,7 @@ model EvidenceReference {
   transcriptSegment TranscriptSegment?               @relation(fields: [transcriptDocumentId, transcriptSegmentId], references: [transcriptDocumentId, id], onDelete: Restrict)
   analysisOutputs   AnalysisOutputEvidence[]
   recommendations   AnalysisRecommendationEvidence[]
+  decisionEvidence  DecisionEvidence[]
 
   @@index([projectId, createdAt])
   @@index([mediaAssetId, createdAt])
@@ -564,15 +592,16 @@ model EvidenceReference {
 }
 
 model AnalysisRun {
-  id            String            @id
-  ownerId       String            @map("owner_id")
-  projectId     String            @map("project_id")
+  id            String                @id
+  ownerId       String                @map("owner_id")
+  projectId     String                @map("project_id")
   version       Int
+  sourceKind    AnalysisRunSourceKind @default(LEGACY) @map("source_kind")
   status        AnalysisRunStatus
-  failureReason String?           @map("failure_reason")
-  createdAt     DateTime          @map("created_at") @db.Timestamptz(3)
-  startedAt     DateTime?         @map("started_at") @db.Timestamptz(3)
-  completedAt   DateTime?         @map("completed_at") @db.Timestamptz(3)
+  failureReason String?               @map("failure_reason")
+  createdAt     DateTime              @map("created_at") @db.Timestamptz(3)
+  startedAt     DateTime?             @map("started_at") @db.Timestamptz(3)
+  completedAt   DateTime?             @map("completed_at") @db.Timestamptz(3)
 
   project         Project                  @relation(fields: [projectId, ownerId], references: [id, ownerId], onDelete: Restrict)
   outputs         AnalysisOutput[]
@@ -580,6 +609,7 @@ model AnalysisRun {
 
   @@unique([projectId, version])
   @@index([projectId, createdAt])
+  @@index([projectId, sourceKind, version])
   @@map("analysis_runs")
 }
 
@@ -645,25 +675,49 @@ model AnalysisRecommendationEvidence {
 /// The creator-supplied context Stroman OS analyzes into a Creative Blueprint.
 /// One brief per project (project_id is unique); cascades with its project.
 model CreativeBrief {
-  id                String   @id
-  projectId         String   @unique @map("project_id")
-  title             String
-  client            String
-  projectType       String   @map("project_type")
-  creativeGoal      String   @map("creative_goal")
-  targetAudience    String   @map("target_audience")
-  desiredEmotion    String   @map("desired_emotion")
-  context           String
-  blueprint         Json?
-  reasoningProvider String?  @map("reasoning_provider")
-  planningContext   Json?    @map("planning_context")
-  createdAt         DateTime @map("created_at") @db.Timestamptz(3)
-  updatedAt         DateTime @map("updated_at") @db.Timestamptz(3)
-  lockVersion       Int      @default(1) @map("lock_version")
+  id                 String   @id
+  projectId          String   @unique @map("project_id")
+  title              String
+  client             String
+  projectType        String   @map("project_type")
+  creativeGoal       String   @map("creative_goal")
+  targetAudience     String   @map("target_audience")
+  desiredEmotion     String   @map("desired_emotion")
+  context            String
+  runtimeTarget      String   @default("") @map("runtime_target")
+  deliveryPlatform   String   @default("") @map("delivery_platform")
+  references         String   @default("")
+  restrictions       String   @default("")
+  clientRequirements String   @default("") @map("client_requirements")
+  nonNegotiables     String   @default("") @map("non_negotiables")
+  successCriteria    String   @default("") @map("success_criteria")
+  blueprint          Json?
+  reasoningProvider  String?  @map("reasoning_provider")
+  planningContext    Json?    @map("planning_context")
+  createdAt          DateTime @map("created_at") @db.Timestamptz(3)
+  updatedAt          DateTime @map("updated_at") @db.Timestamptz(3)
+  lockVersion        Int      @default(1) @map("lock_version")
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project   Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  revisions CreativeBriefRevision[]
 
   @@map("creative_briefs")
+}
+
+model CreativeBriefRevision {
+  id              String   @id
+  creativeBriefId String   @map("creative_brief_id")
+  projectId       String   @map("project_id")
+  version         Int
+  snapshot        Json
+  createdAt       DateTime @map("created_at") @db.Timestamptz(3)
+
+  creativeBrief CreativeBrief @relation(fields: [creativeBriefId], references: [id], onDelete: Cascade)
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([creativeBriefId, version])
+  @@index([projectId, version])
+  @@map("creative_brief_revisions")
 }
 
 /// Knowledge-base content item. Slug uniqueness is enforced by the database.
@@ -824,19 +878,27 @@ model Lesson {
 /// A recorded creative decision. Human-authority fields (selected option, decided
 /// by, rationale) are stored separately from AI advisory fields.
 model Decision {
-  id                          String         @id
-  projectId                   String         @map("project_id")
+  id                          String               @id
+  projectId                   String               @map("project_id")
   question                    String
   status                      DecisionStatus
-  selectedOptionId            String?        @map("selected_option_id")
-  decidedBy                   String?        @map("decided_by")
-  decisionRationale           String?        @map("decision_rationale")
-  advisoryRecommendedOptionId String?        @map("advisory_recommended_option_id")
-  advisoryRationale           String?        @map("advisory_rationale")
-  advisoryConfidence          Float?         @map("advisory_confidence")
-  createdAt                   DateTime       @map("created_at") @db.Timestamptz(3)
-  decidedAt                   DateTime?      @map("decided_at") @db.Timestamptz(3)
-  lockVersion                 Int            @default(1) @map("lock_version")
+  originStage                 DecisionOriginStage  @default(MANUAL) @map("origin_stage")
+  artifactKind                DecisionArtifactKind @default(MANUAL) @map("artifact_kind")
+  artifactId                  String?              @map("artifact_id")
+  artifactVersion             Int?                 @map("artifact_version")
+  needsReview                 Boolean              @default(false) @map("needs_review")
+  reviewReason                String?              @map("review_reason")
+  selectedOptionId            String?              @map("selected_option_id")
+  decidedBy                   String?              @map("decided_by")
+  decisionRationale           String?              @map("decision_rationale")
+  advisoryRecommendedOptionId String?              @map("advisory_recommended_option_id")
+  advisoryRationale           String?              @map("advisory_rationale")
+  advisoryTradeoff            String?              @map("advisory_tradeoff")
+  advisoryUncertainty         String?              @map("advisory_uncertainty")
+  advisoryConfidence          Float?               @map("advisory_confidence")
+  createdAt                   DateTime             @map("created_at") @db.Timestamptz(3)
+  decidedAt                   DateTime?            @map("decided_at") @db.Timestamptz(3)
+  lockVersion                 Int                  @default(1) @map("lock_version")
 
   project                 Project                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
   options                 DecisionOption[]
@@ -844,6 +906,7 @@ model Decision {
   analysisRecommendations AnalysisRecommendation[]
 
   @@index([projectId])
+  @@index([projectId, originStage, needsReview])
   @@map("decisions")
 }
 
@@ -851,15 +914,18 @@ model Decision {
 /// decision aggregate (replaced wholesale when the advisory is attached), so it
 /// cascades with its decision. `position` preserves ordering.
 model DecisionEvidence {
-  decisionId  String @map("decision_id")
-  position    Int
-  sourceLabel String @map("source_label")
-  observation String
-  relevance   String
+  decisionId          String  @map("decision_id")
+  position            Int
+  evidenceReferenceId String? @map("evidence_reference_id")
+  sourceLabel         String  @map("source_label")
+  observation         String
+  relevance           String
 
-  decision Decision @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  decision          Decision           @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  evidenceReference EvidenceReference? @relation(fields: [evidenceReferenceId], references: [id], onDelete: Restrict)
 
   @@id([decisionId, position])
+  @@index([evidenceReferenceId])
   @@map("decision_evidence")
 }
 

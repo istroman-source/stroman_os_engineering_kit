@@ -46,6 +46,18 @@ const ready = {
     sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
     scaleMetersPerUnit: 1,
     scaleConfidence: "ESTIMATED" as const,
+    shootBrief: {
+      usability: "SHOOTABLE_ESTIMATE" as const,
+      usableViews: ["Explore inside the recovered bounds."],
+      observedConstraints: [
+        "Recovered bounds span approximately 4.0m wide × 3.0m high × 5.0m deep.",
+      ],
+      estimates: ["Scale and dimensions are estimates."],
+      unknowns: ["Doors and windows are not confirmed."],
+      noGoAreas: ["Outside the mesh remains unverified."],
+      issues: [],
+      correctiveAction: null,
+    },
   },
 };
 
@@ -118,6 +130,36 @@ describe("LocationDetailView", () => {
 
     expect(await screen.findByLabelText(/room viewer for downtown kitchen/i)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /building your room/i })).toBeInTheDocument();
+  });
+
+  it("withholds a distorted room from normal planning and explains the coverage fix", async () => {
+    vi.mocked(getPreparedLocation).mockResolvedValue({
+      ...ready,
+      status: "NEEDS_ATTENTION",
+      environment: {
+        ...ready.environment,
+        shootBrief: {
+          ...ready.environment.shootBrief,
+          usability: "REVIEW_REQUIRED",
+          usableViews: [],
+          issues: ["The recovered floor bounds are unusually stretched and may be distorted."],
+          correctiveAction:
+            "Add overlapping photos around the distorted or missing side, including floor, ceiling, corners, and connecting views, then rebuild.",
+        },
+      },
+    });
+    render(<LocationDetailView locationId={ready.id} />);
+
+    expect(
+      await screen.findByRole("heading", { name: /review coverage before planning shots/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /room needs more coverage/i })).toBeInTheDocument();
+    expect(screen.getByText(/unusually stretched/i)).toBeInTheDocument();
+    expect(screen.getByText(/add overlapping photos around the distorted/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/room viewer for downtown kitchen/i).closest("details"),
+    ).not.toHaveAttribute("open");
+    expect(screen.getByText(/inspect incomplete room geometry/i)).toBeInTheDocument();
   });
 
   it("explains that a failed 3D scan remains available for retry", async () => {

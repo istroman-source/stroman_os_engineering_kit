@@ -1,5 +1,6 @@
 import { proposeDecision } from "@/application/decision";
 import { ProjectId } from "@/domain/project";
+import { EvidenceReferenceId } from "@/domain/evidence";
 import { getApiContext } from "@/server/composition";
 import { authenticateRequest } from "@/server/auth";
 import { apiRoute, parseJson, parsePathId, sendResult } from "@/server/http/respond";
@@ -19,12 +20,27 @@ export const POST = apiRoute(async ({ req, requestId }) => {
       label: option.label,
       rationale: option.rationale ?? null,
     })),
+    context: body.context
+      ? {
+          originStage: body.context.originStage,
+          artifactKind: body.context.artifactKind,
+          artifactId: body.context.artifactId ?? null,
+          artifactVersion: body.context.artifactVersion ?? null,
+        }
+      : undefined,
     advisory: body.advisory
       ? {
           recommendedOptionId: body.advisory.recommendedOptionId ?? null,
           rationale: body.advisory.rationale,
+          tradeoff: body.advisory.tradeoff ?? null,
+          uncertainty: body.advisory.uncertainty ?? null,
           confidence: body.advisory.confidence,
-          evidence: body.advisory.evidence,
+          evidence: body.advisory.evidence?.map((entry) => ({
+            ...entry,
+            evidenceReferenceId: entry.evidenceReferenceId
+              ? parsePathId(entry.evidenceReferenceId, EvidenceReferenceId.parse)
+              : null,
+          })),
         }
       : undefined,
   });

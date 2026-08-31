@@ -22,7 +22,7 @@ describe("EvidenceReference", () => {
       ownerId: base.ownerId,
       projectId: base.projectId,
       createdAt: base.now,
-      provenance,
+      provenance: { ...provenance, frame: null },
     });
     expect(evidence.provenance).not.toBe(provenance);
   });

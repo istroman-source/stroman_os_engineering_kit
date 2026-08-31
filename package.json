@@ -33,6 +33,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:rehearse": "node scripts/verify-existing-database-migrations.mjs",
     "private-beta:access": "node scripts/private-beta-access.mjs",
     "db:reset": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/database-maintenance.ts reset",
     "db:seed": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/database-maintenance.ts seed",

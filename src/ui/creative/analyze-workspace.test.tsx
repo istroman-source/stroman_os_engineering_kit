@@ -2,7 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyzeWorkspace } from "./analyze-workspace";
-import { analyzeProject, getAnalysis } from "./creative-api";
+import { analyzeProject, getAnalysis, getIntentHistory } from "./creative-api";
+import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 import { creativeAnalysisFixture } from "./creative-test-fixtures";
 
 const { replaceMock, routerMock } = vi.hoisted(() => {
@@ -13,7 +14,12 @@ const { replaceMock, routerMock } = vi.hoisted(() => {
   };
 });
 vi.mock("next/navigation", () => ({ useRouter: () => routerMock }));
-vi.mock("./creative-api", () => ({ getAnalysis: vi.fn(), analyzeProject: vi.fn() }));
+vi.mock("./creative-api", () => ({
+  getAnalysis: vi.fn(),
+  getIntentHistory: vi.fn(),
+  analyzeProject: vi.fn(),
+}));
+vi.mock("@/ui/decisions/decisions-api", () => ({ proposeRecommendationDecision: vi.fn() }));
 vi.mock("@/ui/auth/api-client", () => ({
   errorStatus: (err: { status?: number }) => err?.status,
   friendlyError: (err: { message?: string }) => err?.message ?? "error",
@@ -23,6 +29,10 @@ beforeEach(() => {
   replaceMock.mockReset();
   vi.mocked(getAnalysis).mockReset();
   vi.mocked(analyzeProject).mockReset();
+  vi.mocked(getIntentHistory).mockReset();
+  vi.mocked(getIntentHistory).mockResolvedValue([]);
+  vi.mocked(proposeRecommendationDecision).mockReset();
+  routerMock.push.mockReset();
 });
 
 describe("AnalyzeWorkspace", () => {
@@ -76,5 +86,39 @@ describe("AnalyzeWorkspace", () => {
         name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("creates a traceable open choice from the recommended direction", async () => {
+    vi.mocked(getAnalysis).mockResolvedValue(creativeAnalysisFixture());
+    vi.mocked(proposeRecommendationDecision).mockResolvedValue({
+      data: { id: "dec_direction" },
+      etag: '"decision:1"',
+    } as never);
+    const user = userEvent.setup();
+    render(<AnalyzeWorkspace projectId="proj_1" />);
+
+    await user.click(await screen.findByRole("button", { name: /turn this into a choice/i }));
+
+    await waitFor(() =>
+      expect(proposeRecommendationDecision).toHaveBeenCalledWith(
+        expect.objectContaining({
+          projectId: "proj_1",
+          question: expect.stringContaining("Which creative direction"),
+          context: expect.objectContaining({
+            originStage: "DEVELOP",
+            artifactKind: "CREATIVE_DIRECTION",
+          }),
+          recommendation: expect.objectContaining({
+            label: "The first quiet bite",
+            confidence: 0.78,
+            evidence: expect.arrayContaining([
+              expect.objectContaining({ sourceLabel: "Audience and emotional job" }),
+            ]),
+          }),
+          alternatives: expect.any(Array),
+        }),
+      ),
+    );
+    expect(routerMock.push).toHaveBeenCalledWith("/projects/proj_1/decisions/dec_direction");
   });
 });

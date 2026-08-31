@@ -14,9 +14,11 @@ import {
   getPreparedLocationForOwner,
   getPreparedLocationGeometryForOwner,
   listPreparedLocationsForOwner,
+  preparedLocationDetailView,
   preparedLocationView,
   renamePreparedLocationForOwner,
   startPreparedLocationReconstruction,
+  uploadPreparedLocationGlb,
   uploadPreparedLocationPhotos,
 } from "./prepared-locations";
 
@@ -84,7 +86,7 @@ describe("prepared location application", () => {
         inferRoomScale: () => ({
           scaleMetersPerUnit: 1,
           sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as const,
-          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } },
+          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 5, y: 3, z: 4 } },
         }),
       },
     };
@@ -98,6 +100,52 @@ describe("prepared location application", () => {
       expect.objectContaining({ name: "Studio A", status: "DRAFT", inputCount: 0 }),
     );
     await expect(listPreparedLocationsForOwner(deps, owner)).resolves.toEqual([location]);
+  });
+
+  it("preserves but withholds a structurally valid distorted GLB from ready planning", async () => {
+    const preparedLocations = new Locations();
+    const deps = {
+      preparedLocations,
+      preparedLocationReconstructions: new Reconstructions(),
+      ids: new SequentialIdGenerator(),
+      clock: new FixedClock(new Date("2026-08-21T13:00:00.000Z")),
+      sourceStorage: {
+        put: async () => ({ leaseId: "lease" }),
+        get: async () => new Uint8Array([1]),
+        retain: async () => undefined,
+        discard: async () => undefined,
+      },
+      locationGeometryInspector: {
+        inferRoomScale: () => ({
+          scaleMetersPerUnit: 1,
+          sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as const,
+          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 70, y: 2.8, z: 2 } },
+        }),
+      },
+    };
+    const owner = OwnerId.unsafe("usr_LOCATIONDISTORTED");
+    const location = await createPreparedLocationForOwner(deps, {
+      actorId: owner,
+      name: "Stretched room",
+      inputKind: "GLB",
+    });
+
+    const result = await uploadPreparedLocationGlb(deps, {
+      actorId: owner,
+      locationId: location.id,
+      fileName: "room.glb",
+      bytes: new Uint8Array([1, 2, 3]),
+    });
+
+    expect(result.status).toBe("NEEDS_ATTENTION");
+    expect(preparedLocationDetailView(result).environment).toMatchObject({
+      shootBrief: {
+        usability: "REVIEW_REQUIRED",
+        issues: [expect.stringMatching(/stretched.*distorted/i)],
+        correctiveAction: expect.stringMatching(/replace.*complete textured room GLB/i),
+      },
+    });
+    expect((await preparedLocations.findById(location.id))?.inputs).toHaveLength(1);
   });
 
   it("owner-scopes last-known-good geometry during a rebuild without exposing stored evidence paths", async () => {
@@ -189,7 +237,7 @@ describe("prepared location application", () => {
         inferRoomScale: () => ({
           scaleMetersPerUnit: 1,
           sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as const,
-          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } },
+          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 5, y: 3, z: 4 } },
         }),
       },
     };
@@ -262,7 +310,7 @@ describe("prepared location application", () => {
         inferRoomScale: () => ({
           scaleMetersPerUnit: 1,
           sourceToCanonical: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as const,
-          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } },
+          bounds: { min: { x: 0, y: 0, z: 0 }, max: { x: 5, y: 3, z: 4 } },
         }),
       },
     };

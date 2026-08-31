@@ -8,7 +8,13 @@ import { NotAuthorizedError, NotFoundError, RepositoryError } from "../shared/er
 import { createProject } from "./create-project";
 import { getProject } from "./get-project";
 import { listProjectsForOwner } from "./list-projects-for-owner";
-import { activateProject, archiveProject, completeProject } from "./project-lifecycle";
+import {
+  activateProject,
+  archiveProject,
+  completeProject,
+  reopenProject,
+} from "./project-lifecycle";
+import { renameProject } from "./rename-project";
 
 const OWNER = OwnerId.unsafe("usr_00000001");
 const OTHER = OwnerId.unsafe("usr_99999999");
@@ -176,5 +182,72 @@ describe("project lifecycle", () => {
       expectedVersion: completed.value.lockVersion,
     });
     expect(archived.ok && archived.value.status).toBe("ARCHIVED");
+
+    if (!archived.ok) throw archived.error;
+    const restored = await reopenProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      expectedVersion: archived.value.lockVersion,
+    });
+    expect(restored.ok && restored.value.status).toBe("ACTIVE");
+  });
+});
+
+describe("renameProject", () => {
+  it("renames an owned project and advances its concurrency token", async () => {
+    const d = deps();
+    const created = await createProject(d, { actorId: OWNER, name: "Working title" });
+    if (!created.ok) throw created.error;
+
+    const renamed = await renameProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      name: "Final title",
+      expectedVersion: created.value.lockVersion,
+    });
+
+    expect(renamed.ok && renamed.value.name).toBe("Final title");
+    expect(renamed.ok && renamed.value.lockVersion).toBe(2);
+    expect((await d.projects.findById(created.value.id))?.name).toBe("Final title");
+  });
+
+  it("rejects invalid, unauthorized, and stale renames without overwriting", async () => {
+    const d = deps();
+    const created = await createProject(d, { actorId: OWNER, name: "Original" });
+    if (!created.ok) throw created.error;
+
+    const invalid = await renameProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      name: "   ",
+      expectedVersion: created.value.lockVersion,
+    });
+    expect(invalid.ok).toBe(false);
+
+    const denied = await renameProject(d, {
+      actorId: OTHER,
+      projectId: created.value.id,
+      name: "Stolen",
+      expectedVersion: created.value.lockVersion,
+    });
+    expect(denied.ok).toBe(false);
+    if (!denied.ok) expect(denied.error).toBeInstanceOf(NotAuthorizedError);
+
+    const first = await renameProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      name: "Current",
+      expectedVersion: created.value.lockVersion,
+    });
+    expect(first.ok).toBe(true);
+    const stale = await renameProject(d, {
+      actorId: OWNER,
+      projectId: created.value.id,
+      name: "Overwrite",
+      expectedVersion: created.value.lockVersion,
+    });
+    expect(stale.ok).toBe(false);
+    if (!stale.ok) expect(stale.error).toBeInstanceOf(OptimisticConcurrencyError);
+    expect((await d.projects.findById(created.value.id))?.name).toBe("Current");
   });
 });

@@ -124,6 +124,21 @@ export function evaluateCreativeQuality(
     ].every((value) => words(value).length >= 4),
   ).length;
   const primary = output.directionDecision;
+  const reasoningBasis = primary.basis ?? [];
+  const confidenceIsCalibrated =
+    typeof primary.confidence === "number" &&
+    primary.confidence >= 0 &&
+    primary.confidence <= 1 &&
+    Boolean(primary.confidenceRationale?.trim());
+  const hasIntentOrEvidenceBasis = reasoningBasis.some(
+    (item) => item.kind === "SUPPLIED_INTENT" || item.kind === "SOURCE_EVIDENCE",
+  );
+  const alternativePrinciples = new Set(
+    output.alternativeDecisions.map((item) => item.storyEngine.trim().toLowerCase()),
+  );
+  const alternativeEffects = new Set(
+    output.alternativeDecisions.map((item) => item.audienceJourney.trim().toLowerCase()),
+  );
   const distinctTitles = new Set([
     primary.title.toLowerCase(),
     ...output.alternativeDecisions.map((item) => item.title.toLowerCase()),
@@ -170,17 +185,27 @@ export function evaluateCreativeQuality(
     ),
     score(
       "DISTINCTIVENESS",
-      distinctTitles >= 4 && genericHits.length === 0 ? 9 : distinctTitles >= 3 ? 7 : 3,
-      `${distinctTitles} direction titles are distinct; ${genericHits.length} known generic phrases appear.`,
+      distinctTitles >= 4 &&
+        alternativePrinciples.size === output.alternativeDecisions.length &&
+        alternativeEffects.size === output.alternativeDecisions.length &&
+        genericHits.length === 0
+        ? 9
+        : distinctTitles >= 3
+          ? 7
+          : 3,
+      `${distinctTitles} titles, ${alternativePrinciples.size} alternative story engines, and ${alternativeEffects.size} alternative audience journeys are distinct; ${genericHits.length} known generic phrases appear.`,
     ),
     score(
       "JUDGMENT",
       primary.assumptions.length >= 2 &&
+        confidenceIsCalibrated &&
+        reasoningBasis.length >= 2 &&
+        hasIntentOrEvidenceBasis &&
         primary.sacrifice.length > 30 &&
         primary.changeMyMindIf.length > 40
         ? 10
         : 4,
-      "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition.",
+      "The recommendation is judged by calibrated confidence, traceable basis, explicit assumptions, sacrifice, and a falsifiable change-my-mind condition.",
     ),
     score(
       "INNOVATION",
@@ -236,6 +261,20 @@ export function evaluateCreativeQuality(
   }
   if (genericHits.length >= 2) {
     blockingFindings.push(`Known generic baseline language remains: ${genericHits.join(", ")}.`);
+  }
+  if (!confidenceIsCalibrated) {
+    blockingFindings.push("The recommendation lacks calibrated confidence and uncertainty.");
+  }
+  if (reasoningBasis.length < 2 || !hasIntentOrEvidenceBasis) {
+    blockingFindings.push("The recommendation is not traceable to supplied intent or evidence.");
+  }
+  if (
+    alternativePrinciples.size !== output.alternativeDecisions.length ||
+    alternativeEffects.size !== output.alternativeDecisions.length
+  ) {
+    blockingFindings.push(
+      "Alternative directions repeat an organizing principle or audience effect.",
+    );
   }
   const total = scores.reduce((sum, item) => sum + item.score, 0);
   return {

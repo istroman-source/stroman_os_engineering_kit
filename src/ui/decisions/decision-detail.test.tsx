@@ -72,12 +72,23 @@ describe("DecisionDetail", () => {
     vi.mocked(getDecision).mockResolvedValue({
       data: {
         ...base,
+        context: {
+          originStage: "EDIT" as const,
+          artifactKind: "EDIT_RECOMMENDATION" as const,
+          artifactId: "rec-1",
+          artifactVersion: 2,
+          needsReview: true,
+          reviewReason: "Source evidence changed after this choice was created.",
+        },
         advisory: {
           recommendedOptionId: "opt-1",
           rationale: "Hooks faster",
+          tradeoff: "Less room for a slow character entrance.",
+          uncertainty: "The later interview may change the opening.",
           confidence: 0.9,
           evidence: [
             {
+              evidenceReferenceId: "evref_1",
               sourceLabel: "Client brief",
               observation: "Wants a fast hook",
               relevance: "Cold open is faster",
@@ -93,11 +104,19 @@ describe("DecisionDetail", () => {
     expect(screen.getByText(/Recommends:/)).toHaveTextContent(/Cold open/);
     expect(screen.getByText(/90% confidence/i)).toBeInTheDocument();
     expect(screen.getByText(/Hooks faster/)).toBeInTheDocument();
+    expect(screen.getByText(/Less room for a slow character entrance/i)).toBeInTheDocument();
+    expect(screen.getByText(/later interview may change/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Upstream work changed" })).toBeInTheDocument();
+    expect(screen.getByText(/Source evidence changed/i)).toBeInTheDocument();
     // Supporting evidence is shown, separately from the human decision.
     const evidence = within(screen.getByRole("list", { name: /supporting evidence/i }));
     expect(evidence.getByText("Client brief")).toBeInTheDocument();
     expect(evidence.getByText(/Wants a fast hook/)).toBeInTheDocument();
     expect(evidence.getByText(/Cold open is faster/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /inspect canonical source/i })).toHaveAttribute(
+      "href",
+      "/projects/proj_1/materials#analysis",
+    );
   });
 
   it("records the human decision with the current ETag and shows the result", async () => {

@@ -37,6 +37,11 @@ export interface AutomaticAnalysisDependencies {
   readonly clock: Clock;
 }
 
+type AnalysisResultView = Extract<
+  Awaited<ReturnType<typeof getAnalysisRun>>,
+  { readonly ok: true }
+>["value"];
+
 function segmentKey(id: TranscriptSegmentId): string {
   return id;
 }
@@ -130,7 +135,7 @@ export async function runAutomaticAnalysis(
       endMs: segment.endMs,
     }));
   });
-  const created = await createAnalysisRun(deps, input);
+  const created = await createAnalysisRun(deps, { ...input, sourceKind: "TRANSCRIPT" });
   if (!created.ok) return created;
   const started = await startAnalysisRun(deps, {
     actorId: input.actorId,
@@ -210,10 +215,44 @@ export async function getLatestAutomaticAnalysis(
     deps.analyses.listRunsByProject(input.projectId),
   );
   if (!runs.ok) return runs;
-  const latest = runs.value.filter((run) => run.status === "COMPLETED").at(-1);
+  const completed = runs.value.filter((run) => run.status === "COMPLETED");
+  const latest = completed.at(-1);
   if (!latest) return err(new NotFoundError("AnalysisRun", input.projectId));
-  return getAnalysisRun(deps, {
-    actorId: input.actorId,
-    analysisRunId: latest.id,
+  const typed = completed.filter((run) => run.sourceKind !== "LEGACY");
+  const candidates = typed.length > 0 ? typed : completed;
+  const selected = new Map<(typeof completed)[number]["sourceKind"], AnalysisResultView>();
+
+  for (const run of [...candidates].reverse()) {
+    if (selected.has(run.sourceKind)) continue;
+    const result = await getAnalysisRun(deps, {
+      actorId: input.actorId,
+      analysisRunId: run.id,
+    });
+    if (!result.ok) return result;
+    selected.set(run.sourceKind, result.value);
+  }
+
+  const parts: AnalysisResultView[] = [...new Set(selected.values())].sort(
+    (left, right) => left.run.version - right.run.version,
+  );
+  if (parts.length === 0) {
+    const fallback = await getAnalysisRun(deps, {
+      actorId: input.actorId,
+      analysisRunId: latest.id,
+    });
+    if (!fallback.ok) return fallback;
+    parts.push(fallback.value);
+  }
+  const current = parts.at(-1)!;
+  return ok({
+    run: current.run,
+    outputs: [
+      ...new Map(parts.flatMap((part) => part.outputs).map((item) => [item.id, item])).values(),
+    ],
+    recommendations: [
+      ...new Map(
+        parts.flatMap((part) => part.recommendations).map((item) => [item.id, item]),
+      ).values(),
+    ],
   });
 }

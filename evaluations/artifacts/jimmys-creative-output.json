@@ -3,7 +3,7 @@
   "purpose": "Exact deterministic fallback output used for semantic and independent product review.",
   "quality": {
     "passed": true,
-    "total": 94,
+    "total": 93,
     "scores": [
       {
         "dimension": "TRANSFORMATION",
@@ -12,8 +12,8 @@
       },
       {
         "dimension": "PROJECT_SPECIFICITY",
-        "score": 9,
-        "evidence": "14/15 distinctive title, client, or context terms survive in the reasoning."
+        "score": 10,
+        "evidence": "15/15 distinctive title, client, or context terms survive in the reasoning."
       },
       {
         "dimension": "ACTIONABILITY",
@@ -22,13 +22,13 @@
       },
       {
         "dimension": "DISTINCTIVENESS",
-        "score": 9,
-        "evidence": "4 direction titles are distinct; 0 known generic phrases appear."
+        "score": 7,
+        "evidence": "4 titles, 3 alternative story engines, and 3 alternative audience journeys are distinct; 1 known generic phrases appear."
       },
       {
         "dimension": "JUDGMENT",
         "score": 10,
-        "evidence": "The recommendation is judged by explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
+        "evidence": "The recommendation is judged by calibrated confidence, traceable basis, explicit assumptions, sacrifice, and a falsifiable change-my-mind condition."
       },
       {
         "dimension": "INNOVATION",
@@ -72,7 +72,8 @@
         "baby's",
         "face",
         "hands",
-        "feet"
+        "feet",
+        "allowed"
       ],
       "weak": false
     }
@@ -100,6 +101,25 @@
         "formalStrategy": "Begin with restless, physically present fragments and layered domestic sound. After the fridge opens, lengthen the shot, simplify the frame, and let room tone return.",
         "audienceJourney": "Recognition of invisible labor → pressure → unexpected quiet → feeling cared for → brand recognition.",
         "whyThisProject": "Jimmy's promise becomes emotional without pretending the product solves motherhood: it simply gives this parent one decision and one cleanup task back.",
+        "confidence": 0.78,
+        "confidenceRationale": "The direction tightly joins the stated parent audience, convenience goal, and baby-framing restriction, but the mother's real source of morning pressure still needs observation.",
+        "basis": [
+          {
+            "kind": "SUPPLIED_INTENT",
+            "label": "Audience and emotional job",
+            "statement": "Parents should feel understood, relatable, and cared for before conversion."
+          },
+          {
+            "kind": "SUPPLIED_INTENT",
+            "label": "Production restriction",
+            "statement": "The baby may appear only through hands, feet, weight, and sound."
+          },
+          {
+            "kind": "CREATIVE_HYPOTHESIS",
+            "label": "Proposed human truth",
+            "statement": "Removing one decision may make convenience register as care."
+          }
+        ],
         "sacrifice": "The product receives less early glamour and the film avoids a conventional appetite montage until relief has been earned.",
         "assumptions": [
           "The meal can plausibly be heated or served within the real morning routine.",
@@ -124,6 +144,20 @@
           "formalStrategy": "Keep faces secondary. Build a waist-height visual grammar from reaching hands, baby fingers, cabinet pulls, phone taps, fridge handles, and the meal tray.",
           "audienceJourney": "Physical recognition → admiration without idealization → relief that feels designed for real life.",
           "whyThisProject": "The baby's no-face constraint becomes the visual idea instead of a limitation, and the convenience claim is demonstrated through choreography rather than copy.",
+          "confidence": 0.7,
+          "confidenceRationale": "The visual rule is specific to the supplied restriction, but it depends on truthful one-handed behavior and a safe baby setup.",
+          "basis": [
+            {
+              "kind": "SUPPLIED_INTENT",
+              "label": "Baby framing rule",
+              "statement": "Do not show the baby's face; hands and feet are allowed."
+            },
+            {
+              "kind": "CREATIVE_HYPOTHESIS",
+              "label": "Physical story engine",
+              "statement": "One-handed actions could embody the parent's morning pressure."
+            }
+          ],
           "sacrifice": "Less facial performance means emotion must arrive through rhythm, touch, breath, and sound.",
           "assumptions": [
             "The mother is comfortable performing real tasks while holding or tending the baby.",
@@ -145,6 +179,20 @@
           "formalStrategy": "Use three locked negative-space compositions—clear board, cold stove, empty sink—intercut with the mother's actual morning pressure before revealing why those tasks vanished.",
           "audienceJourney": "Curiosity → recognition of avoided work → relief → reconsideration of what meal prep can mean.",
           "whyThisProject": "Jimmy's convenience is made visible through subtraction, which speaks directly to parents whose burden is the pile of tiny tasks rather than cooking alone.",
+          "confidence": 0.64,
+          "confidenceRationale": "The subtraction device is distinctive and relevant, but it must be verified against the product's actual prep and cleanup requirements.",
+          "basis": [
+            {
+              "kind": "SUPPLIED_INTENT",
+              "label": "Convenience objective",
+              "statement": "The commercial must make Jimmy's Famous Meals useful to busy parents."
+            },
+            {
+              "kind": "CREATIVE_HYPOTHESIS",
+              "label": "Absence as proof",
+              "statement": "Showing omitted work may communicate relief more honestly than food glamour."
+            }
+          ],
           "sacrifice": "The concept risks feeling cryptic and gives up immediate product appetite; the reveal must remain clear and fast enough for the format.",
           "assumptions": [
             "The meal genuinely removes prep or cleanup steps shown in the film.",
@@ -172,6 +220,20 @@
           "formalStrategy": "Contrast cool pre-dawn fragments with one warm refrigerator interior and a handwritten household detail that suggests preparation without inventing backstory.",
           "audienceJourney": "Pressure → recognition → self-compassion → readiness to prepare for a future hard morning.",
           "whyThisProject": "It makes preparedness feel sentimental without requiring the brand to impersonate a family member or overclaim emotional intimacy.",
+          "confidence": 0.58,
+          "confidenceRationale": "The emotional approach fits the brief but relies on an unverified pre-existing purchase habit.",
+          "basis": [
+            {
+              "kind": "SUPPLIED_INTENT",
+              "label": "Desired audience effect",
+              "statement": "The film should feel understood, relatable, and sentimental."
+            },
+            {
+              "kind": "CREATIVE_HYPOTHESIS",
+              "label": "Preparedness as care",
+              "statement": "A stocked meal could read as care from an earlier version of the parent."
+            }
+          ],
           "sacrifice": "This direction is gentler and less immediately demonstrative; it needs a credible pre-existing product relationship.",
           "assumptions": [
             "She already buys or has intentionally stocked the meal before the scene begins.",

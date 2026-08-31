@@ -18,10 +18,15 @@ export function createCreativeReasoningProvider(
       model: env.STROMAN_CREATIVE_MODEL,
     });
   }
-  if (selection === "openai") {
+  if (selection === "openai" || env.NODE_ENV === "production" || !env.NODE_ENV) {
     throw new CreativeReasoningError(
-      "Hosted creative reasoning is selected but OPENAI_API_KEY is not configured.",
+      "Hosted creative reasoning is required but OPENAI_API_KEY is not configured. " +
+        "Set STROMAN_CREATIVE_REASONING_PROVIDER=deterministic explicitly for offline or test use.",
     );
   }
+
+  // Automatic fallback is deliberately limited to a known local/test runtime.
+  // A missing or production runtime identity must fail closed so a deployed app
+  // can never present deterministic fixture output as hosted creative judgment.
   return new DeterministicCreativeReasoningProvider();
 }

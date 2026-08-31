@@ -11,6 +11,12 @@ const base: EvidenceReference = {
   mediaAssetId: "mast_00000001",
   transcriptDocumentId: null,
   transcriptSegmentId: null,
+  frameIndex: null,
+  frameTimestampMs: null,
+  frameStorageKey: null,
+  frameContentType: null,
+  frameByteSize: null,
+  frameContentHash: null,
   createdAt: new Date("2026-07-22T21:00:00Z"),
 };
 
@@ -19,6 +25,25 @@ describe("evidence Prisma mappers", () => {
     expect(toEvidenceReference(base)).toMatchObject({
       id: base.id,
       provenance: { kind: "MEDIA_ASSET", mediaAssetId: base.mediaAssetId },
+    });
+  });
+
+  it("reconstructs an exact retained sampled frame", () => {
+    expect(
+      toEvidenceReference({
+        ...base,
+        frameIndex: 2,
+        frameTimestampMs: 1_500,
+        frameStorageKey: "owner/project/evidence-frames/frame.jpg",
+        frameContentType: "image/jpeg",
+        frameByteSize: 42,
+        frameContentHash: "sha256:frame",
+      }),
+    ).toMatchObject({
+      provenance: {
+        kind: "MEDIA_ASSET",
+        frame: { index: 2, timestampMs: 1_500, contentType: "image/jpeg", byteSize: 42 },
+      },
     });
   });
 
@@ -45,6 +70,16 @@ describe("evidence Prisma mappers", () => {
     { ...base, projectId: "bad" },
     { ...base, mediaAssetId: "bad" },
     { ...base, transcriptDocumentId: "trdoc_00000001" },
+    { ...base, frameIndex: 1 },
+    {
+      ...base,
+      frameIndex: 1,
+      frameTimestampMs: 100,
+      frameStorageKey: "frame",
+      frameContentType: "text/plain",
+      frameByteSize: 1,
+      frameContentHash: "sha256:x",
+    },
     { ...base, provenanceKind: "TRANSCRIPT_SEGMENT" as const },
     {
       ...base,

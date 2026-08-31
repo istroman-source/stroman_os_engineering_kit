@@ -1,6 +1,12 @@
 import { ok, type Result } from "@/lib/result";
 import type { ProjectId } from "../project";
-import { type Brand, defineId, type DomainError, validateBoundedText } from "../shared";
+import {
+  type Brand,
+  defineId,
+  type DomainError,
+  InvalidValueError,
+  validateBoundedText,
+} from "../shared";
 import type { Blueprint } from "./blueprint";
 import { emptyCreativePlanningContext, type CreativePlanningContext } from "./visual-planning";
 
@@ -20,7 +26,27 @@ export interface CreativeBriefFields {
   readonly targetAudience: string;
   readonly desiredEmotion: string;
   readonly context: string;
+  readonly runtimeTarget: string;
+  readonly deliveryPlatform: string;
+  readonly references: string;
+  readonly restrictions: string;
+  readonly clientRequirements: string;
+  readonly nonNegotiables: string;
+  readonly successCriteria: string;
 }
+
+type StructuredIntentKey =
+  | "runtimeTarget"
+  | "deliveryPlatform"
+  | "references"
+  | "restrictions"
+  | "clientRequirements"
+  | "nonNegotiables"
+  | "successCriteria";
+
+/** Backward-compatible input: legacy clients may omit newly structured intent. */
+export type CreativeBriefInputFields = Omit<CreativeBriefFields, StructuredIntentKey> &
+  Partial<Pick<CreativeBriefFields, StructuredIntentKey>>;
 
 export interface CreativeBrief extends CreativeBriefFields {
   readonly id: CreativeBriefId;
@@ -37,6 +63,34 @@ export interface CreativeBrief extends CreativeBriefFields {
   readonly planningContext: CreativePlanningContext;
 }
 
+/** Immutable snapshot of filmmaker-supplied intent, recorded on every save. */
+export interface CreativeBriefRevision {
+  readonly creativeBriefId: CreativeBriefId;
+  readonly projectId: ProjectId;
+  readonly version: number;
+  readonly fields: CreativeBriefFields;
+  readonly createdAt: Date;
+}
+
+export function creativeBriefFields(brief: CreativeBrief): CreativeBriefFields {
+  const fields: Record<string, string> = {};
+  for (const [key] of FIELD_SPECS) fields[key] = brief[key];
+  return fields as unknown as CreativeBriefFields;
+}
+
+export function snapshotCreativeBrief(
+  brief: CreativeBrief,
+  version = brief.lockVersion,
+): CreativeBriefRevision {
+  return {
+    creativeBriefId: brief.id,
+    projectId: brief.projectId,
+    version,
+    fields: creativeBriefFields(brief),
+    createdAt: brief.updatedAt,
+  };
+}
+
 const FIELD_SPECS: ReadonlyArray<
   readonly [keyof CreativeBriefFields, string, number, "REQUIRED" | "OPTIONAL"]
 > = [
@@ -47,12 +101,19 @@ const FIELD_SPECS: ReadonlyArray<
   ["targetAudience", "Target audience", 2000, "OPTIONAL"],
   ["desiredEmotion", "Desired emotion", 200, "OPTIONAL"],
   ["context", "Context", 5000, "OPTIONAL"],
+  ["runtimeTarget", "Runtime", 200, "OPTIONAL"],
+  ["deliveryPlatform", "Delivery platform", 300, "OPTIONAL"],
+  ["references", "References", 5000, "OPTIONAL"],
+  ["restrictions", "Restrictions", 5000, "OPTIONAL"],
+  ["clientRequirements", "Client requirements", 5000, "OPTIONAL"],
+  ["nonNegotiables", "Non-negotiables", 5000, "OPTIONAL"],
+  ["successCriteria", "Success criteria", 5000, "OPTIONAL"],
 ];
 
-function validateFields(input: CreativeBriefFields): Result<CreativeBriefFields, DomainError> {
+function validateFields(input: CreativeBriefInputFields): Result<CreativeBriefFields, DomainError> {
   const out: Record<string, string> = {};
   for (const [key, label, max, requirement] of FIELD_SPECS) {
-    const result = validateBoundedText(input[key], {
+    const result = validateBoundedText(input[key] ?? "", {
       label,
       min: requirement === "REQUIRED" ? 1 : 0,
       max,
@@ -63,7 +124,26 @@ function validateFields(input: CreativeBriefFields): Result<CreativeBriefFields,
   return ok(out as unknown as CreativeBriefFields);
 }
 
-export interface CreateCreativeBriefInput extends CreativeBriefFields {
+export function parseCreativeBriefFields(value: unknown): Result<CreativeBriefFields, DomainError> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return {
+      ok: false,
+      error: new InvalidValueError("Creative brief revision snapshot is invalid."),
+    };
+  }
+  const candidate = value as Record<string, unknown>;
+  for (const [key] of FIELD_SPECS) {
+    if (typeof candidate[key] !== "string") {
+      return {
+        ok: false,
+        error: new InvalidValueError("Creative brief revision snapshot is invalid."),
+      };
+    }
+  }
+  return validateFields(candidate as unknown as CreativeBriefFields);
+}
+
+export interface CreateCreativeBriefInput extends CreativeBriefInputFields {
   readonly id: CreativeBriefId;
   readonly projectId: ProjectId;
   readonly now: Date;
@@ -98,7 +178,7 @@ export function attachCreativePlanningContext(
 /** Replace the brief's context (a re-analysis). The persistence layer bumps lockVersion. */
 export function reviseCreativeBrief(
   brief: CreativeBrief,
-  fields: CreativeBriefFields,
+  fields: CreativeBriefInputFields,
   now: Date,
 ): Result<CreativeBrief, DomainError> {
   const validated = validateFields(fields);

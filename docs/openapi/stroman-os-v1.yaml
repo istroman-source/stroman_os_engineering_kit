@@ -115,6 +115,12 @@ components:
       additionalProperties: false
       properties:
         name: { type: string, minLength: 1, maxLength: 200 }
+    RenameProjectRequest:
+      type: object
+      required: [name]
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
     SourceImport:
       type: object
       required:
@@ -127,6 +133,7 @@ components:
           contentHash,
           mediaId,
           transcriptId,
+          failureCode,
           createdAt,
         ]
       properties:
@@ -135,12 +142,55 @@ components:
           type: string
           enum: [PROCESSING, COMPLETED, RETRYABLE_FAILURE, TERMINAL_FAILURE]
         sourceName: { type: string }
-        sourceKind: { type: string, enum: [MEDIA, TRANSCRIPT] }
+        sourceKind: { type: string, enum: [MEDIA, TRANSCRIPT, DOCUMENT, REFERENCE_IMAGE] }
         byteSize: { type: integer, minimum: 0 }
         contentHash: { type: string }
         mediaId: { type: [string, "null"] }
         transcriptId: { type: [string, "null"] }
+        failureCode:
+          type: [string, "null"]
+          description: Stable failure category; technical internals are not exposed.
         createdAt: { type: string, format: date-time }
+    EvidenceInspection:
+      type: object
+      required: [id, kind, source, transcript, frame, limitation]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [MEDIA_ASSET, TRANSCRIPT_SEGMENT] }
+        source:
+          type: object
+          required: [id, name, mediaType]
+          properties:
+            id: { type: string }
+            name: { type: string }
+            mediaType: { type: string }
+        transcript:
+          anyOf:
+            - type: object
+              required:
+                [title, segmentId, speaker, text, startMs, endMs, contextBefore, contextAfter]
+              properties:
+                title: { type: string }
+                segmentId: { type: string }
+                speaker: { type: [string, "null"] }
+                text: { type: string }
+                startMs: { type: [integer, "null"] }
+                endMs: { type: [integer, "null"] }
+                contextBefore: { type: [string, "null"] }
+                contextAfter: { type: [string, "null"] }
+            - { type: "null" }
+        frame:
+          anyOf:
+            - type: object
+              required: [index, timestampMs, contentType, byteSize, url]
+              properties:
+                index: { type: integer, minimum: 0 }
+                timestampMs: { type: integer, minimum: 0 }
+                contentType: { type: string, enum: [image/jpeg, image/png, image/webp] }
+                byteSize: { type: integer, minimum: 1 }
+                url: { type: string }
+            - { type: "null" }
+        limitation: { type: [string, "null"] }
     AutomaticAnalysisResult:
       type: object
       required: [run, outputs, recommendations]
@@ -518,7 +568,7 @@ components:
         rationale: { type: string, maxLength: 2000 }
     AnalyzeProjectRequest:
       type: object
-      required: [title, client, projectType, creativeGoal, targetAudience, desiredEmotion, context]
+      required: [title]
       additionalProperties: false
       properties:
         title: { type: string, maxLength: 200 }
@@ -528,6 +578,13 @@ components:
         targetAudience: { type: string, maxLength: 2000 }
         desiredEmotion: { type: string, maxLength: 200 }
         context: { type: string, maxLength: 5000 }
+        runtimeTarget: { type: string, maxLength: 200 }
+        deliveryPlatform: { type: string, maxLength: 300 }
+        references: { type: string, maxLength: 5000 }
+        restrictions: { type: string, maxLength: 5000 }
+        clientRequirements: { type: string, maxLength: 5000 }
+        nonNegotiables: { type: string, maxLength: 5000 }
+        successCriteria: { type: string, maxLength: 5000 }
     ProductionReality:
       type: object
       additionalProperties: false
@@ -878,6 +935,13 @@ components:
           targetAudience,
           desiredEmotion,
           context,
+          runtimeTarget,
+          deliveryPlatform,
+          references,
+          restrictions,
+          clientRequirements,
+          nonNegotiables,
+          successCriteria,
           createdAt,
           updatedAt,
           planningContext,
@@ -892,9 +956,61 @@ components:
         targetAudience: { type: string }
         desiredEmotion: { type: string }
         context: { type: string }
+        runtimeTarget: { type: string }
+        deliveryPlatform: { type: string }
+        references: { type: string }
+        restrictions: { type: string }
+        clientRequirements: { type: string }
+        nonNegotiables: { type: string }
+        successCriteria: { type: string }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         planningContext: { $ref: "#/components/schemas/CreativePlanningContext" }
+    CreativeBriefRevision:
+      type: object
+      required:
+        [
+          version,
+          createdAt,
+          title,
+          client,
+          projectType,
+          creativeGoal,
+          targetAudience,
+          desiredEmotion,
+          context,
+          runtimeTarget,
+          deliveryPlatform,
+          references,
+          restrictions,
+          clientRequirements,
+          nonNegotiables,
+          successCriteria,
+        ]
+      properties:
+        version: { type: integer, minimum: 1 }
+        createdAt: { type: string, format: date-time }
+        title: { type: string }
+        client: { type: string }
+        projectType: { type: string }
+        creativeGoal: { type: string }
+        targetAudience: { type: string }
+        desiredEmotion: { type: string }
+        context: { type: string }
+        runtimeTarget: { type: string }
+        deliveryPlatform: { type: string }
+        references: { type: string }
+        restrictions: { type: string }
+        clientRequirements: { type: string }
+        nonNegotiables: { type: string }
+        successCriteria: { type: string }
+    CreativeBriefRevisionList:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CreativeBriefRevision" }
     HookConcept:
       type: object
       required: [title, description]
@@ -1823,6 +1939,28 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
+    patch:
+      tags: [Projects]
+      operationId: renameProject
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RenameProjectRequest" }
+      responses:
+        "200":
+          description: Renamed project.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
   /api/v1/projects/{projectId}/activate:
     parameters:
       - name: projectId
@@ -1858,6 +1996,29 @@ paths:
       responses:
         "200":
           description: Updated project.
+          headers: { ETag: { $ref: "#/components/headers/ETag" } }
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Project" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "428": { $ref: "#/components/responses/PreconditionRequired" }
+  /api/v1/projects/{projectId}/reopen:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - $ref: "#/components/parameters/IfMatch"
+    post:
+      tags: [Projects]
+      operationId: reopenProject
+      summary: Reopen a completed or archived project without deleting its history.
+      responses:
+        "200":
+          description: Reopened project.
           headers: { ETag: { $ref: "#/components/headers/ETag" } }
           content:
             application/json:
@@ -2226,6 +2387,25 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
         "422": { $ref: "#/components/responses/Unprocessable" }
+  /api/v1/projects/{projectId}/analysis/history:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: listProjectIntentHistory
+      summary: List immutable filmmaker-intent snapshots, oldest first.
+      responses:
+        "200":
+          description: Saved intent revisions.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreativeBriefRevisionList" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/imports:
     parameters:
       - name: projectId
@@ -2271,6 +2451,10 @@ paths:
                 transcriptFormat:
                   type: string
                   enum: [srt, vtt, json, text]
+                sourceKind:
+                  type: string
+                  enum: [MEDIA, DOCUMENT, REFERENCE_IMAGE]
+                  description: Optional non-transcript inventory classification.
       responses:
         "201":
           description: Completed import receipt.
@@ -2285,6 +2469,75 @@ paths:
           description: Content-Length is required before an upload body is read.
         "413":
           description: Upload request exceeds the bounded in-memory request limit.
+  /api/v1/projects/{projectId}/imports/{importId}/retry:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: importId
+        in: path
+        required: true
+        schema: { type: string }
+    post:
+      tags: [Projects]
+      operationId: retryProjectSourceImport
+      summary: Retry a recoverable source import using its preserved original bytes.
+      responses:
+        "200":
+          description: Current import receipt after the idempotent retry attempt.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SourceImport" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/projects/{projectId}/evidence/{evidenceReferenceId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: evidenceReferenceId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: inspectProjectEvidence
+      summary: Inspect the owner-scoped source context supporting a claim.
+      responses:
+        "200":
+          description: Exact transcript excerpt or media-source provenance.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EvidenceInspection" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/evidence/{evidenceReferenceId}/frame:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: evidenceReferenceId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectEvidenceFrame
+      summary: Serve an integrity-checked retained sampled frame to its project owner.
+      responses:
+        "200":
+          description: Retained JPEG, PNG, or WebP frame bytes.
+          content:
+            image/jpeg: { schema: { type: string, format: binary } }
+            image/png: { schema: { type: string, format: binary } }
+            image/webp: { schema: { type: string, format: binary } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/media-visual-analysis:
     parameters:
       - name: projectId
@@ -2876,6 +3129,101 @@ paths:
               schema: { $ref: "#/components/schemas/PromptHandoffResult" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/review:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectReview
+      summary: Review current intent, evidence, recommendations, and filmmaker choices.
+      responses:
+        "200":
+          description: Owner-scoped project review and handoff readiness.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  [
+                    project,
+                    readiness,
+                    intent,
+                    sources,
+                    evidence,
+                    recommendations,
+                    decisions,
+                    decisionSummary,
+                    conflicts,
+                    missingCoverage,
+                    unresolvedActions,
+                  ]
+                properties:
+                  project:
+                    type: object
+                    required: [id, name, status]
+                    properties:
+                      id: { type: string }
+                      name: { type: string }
+                      status: { type: string }
+                  readiness: { type: string, enum: [EMPTY, NEEDS_ATTENTION, READY] }
+                  intent: { type: [object, "null"] }
+                  sources: { type: object }
+                  evidence: { type: array, items: { type: object } }
+                  recommendations: { type: array, items: { type: object } }
+                  decisions: { type: array, items: { $ref: "#/components/schemas/Decision" } }
+                  decisionSummary: { type: object }
+                  conflicts: { type: array, items: { type: string } }
+                  missingCoverage: { type: array, items: { type: string } }
+                  unresolvedActions: { type: array, items: { type: string } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+  /api/v1/projects/{projectId}/exports/{kind}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+      - name: kind
+        in: path
+        required: true
+        schema:
+          type: string
+          enum:
+            [
+              snapshot-json,
+              treatment,
+              shot-plan,
+              edit-brief,
+              decision-record,
+              review-packet,
+              decisions-csv,
+            ]
+    get:
+      tags: [Projects]
+      operationId: downloadProjectExport
+      summary: Download a private handoff tied to exact intent and decision versions.
+      responses:
+        "200":
+          description: Version-tied project snapshot or human-readable handoff.
+          headers:
+            Content-Disposition:
+              description: Safe attachment filename.
+              schema: { type: string }
+            X-Stroman-Snapshot-Id:
+              description: Exact intent and decision version vector for this export.
+              schema: { type: string }
+          content:
+            application/json: { schema: { type: object } }
+            text/markdown: { schema: { type: string } }
+            text/csv: { schema: { type: string } }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "409": { $ref: "#/components/responses/Conflict" }
   /api/v1/entities:
     post:
       tags: [Memory]

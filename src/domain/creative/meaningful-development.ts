@@ -23,6 +23,14 @@ export interface InnovationCase {
   readonly executionRisk: string;
 }
 
+export type DirectionBasisKind = "SUPPLIED_INTENT" | "SOURCE_EVIDENCE" | "CREATIVE_HYPOTHESIS";
+
+export interface DirectionBasis {
+  readonly kind: DirectionBasisKind;
+  readonly label: string;
+  readonly statement: string;
+}
+
 export interface DirectionDecision {
   readonly title: string;
   readonly pointOfView: string;
@@ -30,6 +38,10 @@ export interface DirectionDecision {
   readonly formalStrategy: string;
   readonly audienceJourney: string;
   readonly whyThisProject: string;
+  /** Calibrated 0–1 confidence in the recommendation, never human approval. */
+  readonly confidence?: number;
+  readonly confidenceRationale?: string;
+  readonly basis?: readonly DirectionBasis[];
   readonly sacrifice: string;
   readonly assumptions: readonly string[];
   readonly changeMyMindIf: string;
@@ -233,6 +245,26 @@ function jimmyDirections(): readonly DirectionDecision[] {
         "Recognition of invisible labor → pressure → unexpected quiet → feeling cared for → brand recognition.",
       whyThisProject:
         "Jimmy's promise becomes emotional without pretending the product solves motherhood: it simply gives this parent one decision and one cleanup task back.",
+      confidence: 0.78,
+      confidenceRationale:
+        "The direction tightly joins the stated parent audience, convenience goal, and baby-framing restriction, but the mother's real source of morning pressure still needs observation.",
+      basis: [
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Audience and emotional job",
+          statement: "Parents should feel understood, relatable, and cared for before conversion.",
+        },
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Production restriction",
+          statement: "The baby may appear only through hands, feet, weight, and sound.",
+        },
+        {
+          kind: "CREATIVE_HYPOTHESIS",
+          label: "Proposed human truth",
+          statement: "Removing one decision may make convenience register as care.",
+        },
+      ],
       sacrifice:
         "The product receives less early glamour and the film avoids a conventional appetite montage until relief has been earned.",
       assumptions: [
@@ -263,6 +295,21 @@ function jimmyDirections(): readonly DirectionDecision[] {
         "Physical recognition → admiration without idealization → relief that feels designed for real life.",
       whyThisProject:
         "The baby's no-face constraint becomes the visual idea instead of a limitation, and the convenience claim is demonstrated through choreography rather than copy.",
+      confidence: 0.7,
+      confidenceRationale:
+        "The visual rule is specific to the supplied restriction, but it depends on truthful one-handed behavior and a safe baby setup.",
+      basis: [
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Baby framing rule",
+          statement: "Do not show the baby's face; hands and feet are allowed.",
+        },
+        {
+          kind: "CREATIVE_HYPOTHESIS",
+          label: "Physical story engine",
+          statement: "One-handed actions could embody the parent's morning pressure.",
+        },
+      ],
       sacrifice:
         "Less facial performance means emotion must arrive through rhythm, touch, breath, and sound.",
       assumptions: [
@@ -291,6 +338,21 @@ function jimmyDirections(): readonly DirectionDecision[] {
         "Curiosity → recognition of avoided work → relief → reconsideration of what meal prep can mean.",
       whyThisProject:
         "Jimmy's convenience is made visible through subtraction, which speaks directly to parents whose burden is the pile of tiny tasks rather than cooking alone.",
+      confidence: 0.64,
+      confidenceRationale:
+        "The subtraction device is distinctive and relevant, but it must be verified against the product's actual prep and cleanup requirements.",
+      basis: [
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Convenience objective",
+          statement: "The commercial must make Jimmy's Famous Meals useful to busy parents.",
+        },
+        {
+          kind: "CREATIVE_HYPOTHESIS",
+          label: "Absence as proof",
+          statement: "Showing omitted work may communicate relief more honestly than food glamour.",
+        },
+      ],
       sacrifice:
         "The concept risks feeling cryptic and gives up immediate product appetite; the reveal must remain clear and fast enough for the format.",
       assumptions: [
@@ -330,6 +392,21 @@ function jimmyDirections(): readonly DirectionDecision[] {
         "Pressure → recognition → self-compassion → readiness to prepare for a future hard morning.",
       whyThisProject:
         "It makes preparedness feel sentimental without requiring the brand to impersonate a family member or overclaim emotional intimacy.",
+      confidence: 0.58,
+      confidenceRationale:
+        "The emotional approach fits the brief but relies on an unverified pre-existing purchase habit.",
+      basis: [
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Desired audience effect",
+          statement: "The film should feel understood, relatable, and sentimental.",
+        },
+        {
+          kind: "CREATIVE_HYPOTHESIS",
+          label: "Preparedness as care",
+          statement: "A stocked meal could read as care from an earlier version of the parent.",
+        },
+      ],
       sacrifice:
         "This direction is gentler and less immediately demonstrative; it needs a credible pre-existing product relationship.",
       assumptions: [
@@ -713,6 +790,21 @@ function genericMeaningfulDevelopment(
     formalStrategy: direction.execution,
     audienceJourney: direction.audienceEffect,
     whyThisProject: `${direction.title} must be tested against the verified subject, location, and constraint inside ${title}; it is not approved as category advice.`,
+    confidence: 0.5,
+    confidenceRationale:
+      "This is a deliberately provisional alternative until subject behavior, location, and access are verified.",
+    basis: [
+      {
+        kind: "SUPPLIED_INTENT" as const,
+        label: "Current project objective",
+        statement: clean(brief.creativeGoal) || "The project's creative objective remains open.",
+      },
+      {
+        kind: "CREATIVE_HYPOTHESIS" as const,
+        label: "Alternative organizing principle",
+        statement: direction.organizingPrinciple,
+      },
+    ],
     sacrifice: direction.tradeoff,
     assumptions: ["The proposed action and access remain unverified creative hypotheses."],
     changeMyMindIf: `Reject this direction if the real subject behavior or location makes “${direction.organizingPrinciple}” decorative rather than causal.`,
@@ -749,6 +841,26 @@ function genericMeaningfulDevelopment(
       formalStrategy: seed.recommendedDirection.execution,
       audienceJourney: seed.recommendedDirection.audienceEffect,
       whyThisProject: `${title} needs this direction to turn “${clean(brief.creativeGoal) || "its unresolved goal"}” into behavior ${clean(brief.targetAudience) || "the intended audience"} can actually recognize, while honoring ${clean(brief.context) || "the still-unverified production conditions"}.`,
+      confidence: 0.6,
+      confidenceRationale:
+        "The recommendation is grounded in supplied intent, but real subject behavior, access, and location evidence remain unverified.",
+      basis: [
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Creative objective",
+          statement: clean(brief.creativeGoal) || "The project's creative objective remains open.",
+        },
+        {
+          kind: "SUPPLIED_INTENT",
+          label: "Audience",
+          statement: clean(brief.targetAudience) || "The intended audience remains undefined.",
+        },
+        {
+          kind: "CREATIVE_HYPOTHESIS",
+          label: "Proposed organizing principle",
+          statement: seed.recommendedDirection.organizingPrinciple,
+        },
+      ],
       sacrifice: seed.recommendedDirection.tradeoff,
       assumptions: [
         `${clean(brief.client) || "The project owner"} agrees that the stated goal is the real communication job.`,

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/ui/primitives/button";
+import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 
 interface AnalysisResult {
   run: { id: string; version: number; status: string };
@@ -23,6 +24,132 @@ interface AnalysisResult {
 
 type AnalysisOutput = AnalysisResult["outputs"][number];
 
+interface EvidenceInspection {
+  id: string;
+  kind: "MEDIA_ASSET" | "TRANSCRIPT_SEGMENT";
+  source: { id: string; name: string; mediaType: string };
+  transcript: null | {
+    title: string;
+    segmentId: string;
+    speaker: string | null;
+    text: string;
+    startMs: number | null;
+    endMs: number | null;
+    contextBefore: string | null;
+    contextAfter: string | null;
+  };
+  frame: null | {
+    index: number;
+    timestampMs: number;
+    contentType: string;
+    byteSize: number;
+    url: string;
+  };
+  limitation: string | null;
+}
+
+function formatTime(value: number | null): string | null {
+  if (value === null) return null;
+  const minutes = Math.floor(value / 60_000);
+  const seconds = ((value % 60_000) / 1_000).toFixed(1).padStart(4, "0");
+  return `${minutes}:${seconds}`;
+}
+
+function EvidenceInspector({ projectId, ids }: { projectId: string; ids: string[] }) {
+  const [selected, setSelected] = useState<EvidenceInspection | null>(null);
+  const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function inspect(id: string) {
+    if (selected?.id === id) {
+      setSelected(null);
+      return;
+    }
+    setLoading(id);
+    setError(null);
+    try {
+      const response = await fetch(
+        `/api/v1/projects/${projectId}/evidence/${encodeURIComponent(id)}`,
+        { credentials: "same-origin" },
+      );
+      if (!response.ok) throw new Error("Source evidence is temporarily unavailable.");
+      setSelected((await response.json()) as EvidenceInspection);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Source evidence is unavailable.");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  return (
+    <div className="mt-2">
+      <div className="flex flex-wrap gap-2">
+        {ids.map((id, index) => (
+          <Button key={id} type="button" variant="secondary" onClick={() => void inspect(id)}>
+            {loading === id
+              ? "Opening source…"
+              : selected?.id === id
+                ? "Close source"
+                : `Inspect source ${index + 1}`}
+          </Button>
+        ))}
+      </div>
+      {error ? (
+        <p role="alert" className="text-destructive mt-2 text-xs">
+          {error}
+        </p>
+      ) : null}
+      {selected ? (
+        <aside className="bg-muted/40 mt-2 rounded border p-3" aria-label="Source evidence">
+          <p className="text-xs font-medium">{selected.source.name}</p>
+          {selected.transcript ? (
+            <div className="mt-2 space-y-2 text-sm">
+              {selected.transcript.contextBefore ? (
+                <p className="text-muted-foreground">…{selected.transcript.contextBefore}</p>
+              ) : null}
+              <blockquote className="border-primary border-l-2 pl-3">
+                {selected.transcript.speaker ? (
+                  <span className="font-medium">{selected.transcript.speaker}: </span>
+                ) : null}
+                {selected.transcript.text}
+                {formatTime(selected.transcript.startMs) ? (
+                  <span className="text-muted-foreground ml-2 text-xs">
+                    {formatTime(selected.transcript.startMs)}–
+                    {formatTime(selected.transcript.endMs)}
+                  </span>
+                ) : null}
+              </blockquote>
+              {selected.transcript.contextAfter ? (
+                <p className="text-muted-foreground">{selected.transcript.contextAfter}…</p>
+              ) : null}
+            </div>
+          ) : selected.frame ? (
+            <figure className="mt-2">
+              {/* The URL is an owner-scoped same-origin route, never provider-controlled HTML. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selected.frame.url}
+                alt={`Exact sampled frame at ${formatTime(selected.frame.timestampMs) ?? "source time"}`}
+                className="max-h-80 w-full rounded border object-contain"
+              />
+              <figcaption className="text-muted-foreground mt-1 text-xs">
+                Exact sampled frame · {formatTime(selected.frame.timestampMs)}
+              </figcaption>
+            </figure>
+          ) : (
+            <p className="text-muted-foreground mt-1 text-xs">
+              Video or audio source. Use the cited time in the finding to inspect the original.
+            </p>
+          )}
+          {selected.limitation ? (
+            <p className="text-muted-foreground mt-2 text-xs">{selected.limitation}</p>
+          ) : null}
+        </aside>
+      ) : null}
+    </div>
+  );
+}
+
 function interpretationLabel(kind: string): string {
   switch (kind) {
     case "THEME":
@@ -38,10 +165,25 @@ function interpretationLabel(kind: string): string {
   }
 }
 
+function counterEvidencePrompt(kind: string): string {
+  switch (kind) {
+    case "NARRATIVE":
+      return "Check whether omitted or later material changes this proposed progression.";
+    case "THEME":
+      return "Check whether this pattern holds across the full material, not only the cited moments.";
+    case "INFERENCE":
+      return "Look for source material that directly contradicts this inference.";
+    default:
+      return "Review neighboring and contradictory source material before accepting this interpretation.";
+  }
+}
+
 function FindingList({
+  projectId,
   outputs,
   interpretation,
 }: {
+  projectId: string;
   outputs: AnalysisOutput[];
   interpretation: boolean;
 }) {
@@ -77,6 +219,17 @@ function FindingList({
             </span>
           </div>
           <p className="mt-1 text-sm">{output.content.replace(/^Source-backed moment:\s*/, "")}</p>
+          {interpretation ? (
+            <div className="text-muted-foreground mt-2 space-y-1 text-xs">
+              <p>
+                {output.confidence === null
+                  ? "Confidence not scored"
+                  : `${Math.round(output.confidence * 100)}% confidence`}
+              </p>
+              <p>What could challenge this: {counterEvidencePrompt(output.kind)}</p>
+            </div>
+          ) : null}
+          <EvidenceInspector projectId={projectId} ids={output.evidenceReferenceIds} />
         </li>
       ))}
     </ul>
@@ -86,6 +239,8 @@ function FindingList({
 export function AutomaticAnalysis({ projectId }: { projectId: string }) {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [busy, setBusy] = useState(false);
+  const [promoting, setPromoting] = useState<string | null>(null);
+  const [decisionLinks, setDecisionLinks] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
   const loadLatest = useCallback(async () => {
@@ -147,6 +302,48 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
     }
   }
 
+  async function promoteRecommendation(recommendation: AnalysisResult["recommendations"][number]) {
+    setPromoting(recommendation.id);
+    setError(null);
+    try {
+      const decision = await proposeRecommendationDecision({
+        projectId,
+        question: `Should “${recommendation.title}” guide the next edit pass?`.slice(0, 500),
+        context: {
+          originStage: "EDIT",
+          artifactKind: "EDIT_RECOMMENDATION",
+          artifactId: recommendation.id,
+          artifactVersion: result?.run.version ?? null,
+        },
+        recommendation: {
+          label: recommendation.title,
+          rationale: recommendation.rationale.slice(0, 2000),
+          tradeoff: "Committing to this approach may reduce space for other supported structures.",
+          uncertainty:
+            "Revisit this recommendation if fuller or contradictory source material changes the evidence pattern.",
+          confidence: recommendation.confidence,
+          evidence: recommendation.evidenceReferenceIds.map((evidenceReferenceId, index) => ({
+            evidenceReferenceId,
+            sourceLabel: `Cited source ${index + 1}`,
+            observation: "Source material cited by this edit recommendation.",
+            relevance: recommendation.rationale.slice(0, 2000),
+          })),
+        },
+        alternatives: (result?.recommendations ?? [])
+          .filter((candidate) => candidate.id !== recommendation.id)
+          .map((candidate) => ({
+            label: candidate.title,
+            rationale: candidate.rationale,
+          })),
+      });
+      setDecisionLinks((current) => ({ ...current, [recommendation.id]: decision.data.id }));
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "The decision could not be created.");
+    } finally {
+      setPromoting(null);
+    }
+  }
+
   return (
     <section
       className="border-border bg-card mb-8 rounded-lg border p-5"
@@ -183,6 +380,7 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
               source material, not story conclusions.
             </p>
             <FindingList
+              projectId={projectId}
               outputs={result.outputs.filter((output) => output.kind === "OBSERVATION")}
               interpretation={false}
             />
@@ -194,6 +392,7 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
               them against the fuller material.
             </p>
             <FindingList
+              projectId={projectId}
               outputs={result.outputs.filter((output) => output.kind !== "OBSERVATION")}
               interpretation
             />
@@ -215,6 +414,30 @@ export function AutomaticAnalysis({ projectId }: { projectId: string }) {
                   {recommendation.evidenceReferenceIds.length} evidence source
                   {recommendation.evidenceReferenceIds.length === 1 ? "" : "s"}
                 </p>
+                <EvidenceInspector
+                  projectId={projectId}
+                  ids={recommendation.evidenceReferenceIds}
+                />
+                {decisionLinks[recommendation.id] ? (
+                  <a
+                    href={`/projects/${projectId}/decisions/${decisionLinks[recommendation.id]}`}
+                    className="text-primary mt-3 inline-flex text-sm font-medium underline-offset-4 hover:underline"
+                  >
+                    Review this decision
+                  </a>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-3"
+                    disabled={promoting === recommendation.id}
+                    onClick={() => void promoteRecommendation(recommendation)}
+                  >
+                    {promoting === recommendation.id
+                      ? "Creating decision…"
+                      : "Make this a decision"}
+                  </Button>
+                )}
               </article>
             ))}
           </div>

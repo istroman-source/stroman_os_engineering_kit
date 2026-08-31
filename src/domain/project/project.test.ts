@@ -5,6 +5,8 @@ import {
   archiveProject,
   completeProject,
   createProject,
+  renameProject,
+  reopenProject,
   type Project,
 } from "./project";
 import { OwnerId, ProjectId } from "./project-id";
@@ -38,6 +40,19 @@ describe("ProjectId / OwnerId", () => {
 });
 
 describe("Project lifecycle", () => {
+  it("renames without changing lifecycle state or mutating the original", () => {
+    const original = make();
+    const nextName = makeProjectName("Night Market Portrait");
+    if (!nextName.ok) throw nextName.error;
+
+    const renamed = renameProject(original, nextName.value, T1);
+
+    expect(renamed.name).toBe("Night Market Portrait");
+    expect(renamed.status).toBe("DRAFT");
+    expect(renamed.updatedAt).toEqual(T1);
+    expect(original.name).toBe("Signature Dish Reel");
+  });
+
   it("is created in DRAFT with matching timestamps", () => {
     const p = make();
     expect(p.status).toBe("DRAFT");
@@ -61,12 +76,23 @@ describe("Project lifecycle", () => {
     if (!result.ok) expect(result.error).toBeInstanceOf(InvalidStateTransitionError);
   });
 
-  it("treats ARCHIVED as terminal", () => {
+  it("restores ARCHIVED work to ACTIVE without losing its identity", () => {
     const archived = archiveProject(make(), T1);
     expect(archived.ok).toBe(true);
     if (archived.ok) {
-      expect(activateProject(archived.value, T1).ok).toBe(false);
+      const restored = reopenProject(archived.value, T1);
+      expect(restored.ok && restored.value.status).toBe("ACTIVE");
+      expect(restored.ok && restored.value.id).toBe(archived.value.id);
     }
+  });
+
+  it("reopens COMPLETED work but rejects reopening a DRAFT", () => {
+    const active = activateProject(make(), T1);
+    if (!active.ok) throw active.error;
+    const completed = completeProject(active.value, T1);
+    if (!completed.ok) throw completed.error;
+    expect(reopenProject(completed.value, T1).ok).toBe(true);
+    expect(reopenProject(make(), T1).ok).toBe(false);
   });
 
   it("does not mutate the original aggregate", () => {

@@ -2,9 +2,13 @@ import { describe, expect, it } from "vitest";
 import { NotAuthorizedError, NotFoundError } from "../shared/errors";
 import { createProject, makeProjectName, OwnerId, ProjectId } from "@/domain/project";
 import { FixedClock, SequentialIdGenerator } from "../../../test/adapters/fakes";
-import { InMemoryProjectRepository } from "../../../test/adapters/in-memory-repositories";
+import {
+  InMemoryDecisionRepository,
+  InMemoryProjectRepository,
+} from "../../../test/adapters/in-memory-repositories";
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
 import { getCreativeBrief } from "./get-creative-brief";
+import { listCreativeBriefRevisions } from "./list-creative-brief-revisions";
 import { saveCreativeBrief } from "./save-creative-brief";
 import { updateCreativePlanning } from "./update-creative-planning";
 import { FakeCreativeReasoningProvider } from "../../../test/adapters/fake-creative-reasoning-provider";
@@ -17,6 +21,7 @@ import {
   generateDevelopmentBlueprint,
   instructionAtDeskShotPlanning,
 } from "@/domain/creative";
+import { createDecision, DecisionId } from "@/domain/decision";
 
 const OWNER = OwnerId.unsafe("usr_OWNER001");
 const OTHER = OwnerId.unsafe("usr_OTHER001");
@@ -32,6 +37,13 @@ function fields() {
     desiredEmotion: "Understood, relatable, sentimental",
     context:
       "An everyday mother and her eight-month-old baby. Do not show the baby's face. Hands and feet are allowed.",
+    runtimeTarget: "30 seconds",
+    deliveryPlatform: "Broadcast and social",
+    references: "Natural morning-routine observation",
+    restrictions: "Never show the baby's face.",
+    clientRequirements: "Show Jimmy's Famous Meals clearly.",
+    nonNegotiables: "Hands and feet only when the baby enters frame.",
+    successCriteria: "Parents recognize a credible convenience benefit.",
   };
 }
 
@@ -45,6 +57,7 @@ function deps() {
   return {
     projects,
     creativeBriefs: new InMemoryCreativeBriefRepository(),
+    decisions: new InMemoryDecisionRepository(),
     ids: new SequentialIdGenerator(),
     clock: new FixedClock(new Date("2026-07-19T00:00:00.000Z")),
     creativeReasoning: new FakeCreativeReasoningProvider(),
@@ -62,6 +75,8 @@ describe("saveCreativeBrief", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.value.brief.title).toContain("Jimmy's Famous Meals");
+    expect(result.value.brief.runtimeTarget).toBe("30 seconds");
+    expect(result.value.brief.restrictions).toContain("baby's face");
     expect(result.value.blueprint.hookConcepts).toHaveLength(3);
     const persisted = await d.creativeBriefs.findByProject(PROJECT);
     expect(persisted?.blueprint).toEqual(result.value.blueprint);
@@ -71,6 +86,23 @@ describe("saveCreativeBrief", () => {
   it("updates the brief on re-analysis (same project)", async () => {
     const d = deps();
     await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    const directionDecision = createDecision({
+      id: DecisionId.unsafe("dec_DIRECTION01"),
+      projectId: PROJECT,
+      question: "Use this direction?",
+      options: [
+        { id: "keep", label: "Keep" },
+        { id: "reject", label: "Reject" },
+      ],
+      context: {
+        originStage: "DEVELOP",
+        artifactKind: "CREATIVE_DIRECTION",
+        artifactVersion: 1,
+      },
+      now: d.clock.now(),
+    });
+    if (!directionDecision.ok) throw directionDecision.error;
+    d.decisions.seed(directionDecision.value);
     const again = await saveCreativeBrief(d, {
       actorId: OWNER,
       projectId: PROJECT,
@@ -81,6 +113,16 @@ describe("saveCreativeBrief", () => {
     expect(again.value.brief.desiredEmotion).toBe("nostalgic");
     // Still exactly one brief for the project.
     expect(await d.creativeBriefs.findByProject(PROJECT)).not.toBeNull();
+    const history = await d.creativeBriefs.listRevisions(PROJECT);
+    expect(history).toHaveLength(2);
+    expect(history.map((revision) => revision.fields.desiredEmotion)).toEqual([
+      "Understood, relatable, sentimental",
+      "nostalgic",
+    ]);
+    expect((await d.decisions.findById(directionDecision.value.id))?.context).toMatchObject({
+      needsReview: true,
+      reviewReason: expect.stringContaining("intent changed"),
+    });
   });
 
   it("denies analyzing another owner's project", async () => {
@@ -103,6 +145,31 @@ describe("saveCreativeBrief", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(NotFoundError);
+  });
+});
+
+describe("listCreativeBriefRevisions", () => {
+  it("returns immutable intent history to the owner and denies another owner", async () => {
+    const d = deps();
+    await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    await saveCreativeBrief(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      fields: { ...fields(), successCriteria: "Parents choose the product without feeling sold." },
+    });
+
+    const history = await listCreativeBriefRevisions(d, { actorId: OWNER, projectId: PROJECT });
+    expect(history.ok && history.value.map((revision) => revision.version)).toEqual([1, 2]);
+    expect(history.ok && history.value[1]?.successCriteria).toBe(
+      "Parents choose the product without feeling sold.",
+    );
+
+    const denied = await listCreativeBriefRevisions(d, {
+      actorId: OTHER,
+      projectId: PROJECT,
+    });
+    expect(denied.ok).toBe(false);
+    if (!denied.ok) expect(denied.error).toBeInstanceOf(NotAuthorizedError);
   });
 });
 
@@ -188,6 +255,23 @@ describe("updateCreativePlanning", () => {
   it("updates only the planning layer and persists photo-grounded spatial state", async () => {
     const d = deps();
     await saveCreativeBrief(d, { actorId: OWNER, projectId: PROJECT, fields: fields() });
+    const shotDecision = createDecision({
+      id: DecisionId.unsafe("dec_SHOTPLAN01"),
+      projectId: PROJECT,
+      question: "Use this shot?",
+      options: [
+        { id: "keep", label: "Keep" },
+        { id: "revise", label: "Revise" },
+      ],
+      context: {
+        originStage: "BUILD",
+        artifactKind: "SHOT_PLAN",
+        artifactVersion: 1,
+      },
+      now: d.clock.now(),
+    });
+    if (!shotDecision.ok) throw shotDecision.error;
+    d.decisions.seed(shotDecision.value);
     const result = await updateCreativePlanning(d, {
       actorId: OWNER,
       projectId: PROJECT,
@@ -206,6 +290,10 @@ describe("updateCreativePlanning", () => {
     const persisted = await d.creativeBriefs.findByProject(PROJECT);
     expect(persisted?.planningContext.scoutPhotos).toHaveLength(2);
     expect(persisted?.blueprint).toEqual(result.value.blueprint);
+    expect((await d.decisions.findById(shotDecision.value.id))?.context).toMatchObject({
+      needsReview: true,
+      reviewReason: expect.stringContaining("spatial plan changed"),
+    });
   });
 
   it("applies a spatial correction without re-entering project intent", async () => {

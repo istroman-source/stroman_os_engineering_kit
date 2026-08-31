@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import {
   completeAnalysisRun,
   createAnalysisRun,
@@ -13,6 +14,7 @@ import type { DecisionRepository } from "@/domain/decision";
 import {
   EvidenceReferenceId,
   createEvidenceReference,
+  type EvidenceReference,
   type EvidenceReferenceRepository,
 } from "@/domain/evidence";
 import type {
@@ -22,6 +24,7 @@ import type {
 } from "@/domain/media-analysis";
 import type { MediaAssetId, MediaAssetRepository } from "@/domain/media-transcript";
 import type { OwnerId, ProjectId, ProjectRepository } from "@/domain/project";
+import type { SourceStorage } from "@/domain/source-import";
 import { InvalidValueError } from "@/domain/shared";
 import { err, ok } from "@/lib/result";
 
@@ -33,6 +36,7 @@ export interface MediaVisualAnalysisDependencies {
   readonly analyses: AnalysisRepository;
   readonly decisions: DecisionRepository;
   readonly visualMediaAnalyzer: VisualMediaAnalyzer;
+  readonly sourceStorage: SourceStorage;
   readonly ids: IdGenerator;
   readonly clock: Clock;
 }
@@ -125,30 +129,81 @@ function validateDraft(draft: VisualMediaAnalysisDraft, available: ReadonlySet<n
 
 async function ensureMediaEvidence(
   deps: MediaVisualAnalysisDependencies,
-  input: { actorId: OwnerId; projectId: ProjectId; mediaAssetId: MediaAssetId },
+  input: {
+    actorId: OwnerId;
+    projectId: ProjectId;
+    mediaAssetId: MediaAssetId;
+    frames: readonly VisualAnalysisFrame[];
+  },
 ) {
   const listed = await attempt("evidenceReference.listByMediaAsset", () =>
     deps.evidenceReferences.listByMediaAsset(input.mediaAssetId),
   );
   if (!listed.ok) return listed;
-  const existing = listed.value.find(
-    (item) =>
+  const byIndex = new Map<number, EvidenceReference>();
+  for (const item of listed.value) {
+    if (
       item.ownerId === input.actorId &&
       item.projectId === input.projectId &&
-      item.provenance.kind === "MEDIA_ASSET",
-  );
-  if (existing) return ok(existing);
-  const evidence = createEvidenceReference({
-    id: EvidenceReferenceId.unsafe(deps.ids.generate(EvidenceReferenceId.prefix)),
-    ownerId: input.actorId,
-    projectId: input.projectId,
-    provenance: { kind: "MEDIA_ASSET", mediaAssetId: input.mediaAssetId },
-    now: deps.clock.now(),
-  });
-  const inserted = await attempt("evidenceReference.insert", () =>
-    deps.evidenceReferences.insert(evidence),
-  );
-  return inserted.ok ? ok(evidence) : inserted;
+      item.provenance.kind === "MEDIA_ASSET" &&
+      item.provenance.frame
+    ) {
+      byIndex.set(item.provenance.frame.index, item);
+    }
+  }
+  for (const frame of input.frames) {
+    const current = byIndex.get(frame.index);
+    if (
+      current?.provenance.kind === "MEDIA_ASSET" &&
+      current.provenance.frame?.timestampMs === frame.timestampMs
+    )
+      continue;
+    const contentHash = `sha256:${createHash("sha256").update(frame.bytes).digest("hex")}`;
+    const storageKey = `${input.actorId}/${input.projectId}/evidence-frames/${input.mediaAssetId}/${contentHash}`;
+    let lease: { readonly leaseId: string };
+    try {
+      lease = await deps.sourceStorage.put(storageKey, frame.bytes);
+    } catch (error) {
+      return err(
+        new InvalidValueError("A sampled evidence frame could not be preserved", { cause: error }),
+      );
+    }
+    const evidence = createEvidenceReference({
+      id: EvidenceReferenceId.unsafe(deps.ids.generate(EvidenceReferenceId.prefix)),
+      ownerId: input.actorId,
+      projectId: input.projectId,
+      provenance: {
+        kind: "MEDIA_ASSET",
+        mediaAssetId: input.mediaAssetId,
+        frame: {
+          index: frame.index,
+          timestampMs: frame.timestampMs,
+          storageKey,
+          contentType: frame.mimeType,
+          byteSize: frame.bytes.byteLength,
+          contentHash,
+        },
+      },
+      now: deps.clock.now(),
+    });
+    try {
+      await deps.sourceStorage.retain(storageKey, lease.leaseId);
+    } catch (error) {
+      await deps.sourceStorage.discard(storageKey, lease.leaseId).catch(() => undefined);
+      return err(
+        new InvalidValueError("A sampled evidence frame could not be retained", { cause: error }),
+      );
+    }
+    const inserted = await attempt("evidenceReference.insert", () =>
+      deps.evidenceReferences.insert(evidence),
+    );
+    if (!inserted.ok) {
+      await deps.sourceStorage.discard(storageKey, lease.leaseId).catch(() => undefined);
+      return inserted;
+    }
+    byIndex.set(frame.index, evidence);
+  }
+  return ok(byIndex);
 }
 
 export async function runMediaVisualAnalysis(
@@ -186,7 +241,7 @@ export async function runMediaVisualAnalysis(
     return err(new InvalidValueError("Visual frame analysis requires a video import"));
   }
 
-  const created = await createAnalysisRun(deps, input);
+  const created = await createAnalysisRun(deps, { ...input, sourceKind: "VISUAL_MEDIA" });
   if (!created.ok) return created;
   const analysisRunId = created.value.id as never;
   const started = await startAnalysisRun(deps, { actorId: input.actorId, analysisRunId });
@@ -206,7 +261,7 @@ export async function runMediaVisualAnalysis(
       });
       return grounded;
     }
-    const evidence = await ensureMediaEvidence(deps, input);
+    const evidence = await ensureMediaEvidence(deps, { ...input, frames: input.frames });
     if (!evidence.ok) {
       await failAnalysisRun(deps, {
         actorId: input.actorId,
@@ -220,6 +275,9 @@ export async function runMediaVisualAnalysis(
       [...new Set(indices)]
         .map((index) => formatTimestamp(frameByIndex.get(index)!.timestampMs))
         .join(", ");
+    const evidenceIds = (indices: readonly number[]) =>
+      [...new Set(indices)].map((index) => evidence.value.get(index)!.id);
+    const allEvidenceIds = evidenceIds(input.frames.map((frame) => frame.index));
     const completed = await completeAnalysisRun(deps, {
       actorId: input.actorId,
       analysisRunId,
@@ -234,26 +292,26 @@ export async function runMediaVisualAnalysis(
             kind: "OBSERVATION" as const,
             content: `[OBSERVED @ ${labelFrames([observation.frameIndex])}] ${observation.description}`,
             confidence: observation.confidence,
-            evidenceReferenceIds: [evidence.value.id],
+            evidenceReferenceIds: evidenceIds([observation.frameIndex]),
           })),
         ...grounded.value.interpretations.map((interpretation) => ({
           kind: "INFERENCE" as const,
           content: `[ESTIMATED from ${labelFrames(interpretation.frameIndices)}] ${interpretation.content}`,
           confidence: interpretation.confidence,
-          evidenceReferenceIds: [evidence.value.id],
+          evidenceReferenceIds: evidenceIds(interpretation.frameIndices),
         })),
         ...grounded.value.unknowns.map((unknown) => ({
           kind: "PROMPT" as const,
           content: `[UNKNOWN] ${unknown}`,
           confidence: null,
-          evidenceReferenceIds: [evidence.value.id],
+          evidenceReferenceIds: allEvidenceIds,
         })),
       ],
       recommendations: grounded.value.recommendations.map((recommendation) => ({
         title: recommendation.title,
         rationale: `Test against frames ${labelFrames(recommendation.frameIndices)}: ${recommendation.rationale}`,
         confidence: recommendation.confidence,
-        evidenceReferenceIds: [evidence.value.id],
+        evidenceReferenceIds: evidenceIds(recommendation.frameIndices),
       })),
     });
     if (!completed.ok) {

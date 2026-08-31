@@ -18,7 +18,7 @@ const ReceiptRow = z.object({
   idempotencyKey: z.string().min(1),
   status: z.enum(["PROCESSING", "COMPLETED", "RETRYABLE_FAILURE", "TERMINAL_FAILURE"]),
   sourceName: z.string().min(1),
-  sourceKind: z.enum(["MEDIA", "TRANSCRIPT"]),
+  sourceKind: z.enum(["MEDIA", "TRANSCRIPT", "DOCUMENT", "REFERENCE_IMAGE"]),
   contentType: z.string().min(1),
   byteSize: z.number().int().nonnegative(),
   contentHash: z.string().min(1),
@@ -52,6 +52,15 @@ export function toSourceImportReceipt(row: unknown): SourceImportReceipt {
 export class PrismaSourceImportRepository implements SourceImportRepository {
   constructor(private readonly db: PrismaClient) {}
 
+  async findById(id: string): Promise<SourceImportReceipt | null> {
+    try {
+      const row = await this.db.sourceImport.findUnique({ where: { id } });
+      return row ? toSourceImportReceipt(row) : null;
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+  }
+
   async findByKey(projectId: ProjectId, key: string): Promise<SourceImportReceipt | null> {
     try {
       const row = await this.db.sourceImport.findUnique({
@@ -70,6 +79,75 @@ export class PrismaSourceImportRepository implements SourceImportRepository {
         orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       });
       return rows.map(toSourceImportReceipt);
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+  }
+
+  async start(receipt: SourceImportReceipt): Promise<SourceImportReceipt> {
+    try {
+      const row = await this.db.sourceImport.create({
+        data: {
+          id: receipt.id,
+          ownerId: receipt.ownerId,
+          projectId: receipt.projectId,
+          idempotencyKey: receipt.idempotencyKey,
+          status: "PROCESSING",
+          sourceName: receipt.sourceName,
+          sourceKind: receipt.sourceKind,
+          contentType: receipt.contentType,
+          byteSize: receipt.byteSize,
+          contentHash: receipt.contentHash,
+          storageKey: receipt.storageKey,
+          transcriptFormat: receipt.transcriptFormat,
+          failureCode: null,
+          mediaAssetId: null,
+          transcriptDocumentId: null,
+          createdAt: receipt.createdAt,
+          updatedAt: receipt.updatedAt,
+        },
+      });
+      return toSourceImportReceipt(row);
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+  }
+
+  async claimRetry(
+    id: string,
+    projectId: ProjectId,
+    now: Date,
+  ): Promise<SourceImportReceipt | null> {
+    try {
+      const claimed = await this.db.sourceImport.updateMany({
+        where: { id, projectId, status: "RETRYABLE_FAILURE" },
+        data: { status: "PROCESSING", failureCode: null, updatedAt: now },
+      });
+      if (claimed.count !== 1) return null;
+      const row = await this.db.sourceImport.findUniqueOrThrow({ where: { id } });
+      return toSourceImportReceipt(row);
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+  }
+
+  async markFailure(input: {
+    id: string;
+    projectId: ProjectId;
+    status: "RETRYABLE_FAILURE" | "TERMINAL_FAILURE";
+    failureCode: string;
+    now: Date;
+  }): Promise<SourceImportReceipt> {
+    try {
+      const row = await this.db.sourceImport.update({
+        where: { id: input.id, projectId: input.projectId },
+        data: {
+          status: input.status,
+          failureCode: input.failureCode,
+          updatedAt: input.now,
+        },
+      });
+      return toSourceImportReceipt(row);
     } catch (error) {
       throw translatePrismaError(error);
     }
@@ -95,24 +173,13 @@ export class PrismaSourceImportRepository implements SourceImportRepository {
             data: toTranscriptSegmentRows(input.transcript),
           });
         }
-        return tx.sourceImport.create({
+        return tx.sourceImport.update({
+          where: { id: input.receipt.id, projectId: input.receipt.projectId },
           data: {
-            id: input.receipt.id,
-            ownerId: input.receipt.ownerId,
-            projectId: input.receipt.projectId,
-            idempotencyKey: input.receipt.idempotencyKey,
             status: "COMPLETED",
-            sourceName: input.receipt.sourceName,
-            sourceKind: input.receipt.sourceKind,
-            contentType: input.receipt.contentType,
-            byteSize: input.receipt.byteSize,
-            contentHash: input.receipt.contentHash,
-            storageKey: input.receipt.storageKey,
-            transcriptFormat: input.receipt.transcriptFormat,
             failureCode: null,
             mediaAssetId: input.media.id,
             transcriptDocumentId: input.transcript?.id ?? null,
-            createdAt: input.receipt.createdAt,
             updatedAt: input.receipt.updatedAt,
           },
         });

@@ -41,6 +41,60 @@ describe("createDecision", () => {
     expect(d.status).toBe("PROPOSED");
     expect(d.selectedOptionId).toBeNull();
     expect(d.decidedBy).toBeNull();
+    expect(d.context).toEqual({
+      originStage: "MANUAL",
+      artifactKind: "MANUAL",
+      artifactId: null,
+      artifactVersion: null,
+      needsReview: false,
+      reviewReason: null,
+    });
+  });
+
+  it("records recommendation stage and affected artifact without deciding", () => {
+    const result = createDecision({
+      id: DecisionId.unsafe("dec_CONTEXT01"),
+      projectId: ProjectId.unsafe("proj_ABCDEF12"),
+      question: "Use this shot?",
+      options: [
+        { id: "keep", label: "Keep" },
+        { id: "defer", label: "Defer" },
+      ],
+      context: {
+        originStage: "BUILD",
+        artifactKind: "SHOT_PLAN",
+        artifactId: "shot-1",
+        artifactVersion: 3,
+      },
+      now: T0,
+    });
+    expect(result.ok && result.value.context).toMatchObject({
+      originStage: "BUILD",
+      artifactKind: "SHOT_PLAN",
+      artifactId: "shot-1",
+      artifactVersion: 3,
+      needsReview: false,
+    });
+  });
+
+  it("rejects invalid affected-artifact metadata", () => {
+    const result = createDecision({
+      id: DecisionId.unsafe("dec_CONTEXT02"),
+      projectId: ProjectId.unsafe("proj_ABCDEF12"),
+      question: "Use this shot?",
+      options: [
+        { id: "keep", label: "Keep" },
+        { id: "defer", label: "Defer" },
+      ],
+      context: {
+        originStage: "BUILD",
+        artifactKind: "SHOT_PLAN",
+        artifactId: "x".repeat(201),
+        artifactVersion: 1,
+      },
+      now: T0,
+    });
+    expect(result.ok).toBe(false);
   });
 
   it("requires at least two options", () => {

@@ -1,5 +1,32 @@
 # Release Notes
 
+## Functional V1 completion candidate (2026-08-31)
+
+- Connected structured intent, source evidence, Develop/Build/Edit recommendations, durable
+  filmmaker choices, human Review, and versioned exports into one owner-scoped decision loop.
+- Added canonical evidence links, keep/revise/reject/defer semantics, affected-artifact versions,
+  uncertainty/tradeoff recording, and stale-choice review signals without allowing advisory output
+  to decide for the filmmaker.
+- Added private treatment, shot-plan, edit-brief, decision-record, review-packet, JSON snapshot, and
+  spreadsheet-safe CSV handoffs tied to exact intent and decision versions.
+- Revalidated actual hosted artifacts across commercial, documentary, narrative, performance, and
+  open modes against the current semantic and visual-planning contracts.
+- Added an authenticated real-PostgreSQL acceptance journey from intent and source import through
+  analysis, human decision, Review, and exact snapshot export.
+- Added a reproducible existing-database migration rehearsal. Existing decision/evidence rows retain
+  their meaning while the final two additive migrations apply.
+- Reconstructed a preserved 26-photo room through the current full-detail Apple pipeline with no
+  paid service. The resulting 12.3 MB GLB passed current application validation and exposed a
+  double-scaling defect in room dimensions; canonical bounds are now reported exactly once with
+  regression coverage.
+- Production creative reasoning now fails closed if hosted configuration is unavailable. Explicit
+  offline/test drafts remain supported but carry a visible filmmaker-facing fallback label instead
+  of appearing equivalent to hosted project-specific judgment.
+
+The candidate remains behind exact-SHA independent review, CI, established merge/deploy safeguards,
+and the final signed-in deployed-browser acceptance. Evidence and human-test steps are in
+`docs/V1_RELEASE_EVIDENCE.md`.
+
 ## Zero-fee Apple reconstruction path (2026-08-20)
 
 - Added an Apple RealityKit photogrammetry engine for supported Macs, verified on the owner's exact

@@ -4,3 +4,4 @@ export * from "./update-creative-planning";
 export * from "./location-reconstruction";
 export * from "./save-creative-brief";
 export * from "./get-creative-brief";
+export * from "./list-creative-brief-revisions";

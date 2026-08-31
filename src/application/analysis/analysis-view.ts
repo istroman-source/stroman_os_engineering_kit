@@ -4,6 +4,7 @@ export interface AnalysisRunView {
   readonly id: string;
   readonly projectId: string;
   readonly version: number;
+  readonly sourceKind: AnalysisRun["sourceKind"];
   readonly status: AnalysisRun["status"];
   readonly failureReason: string | null;
   readonly createdAt: Date;
@@ -15,6 +16,7 @@ export const toAnalysisRunView = (run: AnalysisRun): AnalysisRunView => ({
   id: run.id,
   projectId: run.projectId,
   version: run.version,
+  sourceKind: run.sourceKind,
   status: run.status,
   failureReason: run.failureReason,
   createdAt: run.createdAt,

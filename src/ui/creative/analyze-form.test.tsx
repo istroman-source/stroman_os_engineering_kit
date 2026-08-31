@@ -28,6 +28,13 @@ describe("AnalyzeForm", () => {
       targetAudience: "",
       desiredEmotion: "",
       context: "",
+      runtimeTarget: "",
+      deliveryPlatform: "",
+      references: "",
+      restrictions: "",
+      clientRequirements: "",
+      nonNegotiables: "",
+      successCriteria: "",
     });
   });
 
@@ -45,6 +52,13 @@ describe("AnalyzeForm", () => {
           targetAudience: "a",
           desiredEmotion: "e",
           context: "ctx",
+          runtimeTarget: "30 seconds",
+          deliveryPlatform: "YouTube",
+          references: "observational food films",
+          restrictions: "no customer faces",
+          clientRequirements: "show the finished dish",
+          nonNegotiables: "real kitchen",
+          successCriteria: "viewers understand the process",
         }}
       />,
     );
@@ -63,6 +77,13 @@ describe("AnalyzeForm", () => {
       targetAudience: "a",
       desiredEmotion: "e",
       context: "ctx",
+      runtimeTarget: "30 seconds",
+      deliveryPlatform: "YouTube",
+      references: "observational food films",
+      restrictions: "no customer faces",
+      clientRequirements: "show the finished dish",
+      nonNegotiables: "real kitchen",
+      successCriteria: "viewers understand the process",
     };
     const savedBrief = {
       ...editable,
@@ -78,5 +99,42 @@ describe("AnalyzeForm", () => {
 
     expect(onSubmit).toHaveBeenCalledWith(editable);
     expect(Object.keys(onSubmit.mock.calls[0]![0])).toEqual(Object.keys(editable));
+  });
+
+  it("shows saved intent versions without exposing system metadata", async () => {
+    const user = userEvent.setup();
+    render(
+      <AnalyzeForm
+        busy={false}
+        error={null}
+        onSubmit={vi.fn()}
+        history={[
+          {
+            title: "First direction",
+            client: "",
+            projectType: "documentary",
+            creativeGoal: "Reveal the cost of the handoff",
+            targetAudience: "working families",
+            desiredEmotion: "earned respect",
+            context: "one overnight shift",
+            runtimeTarget: "8 minutes",
+            deliveryPlatform: "festival and web",
+            references: "",
+            restrictions: "",
+            clientRequirements: "",
+            nonNegotiables: "No staged danger",
+            successCriteria: "Workers recognize the film as honest",
+            version: 1,
+            createdAt: "2026-08-30T12:00:00.000Z",
+          },
+        ]}
+      />,
+    );
+
+    await user.click(screen.getByText(/intent history/i));
+    expect(screen.getByText("Version 1")).toBeInTheDocument();
+    expect(screen.getByText(/Reveal the cost of the handoff/i)).toBeInTheDocument();
+    expect(screen.getByText(/No staged danger/i)).toBeInTheDocument();
+    expect(screen.queryByText(/provider|lockVersion|system prompt/i)).not.toBeInTheDocument();
   });
 });

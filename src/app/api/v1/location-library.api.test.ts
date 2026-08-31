@@ -118,7 +118,15 @@ describe("Prepared location library (real HTTP + PostgreSQL)", () => {
       location: {
         id: locationId,
         status: "READY",
-        environment: { source: "GLB", scaleConfidence: "ESTIMATED" },
+        environment: {
+          source: "GLB",
+          scaleConfidence: "ESTIMATED",
+          shootBrief: {
+            usability: "SHOOTABLE_ESTIMATE",
+            observedConstraints: [expect.stringContaining("approximately")],
+            unknowns: expect.arrayContaining([expect.stringMatching(/doors.*windows.*obstacles/i)]),
+          },
+        },
       },
     });
     const serialized = JSON.stringify(detail.body);

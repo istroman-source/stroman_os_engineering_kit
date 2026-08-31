@@ -1,6 +1,11 @@
 import type { PrismaClient } from "@prisma/client";
 import { NotFoundError, OptimisticConcurrencyError } from "@/lib/errors";
-import type { Decision, DecisionId, DecisionRepository } from "@/domain/decision";
+import type {
+  Decision,
+  DecisionId,
+  DecisionOriginStage,
+  DecisionRepository,
+} from "@/domain/decision";
 import type { ProjectId } from "@/domain/project";
 import { translatePrismaError } from "../errors";
 import {
@@ -91,6 +96,30 @@ export class PrismaDecisionRepository implements DecisionRepository {
     }
     if (!updated) {
       throw (await this.exists(id)) ? new OptimisticConcurrencyError() : new NotFoundError();
+    }
+  }
+
+  async markForReview(
+    projectId: ProjectId,
+    originStages: readonly DecisionOriginStage[],
+    reason: string,
+  ): Promise<void> {
+    if (originStages.length === 0) return;
+    try {
+      await this.db.decision.updateMany({
+        where: {
+          projectId,
+          originStage: { in: [...originStages] },
+          needsReview: false,
+        },
+        data: {
+          needsReview: true,
+          reviewReason: reason.slice(0, 1000),
+          lockVersion: { increment: 1 },
+        },
+      });
+    } catch (error) {
+      throw translatePrismaError(error);
     }
   }
 

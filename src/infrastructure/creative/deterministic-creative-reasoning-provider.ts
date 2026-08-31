@@ -40,7 +40,19 @@ export class DeterministicCreativeReasoningProvider implements CreativeReasoning
         `Desired emotion: ${brief.desiredEmotion || "not supplied"}`,
       ],
       assumptions: plan.directionDecision.assumptions,
-      constraints: [brief.context || "Production constraints were not supplied."],
+      constraints: [
+        brief.context,
+        brief.restrictions,
+        brief.clientRequirements,
+        brief.nonNegotiables,
+      ].filter(Boolean).length
+        ? [
+            brief.context,
+            brief.restrictions,
+            brief.clientRequirements,
+            brief.nonNegotiables,
+          ].filter(Boolean)
+        : ["Production constraints were not supplied."],
     };
   }
 
