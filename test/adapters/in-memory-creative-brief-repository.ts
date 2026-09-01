@@ -39,8 +39,16 @@ export class InMemoryCreativeBriefRepository implements CreativeBriefRepository 
     if (existing.lockVersion !== brief.lockVersion) throw new OptimisticConcurrencyError();
     this.byProject.set(brief.projectId, { ...brief, lockVersion: brief.lockVersion + 1 });
     const history = this.revisions.get(brief.projectId) ?? [];
-    history.push(snapshotCreativeBrief(brief, brief.lockVersion + 1));
+    history.push(snapshotCreativeBrief(brief, history.length + 1));
     this.revisions.set(brief.projectId, history);
+  }
+
+  async updateDevelopment(brief: CreativeBrief): Promise<void> {
+    this.guard();
+    const existing = this.byProject.get(brief.projectId);
+    if (!existing) throw new NotFoundError();
+    if (existing.lockVersion !== brief.lockVersion) throw new OptimisticConcurrencyError();
+    this.byProject.set(brief.projectId, { ...brief, lockVersion: brief.lockVersion + 1 });
   }
 
   async listRevisions(projectId: ProjectId): Promise<readonly CreativeBriefRevision[]> {

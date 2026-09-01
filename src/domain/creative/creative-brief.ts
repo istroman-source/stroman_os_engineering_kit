@@ -59,9 +59,16 @@ export interface CreativeBrief extends CreativeBriefFields {
   readonly blueprint?: Blueprint | null;
   /** Server-side adapter id for auditability; never exposes credentials. */
   readonly reasoningProvider?: string | null;
+  /** Durable lifecycle for the potentially long hosted development pass. */
+  readonly developmentStatus: CreativeDevelopmentStatus;
+  /** Stable, non-sensitive failure code; never raw provider output. */
+  readonly developmentError?: string | null;
+  readonly developmentStartedAt?: Date | null;
   /** Filmmaker-owned stage, production, scout, and spatial-correction state. */
   readonly planningContext: CreativePlanningContext;
 }
+
+export type CreativeDevelopmentStatus = "DRAFT" | "PROCESSING" | "READY" | "FAILED";
 
 /** Immutable snapshot of filmmaker-supplied intent, recorded on every save. */
 export interface CreativeBriefRevision {
@@ -100,7 +107,7 @@ const FIELD_SPECS: ReadonlyArray<
   ["creativeGoal", "Creative goal", 2000, "OPTIONAL"],
   ["targetAudience", "Target audience", 2000, "OPTIONAL"],
   ["desiredEmotion", "Desired emotion", 200, "OPTIONAL"],
-  ["context", "Context", 5000, "OPTIONAL"],
+  ["context", "Context", 20000, "OPTIONAL"],
   ["runtimeTarget", "Runtime", 200, "OPTIONAL"],
   ["deliveryPlatform", "Delivery platform", 300, "OPTIONAL"],
   ["references", "References", 5000, "OPTIONAL"],
@@ -163,6 +170,9 @@ export function createCreativeBrief(
     lockVersion: 1,
     blueprint: null,
     reasoningProvider: null,
+    developmentStatus: "DRAFT",
+    developmentError: null,
+    developmentStartedAt: null,
     planningContext: emptyCreativePlanningContext(),
   });
 }
@@ -189,7 +199,34 @@ export function reviseCreativeBrief(
     updatedAt: now,
     blueprint: null,
     reasoningProvider: null,
+    developmentStatus: "DRAFT",
+    developmentError: null,
+    developmentStartedAt: null,
   });
+}
+
+export function markCreativeDevelopmentProcessing(brief: CreativeBrief, now: Date): CreativeBrief {
+  return {
+    ...brief,
+    blueprint: null,
+    reasoningProvider: null,
+    developmentStatus: "PROCESSING",
+    developmentError: null,
+    developmentStartedAt: now,
+  };
+}
+
+export function markCreativeDevelopmentFailed(
+  brief: CreativeBrief,
+  errorCode: string,
+): CreativeBrief {
+  return {
+    ...brief,
+    blueprint: null,
+    reasoningProvider: null,
+    developmentStatus: "FAILED",
+    developmentError: errorCode,
+  };
 }
 
 export function attachCreativeBlueprint(
@@ -197,5 +234,11 @@ export function attachCreativeBlueprint(
   blueprint: Blueprint,
   reasoningProvider: string,
 ): CreativeBrief {
-  return { ...brief, blueprint, reasoningProvider };
+  return {
+    ...brief,
+    blueprint,
+    reasoningProvider,
+    developmentStatus: "READY",
+    developmentError: null,
+  };
 }

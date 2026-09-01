@@ -203,7 +203,7 @@ export const AnalyzeProjectRequest = z
     creativeGoal: z.string().max(2000).default(""),
     targetAudience: z.string().max(2000).default(""),
     desiredEmotion: z.string().max(200).default(""),
-    context: z.string().max(5000).default(""),
+    context: z.string().max(20000).default(""),
     runtimeTarget: z.string().max(200).default(""),
     deliveryPlatform: z.string().max(300).default(""),
     references: z.string().max(5000).default(""),

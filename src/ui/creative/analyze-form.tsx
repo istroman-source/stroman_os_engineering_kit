@@ -53,9 +53,11 @@ export function AnalyzeForm({
   history = [],
   busy,
   error,
+  defaultTitle,
   onSubmit,
 }: {
   initial?: AnalyzeFields;
+  defaultTitle: string;
   history?: readonly IntentRevision[];
   busy: boolean;
   error: string | null;
@@ -67,21 +69,7 @@ export function AnalyzeForm({
   const [fields, setFields] = useState<AnalyzeFields>(() => editableFields(initial));
   const [showDetails, setShowDetails] = useState(() => {
     const details = initial
-      ? [
-          initial.client,
-          initial.projectType,
-          initial.creativeGoal,
-          initial.targetAudience,
-          initial.desiredEmotion,
-          initial.context,
-          initial.runtimeTarget,
-          initial.deliveryPlatform,
-          initial.references,
-          initial.restrictions,
-          initial.clientRequirements,
-          initial.nonNegotiables,
-          initial.successCriteria,
-        ]
+      ? [initial.projectType, initial.runtimeTarget, initial.deliveryPlatform]
       : [];
     return details.some((value) => value.trim() !== "");
   });
@@ -92,30 +80,46 @@ export function AnalyzeForm({
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    onSubmit(fields);
+    onSubmit({ ...fields, title: fields.title.trim() || defaultTitle.trim() });
   }
 
-  const complete = fields.title.trim() !== "";
+  const hasLegacyIntent = [
+    fields.creativeGoal,
+    fields.targetAudience,
+    fields.desiredEmotion,
+    fields.references,
+    fields.restrictions,
+    fields.clientRequirements,
+    fields.nonNegotiables,
+    fields.successCriteria,
+  ].some((value) => value.trim() !== "");
+  const complete =
+    (fields.title.trim() !== "" || defaultTitle.trim() !== "") &&
+    (fields.context.trim() !== "" || hasLegacyIntent);
 
   return (
     <form onSubmit={handleSubmit} aria-label="Start a video" className="flex flex-col gap-5">
       <div className="border-primary/30 bg-primary/5 rounded-lg border p-4">
-        <p className="text-sm font-medium">Start with one sentence</p>
+        <p className="text-sm font-medium">One brief is enough</p>
         <p className="text-muted-foreground mt-1 text-xs">
-          Tell Stroman what you want to make. It will turn the idea into a shootable direction; you
-          stay in control of every recommendation.
+          Write naturally or paste everything you already know. You do not need to sort the idea
+          into separate boxes.
         </p>
       </div>
-      <Field label="What are you making?" required>
-        <input
+      <Field label="Describe the video" required>
+        <textarea
           className={inputClass}
-          value={fields.title}
-          onChange={(e) => set("title", e.target.value)}
-          maxLength={200}
-          aria-label="What are you making?"
-          required
-          placeholder="e.g. A 30-second restaurant promo that feels like a Friday-night rush"
+          rows={12}
+          value={fields.context}
+          onChange={(e) => set("context", e.target.value)}
+          maxLength={20000}
+          aria-label="Describe the video"
+          required={!hasLegacyIntent}
+          placeholder="Tell Stroman the story, song or subject, feeling, audience, locations, people, moments you can picture, references, must-haves, and anything to avoid. Use as much detail as you need."
         />
+        <span className="text-muted-foreground text-right text-xs">
+          {fields.context.length.toLocaleString()} / 20,000
+        </span>
       </Field>
       <button
         type="button"
@@ -123,20 +127,10 @@ export function AnalyzeForm({
         className="text-muted-foreground hover:text-foreground w-fit text-sm font-medium underline-offset-4 hover:underline"
         onClick={() => setShowDetails((current) => !current)}
       >
-        {showDetails ? "Hide project details" : "Add details that change the plan (optional)"}
+        {showDetails ? "Hide format details" : "Add format details (optional)"}
       </button>
       {showDetails ? (
-        <div className="border-border grid gap-4 rounded-lg border p-4 sm:grid-cols-2">
-          <Field label="Who is this for?">
-            <input
-              className={inputClass}
-              value={fields.client}
-              onChange={(e) => set("client", e.target.value)}
-              maxLength={200}
-              aria-label="Client or owner"
-              placeholder="Client, brand, or person"
-            />
-          </Field>
+        <div className="border-border grid gap-4 rounded-lg border p-4 sm:grid-cols-3">
           <Field label="What kind of video is it?">
             <input
               className={inputClass}
@@ -145,49 +139,6 @@ export function AnalyzeForm({
               placeholder="Commercial, documentary, short film…"
               maxLength={120}
               aria-label="Project type"
-            />
-          </Field>
-          <Field label="What should the audience feel or do?">
-            <textarea
-              className={inputClass}
-              rows={2}
-              value={fields.creativeGoal}
-              onChange={(e) => set("creativeGoal", e.target.value)}
-              maxLength={2000}
-              aria-label="Creative intent"
-              placeholder="The change you want to create"
-            />
-          </Field>
-          <Field label="Who needs to see it?">
-            <textarea
-              className={inputClass}
-              rows={2}
-              value={fields.targetAudience}
-              onChange={(e) => set("targetAudience", e.target.value)}
-              maxLength={2000}
-              aria-label="Target audience"
-              placeholder="The people this is for"
-            />
-          </Field>
-          <Field label="What should it feel like?">
-            <input
-              className={inputClass}
-              value={fields.desiredEmotion}
-              onChange={(e) => set("desiredEmotion", e.target.value)}
-              placeholder="Hopeful, urgent, intimate…"
-              maxLength={200}
-              aria-label="Desired emotion"
-            />
-          </Field>
-          <Field label="What do we need to work around?">
-            <textarea
-              className={inputClass}
-              rows={4}
-              value={fields.context}
-              onChange={(e) => set("context", e.target.value)}
-              placeholder="Locations, access, footage, duration, platform, or hard limits"
-              maxLength={5000}
-              aria-label="Source material and constraints"
             />
           </Field>
           <Field label="How long should it be?">
@@ -208,61 +159,6 @@ export function AnalyzeForm({
               placeholder="Broadcast, cinema, YouTube, Instagram…"
               maxLength={300}
               aria-label="Delivery platform"
-            />
-          </Field>
-          <Field label="What references matter?">
-            <textarea
-              className={inputClass}
-              rows={3}
-              value={fields.references}
-              onChange={(e) => set("references", e.target.value)}
-              placeholder="Films, campaigns, images, or approaches to learn from—not copy"
-              maxLength={5000}
-              aria-label="Creative references"
-            />
-          </Field>
-          <Field label="What must Stroman avoid?">
-            <textarea
-              className={inputClass}
-              rows={3}
-              value={fields.restrictions}
-              onChange={(e) => set("restrictions", e.target.value)}
-              placeholder="Legal, safety, privacy, brand, access, or representation restrictions"
-              maxLength={5000}
-              aria-label="Restrictions"
-            />
-          </Field>
-          <Field label="What has the client required?">
-            <textarea
-              className={inputClass}
-              rows={3}
-              value={fields.clientRequirements}
-              onChange={(e) => set("clientRequirements", e.target.value)}
-              placeholder="Messages, deliverables, products, people, or approvals"
-              maxLength={5000}
-              aria-label="Client requirements"
-            />
-          </Field>
-          <Field label="What cannot change?">
-            <textarea
-              className={inputClass}
-              rows={3}
-              value={fields.nonNegotiables}
-              onChange={(e) => set("nonNegotiables", e.target.value)}
-              placeholder="The few creative or production truths the plan must protect"
-              maxLength={5000}
-              aria-label="Non-negotiables"
-            />
-          </Field>
-          <Field label="How will you know it worked?">
-            <textarea
-              className={inputClass}
-              rows={3}
-              value={fields.successCriteria}
-              onChange={(e) => set("successCriteria", e.target.value)}
-              placeholder="The audience response, business result, or creative proof that matters"
-              maxLength={5000}
-              aria-label="Success criteria"
             />
           </Field>
         </div>
@@ -298,7 +194,7 @@ export function AnalyzeForm({
       ) : null}
       <div>
         <Button type="submit" disabled={busy || !complete}>
-          {busy ? "Building your plan…" : "Make my plan"}
+          {busy ? "Building your plan…" : initial ? "Rebuild my plan" : "Make my plan"}
         </Button>
       </div>
     </form>

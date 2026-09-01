@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { errorStatus, friendlyError } from "@/ui/auth/api-client";
+import { getProject } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
 import { BlueprintView } from "./blueprint-view";
 import {
@@ -11,6 +12,7 @@ import {
   type IntentRevision,
   analyzeProject,
   getAnalysis,
+  getCreativeIntent,
   getIntentHistory,
 } from "./creative-api";
 import {
@@ -31,7 +33,31 @@ import type {
 } from "@/domain/creative";
 import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 
-type Mode = "loading" | "form" | "blueprint";
+type Mode = "loading" | "form" | "processing" | "blueprint";
+
+function editableIntent(fields: AnalyzeFields): AnalyzeFields {
+  return {
+    title: fields.title,
+    client: fields.client,
+    projectType: fields.projectType,
+    creativeGoal: fields.creativeGoal,
+    targetAudience: fields.targetAudience,
+    desiredEmotion: fields.desiredEmotion,
+    context: fields.context,
+    runtimeTarget: fields.runtimeTarget,
+    deliveryPlatform: fields.deliveryPlatform,
+    references: fields.references,
+    restrictions: fields.restrictions,
+    clientRequirements: fields.clientRequirements,
+    nonNegotiables: fields.nonNegotiables,
+    successCriteria: fields.successCriteria,
+  };
+}
+
+function isStaleDevelopment(startedAt: string | null): boolean {
+  if (!startedAt) return true;
+  return Date.now() - new Date(startedAt).getTime() > 45 * 60_000;
+}
 
 /**
  * The creator can begin with one idea and move through Story, Plan, and Edit.
@@ -50,13 +76,19 @@ export function AnalyzeWorkspace({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [intentHistory, setIntentHistory] = useState<IntentRevision[]>([]);
+  const [formInitial, setFormInitial] = useState<AnalyzeFields | undefined>();
+  const [projectName, setProjectName] = useState("");
+  const [intentSaved, setIntentSaved] = useState(false);
 
   useEffect(() => {
     let active = true;
-    getAnalysis(projectId)
-      .then((loaded) => {
+    Promise.all([getProject(projectId), getAnalysis(projectId)])
+      .then(([project, loaded]) => {
         if (!active) return;
+        setProjectName(project.name);
         setAnalysis(loaded);
+        setFormInitial(editableIntent(loaded.brief));
+        setIntentSaved(true);
         setMode("blueprint");
         void getIntentHistory(projectId)
           .then((history) => {
@@ -72,19 +104,116 @@ export function AnalyzeWorkspace({
           router.replace("/login");
           return;
         }
-        // 404 = not analyzed yet → show the form. Anything else → show the form too,
-        // but surface the message.
-        if (errorStatus(err) !== 404) setError(friendlyError(err));
-        setMode("form");
+        if (errorStatus(err) !== 404) {
+          setError(friendlyError(err));
+          setMode("form");
+          return;
+        }
+        void Promise.all([getProject(projectId), getCreativeIntent(projectId).catch(() => null)])
+          .then(([project, intent]) => {
+            if (!active) return;
+            setProjectName(project.name);
+            if (!intent) {
+              setMode("form");
+              return;
+            }
+            setFormInitial(editableIntent(intent));
+            setIntentSaved(true);
+            if (
+              intent.developmentStatus === "PROCESSING" &&
+              !isStaleDevelopment(intent.developmentStartedAt)
+            ) {
+              setBusy(true);
+              setMode("processing");
+            } else {
+              if (
+                intent.developmentStatus === "FAILED" ||
+                intent.developmentStatus === "PROCESSING"
+              ) {
+                setError(
+                  "Your full brief is saved. The previous plan stopped before finishing; retry without entering anything again.",
+                );
+              }
+              setMode("form");
+            }
+            void getIntentHistory(projectId)
+              .then((history) => active && setIntentHistory(history))
+              .catch(() => undefined);
+          })
+          .catch((loadError) => {
+            if (!active) return;
+            if (errorStatus(loadError) === 401) router.replace("/login");
+            else {
+              setError(friendlyError(loadError));
+              setMode("form");
+            }
+          });
       });
     return () => {
       active = false;
     };
   }, [projectId, router]);
 
+  useEffect(() => {
+    if (mode !== "processing") return;
+    let active = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
+      try {
+        const intent = await getCreativeIntent(projectId);
+        if (!active) return;
+        setIntentSaved(true);
+        setFormInitial(editableIntent(intent));
+        if (intent.developmentStatus === "READY") {
+          const loaded = await getAnalysis(projectId);
+          if (!active) return;
+          setAnalysis(loaded);
+          setIntentHistory(await getIntentHistory(projectId).catch(() => []));
+          setBusy(false);
+          setMode("blueprint");
+          return;
+        }
+        if (intent.developmentStatus === "FAILED") {
+          setError(
+            "Your full brief is saved. Stroman could not finish the plan; retry without entering it again.",
+          );
+          setBusy(false);
+          setMode("form");
+          return;
+        }
+        if (
+          intent.developmentStatus === "PROCESSING" &&
+          isStaleDevelopment(intent.developmentStartedAt)
+        ) {
+          setError(
+            "Your full brief is saved. The previous plan stopped before finishing; retry without entering anything again.",
+          );
+          setBusy(false);
+          setMode("form");
+          return;
+        }
+      } catch (caught) {
+        if (errorStatus(caught) === 401) {
+          router.replace("/login");
+          return;
+        }
+        // A transient status read must not interrupt the in-flight plan.
+      }
+      if (active) timer = setTimeout(poll, 3_000);
+    };
+    void poll();
+    return () => {
+      active = false;
+      if (timer) clearTimeout(timer);
+    };
+  }, [mode, projectId, router]);
+
   async function onAnalyze(fields: AnalyzeFields) {
+    setFormInitial(fields);
+    setIntentSaved(false);
     setBusy(true);
     setError(null);
+    setMode("processing");
     try {
       const result = await analyzeProject(projectId, fields);
       setAnalysis(result);
@@ -96,6 +225,7 @@ export function AnalyzeWorkspace({
         return;
       }
       setError(friendlyError(err));
+      setMode("form");
     } finally {
       setBusy(false);
     }
@@ -212,6 +342,27 @@ export function AnalyzeWorkspace({
     return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
 
+  if (mode === "processing") {
+    return (
+      <section
+        className="border-border bg-card rounded-2xl border p-6 shadow-sm"
+        aria-live="polite"
+      >
+        <p className="text-primary text-sm font-semibold">
+          {intentSaved ? "Brief saved" : "Saving your brief…"}
+        </p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight">Building your film plan</h2>
+        <p className="text-muted-foreground mt-2 max-w-2xl text-sm">
+          Stroman is developing the story, scene ideas, and shootable frames. You can leave this
+          page and come back—your words will stay here and progress will recover automatically.
+        </p>
+        <div className="bg-muted mt-5 h-2 overflow-hidden rounded-full" aria-hidden="true">
+          <div className="bg-primary h-full w-2/3 animate-pulse rounded-full" />
+        </div>
+      </section>
+    );
+  }
+
   if (mode === "blueprint" && analysis) {
     return (
       <div className="flex flex-col gap-6">
@@ -279,7 +430,8 @@ export function AnalyzeWorkspace({
         </p>
       </header>
       <AnalyzeForm
-        initial={analysis?.brief}
+        initial={formInitial}
+        defaultTitle={projectName}
         history={intentHistory}
         busy={busy}
         error={error}

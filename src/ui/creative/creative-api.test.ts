@@ -39,6 +39,10 @@ function analysis(updatedAt: string): Analysis {
   return { ...fixture, brief: { ...fixture.brief, updatedAt } };
 }
 
+function intent(value: Analysis, status: Analysis["brief"]["developmentStatus"] = "READY") {
+  return { ...value.brief, developmentStatus: status };
+}
+
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
@@ -57,6 +61,24 @@ describe("analyzeProject edge recovery", () => {
     expect(fetch).toHaveBeenCalledTimes(2);
   });
 
+  it("returns immediately from a queued hosted plan and follows its durable status", async () => {
+    vi.useFakeTimers();
+    const completed = analysis("2026-08-13T20:05:00.000Z");
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(response(404, { error: { code: "NOT_FOUND" } }))
+      .mockResolvedValueOnce(response(202, { brief: intent(completed, "PROCESSING") }))
+      .mockResolvedValueOnce(response(200, intent(completed)))
+      .mockResolvedValueOnce(response(200, completed));
+    vi.stubGlobal("fetch", fetch);
+
+    const pending = analyzeProject("proj_1", FIELDS);
+    await vi.advanceTimersByTimeAsync(5_000);
+
+    await expect(pending).resolves.toEqual(completed);
+    expect(fetch).toHaveBeenCalledTimes(4);
+  });
+
   it("keeps polling until a new analysis is committed after a plain-text edge timeout", async () => {
     vi.useFakeTimers();
     const completed = analysis("2026-08-13T20:05:00.000Z");
@@ -64,7 +86,8 @@ describe("analyzeProject edge recovery", () => {
       .fn()
       .mockResolvedValueOnce(response(404, { error: { code: "NOT_FOUND" } }))
       .mockResolvedValueOnce(response(502, "upstream error", true))
-      .mockResolvedValueOnce(response(404, { error: { code: "NOT_FOUND" } }))
+      .mockResolvedValueOnce(response(200, intent(completed, "PROCESSING")))
+      .mockResolvedValueOnce(response(200, intent(completed)))
       .mockResolvedValueOnce(response(200, completed));
     vi.stubGlobal("fetch", fetch);
 
@@ -72,7 +95,7 @@ describe("analyzeProject edge recovery", () => {
     await vi.advanceTimersByTimeAsync(10_000);
 
     await expect(pending).resolves.toEqual(completed);
-    expect(fetch).toHaveBeenCalledTimes(4);
+    expect(fetch).toHaveBeenCalledTimes(5);
   });
 
   it("does not mistake a stale blueprint for a completed re-development", async () => {
@@ -81,9 +104,10 @@ describe("analyzeProject edge recovery", () => {
     const revised = analysis("2026-08-13T20:10:00.000Z");
     const fetch = vi
       .fn()
-      .mockResolvedValueOnce(response(200, stale))
+      .mockResolvedValueOnce(response(200, intent(stale)))
       .mockResolvedValueOnce(response(504, "upstream error", true))
-      .mockResolvedValueOnce(response(200, stale))
+      .mockResolvedValueOnce(response(200, intent(stale)))
+      .mockResolvedValueOnce(response(200, intent(revised)))
       .mockResolvedValueOnce(response(200, revised));
     vi.stubGlobal("fetch", fetch);
 
@@ -91,7 +115,7 @@ describe("analyzeProject edge recovery", () => {
     await vi.advanceTimersByTimeAsync(10_000);
 
     await expect(pending).resolves.toEqual(revised);
-    expect(fetch).toHaveBeenCalledTimes(4);
+    expect(fetch).toHaveBeenCalledTimes(5);
   });
 
   it("stops at the full hosted-pipeline recovery bound with non-duplicating guidance", async () => {

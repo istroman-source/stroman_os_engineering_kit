@@ -27,6 +27,9 @@ export interface CreativeBriefView {
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly lockVersion: number;
+  readonly developmentStatus: CreativeBrief["developmentStatus"];
+  readonly developmentError: string | null;
+  readonly developmentStartedAt: Date | null;
   readonly planningContext: CreativePlanningContext;
 }
 
@@ -80,6 +83,9 @@ export function toCreativeBriefView(brief: CreativeBrief): CreativeBriefView {
     createdAt: brief.createdAt,
     updatedAt: brief.updatedAt,
     lockVersion: brief.lockVersion,
+    developmentStatus: brief.developmentStatus,
+    developmentError: brief.developmentError ?? null,
+    developmentStartedAt: brief.developmentStartedAt ?? null,
     planningContext: brief.planningContext,
   };
 }
