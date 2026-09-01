@@ -59,6 +59,9 @@ export function toCreativeBrief(row: CreativeBriefRow): CreativeBrief {
     lockVersion: row.lockVersion,
     blueprint: isBlueprint(row.blueprint) ? row.blueprint : null,
     reasoningProvider: row.reasoningProvider,
+    developmentStatus: row.developmentStatus,
+    developmentError: row.developmentError,
+    developmentStartedAt: row.developmentStartedAt,
     planningContext: row.planningContext ?? emptyCreativePlanningContext(),
   };
 }
@@ -117,6 +120,9 @@ export function toCreativeBriefFields(brief: CreativeBrief): Prisma.CreativeBrie
       ? (brief.blueprint as unknown as Prisma.InputJsonValue)
       : Prisma.DbNull,
     reasoningProvider: brief.reasoningProvider ?? null,
+    developmentStatus: brief.developmentStatus,
+    developmentError: brief.developmentError ?? null,
+    developmentStartedAt: brief.developmentStartedAt ?? null,
     planningContext: brief.planningContext as unknown as Prisma.InputJsonValue,
     createdAt: brief.createdAt,
     updatedAt: brief.updatedAt,

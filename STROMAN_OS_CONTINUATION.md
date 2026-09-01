@@ -2,11 +2,16 @@
 
 ## Current objective
 
-Complete the connected Stroman OS functional V1 and pass the exact-SHA release gate for human
-testing without weakening filmmaker authority, evidence integrity, security, or source preservation.
+Ship the production-discovered music-video intake reliability fix and pass its exact-SHA release
+gate without weakening filmmaker authority, evidence integrity, security, or source preservation.
 
 ## Completed
 
+- Replaced redundant creative-intake questions with one detailed natural-language brief and three
+  optional format fields.
+- Persisted the complete brief before hosted reasoning and added durable processing/failure recovery
+  so navigation, proxy, and provider failures cannot erase the filmmaker's words.
+- Added reload-safe progress, automatic completion polling, and retry without re-entry.
 - Simplified the project entry to one required, plain-language question.
 - Moved optional planning details behind intentional progressive disclosure.
 - Changed the project landing language to "Start a video" and simplified project navigation.
@@ -45,7 +50,7 @@ testing without weakening filmmaker authority, evidence integrity, security, or 
 
 ## Priority order
 
-1. Commit the reconciled release evidence and freeze the exact review SHA.
+1. Freeze the music-video intake fix at an exact review SHA.
 2. Obtain independent product-meaning and implementation review; remediate any BLOCKING or IMPORTANT
    finding against a new exact SHA.
 3. Push, pass exact-head CI, merge normally, and verify post-merge main CI.
@@ -83,6 +88,24 @@ testing without weakening filmmaker authority, evidence integrity, security, or 
 
 ## ACTIVE WORK QUEUE
 
+- [x] Reproduce the lost music-video plan in the signed-in deployed app and identify the repeated
+  404 polling caused by saving intent only after hosted development.
+- [x] Persist full filmmaker intent before provider work and expose its durable lifecycle.
+- [x] Reduce the intake to one detailed brief while preserving legacy structured intent on edits.
+- [x] Recover processing and failed plans across navigation and reload without duplicate generation.
+- [x] Add focused unit/UI/API/PostgreSQL regression coverage and update the OpenAPI contract.
+- [x] Pass format, lint, typecheck, full 720-test unit/UI/worker suite, fresh 31-migration real-
+  PostgreSQL API suite (99 tests), integration suite (92 tests), evaluation suite (28 tests),
+  autopilot suite (57 tests), migration rehearsal, 10 desktop/mobile browser smokes, and webpack
+  production build.
+- [ ] Freeze the music-video intake fix at an exact SHA and obtain independent review with zero
+  BLOCKING and IMPORTANT findings.
+- [ ] Push, pass exact-head CI, merge normally, and verify post-merge main CI/deployment.
+- [ ] Verify the simplified, saved-before-development workflow in the signed-in deployed browser.
+- [ ] Publish exact evidence and the READY FOR HUMAN TESTING verdict.
+
+### Previously completed V1 release queue
+
 - [x] Complete the filmmaker-facing UX redesign.
 - [x] Complete project lifecycle, structured intent, source/evidence inspection, Develop, Build,
   Edit, unified decisions, Review, exports, and cross-mode acceptance.
@@ -96,11 +119,11 @@ testing without weakening filmmaker authority, evidence integrity, security, or 
 - [x] Record exact automated/native evidence and reproducible human-testing instructions.
 - [x] Remediate the first independent review's hosted-versus-offline honesty finding: production
   now fails closed, while explicit offline drafts are visibly labeled for the filmmaker.
-- [ ] Freeze the final exact SHA and obtain independent Claude review with zero BLOCKING and
+- [x] Freeze the final exact SHA and obtain independent Claude review with zero BLOCKING and
   IMPORTANT findings.
-- [ ] Push the private branch, pass exact-head CI, and complete the established non-force merge.
-- [ ] Verify post-merge main CI and the signed-in deployed intent → evidence → decision → Review →
+- [x] Push the private branch, pass exact-head CI, and complete the established non-force merge.
+- [x] Verify post-merge main CI and the signed-in deployed intent → evidence → decision → Review →
   export and prepared-room workflow.
-- [ ] Publish the final exact SHA, evidence, limitations, and READY FOR HUMAN TESTING verdict.
+- [x] Publish the final exact SHA, evidence, limitations, and READY FOR HUMAN TESTING verdict.
 
 The task remains in progress while an executable unchecked item remains.

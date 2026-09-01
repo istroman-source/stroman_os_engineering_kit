@@ -20,6 +20,8 @@ import {
   generateBlueprint,
   generateDevelopmentBlueprint,
   instructionAtDeskShotPlanning,
+  CreativeReasoningError,
+  type CreativeReasoningProvider,
 } from "@/domain/creative";
 import { createDecision, DecisionId } from "@/domain/decision";
 
@@ -145,6 +147,45 @@ describe("saveCreativeBrief", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toBeInstanceOf(NotFoundError);
+  });
+
+  it("preserves the full brief and records a retryable failure when reasoning fails", async () => {
+    const d = deps();
+    const unavailable: CreativeReasoningProvider = {
+      id: "unavailable-test-provider",
+      mode: "HOSTED",
+      async understand() {
+        throw new CreativeReasoningError("Provider unavailable.");
+      },
+      async generateCandidates() {
+        throw new Error("unreachable");
+      },
+      async critiqueCandidates() {
+        throw new Error("unreachable");
+      },
+      async synthesize() {
+        throw new Error("unreachable");
+      },
+    };
+    const detailedContext = "Music video treatment. ".repeat(300);
+    const result = await saveCreativeBrief(
+      { ...d, creativeReasoning: unavailable },
+      {
+        actorId: OWNER,
+        projectId: PROJECT,
+        fields: { ...fields(), context: detailedContext },
+      },
+    );
+
+    expect(result.ok).toBe(false);
+    const persisted = await d.creativeBriefs.findByProject(PROJECT);
+    expect(persisted).toMatchObject({
+      context: detailedContext.trim(),
+      developmentStatus: "FAILED",
+      developmentError: "UNAVAILABLE",
+      blueprint: null,
+    });
+    expect(await d.creativeBriefs.listRevisions(PROJECT)).toHaveLength(1);
   });
 });
 

@@ -675,33 +675,43 @@ model AnalysisRecommendationEvidence {
 /// The creator-supplied context Stroman OS analyzes into a Creative Blueprint.
 /// One brief per project (project_id is unique); cascades with its project.
 model CreativeBrief {
-  id                 String   @id
-  projectId          String   @unique @map("project_id")
-  title              String
-  client             String
-  projectType        String   @map("project_type")
-  creativeGoal       String   @map("creative_goal")
-  targetAudience     String   @map("target_audience")
-  desiredEmotion     String   @map("desired_emotion")
-  context            String
-  runtimeTarget      String   @default("") @map("runtime_target")
-  deliveryPlatform   String   @default("") @map("delivery_platform")
-  references         String   @default("")
-  restrictions       String   @default("")
-  clientRequirements String   @default("") @map("client_requirements")
-  nonNegotiables     String   @default("") @map("non_negotiables")
-  successCriteria    String   @default("") @map("success_criteria")
-  blueprint          Json?
-  reasoningProvider  String?  @map("reasoning_provider")
-  planningContext    Json?    @map("planning_context")
-  createdAt          DateTime @map("created_at") @db.Timestamptz(3)
-  updatedAt          DateTime @map("updated_at") @db.Timestamptz(3)
-  lockVersion        Int      @default(1) @map("lock_version")
+  id                   String                    @id
+  projectId            String                    @unique @map("project_id")
+  title                String
+  client               String
+  projectType          String                    @map("project_type")
+  creativeGoal         String                    @map("creative_goal")
+  targetAudience       String                    @map("target_audience")
+  desiredEmotion       String                    @map("desired_emotion")
+  context              String
+  runtimeTarget        String                    @default("") @map("runtime_target")
+  deliveryPlatform     String                    @default("") @map("delivery_platform")
+  references           String                    @default("")
+  restrictions         String                    @default("")
+  clientRequirements   String                    @default("") @map("client_requirements")
+  nonNegotiables       String                    @default("") @map("non_negotiables")
+  successCriteria      String                    @default("") @map("success_criteria")
+  blueprint            Json?
+  reasoningProvider    String?                   @map("reasoning_provider")
+  developmentStatus    CreativeDevelopmentStatus @default(DRAFT) @map("development_status")
+  developmentError     String?                   @map("development_error")
+  developmentStartedAt DateTime?                 @map("development_started_at") @db.Timestamptz(3)
+  planningContext      Json?                     @map("planning_context")
+  createdAt            DateTime                  @map("created_at") @db.Timestamptz(3)
+  updatedAt            DateTime                  @map("updated_at") @db.Timestamptz(3)
+  lockVersion          Int                       @default(1) @map("lock_version")
 
   project   Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
   revisions CreativeBriefRevision[]
 
   @@map("creative_briefs")
+}
+
+enum CreativeDevelopmentStatus {
+  DRAFT
+  PROCESSING
+  READY
+  FAILED
 }
 
 model CreativeBriefRevision {

@@ -1,5 +1,19 @@
 # Release Notes
 
+## Music-video intake reliability candidate (2026-09-01)
+
+- Replaced the redundant multi-box creative intake with one 20,000-character natural-language
+  brief plus optional format details. The existing project name is reused automatically.
+- Persisted the filmmaker's complete brief before hosted creative development begins. Provider,
+  proxy, navigation, and reload failures no longer erase the submitted project context.
+- Added durable processing, ready, and retryable-failure states with an owner-scoped recovery
+  endpoint. The browser resumes a running plan automatically and restores a failed brief without
+  requiring re-entry.
+- Moved hosted plan generation behind an immediate accepted response while retaining synchronous,
+  deterministic behavior for offline tests. Next.js keeps the post-response task alive explicitly.
+- Added database, domain, API, browser-client, reload-recovery, and simplified-form regression
+  coverage, including a real-PostgreSQL long-brief failure journey.
+
 ## Functional V1 completion candidate (2026-08-31)
 
 - Connected structured intent, source evidence, Develop/Build/Edit recommendations, durable

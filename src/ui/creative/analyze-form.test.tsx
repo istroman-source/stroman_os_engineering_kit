@@ -1,19 +1,21 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { AnalyzeForm } from "./analyze-form";
 
 describe("AnalyzeForm", () => {
-  it("requires only the idea and preserves optional fields as explicit unknowns", async () => {
+  it("uses the project title and accepts one natural-language brief", async () => {
     const onSubmit = vi.fn();
     const user = userEvent.setup();
-    render(<AnalyzeForm busy={false} error={null} onSubmit={onSubmit} />);
+    render(
+      <AnalyzeForm busy={false} error={null} defaultTitle="Family Recipe" onSubmit={onSubmit} />,
+    );
 
     const submit = screen.getByRole("button", { name: /make my plan/i });
     expect(submit).toBeDisabled();
 
     await user.type(
-      screen.getByLabelText("What are you making?"),
+      screen.getByLabelText("Describe the video"),
       "A baker teaches his daughter the family recipe before selling the bakery",
     );
 
@@ -21,13 +23,13 @@ describe("AnalyzeForm", () => {
     await user.click(submit);
 
     expect(onSubmit).toHaveBeenCalledWith({
-      title: "A baker teaches his daughter the family recipe before selling the bakery",
+      title: "Family Recipe",
       client: "",
       projectType: "",
       creativeGoal: "",
       targetAudience: "",
       desiredEmotion: "",
-      context: "",
+      context: "A baker teaches his daughter the family recipe before selling the bakery",
       runtimeTarget: "",
       deliveryPlatform: "",
       references: "",
@@ -43,6 +45,7 @@ describe("AnalyzeForm", () => {
       <AnalyzeForm
         busy={false}
         error={null}
+        defaultTitle="Existing"
         onSubmit={vi.fn()}
         initial={{
           title: "Existing",
@@ -62,8 +65,9 @@ describe("AnalyzeForm", () => {
         }}
       />,
     );
-    expect(screen.getByLabelText("What are you making?")).toHaveValue("Existing");
-    expect(screen.getByLabelText("Client or owner")).toHaveValue("C");
+    expect(screen.getByLabelText("Describe the video")).toHaveValue("ctx");
+    expect(screen.queryByLabelText("Client or owner")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /hide format details/i })).toBeInTheDocument();
   });
 
   it("submits only editable fields when a saved brief includes response metadata", async () => {
@@ -94,8 +98,16 @@ describe("AnalyzeForm", () => {
       planningContext: { stage: "IDEA" },
     };
 
-    render(<AnalyzeForm busy={false} error={null} onSubmit={onSubmit} initial={savedBrief} />);
-    await user.click(screen.getByRole("button", { name: /make my plan/i }));
+    render(
+      <AnalyzeForm
+        busy={false}
+        error={null}
+        defaultTitle="Existing"
+        onSubmit={onSubmit}
+        initial={savedBrief}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: /rebuild my plan/i }));
 
     expect(onSubmit).toHaveBeenCalledWith(editable);
     expect(Object.keys(onSubmit.mock.calls[0]![0])).toEqual(Object.keys(editable));
@@ -107,6 +119,7 @@ describe("AnalyzeForm", () => {
       <AnalyzeForm
         busy={false}
         error={null}
+        defaultTitle="First direction"
         onSubmit={vi.fn()}
         history={[
           {
@@ -136,5 +149,36 @@ describe("AnalyzeForm", () => {
     expect(screen.getByText(/Reveal the cost of the handoff/i)).toBeInTheDocument();
     expect(screen.getByText(/No staged danger/i)).toBeInTheDocument();
     expect(screen.queryByText(/provider|lockVersion|system prompt/i)).not.toBeInTheDocument();
+  });
+
+  it("accepts a detailed music-video brief without splitting it across redundant prompts", async () => {
+    const onSubmit = vi.fn();
+    const user = userEvent.setup();
+    const detailed = Array.from(
+      { length: 80 },
+      (_, index) =>
+        `Scene ${index + 1}: the artist crosses a distinct real location with a practical action.`,
+    ).join("\n");
+    render(
+      <AnalyzeForm
+        busy={false}
+        error={null}
+        defaultTitle="Faithful — music video"
+        onSubmit={onSubmit}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Describe the video"), { target: { value: detailed } });
+    await user.click(screen.getByRole("button", { name: /make my plan/i }));
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Faithful — music video",
+        context: detailed,
+      }),
+    );
+    expect(screen.queryByLabelText("Creative intent")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Target audience")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Desired emotion")).not.toBeInTheDocument();
   });
 });

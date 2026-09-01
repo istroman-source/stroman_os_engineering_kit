@@ -577,7 +577,7 @@ components:
         creativeGoal: { type: string, maxLength: 2000 }
         targetAudience: { type: string, maxLength: 2000 }
         desiredEmotion: { type: string, maxLength: 200 }
-        context: { type: string, maxLength: 5000 }
+        context: { type: string, maxLength: 20000 }
         runtimeTarget: { type: string, maxLength: 200 }
         deliveryPlatform: { type: string, maxLength: 300 }
         references: { type: string, maxLength: 5000 }
@@ -945,6 +945,9 @@ components:
           createdAt,
           updatedAt,
           planningContext,
+          developmentStatus,
+          developmentError,
+          developmentStartedAt,
         ]
       properties:
         id: { type: string }
@@ -966,6 +969,11 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
         planningContext: { $ref: "#/components/schemas/CreativePlanningContext" }
+        developmentStatus:
+          type: string
+          enum: [DRAFT, PROCESSING, READY, FAILED]
+        developmentError: { type: [string, "null"] }
+        developmentStartedAt: { type: [string, "null"], format: date-time }
     CreativeBriefRevision:
       type: object
       required:
@@ -2382,11 +2390,39 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Analysis" }
+        "202":
+          description: Filmmaker intent saved; hosted blueprint generation is processing.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [brief]
+                properties:
+                  brief: { $ref: "#/components/schemas/CreativeBrief" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "404": { $ref: "#/components/responses/NotFound" }
         "409": { $ref: "#/components/responses/Conflict" }
         "422": { $ref: "#/components/responses/Unprocessable" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+  /api/v1/projects/{projectId}/analysis/intent:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      tags: [Projects]
+      operationId: getProjectCreativeIntent
+      summary: Fetch saved filmmaker intent and its development status without requiring a blueprint.
+      responses:
+        "200":
+          description: Saved filmmaker intent.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CreativeBrief" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "404": { $ref: "#/components/responses/NotFound" }
   /api/v1/projects/{projectId}/analysis/history:
     parameters:
       - name: projectId

@@ -12,6 +12,7 @@ import { TestAuthenticator } from "@test/adapters/test-auth";
 import { call, TEST_ORIGIN } from "@test/http/call";
 import { POST as createProject } from "./projects/route";
 import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectId]/analysis/route";
+import { GET as getCreativeIntent } from "./projects/[projectId]/analysis/intent/route";
 import { GET as getIntentHistory } from "./projects/[projectId]/analysis/history/route";
 import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
 import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
@@ -287,6 +288,42 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
     expect((after.body as { brief: { title: string } }).brief.title).toContain(
       "Jimmy's Famous Meals",
     );
+
+    const savedIntent = await call(getCreativeIntent, { principal: ACTOR, params: { projectId } });
+    expect(savedIntent.status).toBe(200);
+    expect(savedIntent.body).toMatchObject({
+      context: brief.context,
+      developmentStatus: "READY",
+      developmentError: null,
+    });
+    const deniedIntent = await call(getCreativeIntent, {
+      principal: OTHER,
+      params: { projectId },
+    });
+    expect(deniedIntent.status).toBe(403);
+  });
+
+  it("accepts a long natural-language music-video brief through one context field", async () => {
+    const projectId = await makeProject();
+    const context = "Music-video scene and production detail. ".repeat(300);
+    const analyzed = await call(analyzeProject, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: {
+        title: "Faithful",
+        context,
+        projectType: "Music video",
+      },
+    });
+    expect(analyzed.status).toBe(503);
+    const saved = await call(getCreativeIntent, { principal: ACTOR, params: { projectId } });
+    expect(saved.status).toBe(200);
+    expect(saved.body).toMatchObject({
+      context: context.trim(),
+      developmentStatus: "FAILED",
+      developmentError: "UNAVAILABLE",
+    });
   });
 
   it("re-analysis replaces the brief (one brief per project)", async () => {
@@ -689,7 +726,16 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       json: { ...brief, projectType: "brand documentary with founder interview" },
     });
     expect(res.status).toBe(503);
-    expect(await prisma.creativeBrief.count()).toBe(0);
+    expect(await prisma.creativeBrief.count()).toBe(1);
+    expect(
+      await prisma.creativeBrief.findUnique({
+        where: { projectId },
+        select: { developmentStatus: true, projectType: true },
+      }),
+    ).toEqual({
+      developmentStatus: "FAILED",
+      projectType: "brand documentary with founder interview",
+    });
   });
 
   it("denies analyzing or viewing another owner's project (403)", async () => {
@@ -722,7 +768,13 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       },
     });
     expect(ideaOnly.status).toBe(503);
-    expect(await prisma.creativeBrief.count()).toBe(0);
+    expect(await prisma.creativeBrief.count()).toBe(1);
+    expect(
+      await prisma.creativeBrief.findUnique({
+        where: { projectId },
+        select: { developmentStatus: true },
+      }),
+    ).toEqual({ developmentStatus: "FAILED" });
 
     const invalid = await call(analyzeProject, {
       method: "POST",
@@ -731,5 +783,7 @@ describe("Analyze Project (real HTTP + PostgreSQL)", () => {
       json: { title: "" },
     });
     expect(invalid.status).toBe(400);
+    expect(await prisma.creativeBrief.count()).toBe(1);
+    expect(await prisma.creativeBriefRevision.count()).toBe(1);
   });
 });

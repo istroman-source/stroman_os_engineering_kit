@@ -52,12 +52,35 @@ export class PrismaCreativeBriefRepository implements CreativeBriefRepository {
           data: { ...rest, lockVersion: { increment: 1 } },
         });
         if (result.count === 1) {
+          const latestRevision = await transaction.creativeBriefRevision.findFirst({
+            where: { creativeBriefId: id },
+            orderBy: { version: "desc" },
+            select: { version: true },
+          });
           await transaction.creativeBriefRevision.create({
-            data: toCreativeBriefRevisionFields(brief, currentVersion + 1),
+            data: toCreativeBriefRevisionFields(brief, (latestRevision?.version ?? 0) + 1),
           });
         }
         return result.count;
       });
+    } catch (error) {
+      throw translatePrismaError(error);
+    }
+    if (count === 0) {
+      throw (await this.exists(id)) ? new OptimisticConcurrencyError() : new NotFoundError();
+    }
+  }
+
+  async updateDevelopment(brief: CreativeBrief): Promise<void> {
+    const { id, ...rest } = toCreativeBriefFields(brief);
+    const currentVersion = brief.lockVersion;
+    let count: number;
+    try {
+      const result = await this.db.creativeBrief.updateMany({
+        where: { id, lockVersion: currentVersion },
+        data: { ...rest, lockVersion: { increment: 1 } },
+      });
+      count = result.count;
     } catch (error) {
       throw translatePrismaError(error);
     }

@@ -31,6 +31,9 @@ export function creativeAnalysisFixture(interviewStrategy: string[] | null = nul
     createdAt: now,
     updatedAt: now,
     lockVersion: 1,
+    developmentStatus: "READY",
+    developmentError: null,
+    developmentStartedAt: now,
     planningContext: emptyCreativePlanningContext(),
   };
   const generated = generateBlueprint(brief, generateDevelopmentBlueprint(brief));
@@ -56,6 +59,9 @@ export function creativeAnalysisFixture(interviewStrategy: string[] | null = nul
       createdAt: "",
       updatedAt: "",
       planningContext: brief.planningContext,
+      developmentStatus: "READY",
+      developmentError: null,
+      developmentStartedAt: now.toISOString(),
     },
     blueprint: { ...generated, interviewStrategy },
   };

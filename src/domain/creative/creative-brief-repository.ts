@@ -11,6 +11,8 @@ export interface CreativeBriefRepository {
   insert(brief: CreativeBrief): Promise<void>;
   /** Compare-and-swap on lockVersion; rejects stale writes and missing rows. */
   update(brief: CreativeBrief): Promise<void>;
+  /** Persist system-owned generation state without creating a duplicate intent revision. */
+  updateDevelopment(brief: CreativeBrief): Promise<void>;
   /** Immutable intent snapshots, oldest first. */
   listRevisions(projectId: ProjectId): Promise<readonly CreativeBriefRevision[]>;
 }

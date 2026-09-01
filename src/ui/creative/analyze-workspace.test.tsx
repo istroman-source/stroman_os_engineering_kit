@@ -2,7 +2,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyzeWorkspace } from "./analyze-workspace";
-import { analyzeProject, getAnalysis, getIntentHistory } from "./creative-api";
+import { analyzeProject, getAnalysis, getCreativeIntent, getIntentHistory } from "./creative-api";
+import { getProject } from "@/ui/auth/api-client";
 import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 import { creativeAnalysisFixture } from "./creative-test-fixtures";
 
@@ -17,12 +18,14 @@ vi.mock("next/navigation", () => ({ useRouter: () => routerMock }));
 vi.mock("./creative-api", () => ({
   getAnalysis: vi.fn(),
   getIntentHistory: vi.fn(),
+  getCreativeIntent: vi.fn(),
   analyzeProject: vi.fn(),
 }));
 vi.mock("@/ui/decisions/decisions-api", () => ({ proposeRecommendationDecision: vi.fn() }));
 vi.mock("@/ui/auth/api-client", () => ({
   errorStatus: (err: { status?: number }) => err?.status,
   friendlyError: (err: { message?: string }) => err?.message ?? "error",
+  getProject: vi.fn(),
 }));
 
 beforeEach(() => {
@@ -30,6 +33,16 @@ beforeEach(() => {
   vi.mocked(getAnalysis).mockReset();
   vi.mocked(analyzeProject).mockReset();
   vi.mocked(getIntentHistory).mockReset();
+  vi.mocked(getCreativeIntent).mockReset();
+  vi.mocked(getProject).mockReset();
+  vi.mocked(getProject).mockResolvedValue({
+    id: "proj_1",
+    name: "Faithful — music video",
+    status: "ACTIVE",
+    createdAt: "2026-09-01T00:00:00.000Z",
+    updatedAt: "2026-09-01T00:00:00.000Z",
+  });
+  vi.mocked(getCreativeIntent).mockRejectedValue({ status: 404 });
   vi.mocked(getIntentHistory).mockResolvedValue([]);
   vi.mocked(proposeRecommendationDecision).mockReset();
   routerMock.push.mockReset();
@@ -47,11 +60,9 @@ describe("AnalyzeWorkspace", () => {
     vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
     render(<AnalyzeWorkspace projectId="proj_1" />);
 
-    expect(
-      await screen.findByRole("button", { name: /add details that change the plan/i }),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /add format details/i })).toBeInTheDocument();
     expect(screen.queryByLabelText("Project type")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /add details that change the plan/i }));
+    await user.click(screen.getByRole("button", { name: /add format details/i }));
     expect(screen.getByLabelText("Project type")).toBeInTheDocument();
   });
 
@@ -74,8 +85,8 @@ describe("AnalyzeWorkspace", () => {
 
     await screen.findByRole("form", { name: /start a video/i });
     await user.type(
-      screen.getByLabelText("What are you making?"),
-      "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
+      screen.getByLabelText("Describe the video"),
+      "A mother and baby move through a truthful morning ritual built around the first quiet bite.",
     );
     await user.click(screen.getByRole("button", { name: /make my plan/i }));
 
@@ -86,6 +97,22 @@ describe("AnalyzeWorkspace", () => {
         name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("restores a saved in-progress brief after reload instead of presenting an empty form", async () => {
+    vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
+    const saved = creativeAnalysisFixture().brief;
+    vi.mocked(getCreativeIntent).mockResolvedValue({
+      ...saved,
+      context: "A detailed music-video treatment that must survive a provider delay.",
+      developmentStatus: "PROCESSING",
+      developmentStartedAt: new Date().toISOString(),
+    });
+    render(<AnalyzeWorkspace projectId="proj_1" />);
+
+    expect(await screen.findByText("Building your film plan")).toBeInTheDocument();
+    expect(screen.getByText("Brief saved")).toBeInTheDocument();
+    expect(screen.queryByRole("form", { name: /start a video/i })).not.toBeInTheDocument();
   });
 
   it("creates a traceable open choice from the recommended direction", async () => {

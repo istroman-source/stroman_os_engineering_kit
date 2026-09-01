@@ -39,6 +39,9 @@ export interface CreativeBrief {
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly planningContext: CreativePlanningContext;
+  readonly developmentStatus: "DRAFT" | "PROCESSING" | "READY" | "FAILED";
+  readonly developmentError: string | null;
+  readonly developmentStartedAt: string | null;
 }
 
 export interface Analysis {
@@ -76,6 +79,14 @@ export async function getAnalysis(projectId: string): Promise<Analysis> {
   return data;
 }
 
+/** Fetch filmmaker intent independently from the long-running generated plan. */
+export async function getCreativeIntent(projectId: string): Promise<CreativeBrief> {
+  const { data } = await apiGetWithEtag<CreativeBrief>(
+    `/api/v1/projects/${enc(projectId)}/analysis/intent`,
+  );
+  return data;
+}
+
 export async function getIntentHistory(projectId: string): Promise<IntentRevision[]> {
   const { data } = await apiGetWithEtag<{ items: IntentRevision[] }>(
     `/api/v1/projects/${enc(projectId)}/analysis/history`,
@@ -84,19 +95,17 @@ export async function getIntentHistory(projectId: string): Promise<IntentRevisio
 }
 
 const RECOVERY_POLL_INTERVAL_MS = 5_000;
-// The hosted pipeline has four sequential stages, and each provider call has a
-// ten-minute hard bound. Poll through that full worst case plus teardown/commit
-// margin so the UI never encourages a duplicate generation while the original
-// atomic write can still legitimately complete.
+// The hosted pipeline has four sequential stages. The filmmaker's words are
+// already durable while this poll runs, so reloads never require re-entry.
 const RECOVERY_TIMEOUT_MS = 41 * 60_000;
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function currentAnalysisTimestamp(projectId: string): Promise<string | null> {
+async function currentIntentTimestamp(projectId: string): Promise<string | null> {
   try {
-    return (await getAnalysis(projectId)).brief.updatedAt;
+    return (await getCreativeIntent(projectId)).updatedAt;
   } catch (error) {
     if (errorStatus(error) === 404) return null;
     throw error;
@@ -105,10 +114,8 @@ async function currentAnalysisTimestamp(projectId: string): Promise<string | nul
 
 /**
  * Railway can close an otherwise healthy long-running HTTP request before the
- * four-stage hosted reasoning pipeline finishes. The Node process continues the
- * work and commits atomically, so recover by polling the owner-scoped GET until
- * a new brief appears. An existing analysis must actually change; returning the
- * stale blueprint would falsely imply that a re-development completed.
+ * four-stage hosted reasoning pipeline finishes. Recover by polling the durable
+ * intent state until the exact attempt becomes READY or FAILED.
  */
 async function awaitCommittedAnalysis(
   projectId: string,
@@ -118,11 +125,22 @@ async function awaitCommittedAnalysis(
   while (Date.now() < deadline) {
     await wait(RECOVERY_POLL_INTERVAL_MS);
     try {
-      const analysis = await getAnalysis(projectId);
-      if (baselineUpdatedAt === null || analysis.brief.updatedAt !== baselineUpdatedAt) {
-        return analysis;
+      const intent = await getCreativeIntent(projectId);
+      const isCurrentAttempt = baselineUpdatedAt === null || intent.updatedAt !== baselineUpdatedAt;
+      if (isCurrentAttempt && intent.developmentStatus === "READY") {
+        return await getAnalysis(projectId);
+      }
+      if (isCurrentAttempt && intent.developmentStatus === "FAILED") {
+        throw new ApiRequestError(
+          503,
+          "CREATIVE_DEVELOPMENT_FAILED",
+          "Your project brief is saved. Stroman could not finish the plan, so you can retry without entering anything again.",
+        );
       }
     } catch (error) {
+      if (error instanceof ApiRequestError && error.code === "CREATIVE_DEVELOPMENT_FAILED") {
+        throw error;
+      }
       const status = errorStatus(error);
       if (status !== 404 && (status === undefined || status < 500)) throw error;
     }
@@ -130,25 +148,35 @@ async function awaitCommittedAnalysis(
   throw new ApiRequestError(
     504,
     "CREATIVE_DEVELOPMENT_PENDING",
-    "Creative development has not finished yet.",
+    "Your project brief is saved. Creative development is still in progress.",
   );
 }
 
 /** Analyze a project from creator context; returns the generated blueprint. */
 export async function analyzeProject(projectId: string, fields: AnalyzeFields): Promise<Analysis> {
-  const baselineUpdatedAt = await currentAnalysisTimestamp(projectId);
+  const baselineUpdatedAt = await currentIntentTimestamp(projectId);
   try {
-    const { data } = await apiPostWithEtag<Analysis>(
+    const { data } = await apiPostWithEtag<Analysis | { brief: CreativeBrief }>(
       `/api/v1/projects/${enc(projectId)}/analysis`,
       fields,
     );
-    return data;
+    if ("blueprint" in data) return data;
+    return awaitCommittedAnalysis(projectId, baselineUpdatedAt);
   } catch (error) {
-    if (!(error instanceof ApiRequestError) || error.code !== "INVALID_UPSTREAM_RESPONSE") {
+    const recoverable =
+      !(error instanceof ApiRequestError) ||
+      error.code === "INVALID_UPSTREAM_RESPONSE" ||
+      error.status >= 500;
+    if (!recoverable) {
       throw error;
     }
     return awaitCommittedAnalysis(projectId, baselineUpdatedAt);
   }
+}
+
+/** Resume a persisted in-flight plan after reload without submitting a duplicate request. */
+export function resumeCreativePlan(projectId: string): Promise<Analysis> {
+  return awaitCommittedAnalysis(projectId, null);
 }
 
 export async function uploadScoutPhotos(

@@ -1,5 +1,5 @@
 import type { ContentItemView } from "@/application/content";
-import type { AnalysisView } from "@/application/creative";
+import type { AnalysisView, CreativeBriefView } from "@/application/creative";
 import type { DecisionView } from "@/application/decision";
 import type { EvaluationView, RubricView } from "@/application/evaluation";
 import type {
@@ -142,9 +142,39 @@ export function serializeAnalysis(view: AnalysisView) {
       createdAt: iso(b.createdAt),
       updatedAt: iso(b.updatedAt),
       planningContext: b.planningContext,
+      developmentStatus: b.developmentStatus,
+      developmentError: b.developmentError,
+      developmentStartedAt: b.developmentStartedAt ? iso(b.developmentStartedAt) : null,
     },
     // The blueprint is pure JSON-safe data (strings/arrays) — passed through as-is.
     blueprint: view.blueprint,
+  };
+}
+
+export function serializeCreativeIntent(b: CreativeBriefView) {
+  return {
+    id: b.id,
+    projectId: b.projectId,
+    title: b.title,
+    client: b.client,
+    projectType: b.projectType,
+    creativeGoal: b.creativeGoal,
+    targetAudience: b.targetAudience,
+    desiredEmotion: b.desiredEmotion,
+    context: b.context,
+    runtimeTarget: b.runtimeTarget,
+    deliveryPlatform: b.deliveryPlatform,
+    references: b.references,
+    restrictions: b.restrictions,
+    clientRequirements: b.clientRequirements,
+    nonNegotiables: b.nonNegotiables,
+    successCriteria: b.successCriteria,
+    createdAt: iso(b.createdAt),
+    updatedAt: iso(b.updatedAt),
+    planningContext: b.planningContext,
+    developmentStatus: b.developmentStatus,
+    developmentError: b.developmentError,
+    developmentStartedAt: b.developmentStartedAt ? iso(b.developmentStartedAt) : null,
   };
 }
 
