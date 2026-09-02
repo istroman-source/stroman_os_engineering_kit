@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { TopNav } from "./top-nav";
 
@@ -7,6 +10,21 @@ import { TopNav } from "./top-nav";
  * to 375px. Pure layout — feature routes render inside `children`.
  */
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const guidedBrief = /^\/projects\/[^/]+\/brief\/?$/.test(pathname);
+
+  if (guidedBrief) {
+    return (
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto min-h-svh w-full max-w-3xl px-4 py-6 sm:px-6 sm:py-10"
+      >
+        {children}
+      </main>
+    );
+  }
+
   return (
     <div className="grid min-h-svh grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
       {/* Keyboard users can jump straight to content (WCAG 2.4.1). */}

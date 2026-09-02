@@ -8,8 +8,8 @@ export default function ProjectsPage() {
   return (
     <div>
       <PageHeader
-        title="Projects"
-        description="Shape a story, plan real frames, and keep the material for each film together."
+        title="Your films"
+        description="Start with an idea or continue from the next clear step. Stroman will guide you forward."
       />
       <ProjectsView />
     </div>

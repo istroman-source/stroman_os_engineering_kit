@@ -39,6 +39,7 @@ const nextActions: Record<ProjectItem["status"], string> = {
 export function ProjectNavigation({ projectId }: { projectId: string }) {
   const pathname = usePathname();
   const router = useRouter();
+  const base = `/projects/${projectId}`;
   const [project, setProject] = useState<ProjectItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -69,7 +70,7 @@ export function ProjectNavigation({ projectId }: { projectId: string }) {
     };
   }, [loadAttempt, projectId, router]);
 
-  const base = `/projects/${projectId}`;
+  const firstBrief = pathname === `${base}/brief`;
   const currentSuffix = [...sections]
     .reverse()
     .find(({ suffix }) =>
@@ -134,16 +135,20 @@ export function ProjectNavigation({ projectId }: { projectId: string }) {
           </h1>
           {project ? (
             <p className="text-muted-foreground mt-1 text-sm">
-              {statusLabels[project.status]} · {nextActions[project.status]}
+              {firstBrief
+                ? "DEVELOPMENT · First, describe the film you want to make."
+                : `${statusLabels[project.status]} · ${nextActions[project.status]}`}
             </p>
           ) : null}
         </div>
-        <Link
-          href="/locations"
-          className="border-border bg-card hover:border-primary/50 focus-visible:ring-ring inline-flex min-h-11 items-center rounded-lg border px-4 text-sm font-medium shadow-sm focus-visible:ring-2 focus-visible:outline-none"
-        >
-          Rooms
-        </Link>
+        {!firstBrief ? (
+          <Link
+            href="/locations"
+            className="border-border bg-card hover:border-primary/50 focus-visible:ring-ring inline-flex min-h-11 items-center rounded-lg border px-4 text-sm font-medium shadow-sm focus-visible:ring-2 focus-visible:outline-none"
+          >
+            Rooms
+          </Link>
+        ) : null}
       </div>
 
       {missing ? (
@@ -173,7 +178,7 @@ export function ProjectNavigation({ projectId }: { projectId: string }) {
         </div>
       ) : null}
 
-      {project ? (
+      {project && !firstBrief ? (
         <details className="border-border bg-card rounded-xl border px-4 py-3">
           <summary className="focus-visible:ring-ring min-h-11 cursor-pointer content-center text-sm font-medium focus-visible:ring-2 focus-visible:outline-none">
             Project settings
@@ -264,26 +269,28 @@ export function ProjectNavigation({ projectId }: { projectId: string }) {
         </details>
       ) : null}
 
-      <nav aria-label="Project" className="border-border flex gap-1 overflow-x-auto border-b">
-        {sections.map(({ suffix, label }) => {
-          const href = `${base}${suffix}`;
-          const active = currentSuffix === suffix;
-          return (
-            <Link
-              key={label}
-              href={href}
-              aria-current={active ? "page" : undefined}
-              className={`focus-visible:ring-ring relative inline-flex min-h-11 shrink-0 items-center px-3 text-sm font-medium focus-visible:ring-2 focus-visible:outline-none ${
-                active
-                  ? "text-foreground after:bg-primary after:absolute after:inset-x-2 after:bottom-0 after:h-0.5"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
+      {!firstBrief ? (
+        <nav aria-label="Project" className="border-border flex gap-1 overflow-x-auto border-b">
+          {sections.map(({ suffix, label }) => {
+            const href = `${base}${suffix}`;
+            const active = currentSuffix === suffix;
+            return (
+              <Link
+                key={label}
+                href={href}
+                aria-current={active ? "page" : undefined}
+                className={`focus-visible:ring-ring relative inline-flex min-h-11 shrink-0 items-center px-3 text-sm font-medium focus-visible:ring-2 focus-visible:outline-none ${
+                  active
+                    ? "text-foreground after:bg-primary after:absolute after:inset-x-2 after:bottom-0 after:h-0.5"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+      ) : null}
     </header>
   );
 }
