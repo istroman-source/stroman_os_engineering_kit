@@ -1,5 +1,18 @@
 # Release Notes
 
+## Guided film entry — Stage 1 candidate (2026-09-01)
+
+- Replaced the Projects dashboard language with one narrow, guided choice: start a film or continue
+  a film.
+- Existing films now show their known project type, current filmmaking stage, one specific next
+  action, and one Continue destination derived from the durable creative-intent state.
+- New and unfinished films enter a dedicated first-brief route. Downstream Rooms, shot-planning,
+  footage, choices, review, settings, and project-status controls stay out of that transition.
+- Preserved every existing project, creative-intent, planning, and lifecycle contract; Stage 1 adds
+  no new workflow engine or production-data migration.
+- Added desktop and mobile browser journeys for first-time entry and stage-aware resume, plus focused
+  component coverage for the guided shell and direct Continue routing.
+
 ## Music-video intake reliability candidate (2026-09-01)
 
 - Replaced the redundant multi-box creative intake with one 20,000-character natural-language

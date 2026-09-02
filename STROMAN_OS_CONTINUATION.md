@@ -2,8 +2,8 @@
 
 ## Current objective
 
-Ship the production-discovered music-video intake reliability fix and pass its exact-SHA release
-gate without weakening filmmaker authority, evidence integrity, security, or source preservation.
+Ship Stage 1 of the guided Stroman OS entry redesign: Projects, starting a film, resuming a film,
+and the transition into the first brief. Do not redesign later workflow stages in this release.
 
 ## Completed
 
@@ -88,21 +88,19 @@ gate without weakening filmmaker authority, evidence integrity, security, or sou
 
 ## ACTIVE WORK QUEUE
 
-- [x] Reproduce the lost music-video plan in the signed-in deployed app and identify the repeated
-  404 polling caused by saving intent only after hosted development.
-- [x] Persist full filmmaker intent before provider work and expose its durable lifecycle.
-- [x] Reduce the intake to one detailed brief while preserving legacy structured intent on edits.
-- [x] Recover processing and failed plans across navigation and reload without duplicate generation.
-- [x] Add focused unit/UI/API/PostgreSQL regression coverage and update the OpenAPI contract.
-- [x] Pass format, lint, typecheck, full 720-test unit/UI/worker suite, fresh 31-migration real-
-  PostgreSQL API suite (99 tests), integration suite (92 tests), evaluation suite (28 tests),
-  autopilot suite (57 tests), migration rehearsal, 10 desktop/mobile browser smokes, and webpack
-  production build.
-- [ ] Freeze the music-video intake fix at an exact SHA and obtain independent review with zero
-  BLOCKING and IMPORTANT findings.
-- [ ] Push, pass exact-head CI, merge normally, and verify post-merge main CI/deployment.
-- [ ] Verify the simplified, saved-before-development workflow in the signed-in deployed browser.
-- [ ] Publish exact evidence and the READY FOR HUMAN TESTING verdict.
+- [x] Inspect the current Projects → start → first brief and project-resume paths.
+- [x] Replace generic Draft/In progress/Open workspace cards with type, filmmaking stage, specific
+  next action, and one direct Continue action.
+- [x] Simplify Projects into one narrow Start a film / Continue a film hierarchy.
+- [x] Add a guided first-brief route and hide downstream tools during that transition.
+- [x] Preserve existing APIs, project data, planning state, and all later workflow screens.
+- [x] Pass focused type, lint, component, desktop-browser, and mobile-browser verification.
+- [x] Pass the final regression/build gate: format, typecheck, lint, 726 unit/UI/worker tests,
+  production webpack build, and 14 desktop/mobile browser journeys.
+- [ ] Freeze the exact Stage 1 SHA.
+- [ ] Obtain independent exact-SHA review with zero BLOCKING and IMPORTANT findings.
+- [ ] Push, pass exact-head CI, merge normally, and verify post-merge deployment.
+- [ ] Verify the signed-in deployed start/resume journey and publish the human-test handoff.
 
 ### Previously completed V1 release queue
 

@@ -156,4 +156,23 @@ describe("ProjectNavigation", () => {
       "/projects",
     );
   });
+
+  it("hides downstream tools until the first brief exists", async () => {
+    navigation.pathname = "/projects/proj_1/brief";
+    render(<ProjectNavigation projectId="proj_1" />);
+
+    expect(await screen.findByText(/first, describe the film/i)).toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Project" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Rooms" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Project settings")).not.toBeInTheDocument();
+  });
+
+  it("restores project tools on the film home after the brief exists", async () => {
+    navigation.pathname = "/projects/proj_1";
+    render(<ProjectNavigation projectId="proj_1" />);
+
+    expect(await screen.findByRole("navigation", { name: "Project" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Rooms" })).toBeInTheDocument();
+    expect(screen.getByText("Project settings")).toBeInTheDocument();
+  });
 });

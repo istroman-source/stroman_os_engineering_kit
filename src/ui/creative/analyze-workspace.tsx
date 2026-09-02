@@ -423,10 +423,13 @@ export function AnalyzeWorkspace({
   return (
     <div className="flex flex-col gap-6">
       <header>
-        <h2 className="text-2xl font-semibold tracking-tight">What are you making?</h2>
+        <p className="text-primary text-sm font-semibold tracking-wide">YOUR FIRST STEP</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+          What do you want this film to become?
+        </h2>
         <p className="text-muted-foreground text-sm">
-          Start with the idea. Stroman will help you shape a story, choose what matters, and make a
-          plan you can actually shoot.
+          Share the idea in your own words. Next, Stroman will turn it into a film plan you can
+          review and shape.
         </p>
       </header>
       <AnalyzeForm

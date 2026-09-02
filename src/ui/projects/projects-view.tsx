@@ -3,7 +3,8 @@
 import { type FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Button } from "@/ui/primitives/button";
+import { Button, buttonVariants } from "@/ui/primitives/button";
+import { cn } from "@/ui/cn";
 import {
   createProject,
   errorStatus,
@@ -11,16 +12,104 @@ import {
   listProjects,
   type ProjectItem,
 } from "@/ui/auth/api-client";
+import { getCreativeIntent, type CreativeBrief } from "@/ui/creative/creative-api";
 
 const inputClass =
   "min-h-11 flex-1 rounded-lg border border-border bg-background px-3 py-2 text-base outline-none transition-shadow placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring";
 
-const statusLabels: Record<ProjectItem["status"], string> = {
-  DRAFT: "Draft",
-  ACTIVE: "In progress",
-  COMPLETED: "Complete",
-  ARCHIVED: "Archived",
-};
+interface ResumeDetails {
+  readonly projectType: string | null;
+  readonly stage: string;
+  readonly nextAction: string;
+  readonly href: string;
+}
+
+function resumeDetails(project: ProjectItem, intent: CreativeBrief | null): ResumeDetails {
+  const base = `/projects/${project.id}`;
+  if (project.status === "COMPLETED") {
+    return {
+      projectType: intent?.projectType.trim() || null,
+      stage: "REVIEW",
+      nextAction: "Review the finished film and its handoff.",
+      href: `${base}/review`,
+    };
+  }
+  if (project.status === "ARCHIVED") {
+    return {
+      projectType: intent?.projectType.trim() || null,
+      stage: "ARCHIVED",
+      nextAction: "Open the film to restore it when you are ready.",
+      href: base,
+    };
+  }
+  if (!intent) {
+    return {
+      projectType: null,
+      stage: "DEVELOPMENT",
+      nextAction: "Tell Stroman what you want this film to become.",
+      href: `${base}/brief`,
+    };
+  }
+  if (intent.developmentStatus === "PROCESSING") {
+    return {
+      projectType: intent.projectType.trim() || null,
+      stage: "DEVELOPMENT",
+      nextAction: "See the film plan Stroman is building from your saved brief.",
+      href: `${base}/brief`,
+    };
+  }
+  if (intent.developmentStatus === "FAILED") {
+    return {
+      projectType: intent.projectType.trim() || null,
+      stage: "DEVELOPMENT",
+      nextAction: "Retry your saved brief—nothing needs to be entered again.",
+      href: `${base}/brief`,
+    };
+  }
+
+  const stage = intent.planningContext.stage;
+  if (stage === "PRE_PRODUCTION") {
+    return {
+      projectType: intent.projectType.trim() || null,
+      stage: "SHOT PLANNING",
+      nextAction: "Review the suggested shots and make them shootable.",
+      href: `${base}/storyboard`,
+    };
+  }
+  if (stage === "SCOUTING") {
+    return {
+      projectType: intent.projectType.trim() || null,
+      stage: "LOCATION PLANNING",
+      nextAction: "Connect the story to the places where you can shoot it.",
+      href: `${base}/storyboard`,
+    };
+  }
+  if (stage === "SHOOTING") {
+    return {
+      projectType: intent.projectType.trim() || null,
+      stage: "PRODUCTION",
+      nextAction: "Add footage and notes from the shoot.",
+      href: `${base}/materials`,
+    };
+  }
+  if (stage === "POST") {
+    return {
+      projectType: intent.projectType.trim() || null,
+      stage: "EDIT",
+      nextAction: "Shape the footage and review what the film needs next.",
+      href: `${base}/materials`,
+    };
+  }
+  return {
+    projectType: intent.projectType.trim() || null,
+    stage: "DEVELOPMENT",
+    nextAction:
+      intent.developmentStatus === "READY"
+        ? "Review the film plan and choose what to shape next."
+        : "Finish telling Stroman what you want this film to become.",
+    href: base,
+  };
+}
 
 /**
  * Minimal working projects interface backed by the existing /api/v1/projects
@@ -30,6 +119,7 @@ const statusLabels: Record<ProjectItem["status"], string> = {
 export function ProjectsView() {
   const router = useRouter();
   const [projects, setProjects] = useState<ProjectItem[] | null>(null);
+  const [resumeByProject, setResumeByProject] = useState<Record<string, ResumeDetails>>({});
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -45,6 +135,25 @@ export function ProjectsView() {
         if (!active) return;
         setLoadError(null);
         setProjects(items);
+        void Promise.all(
+          items.map(async (project) => {
+            try {
+              return [
+                project.id,
+                resumeDetails(project, await getCreativeIntent(project.id)),
+              ] as const;
+            } catch (error) {
+              if (errorStatus(error) === 401) throw error;
+              return [project.id, resumeDetails(project, null)] as const;
+            }
+          }),
+        )
+          .then((entries) => {
+            if (active) setResumeByProject(Object.fromEntries(entries));
+          })
+          .catch((error) => {
+            if (active && errorStatus(error) === 401) router.replace("/login");
+          });
       })
       .catch((err) => {
         if (!active) return;
@@ -67,7 +176,7 @@ export function ProjectsView() {
     setCreateError(null);
     try {
       const project = await createProject(trimmed);
-      router.push(`/projects/${project.id}`);
+      router.push(`/projects/${project.id}/brief`);
     } catch (err) {
       if (errorStatus(err) === 401) {
         router.replace("/login");
@@ -80,17 +189,16 @@ export function ProjectsView() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      <form
-        onSubmit={onCreate}
-        className="border-border bg-card flex flex-col gap-4 rounded-2xl border p-5 shadow-sm sm:p-6"
-        aria-label="Start a video"
-      >
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
+      <form onSubmit={onCreate} className="flex flex-col gap-5" aria-label="Start a film">
         <div>
-          <h2 className="text-lg font-semibold">Start a video</h2>
-          <p className="text-muted-foreground mt-1 max-w-xl text-sm">
-            Give it a working title. Next, tell Stroman what you want to make — you can fill in
-            production details only when they matter.
+          <p className="text-primary text-sm font-semibold tracking-wide">START A FILM</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+            Tell Stroman what you want to make.
+          </h2>
+          <p className="text-muted-foreground mt-2 max-w-xl text-sm">
+            Give the film a working title. Next, you’ll describe the idea in your own words.
+            Production details can wait.
           </p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -103,7 +211,7 @@ export function ProjectsView() {
             aria-label="Project working title"
           />
           <Button className="sm:min-w-36" type="submit" disabled={busy || name.trim() === ""}>
-            {busy ? "Starting…" : "Start a video"}
+            {busy ? "Starting…" : "Start a film"}
           </Button>
         </div>
       </form>
@@ -133,38 +241,50 @@ export function ProjectsView() {
           </Button>
         </div>
       ) : projects.length === 0 ? (
-        <div className="border-border bg-card rounded-2xl border px-6 py-12 text-center">
-          <h2 className="font-semibold">Make your first video</h2>
-          <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
-            Start with a working title above. Stroman will guide you from the idea to a plan you can
-            actually shoot.
-          </p>
-        </div>
+        <p className="border-border text-muted-foreground border-t pt-8 text-sm">
+          Your films will appear here so you can always return to the exact next step.
+        </p>
       ) : (
         <section aria-labelledby="your-projects" className="space-y-3">
           <div>
-            <h2 id="your-projects" className="text-lg font-semibold">
-              Continue a video
+            <p className="text-primary text-sm font-semibold tracking-wide">CONTINUE A FILM</p>
+            <h2 id="your-projects" className="mt-2 text-2xl font-semibold tracking-tight">
+              Pick up where you left off.
             </h2>
             <p className="text-muted-foreground mt-1 text-sm">
-              Pick up where you left off. Stroman keeps the idea, plan, places, and material in one
-              workspace.
+              Each film shows the one thing that matters next.
             </p>
           </div>
-          <ul className="grid gap-3 sm:grid-cols-2" aria-label="Projects">
-            {projects.map((project) => (
-              <li key={project.id}>
-                <Link
-                  href={`/projects/${project.id}`}
-                  className="border-border bg-card hover:border-primary/50 focus-visible:ring-ring flex min-h-28 flex-col justify-between rounded-xl border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:outline-none"
-                >
-                  <span className="font-semibold">{project.name}</span>
-                  <span className="text-muted-foreground mt-5 text-sm">
-                    {statusLabels[project.status] ?? project.status} · Open workspace
-                  </span>
-                </Link>
-              </li>
-            ))}
+          <ul className="divide-border border-border divide-y border-y" aria-label="Projects">
+            {projects.map((project) => {
+              const resume = resumeByProject[project.id] ?? resumeDetails(project, null);
+              return (
+                <li key={project.id} className="py-6 first:pt-5 last:pb-5">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="min-w-0">
+                      <h3 className="truncate text-lg font-semibold">{project.name}</h3>
+                      {resume.projectType ? (
+                        <p className="text-muted-foreground mt-0.5 text-sm">{resume.projectType}</p>
+                      ) : null}
+                      <p className="text-primary mt-4 text-xs font-semibold tracking-wider">
+                        {resume.stage}
+                      </p>
+                      <p className="mt-2 text-sm">
+                        <span className="font-medium">Next: </span>
+                        <span className="text-muted-foreground">{resume.nextAction}</span>
+                      </p>
+                    </div>
+                    <Link
+                      href={resume.href}
+                      aria-label={`Continue ${project.name}`}
+                      className={cn(buttonVariants(), "shrink-0 sm:min-w-28")}
+                    >
+                      Continue
+                    </Link>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
