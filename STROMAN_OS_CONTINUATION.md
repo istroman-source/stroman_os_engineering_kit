@@ -2,8 +2,8 @@
 
 ## Current objective
 
-Ship Stage 1 of the guided Stroman OS entry redesign: Projects, starting a film, resuming a film,
-and the transition into the first brief. Do not redesign later workflow stages in this release.
+Ship Stage 2 of the guided Stroman OS entry redesign: faithful brief understanding and filmmaker
+confirmation before creative development. Preserve Stage 1 and do not redesign later stages.
 
 ## Completed
 
@@ -50,8 +50,8 @@ and the transition into the first brief. Do not redesign later workflow stages i
 
 ## Priority order
 
-1. Freeze the music-video intake fix at an exact review SHA.
-2. Obtain independent product-meaning and implementation review; remediate any BLOCKING or IMPORTANT
+1. Complete and verify the Stage 2 comprehension-first brief boundary.
+2. Freeze an exact SHA and obtain independent product-meaning and implementation review; remediate any BLOCKING or IMPORTANT
    finding against a new exact SHA.
 3. Push, pass exact-head CI, merge normally, and verify post-merge main CI.
 4. Exercise the signed-in deployed workflow and publish the human-test handoff.
@@ -88,19 +88,16 @@ and the transition into the first brief. Do not redesign later workflow stages i
 
 ## ACTIVE WORK QUEUE
 
-- [x] Inspect the current Projects → start → first brief and project-resume paths.
-- [x] Replace generic Draft/In progress/Open workspace cards with type, filmmaking stage, specific
-  next action, and one direct Continue action.
-- [x] Simplify Projects into one narrow Start a film / Continue a film hierarchy.
-- [x] Add a guided first-brief route and hide downstream tools during that transition.
-- [x] Preserve existing APIs, project data, planning state, and all later workflow screens.
-- [x] Pass focused type, lint, component, desktop-browser, and mobile-browser verification.
-- [x] Pass the final regression/build gate: format, typecheck, lint, 726 unit/UI/worker tests,
-  production webpack build, and 14 desktop/mobile browser journeys.
-- [ ] Freeze the exact Stage 1 SHA.
+- [x] Preserve Stage 1 start/resume behavior.
+- [x] Persist brief drafts before creative reasoning and recover them after reload.
+- [x] Present faithful understanding, decided facts, and material gaps as separate sections.
+- [x] Add explicit Edit brief and Looks right — Continue actions.
+- [x] Keep confidence, invented direction, craft detail, scenes, and shots out of Stage 2.
+- [x] Pass Ticket to Table, detailed, vague, complete, fact/suggestion, API, and desktop/mobile tests.
+- [ ] Run the final full regression/build gate and freeze the exact Stage 2 SHA.
 - [ ] Obtain independent exact-SHA review with zero BLOCKING and IMPORTANT findings.
 - [ ] Push, pass exact-head CI, merge normally, and verify post-merge deployment.
-- [ ] Verify the signed-in deployed start/resume journey and publish the human-test handoff.
+- [ ] Verify the signed-in deployed Stage 2 journey and publish the human-test handoff.
 
 ### Previously completed V1 release queue
 

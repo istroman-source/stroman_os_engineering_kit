@@ -12,7 +12,10 @@ import { TestAuthenticator } from "@test/adapters/test-auth";
 import { call, TEST_ORIGIN } from "@test/http/call";
 import { POST as createProject } from "./projects/route";
 import { GET as getAnalysis, POST as analyzeProject } from "./projects/[projectId]/analysis/route";
-import { GET as getCreativeIntent } from "./projects/[projectId]/analysis/intent/route";
+import {
+  GET as getCreativeIntent,
+  POST as saveCreativeIntent,
+} from "./projects/[projectId]/analysis/intent/route";
 import { GET as getIntentHistory } from "./projects/[projectId]/analysis/history/route";
 import { POST as updatePlanning } from "./projects/[projectId]/planning/route";
 import { POST as uploadScoutPhotos } from "./projects/[projectId]/scout-photos/route";
@@ -86,6 +89,36 @@ const brief = {
   nonNegotiables: "Hands and feet only when the baby enters frame.",
   successCriteria: "Parents recognize a credible convenience benefit.",
 };
+
+describe("brief confirmation boundary", () => {
+  it("persists an authenticated draft without creating a creative blueprint", async () => {
+    const projectId = await makeProject();
+    const saved = await call(saveCreativeIntent, {
+      method: "POST",
+      principal: ACTOR,
+      params: { projectId },
+      json: brief,
+    });
+    expect(saved.status).toBe(200);
+    expect(saved.body).toMatchObject({ context: brief.context, developmentStatus: "DRAFT" });
+    expect(await prisma.creativeBrief.count()).toBe(1);
+    expect((await prisma.creativeBrief.findFirst())?.blueprint).toBeNull();
+    const analysis = await call(getAnalysis, { principal: ACTOR, params: { projectId } });
+    expect(analysis.status).toBe(404);
+  });
+
+  it("keeps draft saves owner-scoped", async () => {
+    const projectId = await makeProject();
+    const denied = await call(saveCreativeIntent, {
+      method: "POST",
+      principal: OTHER,
+      params: { projectId },
+      json: brief,
+    });
+    expect(denied.status).toBe(403);
+    expect(await prisma.creativeBrief.count()).toBe(0);
+  });
+});
 
 function testLocationGlb(): Uint8Array {
   const document = JSON.stringify({

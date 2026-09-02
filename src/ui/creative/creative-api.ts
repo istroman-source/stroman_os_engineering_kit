@@ -94,6 +94,18 @@ export async function getIntentHistory(projectId: string): Promise<IntentRevisio
   return data.items ?? [];
 }
 
+/** Save the filmmaker's words for confirmation before invoking creative reasoning. */
+export async function saveBriefDraft(
+  projectId: string,
+  fields: AnalyzeFields,
+): Promise<CreativeBrief> {
+  const { data } = await apiPostWithEtag<CreativeBrief>(
+    `/api/v1/projects/${enc(projectId)}/analysis/intent`,
+    fields,
+  );
+  return data;
+}
+
 const RECOVERY_POLL_INTERVAL_MS = 5_000;
 // The hosted pipeline has four sequential stages. The filmmaker's words are
 // already durable while this poll runs, so reloads never require re-entry.

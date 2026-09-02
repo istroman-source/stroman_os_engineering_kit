@@ -9,7 +9,7 @@ import {
 import { InMemoryCreativeBriefRepository } from "../../../test/adapters/in-memory-creative-brief-repository";
 import { getCreativeBrief } from "./get-creative-brief";
 import { listCreativeBriefRevisions } from "./list-creative-brief-revisions";
-import { saveCreativeBrief } from "./save-creative-brief";
+import { saveCreativeBrief, saveCreativeBriefDraft } from "./save-creative-brief";
 import { updateCreativePlanning } from "./update-creative-planning";
 import { FakeCreativeReasoningProvider } from "../../../test/adapters/fake-creative-reasoning-provider";
 import { InvalidValueError } from "@/domain/shared";
@@ -67,6 +67,31 @@ function deps() {
 }
 
 describe("saveCreativeBrief", () => {
+  it("persists a draft without invoking creative reasoning", async () => {
+    const d = deps();
+    const understand = d.creativeReasoning.understand;
+    d.creativeReasoning.understand = async () => {
+      throw new Error("Creative reasoning must not run before confirmation.");
+    };
+    const result = await saveCreativeBriefDraft(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      fields: fields(),
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.view.developmentStatus).toBe("DRAFT");
+    expect((await d.creativeBriefs.findByProject(PROJECT))?.blueprint).toBeNull();
+    d.creativeReasoning.understand = understand;
+    const confirmed = await saveCreativeBrief(d, {
+      actorId: OWNER,
+      projectId: PROJECT,
+      fields: fields(),
+    });
+    expect(confirmed.ok).toBe(true);
+    expect(await d.creativeBriefs.listRevisions(PROJECT)).toHaveLength(1);
+  });
+
   it("creates a brief and returns a blueprint on first analysis", async () => {
     const d = deps();
     const result = await saveCreativeBrief(d, {
