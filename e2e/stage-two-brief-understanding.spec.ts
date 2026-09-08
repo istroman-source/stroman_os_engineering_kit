@@ -64,9 +64,9 @@ test.describe("Stage 2 brief understanding", () => {
 
     await expect(page.getByText("BRIEF RECEIVED")).toBeVisible();
     await expect(page.getByRole("heading", { name: "What I understood" })).toBeVisible();
-    await expect(page.getByText(/follows a dish from the ticket through to expo/i)).toBeVisible();
-    await expect(page.getByText(/Platforms: Instagram, X, and TikTok/i)).toBeVisible();
-    await expect(page.getByText(/bell ringing is the ending beat/i)).toBeVisible();
+    await expect(page.getByText(/Ticket to table is a series where a chef/i)).toBeVisible();
+    await expect(page.getByText(/instagram, X and tiktok users/i)).toBeVisible();
+    await expect(page.getByText(/bell is rung at the end/i)).toBeVisible();
     await expect(
       page.getByText(/working confidence|starting gun|ritual of competence|camera direction/i),
     ).toHaveCount(0);

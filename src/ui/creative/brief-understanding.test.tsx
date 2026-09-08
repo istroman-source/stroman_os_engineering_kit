@@ -31,12 +31,31 @@ describe("understandBrief", () => {
   it("faithfully reflects Ticket to Table without creative inventions", () => {
     const result = understandBrief(ticketToTable);
     const output = [...result.understood, ...result.decided, ...result.needsInput].join(" ");
-    expect(output).toMatch(/repeatable series/i);
+    expect(output).toMatch(/is a series/i);
     expect(output).toMatch(/ticket.*expo/i);
     expect(output).toMatch(/bell/i);
-    expect(output).toMatch(/Instagram, X, and TikTok/i);
+    expect(output).toMatch(/instagram, X and tiktok users/i);
     expect(output).not.toMatch(
       /starting gun|ritual|pressure|adrenaline|camera|lighting|blocking|sound design|confidence|dish name/i,
+    );
+  });
+
+  it("preserves negation instead of turning rejected ideas into facts", () => {
+    const result = understandBrief(
+      empty({
+        context:
+          "This is not a series. The chef will not be on camera. No bell should ring at the end. Avoid expo-station shots.",
+      }),
+    );
+    expect(result.understood).toEqual([
+      "This is not a series",
+      "The chef will not be on camera",
+      "No bell should ring at the end",
+      "Avoid expo-station shots",
+    ]);
+    expect(result.decided).toEqual([]);
+    expect(result.understood.join(" ")).not.toMatch(
+      /repeatable|on-screen subject|required ending|coverage ends/i,
     );
   });
 

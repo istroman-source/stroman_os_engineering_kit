@@ -8,7 +8,14 @@ export interface BriefUnderstanding {
 }
 
 const sentence = (value: string) => value.trim().replace(/[.\s]+$/, "");
-const has = (text: string, expression: RegExp) => expression.test(text);
+
+function suppliedStatements(value: string): string[] {
+  return value
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.!?])\s+/)
+    .map((item) => sentence(item))
+    .filter(Boolean);
+}
 
 /**
  * A deliberately conservative reading of filmmaker-supplied language. This is
@@ -16,74 +23,26 @@ const has = (text: string, expression: RegExp) => expression.test(text);
  * number of decisions that genuinely affect the next step.
  */
 export function understandBrief(fields: AnalyzeFields): BriefUnderstanding {
-  const text = [
-    fields.context,
-    fields.projectType,
-    fields.creativeGoal,
-    fields.targetAudience,
-    fields.runtimeTarget,
-    fields.deliveryPlatform,
-    fields.restrictions,
-    fields.nonNegotiables,
-  ]
-    .join(" ")
-    .toLowerCase();
-  const understood: string[] = [];
+  const statements = suppliedStatements(fields.context);
+  const understood = statements.length ? statements : ["You have not described the film yet."];
   const decided: string[] = [];
 
   if (fields.projectType.trim()) decided.push(`Project type: ${sentence(fields.projectType)}.`);
-  if (has(text, /\b(series|recurring)\b/)) {
-    understood.push("This is a repeatable series.");
-    decided.push("Format: recurring series.");
-  }
-  if (has(text, /\bsocial media|instagram|tiktok|\bx\b/)) {
-    understood.push("This is intended as short-form social content.");
-  }
-  if (has(text, /\bchef\b/)) {
-    understood.push("The chef is the on-screen subject.");
-    decided.push("Subject: chef and dish.");
-  }
-  if (has(text, /ticket to (the )?(table|expo)|from (the )?ticket/)) {
-    understood.push("Each episode follows a dish from the ticket through to expo.");
-    decided.push("Structure: begins with the ticket and stops at expo.");
-  }
-  if (has(text, /\bexpo\b/) && !decided.some((item) => /expo/i.test(item))) {
-    understood.push("Coverage stops at the expo station.");
-    decided.push("Constraint: coverage ends at expo.");
-  }
-  if (has(text, /\bfresh\b/)) understood.push("The food should feel fresh and immediate.");
-  if (has(text, /\bbell\b/)) {
-    understood.push("A bell ringing is the ending beat.");
-    decided.push("Required ending: bell rings.");
-  }
   if (fields.deliveryPlatform.trim())
     decided.push(`Platforms: ${sentence(fields.deliveryPlatform)}.`);
-  else if (has(text, /instagram|tiktok|\bx\b/))
-    decided.push("Platforms: Instagram, X, and TikTok.");
   if (fields.creativeGoal.trim()) decided.push(`Purpose: ${sentence(fields.creativeGoal)}.`);
-  else if (has(text, /brand identity|engage/)) {
-    decided.push("Purpose: strengthen brand identity and engage the audience.");
-  }
+  if (fields.targetAudience.trim()) decided.push(`Audience: ${sentence(fields.targetAudience)}.`);
+  if (fields.desiredEmotion.trim())
+    decided.push(`Intended feeling: ${sentence(fields.desiredEmotion)}.`);
   if (fields.runtimeTarget.trim()) decided.push(`Runtime: ${sentence(fields.runtimeTarget)}.`);
+  if (fields.clientRequirements.trim())
+    decided.push(`Required: ${sentence(fields.clientRequirements)}.`);
   if (fields.nonNegotiables.trim()) decided.push(`Must-have: ${sentence(fields.nonNegotiables)}.`);
   if (fields.restrictions.trim()) decided.push(`Constraint: ${sentence(fields.restrictions)}.`);
 
-  if (understood.length === 0 && fields.context.trim()) {
-    understood.push(sentence(fields.context));
-  }
-
   const needsInput: string[] = [];
-  if (!fields.runtimeTarget.trim() && !has(text, /\b\d+\s*(second|minute|min|hour)/)) {
+  if (!fields.runtimeTarget.trim() && !/\b\d+\s*(second|minute|min|hour)/i.test(fields.context)) {
     needsInput.push("How long should each finished piece be?");
-  }
-  if (
-    has(text, /chef.*(explain|describe)|explain.*chef|describe.*chef/) &&
-    !has(text, /voiceover|voice-over|live dialogue|spoken/)
-  ) {
-    needsInput.push("Should the chef speak live, or should the explanation be voiceover?");
-  }
-  if (has(text, /\b(series|recurring)\b/) && !has(text, /\bhook\b|opening/)) {
-    needsInput.push("Is there a repeatable opening hook you want every episode to use?");
   }
   if (!fields.context.trim() && needsInput.length === 0) {
     needsInput.push("What should the finished film help people understand, feel, or do?");
@@ -125,7 +84,7 @@ export function BriefUnderstandingView({
       <UnderstandingSection
         title="What you already decided"
         items={reading.decided}
-        empty="Nothing additional was stated yet."
+        empty="No separate format details were added. Your brief above remains the source of truth."
       />
       <UnderstandingSection
         title="What still needs your input"
