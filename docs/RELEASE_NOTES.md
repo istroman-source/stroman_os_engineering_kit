@@ -1,5 +1,19 @@
 # Release Notes
 
+## Brief understanding — Stage 2 candidate (2026-09-02)
+
+- Brief submission now saves the filmmaker's words as an owner-scoped draft and pauses before any
+  hosted or deterministic creative reasoning begins.
+- Added a concise confirmation screen separating what Stroman understood, what the filmmaker
+  already decided, and only the material questions that remain open.
+- Removed creative titles, directing language, craft plans, tradeoffs, and numerical confidence
+  from the default brief-understanding stage. Existing deeper development remains unchanged after
+  explicit confirmation.
+- Added durable reload recovery for unconfirmed drafts, in-place editing without losing the brief,
+  and an explicit “Looks right — Continue” boundary before creative development.
+- Added Ticket to Table benchmark coverage, complete/vague-brief checks, authenticated draft API
+  coverage, and desktop/mobile Stage 1 + Stage 2 browser journeys.
+
 ## Guided film entry — Stage 1 candidate (2026-09-01)
 
 - Replaced the Projects dashboard language with one narrow, guided choice: start a film or continue

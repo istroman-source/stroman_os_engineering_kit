@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { errorStatus, friendlyError } from "@/ui/auth/api-client";
 import { getProject } from "@/ui/auth/api-client";
 import { AnalyzeForm } from "./analyze-form";
+import { BriefUnderstandingView } from "./brief-understanding";
 import { BlueprintView } from "./blueprint-view";
 import {
   type Analysis,
@@ -14,6 +15,7 @@ import {
   getAnalysis,
   getCreativeIntent,
   getIntentHistory,
+  saveBriefDraft,
 } from "./creative-api";
 import {
   saveLocationShot,
@@ -33,7 +35,7 @@ import type {
 } from "@/domain/creative";
 import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 
-type Mode = "loading" | "form" | "processing" | "blueprint";
+type Mode = "loading" | "form" | "understanding" | "processing" | "blueprint";
 
 function editableIntent(fields: AnalyzeFields): AnalyzeFields {
   return {
@@ -119,6 +121,10 @@ export function AnalyzeWorkspace({
             }
             setFormInitial(editableIntent(intent));
             setIntentSaved(true);
+            if (intent.developmentStatus === "DRAFT") {
+              setMode("understanding");
+              return;
+            }
             if (
               intent.developmentStatus === "PROCESSING" &&
               !isStaleDevelopment(intent.developmentStartedAt)
@@ -211,11 +217,33 @@ export function AnalyzeWorkspace({
   async function onAnalyze(fields: AnalyzeFields) {
     setFormInitial(fields);
     setIntentSaved(false);
+    setError(null);
+    setBusy(true);
+    try {
+      const saved = await saveBriefDraft(projectId, fields);
+      setFormInitial(editableIntent(saved));
+      setIntentHistory(await getIntentHistory(projectId).catch(() => []));
+      setIntentSaved(true);
+      setMode("understanding");
+    } catch (err) {
+      if (errorStatus(err) === 401) {
+        router.replace("/login");
+        return;
+      }
+      setError(friendlyError(err));
+      setMode("form");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function confirmUnderstanding() {
+    if (!formInitial) return;
     setBusy(true);
     setError(null);
     setMode("processing");
     try {
-      const result = await analyzeProject(projectId, fields);
+      const result = await analyzeProject(projectId, formInitial);
       setAnalysis(result);
       setIntentHistory(await getIntentHistory(projectId).catch(() => []));
       setMode("blueprint");
@@ -225,7 +253,7 @@ export function AnalyzeWorkspace({
         return;
       }
       setError(friendlyError(err));
-      setMode("form");
+      setMode("understanding");
     } finally {
       setBusy(false);
     }
@@ -420,16 +448,32 @@ export function AnalyzeWorkspace({
     );
   }
 
+  if (mode === "understanding" && formInitial) {
+    return (
+      <BriefUnderstandingView
+        title={projectName || formInitial.title}
+        fields={formInitial}
+        busy={busy}
+        error={error}
+        onContinue={() => void confirmUnderstanding()}
+        onEdit={() => {
+          setError(null);
+          setMode("form");
+        }}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <header>
         <p className="text-primary text-sm font-semibold tracking-wide">YOUR FIRST STEP</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight">
-          What do you want this film to become?
+          Tell Stroman what you want to make.
         </h2>
         <p className="text-muted-foreground text-sm">
-          Share the idea in your own words. Next, Stroman will turn it into a film plan you can
-          review and shape.
+          Share the idea in your own words. Stroman will first reflect it back so you can confirm it
+          before any creative development begins.
         </p>
       </header>
       <AnalyzeForm

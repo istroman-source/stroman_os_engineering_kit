@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   analyzeProject,
+  saveBriefDraft,
   retryLocationPhotoReconstruction,
   startLocationPhotoReconstruction,
   type Analysis,
@@ -49,6 +50,18 @@ afterEach(() => {
 });
 
 describe("analyzeProject edge recovery", () => {
+  it("saves a draft through the confirmation endpoint without waiting for development", async () => {
+    const completed = analysis("2026-09-02T05:00:00.000Z");
+    const draft = { ...intent(completed, "DRAFT"), developmentStartedAt: null };
+    const fetch = vi.fn().mockResolvedValue(response(200, draft));
+    vi.stubGlobal("fetch", fetch);
+    await expect(saveBriefDraft("proj_1", FIELDS)).resolves.toEqual(draft);
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/v1/projects/proj_1/analysis/intent",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
   it("returns the direct hosted result when the POST completes through the edge", async () => {
     const completed = analysis("2026-08-13T20:00:00.000Z");
     const fetch = vi

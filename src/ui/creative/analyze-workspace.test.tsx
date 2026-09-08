@@ -2,7 +2,13 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyzeWorkspace } from "./analyze-workspace";
-import { analyzeProject, getAnalysis, getCreativeIntent, getIntentHistory } from "./creative-api";
+import {
+  analyzeProject,
+  getAnalysis,
+  getCreativeIntent,
+  getIntentHistory,
+  saveBriefDraft,
+} from "./creative-api";
 import { getProject } from "@/ui/auth/api-client";
 import { proposeRecommendationDecision } from "@/ui/decisions/decisions-api";
 import { creativeAnalysisFixture } from "./creative-test-fixtures";
@@ -20,6 +26,7 @@ vi.mock("./creative-api", () => ({
   getIntentHistory: vi.fn(),
   getCreativeIntent: vi.fn(),
   analyzeProject: vi.fn(),
+  saveBriefDraft: vi.fn(),
 }));
 vi.mock("@/ui/decisions/decisions-api", () => ({ proposeRecommendationDecision: vi.fn() }));
 vi.mock("@/ui/auth/api-client", () => ({
@@ -32,6 +39,7 @@ beforeEach(() => {
   replaceMock.mockReset();
   vi.mocked(getAnalysis).mockReset();
   vi.mocked(analyzeProject).mockReset();
+  vi.mocked(saveBriefDraft).mockReset();
   vi.mocked(getIntentHistory).mockReset();
   vi.mocked(getCreativeIntent).mockReset();
   vi.mocked(getProject).mockReset();
@@ -77,8 +85,13 @@ describe("AnalyzeWorkspace", () => {
     ).toBeInTheDocument();
   });
 
-  it("analyzes from the form and shows the blueprint", async () => {
+  it("saves the brief, confirms comprehension, then develops the blueprint", async () => {
     vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
+    vi.mocked(saveBriefDraft).mockImplementation(async (_projectId, fields) => ({
+      ...creativeAnalysisFixture().brief,
+      ...fields,
+      developmentStatus: "DRAFT",
+    }));
     vi.mocked(analyzeProject).mockResolvedValue(creativeAnalysisFixture());
     const user = userEvent.setup();
     render(<AnalyzeWorkspace projectId="proj_1" />);
@@ -90,6 +103,11 @@ describe("AnalyzeWorkspace", () => {
     );
     await user.click(screen.getByRole("button", { name: /make my plan/i }));
 
+    await waitFor(() => expect(saveBriefDraft).toHaveBeenCalledWith("proj_1", expect.any(Object)));
+    expect(analyzeProject).not.toHaveBeenCalled();
+    expect(screen.getByRole("heading", { name: /what i understood/i })).toBeInTheDocument();
+    expect(screen.queryByText(/working confidence/i)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /looks right/i }));
     await waitFor(() => expect(analyzeProject).toHaveBeenCalledWith("proj_1", expect.any(Object)));
     expect(
       await screen.findByRole("heading", {
@@ -97,6 +115,19 @@ describe("AnalyzeWorkspace", () => {
         name: "Morning routine of an everyday mom who eats Jimmy's Famous Meals",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("restores an unconfirmed draft after reload", async () => {
+    vi.mocked(getAnalysis).mockRejectedValue({ status: 404 });
+    vi.mocked(getCreativeIntent).mockResolvedValue({
+      ...creativeAnalysisFixture().brief,
+      context: "A simple portrait of the real restaurant team.",
+      developmentStatus: "DRAFT",
+      developmentStartedAt: null,
+    });
+    render(<AnalyzeWorkspace projectId="proj_1" />);
+    expect(await screen.findByText("BRIEF RECEIVED")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /edit brief/i })).toBeInTheDocument();
   });
 
   it("restores a saved in-progress brief after reload instead of presenting an empty form", async () => {

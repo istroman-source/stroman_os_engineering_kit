@@ -54,7 +54,7 @@ test.describe("Stage 1 film entry", () => {
     await expect(page).toHaveURL(/\/projects\/proj_new\/brief$/);
     await expect(page.getByText("YOUR FIRST STEP")).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /what do you want this film to become/i }),
+      page.getByRole("heading", { name: /tell stroman what you want to make/i }),
     ).toBeVisible();
     await expect(page.getByLabel("Describe the video")).toBeVisible();
     await expect(page.getByRole("link", { name: "Rooms" })).toHaveCount(0);
