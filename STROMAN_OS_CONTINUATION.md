@@ -32,6 +32,11 @@ confirmation before creative development. Preserve Stage 1 and do not redesign l
 
 - TypeScript, formatting, OpenAPI (98 paths), production build, and Playwright desktop/mobile smoke
   pass.
+- Stage 2 final gate: formatting, typecheck, lint (two pre-existing warnings only), OpenAPI (99
+  paths), Webpack production build, 734 unit/UI/worker tests, 101 real-PostgreSQL API tests, and
+  16 desktop/mobile browser tests pass. The default Turbopack build is unavailable in this linked
+  worktree because its `node_modules` symlink resolves outside Turbopack's filesystem root; the
+  repository's supported Webpack build and Playwright configuration pass.
 - Full unit/UI/worker suite: 716/716 passed; real-PostgreSQL integration: 92/92; authenticated API:
   98/98; cross-mode evaluation: 28/28; guarded autopilot: 57/57.
 - Fresh 30-migration deployment and seeded compatible 28→30 migration rehearsal pass.
@@ -94,7 +99,7 @@ confirmation before creative development. Preserve Stage 1 and do not redesign l
 - [x] Add explicit Edit brief and Looks right — Continue actions.
 - [x] Keep confidence, invented direction, craft detail, scenes, and shots out of Stage 2.
 - [x] Pass Ticket to Table, detailed, vague, complete, fact/suggestion, API, and desktop/mobile tests.
-- [ ] Run the final full regression/build gate and freeze the exact Stage 2 SHA.
+- [x] Run the final full regression/build gate and freeze the exact Stage 2 SHA.
 - [ ] Obtain independent exact-SHA review with zero BLOCKING and IMPORTANT findings.
 - [ ] Push, pass exact-head CI, merge normally, and verify post-merge deployment.
 - [ ] Verify the signed-in deployed Stage 2 journey and publish the human-test handoff.
